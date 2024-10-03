@@ -1,0 +1,524 @@
+---
+title: "Mastrix."
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-title: Contents
+    number-sections: true
+    number-depth: 3
+    embed-resources: true
+    fig-align: 'center'
+    fig-cap-location: margin
+    fig-width: 4
+    fig-height: 4
+    css: custom-style.css
+    page-layout: full
+    grid:
+      sidebar-width: 10px
+      body-width: 1300px
+      gutter-width: 0.5rem
+    margin-left: 50px
+    margin-right: 10px
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+editor: visual
+execute:
+  engine: knitr
+  warning: false
+  echo: true
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(here)
+library(readxl)
+library(easystats)
+library(infer)
+library(kableExtra)
+library(plotly)
+library(ggplot2)
+library(patchwork)
+library(BSDA)
+library(rafalib)
+library(UsingR)
+library(dplyr)
+theme_set(theme_minimal())
+options(scipen= 999)
+```
+
+This document is a summary of different stats courses:
+
+-   Introduction to Linear Models and Matrix Algebra (HarvardX PH525.2x via Edx)
+
+# Matrices
+
+Scalars: are numbers
+
+Vectors: are series of numbers.
+
+Matrices: are a series of vectors. We generally use `X` to represent a matrix, and a matrix will have `N` rows and `p` columns
+A square matrix has the same number of rows as columns.
+
+to create a matrix in r you can create vectors and bind them together using `cbind` or `rbind` or create a matrix directly for example `matrix(1:60,20,3)`
+
+Linear algebra was developed to solve a system of equations. It gives a general solution to any system of equations. Let's see this example:
+
+$$
+\begin{align*}
+a + b + c &= 6 \\
+3a - 2b + c &= 2 \\
+2a + b - c &= 1
+\end{align*}
+$$
+
+$$
+\begin{pmatrix}
+1 & 1 & 1 \\
+3 & -2 & 1 \\
+2 & 1 & -1
+\end{pmatrix}
+\begin{pmatrix}
+a \\
+b \\
+c 
+\end{pmatrix}
+=
+\begin{pmatrix}
+6 \\
+2 \\
+1 
+\end{pmatrix}
+\Rightarrow
+\begin{pmatrix}
+a \\
+b \\
+c 
+\end{pmatrix}
+=
+{\begin{pmatrix}
+1 & 1 & 1 \\
+3 & -2 & 1 \\
+2 & 1 & -1
+\end{pmatrix}}^{-1}
+\begin{pmatrix}
+6 \\
+2 \\
+1 
+\end{pmatrix}
+$$
+## Matrix multiplication
+When you have a matrix and you multiply if by a scalar, you multiply each element of the matrix by that scalar:
+Given a scalar \( k \) and a matrix \( A \):
+
+$$
+k = 3, \quad A = \begin{pmatrix}
+1 & 2 \\
+3 & 4
+\end{pmatrix}
+$$
+
+The result of multiplying the matrix \( A \) by the scalar \( k \) is:
+
+$$
+kA = 3 \begin{pmatrix}
+1 & 2 \\
+3 & 4
+\end{pmatrix} = \begin{pmatrix}
+3 \cdot 1 & 3 \cdot 2 \\
+3 \cdot 3 & 3 \cdot 4
+\end{pmatrix} = \begin{pmatrix}
+3 & 6 \\
+9 & 12
+\end{pmatrix}
+$$
+
+in r is also very simple:
+```{r}
+X<- matrix(1:12,4,3)
+print(X)
+a<-2
+print(X*a)
+```
+
+To multiply a matrix by another matrix:
+Given two matrices \( A \) and \( B \):
+
+$$
+A = \begin{pmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{pmatrix}, \quad
+B = \begin{pmatrix}
+1 \\
+0 \\
+-1
+\end{pmatrix}
+$$
+
+The result of multiplying matrix \( A \) by matrix \( B \) is:
+
+$$
+AB = \begin{pmatrix}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{pmatrix}
+\begin{pmatrix}
+1 \\
+0 \\
+-1
+\end{pmatrix}
+= \begin{pmatrix}
+1 \cdot 1 + 2 \cdot 0 + 3 \cdot (-1) \\
+4 \cdot 1 + 5 \cdot 0 + 6 \cdot (-1) \\
+7 \cdot 1 + 8 \cdot 0 + 9 \cdot (-1)
+\end{pmatrix}
+= \begin{pmatrix}
+-2 \\
+-2 \\
+-2
+\end{pmatrix}
+$$
+and in r we use `%*%` 
+
+```{r}
+X<- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
+X
+beta<- c(3,2,1)
+X%*%beta
+
+```
+
+due to the way the matrices multiplication work, we can only multiply two matrices if the number of rows in one matrix is equal to the number of columns in the other matrix. 
+
+Given two matrices \( A \) and \( B \):
+
+$$
+A = \begin{pmatrix}
+1 & 2 \\
+3 & 4 \\
+5 & 6
+\end{pmatrix}, \quad
+B = \begin{pmatrix}
+7 & 8 & 9 \\
+10 & 11 & 12
+\end{pmatrix}
+$$
+
+The result of multiplying matrix \( A \) by matrix \( B \) is:
+
+$$
+AB = \begin{pmatrix}
+1 & 2 \\
+3 & 4 \\
+5 & 6
+\end{pmatrix}
+\begin{pmatrix}
+7 & 8 & 9 \\
+10 & 11 & 12
+\end{pmatrix}
+= \begin{pmatrix}
+1 \cdot 7 + 2 \cdot 10 & 1 \cdot 8 + 2 \cdot 11 & 1 \cdot 9 + 2 \cdot 12 \\
+3 \cdot 7 + 4 \cdot 10 & 3 \cdot 8 + 4 \cdot 11 & 3 \cdot 9 + 4 \cdot 12 \\
+5 \cdot 7 + 6 \cdot 10 & 5 \cdot 8 + 6 \cdot 11 & 5 \cdot 9 + 6 \cdot 12
+\end{pmatrix}
+= \begin{pmatrix}
+27 & 30 & 33 \\
+61 & 68 & 75 \\
+95 & 106 & 117
+\end{pmatrix}
+$$
+## Identity matrix
+An identity matrix (also known as a unit matrix) is a square matrix in which all the elements of the principal diagonal are ones, and all other elements are zeros. It is denoted by ( I ). The identity matrix plays a crucial role in matrix multiplication, as multiplying any matrix by the identity matrix leaves the original matrix unchanged.
+he identity matrix \( I \) of order 3 is:
+
+$$
+I_3 = \begin{pmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1
+\end{pmatrix}
+$$
+in r we use the function `diag()` with the number of dimensions we want:
+```{r}
+diag(5)
+```
+
+## Inversion
+The inverse of a square matrix $X$ is denoted as $X^{-1}$
+it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$ Note that not all matrices have an inverse. 
+In r we use the function `solve` to get the inverse, and we use it to solve our original equation it gives us the values for a, b and c to resolve the system of equations:
+$$
+\begin{align*}
+a + b + c &= 6 \\
+3a - 2b + c &= 2 \\
+2a + b - c &= 1
+\end{align*}
+\\
+\begin{pmatrix}
+1 & 1 & 1 \\
+3 & -2 & 1 \\
+2 & 1 & -1
+\end{pmatrix}
+\begin{pmatrix}
+a \\
+b \\
+c 
+\end{pmatrix}
+=
+\begin{pmatrix}
+6 \\
+2 \\
+1 
+\end{pmatrix}
+$$
+```{r}
+X <- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
+y <- matrix(c(6,2,1),3,1)
+solve(X)%*%y
+```
+
+## Transpose
+Transpose simply turns the rows into columns and vice versa, in r we use `t` 
+```{r}
+X<- matrix(1:15,5,3)
+X
+t(X)
+```
+
+## calculate an average using matrices
+```{r}
+y<- father.son$fheight
+mean(y)
+
+#using matrices:
+N<- length(y)
+Y<- matrix(y,N,1)
+A<- matrix(1,N,1)
+barY<- t(A)%*%Y/N
+##equivalent to
+barY<- crossprod(A,Y)/N
+print(barY)
+```
+
+## sample variance
+```{r}
+r<- y -barY
+crossprod(r)/N
+```
+
+## linear models represented by matrices
+We can represent a linear model mathematically like this:
+$$ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} + \varepsilon_i, i=1,\dots,n $$
+
+
+$$
+Y_i = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij} + \varepsilon_i, \quad i = 1, \ldots, N
+$$
+but using matrices we can simplify the formula to:
+$$
+Y=X\beta+\epsilon   
+$$
+where:
+Y is the vector of data
+X is a matrix that has columns representing the different covariants or predictors
+$\beta$ represent the unknown parameters
+$\epsilon$ represent the vector of error terms
+
+$$
+\mathbf{Y} = \begin{bmatrix}
+Y_1 \\
+Y_2 \\
+\vdots \\
+Y_N
+\end{bmatrix}, \quad
+\mathbf{X} = \begin{bmatrix}
+1 & x_{1,1} & \cdots & x_{1,P} \\
+1 & x_{2,1} & \cdots & x_{2,P} \\
+\vdots & \vdots & \ddots & \vdots \\
+1 & x_{N,1} & \cdots & x_{N,P}
+\end{bmatrix}, \quad
+\boldsymbol{\beta} = \begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_P
+\end{bmatrix}, \quad
+\boldsymbol{\varepsilon} = \begin{bmatrix}
+\varepsilon_1 \\
+\varepsilon_2 \\
+\vdots \\
+\varepsilon_N
+\end{bmatrix}
+$$
+$$
+\begin{pmatrix}
+Y_1 \\
+Y_2 \\
+\vdots \\
+Y_N
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & x_{1,1} & \cdots & x_{1,p} \\
+1 & x_{2,1} & \cdots & x_{2,p} \\
+\vdots & \vdots & \ddots & \vdots \\
+1 & x_{N,1} & \cdots & x_{N,p}
+\end{pmatrix}
+\begin{pmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_p
+\end{pmatrix}
++
+\begin{pmatrix}
+\varepsilon_1 \\
+\varepsilon_2 \\
+\vdots \\
+\varepsilon_N
+\end{pmatrix}
+$$
+Writing it this way we can calculate the values to minimize the residual sum of squares. The RSS equation now looks like this:
+
+$$
+(Y - X\beta)^T(Y - X\beta)
+$$
+
+and to find the $\hat{\beta}$ that minimizes this we solve by taking the derivative:
+$$
+2X^T(Y-X\hat{\beta})=0\\
+X^TX\hat{\beta}=X^TY\\
+\hat{\beta}= (X^TX^{-1}X^TY)
+$$
+In r:
+```{r}
+x= father.son$fheight
+y= father.son$sheight
+X<- cbind(1,x)
+betahat <- solve(t(X)%*%X)%*%t(X)%*%y
+betahat
+# or equivalent code:
+betahat <- solve(crossprod((X)))%*%crossprod(X,y)
+betahat
+```
+
+so now with $\hat{\beta}$ we can draw the linear model line. 
+
+```{r, fig.align='center', fig.height=5,fig.width=6}
+intercept = betahat[1,1]
+slope= betahat[2, 1]
+
+plot(x,y)
+abline(intercept, slope, col = "blue")
+```
+
+
+## Motivating Examples
+
+#### Falling objects
+
+Imagine you are Galileo in the 16th century trying to describe the velocity of a falling object. An assistant climbs the Tower of Pisa and drops a ball, while several other assistants record the position at different times. Let's simulate some data using the equations we know today and adding some measurement error:
+
+```{r, fig.align='center', fig.height=5,fig.width=6}
+set.seed(1)
+g <- 9.8 ##meters per second
+n <- 25
+tt <- seq(0,3.4,len=n) ##time in secs, note: we use tt because t is a base function
+d <- 56.67  - 0.5*g*tt^2 + rnorm(n,sd=1) ##meters
+```
+The assistants hand the data to Galileo and this is what he sees:
+```{r gravity, fig.cap="Simulated data for distance travelled versus time of falling object measured with error."}
+mypar()
+
+plot(tt,d,ylab="Distance in meters",xlab="Time in seconds")
+```
+
+He does not know the exact equation, but by looking at the plot above he deduces that the position should follow a parabola. So he models the data with:
+
+$$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n $$
+
+With $Y_i$ representing location, $x_i$ representing the time, and $\varepsilon_i$ accounting for measurement error. This is a linear model because it is a linear combination of known quantities (the $x$'s) referred to as predictors or covariates and unknown parameters (the $\beta$'s).
+
+so we are have our measures `d` and we want to calculate the unknown parameters or betas:
+`h` is the hight of the Tower of Pisa and should result in a value similar to 56.67
+`g` is the acceleration due to gravity, but we will actually get $\frac{1}{2}g$ due to physics.
+and we will have some errors due to measurament errors that we introduced in the formula above using `rnorm(n,sd=1)` 
+
+we want to find the values of beta that minimize the sum square of errors (RSS)
+Our first step is to create a matrix with tt and $tt^2$ and we add a column of 1s:
+```{r}
+X<- cbind(1,tt,tt^2)
+X
+```
+
+Now we choose a random matrix for beta of 3 rows (so we can multiply by X)
+Note that the values chosen for the matrix are arbitrary:
+
+```{r}
+Beta <- matrix(c(55,0,5),3,1)
+Beta
+```
+
+the residuals will be y - X times Beta.
+
+```{r}
+r<- d - X%*%Beta
+r
+```
+
+and the Residual Sum of Squares will be: 
+
+```{r}
+RSS<- crossprod(r)
+RSS
+```
+
+now to get the values for our unknown parameters we solve the least square estimate for those 
+
+```{r}
+betahat <- solve(crossprod(X))%*% crossprod(X,d)
+betahat
+```
+
+which gives us:
+57.0212322 is the hight of the tower of Pisa
+-0.4223921 is the starting velocity (should be 0)
+-4.8175119 is half of the gravity acceleration. 
+
+which will result in our formula:
+`d <- 57.0212322 - 0.4223921 tt - 4.8175119 tt^2`
+
+```{r}
+fun <- function(x){
+  57.0212322 - (0.4223921*x) - (4.8175119*x^2)}
+y_1 <- fun(tt)
+```
+
+Now we can plot the measured values along with the calculated values using the equation (note that I have slightly displaced the calculated values to avoid overlapping)
+```{r, fig.align='center', fig.height=5,fig.width=6}
+
+# Plot the measured values
+plot(tt, d, xlab = "Time in secs", ylab = "Distance in m.", col = "blue", pch = 19)
+
+# Add the fitted values to the plot
+points(tt+0.1, y_1, col = "red", pch = 17)
+
+# Add a legend to differentiate between the two lines
+legend("bottomleft", legend = c("Measured values", "Fitted values"), col = c("blue", "red"), pch = c(19, 17))
+```
+
+
+We could have solved this without matrices using the linear model formula in r:
+```{r}
+tt2<- tt^2
+fit <- lm(y~tt+tt2)
+summary(fit)
+```
+
+

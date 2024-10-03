@@ -1,0 +1,51 @@
+/* Change the background color of code blocks */
+pre.sourceCode {
+  background-color: #f8f8f8;
+}
+
+/* Change the text color of code output */
+div.cell-output {
+  background-color: #f0ffff;
+  color: #367588;
+}
+
+pre.code {
+   color: #367588;
+}
+code {
+   color: #367588;
+}
+
+.centered-text p {
+    text-align: center;
+}
+
+.callout-orange {
+ border: 2px solid #f0ad4e;  
+ border-radius: 8px;   
+ background-color: #fff3cd;   
+ padding: 10px;
+}
+
+
+blockquote {
+  font-size: 0.8em; /* Reduces the font size by 1em */
+  background-color: #fcfafc
+}
+
+.blockquote {
+  font-size: 0.8em; /* Reduces the font size by 1em */
+}
+
+.toc {
+  margin-right: 10px;  
+}
+
+body {
+  font-family: serif;
+}
+
+ul, ol {
+  line-height: 0.9;
+  margin-bottom: -0.1em;  
+}
