@@ -1,5 +1,5 @@
 ---
-title: "Mastrix."
+title: "Mastrix Algebra"
 format:
   html:
     toc: true
@@ -60,8 +60,7 @@ Scalars: are numbers
 
 Vectors: are series of numbers.
 
-Matrices: are a series of vectors. We generally use `X` to represent a matrix, and a matrix will have `N` rows and `p` columns
-A square matrix has the same number of rows as columns.
+Matrices: are a series of vectors. We generally use `X` to represent a matrix, and a matrix will have `N` rows and `p` columns A square matrix has the same number of rows as columns.
 
 to create a matrix in r you can create vectors and bind them together using `cbind` or `rbind` or create a matrix directly for example `matrix(1:60,20,3)`
 
@@ -109,10 +108,7 @@ c
 2 \\
 1 
 \end{pmatrix}
-$$
-## Matrix multiplication
-When you have a matrix and you multiply if by a scalar, you multiply each element of the matrix by that scalar:
-Given a scalar \( k \) and a matrix \( A \):
+$$ \## Matrix multiplication When you have a matrix and you multiply if by a scalar, you multiply each element of the matrix by that scalar: Given a scalar ( k ) and a matrix ( A ):
 
 $$
 k = 3, \quad A = \begin{pmatrix}
@@ -121,7 +117,7 @@ k = 3, \quad A = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-The result of multiplying the matrix \( A \) by the scalar \( k \) is:
+The result of multiplying the matrix ( A ) by the scalar ( k ) is:
 
 $$
 kA = 3 \begin{pmatrix}
@@ -137,6 +133,7 @@ kA = 3 \begin{pmatrix}
 $$
 
 in r is also very simple:
+
 ```{r}
 X<- matrix(1:12,4,3)
 print(X)
@@ -144,8 +141,7 @@ a<-2
 print(X*a)
 ```
 
-To multiply a matrix by another matrix:
-Given two matrices \( A \) and \( B \):
+To multiply a matrix by another matrix: Given two matrices ( A ) and ( B ):
 
 $$
 A = \begin{pmatrix}
@@ -160,7 +156,7 @@ B = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-The result of multiplying matrix \( A \) by matrix \( B \) is:
+The result of multiplying matrix ( A ) by matrix ( B ) is:
 
 $$
 AB = \begin{pmatrix}
@@ -183,8 +179,7 @@ AB = \begin{pmatrix}
 -2 \\
 -2
 \end{pmatrix}
-$$
-and in r we use `%*%` 
+$$ and in r we use `%*%`
 
 ```{r}
 X<- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
@@ -194,9 +189,9 @@ X%*%beta
 
 ```
 
-due to the way the matrices multiplication work, we can only multiply two matrices if the number of rows in one matrix is equal to the number of columns in the other matrix. 
+due to the way the matrices multiplication work, we can only multiply two matrices if the number of rows in one matrix is equal to the number of columns in the other matrix.
 
-Given two matrices \( A \) and \( B \):
+Given two matrices ( A ) and ( B ):
 
 $$
 A = \begin{pmatrix}
@@ -210,7 +205,7 @@ B = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-The result of multiplying matrix \( A \) by matrix \( B \) is:
+The result of multiplying matrix ( A ) by matrix ( B ) is:
 
 $$
 AB = \begin{pmatrix}
@@ -232,10 +227,7 @@ AB = \begin{pmatrix}
 61 & 68 & 75 \\
 95 & 106 & 117
 \end{pmatrix}
-$$
-## Identity matrix
-An identity matrix (also known as a unit matrix) is a square matrix in which all the elements of the principal diagonal are ones, and all other elements are zeros. It is denoted by ( I ). The identity matrix plays a crucial role in matrix multiplication, as multiplying any matrix by the identity matrix leaves the original matrix unchanged.
-he identity matrix \( I \) of order 3 is:
+$$ \## Identity matrix An identity matrix (also known as a unit matrix) is a square matrix in which all the elements of the principal diagonal are ones, and all other elements are zeros. It is denoted by ( I ). The identity matrix plays a crucial role in matrix multiplication, as multiplying any matrix by the identity matrix leaves the original matrix unchanged. he identity matrix ( I ) of order 3 is:
 
 $$
 I_3 = \begin{pmatrix}
@@ -243,17 +235,15 @@ I_3 = \begin{pmatrix}
 0 & 1 & 0 \\
 0 & 0 & 1
 \end{pmatrix}
-$$
-in r we use the function `diag()` with the number of dimensions we want:
+$$ in r we use the function `diag()` with the number of dimensions we want:
+
 ```{r}
 diag(5)
 ```
 
 ## Inversion
-The inverse of a square matrix $X$ is denoted as $X^{-1}$
-it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$ Note that not all matrices have an inverse. 
-In r we use the function `solve` to get the inverse, and we use it to solve our original equation it gives us the values for a, b and c to resolve the system of equations:
-$$
+
+The inverse of a square matrix $X$ is denoted as $X^{-1}$ it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$ Note that not all matrices have an inverse. In r we use the function `solve` to get the inverse, and we use it to solve our original equation it gives us the values for a, b and c to resolve the system of equations: $$
 \begin{align*}
 a + b + c &= 6 \\
 3a - 2b + c &= 2 \\
@@ -277,6 +267,7 @@ c
 1 
 \end{pmatrix}
 $$
+
 ```{r}
 X <- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
 y <- matrix(c(6,2,1),3,1)
@@ -284,7 +275,9 @@ solve(X)%*%y
 ```
 
 ## Transpose
-Transpose simply turns the rows into columns and vice versa, in r we use `t` 
+
+Transpose simply turns the rows into columns and vice versa, in r we use `t`
+
 ```{r}
 X<- matrix(1:15,5,3)
 X
@@ -292,6 +285,7 @@ t(X)
 ```
 
 ## calculate an average using matrices
+
 ```{r}
 y<- father.son$fheight
 mean(y)
@@ -307,28 +301,21 @@ print(barY)
 ```
 
 ## sample variance
+
 ```{r}
 r<- y -barY
 crossprod(r)/N
 ```
 
 ## linear models represented by matrices
-We can represent a linear model mathematically like this:
-$$ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} + \varepsilon_i, i=1,\dots,n $$
 
+We can represent a linear model mathematically like this: $$ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} + \varepsilon_i, i=1,\dots,n $$
 
 $$
 Y_i = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij} + \varepsilon_i, \quad i = 1, \ldots, N
-$$
-but using matrices we can simplify the formula to:
-$$
+$$ but using matrices we can simplify the formula to: $$
 Y=X\beta+\epsilon   
-$$
-where:
-Y is the vector of data
-X is a matrix that has columns representing the different covariants or predictors
-$\beta$ represent the unknown parameters
-$\epsilon$ represent the vector of error terms
+$$ where: Y is the vector of data X is a matrix that has columns representing the different covariants or predictors $\beta$ represent the unknown parameters $\epsilon$ represent the vector of error terms
 
 $$
 \mathbf{Y} = \begin{bmatrix}
@@ -355,8 +342,7 @@ Y_N
 \vdots \\
 \varepsilon_N
 \end{bmatrix}
-$$
-$$
+$$ $$
 \begin{pmatrix}
 Y_1 \\
 Y_2 \\
@@ -383,20 +369,18 @@ Y_N
 \vdots \\
 \varepsilon_N
 \end{pmatrix}
-$$
-Writing it this way we can calculate the values to minimize the residual sum of squares. The RSS equation now looks like this:
+$$ Writing it this way we can calculate the values to minimize the residual sum of squares. The RSS equation now looks like this:
 
 $$
 (Y - X\beta)^T(Y - X\beta)
 $$
 
-and to find the $\hat{\beta}$ that minimizes this we solve by taking the derivative:
-$$
+and to find the $\hat{\beta}$ that minimizes this we solve by taking the derivative: $$
 2X^T(Y-X\hat{\beta})=0\\
 X^TX\hat{\beta}=X^TY\\
 \hat{\beta}= (X^TX^{-1}X^TY)
-$$
-In r:
+$$ In r:
+
 ```{r}
 x= father.son$fheight
 y= father.son$sheight
@@ -408,7 +392,7 @@ betahat <- solve(crossprod((X)))%*%crossprod(X,y)
 betahat
 ```
 
-so now with $\hat{\beta}$ we can draw the linear model line. 
+so now with $\hat{\beta}$ we can draw the linear model line.
 
 ```{r, fig.align='center', fig.height=5,fig.width=6}
 intercept = betahat[1,1]
@@ -417,7 +401,6 @@ slope= betahat[2, 1]
 plot(x,y)
 abline(intercept, slope, col = "blue")
 ```
-
 
 ## Motivating Examples
 
@@ -432,7 +415,9 @@ n <- 25
 tt <- seq(0,3.4,len=n) ##time in secs, note: we use tt because t is a base function
 d <- 56.67  - 0.5*g*tt^2 + rnorm(n,sd=1) ##meters
 ```
+
 The assistants hand the data to Galileo and this is what he sees:
+
 ```{r gravity, fig.cap="Simulated data for distance travelled versus time of falling object measured with error."}
 mypar()
 
@@ -445,20 +430,16 @@ $$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n $$
 
 With $Y_i$ representing location, $x_i$ representing the time, and $\varepsilon_i$ accounting for measurement error. This is a linear model because it is a linear combination of known quantities (the $x$'s) referred to as predictors or covariates and unknown parameters (the $\beta$'s).
 
-so we are have our measures `d` and we want to calculate the unknown parameters or betas:
-`h` is the hight of the Tower of Pisa and should result in a value similar to 56.67
-`g` is the acceleration due to gravity, but we will actually get $\frac{1}{2}g$ due to physics.
-and we will have some errors due to measurament errors that we introduced in the formula above using `rnorm(n,sd=1)` 
+so we are have our measures `d` and we want to calculate the unknown parameters or betas: `h` is the hight of the Tower of Pisa and should result in a value similar to 56.67 `g` is the acceleration due to gravity, but we will actually get $\frac{1}{2}g$ due to physics. and we will have some errors due to measurament errors that we introduced in the formula above using `rnorm(n,sd=1)`
 
-we want to find the values of beta that minimize the sum square of errors (RSS)
-Our first step is to create a matrix with tt and $tt^2$ and we add a column of 1s:
+we want to find the values of beta that minimize the sum square of errors (RSS) Our first step is to create a matrix with tt and $tt^2$ and we add a column of 1s:
+
 ```{r}
 X<- cbind(1,tt,tt^2)
 X
 ```
 
-Now we choose a random matrix for beta of 3 rows (so we can multiply by X)
-Note that the values chosen for the matrix are arbitrary:
+Now we choose a random matrix for beta of 3 rows (so we can multiply by X) Note that the values chosen for the matrix are arbitrary:
 
 ```{r}
 Beta <- matrix(c(55,0,5),3,1)
@@ -472,27 +453,23 @@ r<- d - X%*%Beta
 r
 ```
 
-and the Residual Sum of Squares will be: 
+and the Residual Sum of Squares will be:
 
 ```{r}
 RSS<- crossprod(r)
 RSS
 ```
 
-now to get the values for our unknown parameters we solve the least square estimate for those 
+now to get the values for our unknown parameters we solve the least squares estimate (LSE) for those
 
 ```{r}
 betahat <- solve(crossprod(X))%*% crossprod(X,d)
 betahat
 ```
 
-which gives us:
-57.0212322 is the hight of the tower of Pisa
--0.4223921 is the starting velocity (should be 0)
--4.8175119 is half of the gravity acceleration. 
+which gives us: 57.0212322 is the hight of the tower of Pisa -0.4223921 is the starting velocity (should be 0) -4.8175119 is half of the gravity acceleration.
 
-which will result in our formula:
-`d <- 57.0212322 - 0.4223921 tt - 4.8175119 tt^2`
+which will result in our formula: `d <- 57.0212322 - 0.4223921 tt - 4.8175119 tt^2`
 
 ```{r}
 fun <- function(x){
@@ -501,6 +478,7 @@ y_1 <- fun(tt)
 ```
 
 Now we can plot the measured values along with the calculated values using the equation (note that I have slightly displaced the calculated values to avoid overlapping)
+
 ```{r, fig.align='center', fig.height=5,fig.width=6}
 
 # Plot the measured values
@@ -513,12 +491,209 @@ points(tt+0.1, y_1, col = "red", pch = 17)
 legend("bottomleft", legend = c("Measured values", "Fitted values"), col = c("blue", "red"), pch = c(19, 17))
 ```
 
-
 We could have solved this without matrices using the linear model formula in r:
+
 ```{r}
 tt2<- tt^2
-fit <- lm(y~tt+tt2)
+fit <- lm(d~tt+tt2)
 summary(fit)
 ```
 
+# Standard Error in the context of linear models
 
+We have shown how to find the least squares estimates with matrix algebra. These estimates are random variables as they are linear combinations of the data. For these estimates to be useful we also need to compute the standard errors.
+
+It is useful to think about where randomness comes from. In our falling object example, randomnes was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will be random. This implies that our estimate of the gravitational constant will change. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeteadly and compute the estimate for the quadratic term each time.
+
+```{r}
+g = 9.8 ## meters per second
+h0 = 56.67
+v0 = 0
+n = 25
+tt = seq(0,3.4,len=n) ##time in secs, t is a base function
+y = h0 + v0 *tt  - 0.5* g*tt^2 + rnorm(n,sd=1)
+```
+
+now we act as if we didn't know `h0`, `v0` and `-0.5g` and use regression to estimate these. We can rewrite the models as `y=b0+b1 t+ b2 t^2 +e` and obtain LSE. Note that g will be `g=-2*b2`
+
+To obtain the LSE in r
+
+```{r}
+X = cbind(1,tt,tt^2)
+A = solve(crossprod(X))%*%t(X)%*%y
+```
+
+so g will be measured after this experiment as:
+
+```{r}
+-2*A[3]
+```
+
+now we are going to repeat the experiment 100,000 times and calculate the standard deviation for the estimate g.
+
+```{r}
+g = 9.8 ## meters per second
+h0 = 56.67
+v0 = 0
+n = 25
+tt = seq(0,3.4,len=n) ##time in secs, t is a base function
+set.seed(1)
+myfunc <- function(){
+y = h0 + v0 *tt  - 0.5* g*tt^2 + rnorm(n,sd=1)
+
+X = cbind(1,tt,tt^2)
+A = solve(crossprod(X))%*%t(X)%*%y
+A
+g<- -2*A[3]
+return (g)
+}
+
+gs<- replicate(100000,myfunc())
+sd(gs)
+
+```
+
+Now we are going to use matrix algebra to compute standard errors of regression coefficients. We will start by defining the variance covariance matrix.
+
+#### Variance-covariance matrix (Advanced)
+
+As a first step we need to define the *variance-covariance matrix*, $\boldsymbol{\Sigma}$. For a vector of random variables, $\mathbf{Y}$, we define $\boldsymbol{\Sigma}$ as the matrix with the $i,j$ entry:
+
+$$ \Sigma_{i,j} \equiv \mbox{Cov}(Y_i, Y_j) $$
+The covariance is equal to the variance if $i = j$ and equal to 0 if the variables are independent. In the kinds of vectors considered up to now, for example, a vector $\mathbf{Y}$ of individual observations $Y_i$ sampled from a population, we have assumed independence of each observation and assumed the $Y_i$ all have the same variance $\sigma^2$, so the variance-covariance matrix has had only two kinds of elements:
+
+$$ \mbox{Cov}(Y_i, Y_i) = \mbox{var}(Y_i) = \sigma^2$$
+
+$$ \mbox{Cov}(Y_i, Y_j) = 0, \mbox{ for } i \neq j$$
+
+which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$, the identity matrix.
+
+Later, we will see a case, specifically the estimate coefficients of a linear model, $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonal elements of $\boldsymbol{\Sigma}$. Furthermore, the diagonal elements will not be equal to a single value $\sigma^2$.
+
+#### Variance of a linear combination 
+
+A useful result provided by linear algebra is that the variance covariance-matrix of a linear combination $\mathbf{AY}$ of $\mathbf{Y}$ can be computed as follows:
+
+$$
+\mbox{var}(\mathbf{AY}) = \mathbf{A}\mbox{var}(\mathbf{Y}) \mathbf{A}^\top 
+$$
+
+For example, if $Y_1$ and $Y_2$ are independent both with variance $\sigma^2$ then:
+
+$$\mbox{var}\{Y_1+Y_2\} = 
+\mbox{var}\left\{ \begin{pmatrix}1&1\end{pmatrix}\begin{pmatrix} Y_1\\Y_2\\ \end{pmatrix}\right\}$$
+
+$$ =\begin{pmatrix}1&1\end{pmatrix} \sigma^2 \mathbf{I}\begin{pmatrix} 1\\1\\ \end{pmatrix}=2\sigma^2$$
+
+as we expect. We use this result to obtain the standard errors of the LSE (least squares estimate).
+
+#### Least Squares Estimates (LSE) standard errors (Advanced)
+
+Note that the LSE $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{AY}$ with $\mathbf{A}=\mathbf{(X^\top X)^{-1}X}^\top$, so we can use the equation above to derive the variance of our estimates:
+
+$$\mbox{var}(\boldsymbol{\hat{\beta}}) = \mbox{var}( \mathbf{(X^\top X)^{-1}X^\top Y} ) =  $$
+
+$$\mathbf{(X^\top X)^{-1} X^\top} \mbox{var}(Y) (\mathbf{(X^\top X)^{-1} X^\top})^\top = $$
+
+$$\mathbf{(X^\top X)^{-1} X^\top} \sigma^2 \mathbf{I} (\mathbf{(X^\top X)^{-1} X^\top})^\top = $$
+
+$$\sigma^2 \mathbf{(X^\top X)^{-1} X^\top}\mathbf{X} \mathbf{(X^\top X)^{-1}} = $$
+
+$$\sigma^2\mathbf{(X^\top X)^{-1}}$$
+
+The diagonal of the square root of this matrix contains the standard error of our estimates. 
+
+#### Estimating $\sigma^2$ 
+
+To obtain an actual estimate in practice from the formulas above, we need to estimate $\sigma^2$. Previously we estimated the standard errors from the sample. However, the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
+
+We form the residuals like this: 
+
+$$
+\mathbf{r}\equiv\boldsymbol{\hat{\varepsilon}} = \mathbf{Y}-\mathbf{X}\boldsymbol{\hat{\beta}}$$
+
+Both $\mathbf{r}$ and $\boldsymbol{\hat{\varepsilon}}$ notations are used to denote residuals.
+
+Then we use these to estimate, in a similar way, to what we do in the univariate case:
+
+$$ s^2 \equiv \hat{\sigma}^2 = \frac{1}{N-p}\mathbf{r}^\top\mathbf{r} = \frac{1}{N-p}\sum_{i=1}^N r_i^2$$
+
+Here $N$ is the sample size and $p$ is the number of columns in $\mathbf{X}$ or number of parameters (including the intercept term $\beta_0$). The reason we divide by $N-p$ is because mathematical theory tells us that this will give us a better (unbiased) estimate.
+
+Let's try this in R and see if we obtain the same values as we did with the Monte Carlo simulation above:
+
+```{r}
+n <- nrow(father.son)
+N <- 50
+index <- sample(n,N)
+sampledat <- father.son[index,]
+x <- sampledat$fheight
+y <- sampledat$sheight
+X <- model.matrix(~x)
+
+N <- nrow(X)
+p <- ncol(X)
+
+XtXinv <- solve(crossprod(X))
+
+resid <- y - X %*% XtXinv %*% crossprod(X,y)
+
+s <- sqrt( sum(resid^2)/(N-p))
+ses <- sqrt(diag(XtXinv))*s 
+```
+
+Let's compare to what `lm` provides:
+
+```{r}
+summary(lm(y~x))$coef[,2]
+ses
+```
+
+They are identical because they are doing the same thing. Also, note that we approximate the Monte Carlo results:
+
+```{r}
+apply(betahat,2,sd)
+```
+
+
+
+#### Linear combination of estimates
+Imagine that you estimated the effects of several treatments and now you are interested in the difference in the effects of two of those treatments. You already have the $\hat{\beta}$ and want to calculate $\hat{\beta}_2-\hat{\beta}_1$
+
+If we want to compute the standard deviation of a linear combination of estimates such as $\hat{\beta}_2 - \hat{\beta}_1$, this is a linear combination of $\hat{\boldsymbol{\beta}}$:
+
+$$\hat{\beta}_2 - \hat{\beta}_1 = 
+\begin{pmatrix}0&-1&1&0&\dots&0\end{pmatrix} \begin{pmatrix}
+\hat{\beta}_0\\
+\hat{\beta}_1 \\ 
+\hat{\beta}_2 \\ 
+\vdots\\
+\hat{\beta}_p
+\end{pmatrix}$$
+
+Using the above, we know how to compute the variance covariance matrix of $\hat{\boldsymbol{\beta}}$.
+
+
+#### CLT and t-distribution
+
+We have shown how we can obtain standard errors for our estimates. However, as we learned in the first chapter, to perform inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is because the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{\beta}$ and standard errors as described. For small samples, if the $\varepsilon$ are normally distributed, then the $\hat{\beta}-\beta$ follow a t-distribution. We do not derive this result here, but the results are extremely useful since it is how we construct p-values and confidence intervals in the context of linear models.
+
+#### Code versus math
+
+The standard approach to writing linear models either assume the values in $\mathbf{X}$ are fixed or that we are conditioning on them. Thus  $\mathbf{X} \boldsymbol{\beta}$ has no variance as the $\mathbf{X}$ is considered fixed. This is why we write $\mbox{var}(Y_i) = \mbox{var}(\varepsilon_i)=\sigma^2$. This can cause confusion in practice because if you, for example, compute the following:
+
+```{r}
+x =  father.son$fheight
+beta =  c(34,0.5)
+var(beta[1]+beta[2]*x)
+```
+
+it is nowhere near 0. This is an example in which we have to be careful in distinguishing code from math. The function `var` is simply computing the variance of the list we feed it, while the mathematical definition of variance is considering only quantities that are random variables. In the R code above, `x` is not fixed at all: we are letting it vary, but when we write  $\mbox{var}(Y_i) = \sigma^2$ we are imposing, mathematically, `x` to be fixed. Similarly, if we use R to compute the variance of $Y$ in our object dropping example, we obtain something very different than $\sigma^2=1$ (the known variance):
+
+```{r}
+n <- length(tt)
+y <- h0 + v0*tt  - 0.5*g*tt^2 + rnorm(n,sd=1)
+var(y)
+```
+
+Again, this is because we are not fixing `tt`. 

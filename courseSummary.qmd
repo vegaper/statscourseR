@@ -811,7 +811,7 @@ $$
 
 where n is the sample size. **We can actually use this formula to decide what is the sample size we need to use for a desired accuracy in our statistic**.
 
-It plays a similar role as the *standard deviation* for one observation from the population mean, remember that the Standard deviation measures the dispersion of individual data points around the mean of a dataset. It tells you how spread out the values in a dataset are.
+It plays a similar role as the *standard deviation* for one observation from the population mean, remember that the Standard deviation measures the dispersion of individual data points around the mean of a dataset. It tells you how spread out the values in a dataset are. In summary, the standard error of an estimate is the standard deviation of the sampling distribution of an estimate.
 
 #### Exercise:
 
@@ -3004,7 +3004,7 @@ It is easy to confuse the testing for homogeneity and the testing for independen
 ### Comparing the different uses of the chi-square test:
 
 |                 | sample                                                  | research question                                                                   |
-|---------------|-----------------------|----------------------------------|
+|-----------------|----------------------|---------------------------------|
 | goodness of fit | single categorical variable. one sample                 | Are the counts of the different categories matching our expected results            |
 | homogeneity     | single categorical variable measured on several samples | Are the groups homogeneous (have the same distribution of the categorical variable) |
 | independence    | two categorical variables measured on one sample        | Are the two categorical variables independent?                                      |
