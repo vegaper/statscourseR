@@ -1,5 +1,5 @@
 ---
-title: "Mastrix Algebra"
+title: "Matrix Algebra"
 format:
   html:
     toc: true
@@ -46,6 +46,8 @@ library(BSDA)
 library(rafalib)
 library(UsingR)
 library(dplyr)
+library(RColorBrewer)
+library(contrast) 
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -53,8 +55,9 @@ options(scipen= 999)
 This document is a summary of different stats courses:
 
 -   Introduction to Linear Models and Matrix Algebra (HarvardX PH525.2x via Edx)
+There is a free ebook which contains the full course: dataanalysisforthelifesciences.pdf and all the code can be found in the git of the author.
 
-# Matrices
+# Matrices operations
 
 Scalars: are numbers
 
@@ -108,7 +111,11 @@ c
 2 \\
 1 
 \end{pmatrix}
-$$ \## Matrix multiplication When you have a matrix and you multiply if by a scalar, you multiply each element of the matrix by that scalar: Given a scalar ( k ) and a matrix ( A ):
+$$ 
+
+## Matrix multiplication by scalar
+
+When you have a matrix and you multiply if by a scalar, you multiply each element of the matrix by that scalar: Given a scalar ( k ) and a matrix ( A ):
 
 $$
 k = 3, \quad A = \begin{pmatrix}
@@ -140,6 +147,8 @@ print(X)
 a<-2
 print(X*a)
 ```
+
+## Matrices multiplication
 
 To multiply a matrix by another matrix: Given two matrices ( A ) and ( B ):
 
@@ -179,7 +188,8 @@ AB = \begin{pmatrix}
 -2 \\
 -2
 \end{pmatrix}
-$$ and in r we use `%*%`
+$$ 
+and in r we use `%*%`
 
 ```{r}
 X<- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
@@ -227,7 +237,11 @@ AB = \begin{pmatrix}
 61 & 68 & 75 \\
 95 & 106 & 117
 \end{pmatrix}
-$$ \## Identity matrix An identity matrix (also known as a unit matrix) is a square matrix in which all the elements of the principal diagonal are ones, and all other elements are zeros. It is denoted by ( I ). The identity matrix plays a crucial role in matrix multiplication, as multiplying any matrix by the identity matrix leaves the original matrix unchanged. he identity matrix ( I ) of order 3 is:
+$$
+
+## Identity matrix
+
+An identity matrix (also known as a unit matrix) is a square matrix in which all the elements of the principal diagonal are ones, and all other elements are zeros. It is denoted by ( I ). The identity matrix plays a crucial role in matrix multiplication, as multiplying any matrix by the identity matrix leaves the original matrix unchanged. he identity matrix ( I ) of order 3 is:
 
 $$
 I_3 = \begin{pmatrix}
@@ -243,7 +257,9 @@ diag(5)
 
 ## Inversion
 
-The inverse of a square matrix $X$ is denoted as $X^{-1}$ it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$ Note that not all matrices have an inverse. In r we use the function `solve` to get the inverse, and we use it to solve our original equation it gives us the values for a, b and c to resolve the system of equations: $$
+The inverse of a square matrix $X$ is denoted as $X^{-1}$ it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$ Note that not all matrices have an inverse. In r we use the function `solve` to get the inverse, and we use it to solve our original equation it gives us the values for a, b and c to resolve the system of equations: 
+
+$$
 \begin{align*}
 a + b + c &= 6 \\
 3a - 2b + c &= 2 \\
@@ -284,7 +300,7 @@ X
 t(X)
 ```
 
-## calculate an average using matrices
+## Calculate an average using matrices
 
 ```{r}
 y<- father.son$fheight
@@ -300,22 +316,68 @@ barY<- crossprod(A,Y)/N
 print(barY)
 ```
 
-## sample variance
+## Sample variance
+First, remember that the residuals are given by $e=Y-\hat{Y}$ where $e$ is the nX1 vector of residuals, Y is the nx1 vector of observed values and $\hat{Y}$ is the nx1 vector of predicted values from our model. 
+The formula for the sample variance $s^2$ of the residuals is 
+$$
+s^2 = \frac{\mathbf{e}^T \mathbf{e}}{n - p}
+$$
+This gives you the average squared deviation of the residuals from their mean, which is an estimate of the variance of the errors in your model. 
+in r:
 
 ```{r}
-r<- y -barY
-crossprod(r)/N
+e<- y -barY
+crossprod(e)/N
 ```
 
-## linear models represented by matrices
+Example:
+```{r}
+# Sample data
+Y <- matrix(c(2, 3, 5, 7, 9), ncol = 1)
+Y
+X <- matrix(c(1, 1, 1, 1, 1, 1, 2, 3, 4, 5), ncol = 2)
+X
 
-We can represent a linear model mathematically like this: $$ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} + \varepsilon_i, i=1,\dots,n $$
+# Calculate the coefficients (beta_hat)
+beta_hat <- solve(crossprod(X)) %*% crossprod(X, Y)
+beta_hat
+# Calculate the predicted values (Y_hat)
+Y_hat <- X %*% beta_hat
+
+# Calculate the residuals
+residuals <- Y - Y_hat
+
+# Number of observations and parameters
+n <- nrow(Y)
+p <- ncol(X)
+
+# Calculate the sum of squared residuals using crossprod
+ss_res <- crossprod(residuals)
+
+# Calculate the sample variance
+s_squared <- ss_res / (n - p)
+
+s_squared
+
+```
+
+# Linear models represented by matrices
+
+We can represent a linear model mathematically like this: 
+
+$$ 
+Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} + \varepsilon_i, i=1,\dots,n 
+$$
 
 $$
 Y_i = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij} + \varepsilon_i, \quad i = 1, \ldots, N
-$$ but using matrices we can simplify the formula to: $$
+$$ 
+but using matrices we can simplify the formula to: 
+$$
 Y=X\beta+\epsilon   
-$$ where: Y is the vector of data X is a matrix that has columns representing the different covariants or predictors $\beta$ represent the unknown parameters $\epsilon$ represent the vector of error terms
+$$ 
+
+where: Y is the vector of data X is a matrix that has columns representing the different covariants or predictors $\beta$ represent the unknown parameters $\epsilon$ represent the vector of error terms
 
 $$
 \mathbf{Y} = \begin{bmatrix}
@@ -342,7 +404,8 @@ Y_N
 \vdots \\
 \varepsilon_N
 \end{bmatrix}
-$$ $$
+$$ 
+$$
 \begin{pmatrix}
 Y_1 \\
 Y_2 \\
@@ -369,17 +432,25 @@ Y_N
 \vdots \\
 \varepsilon_N
 \end{pmatrix}
-$$ Writing it this way we can calculate the values to minimize the residual sum of squares. The RSS equation now looks like this:
+$$ 
+## Residual sum of squares
+
+Writing it this way we can calculate the values to minimize the *residual sum of squares (RSS)*. The RSS equation now looks like this:
 
 $$
 (Y - X\beta)^T(Y - X\beta)
 $$
+## Least Squares Estimator (LSE)
+LSE is a method used to estimate the parameters of a linear model by minimizing the sum of the squared differences (errors) between observed and predicted values.
 
-and to find the $\hat{\beta}$ that minimizes this we solve by taking the derivative: $$
+To find the $\hat{\beta}$ that minimizes this we solve by taking the derivative: 
+$$
 2X^T(Y-X\hat{\beta})=0\\
 X^TX\hat{\beta}=X^TY\\
 \hat{\beta}= (X^TX^{-1}X^TY)
-$$ In r:
+$$ 
+
+In r:
 
 ```{r}
 x= father.son$fheight
@@ -426,7 +497,9 @@ plot(tt,d,ylab="Distance in meters",xlab="Time in seconds")
 
 He does not know the exact equation, but by looking at the plot above he deduces that the position should follow a parabola. So he models the data with:
 
-$$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n $$
+$$ 
+Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n 
+$$
 
 With $Y_i$ representing location, $x_i$ representing the time, and $\varepsilon_i$ accounting for measurement error. This is a linear model because it is a linear combination of known quantities (the $x$'s) referred to as predictors or covariates and unknown parameters (the $\beta$'s).
 
@@ -453,14 +526,14 @@ r<- d - X%*%Beta
 r
 ```
 
-and the Residual Sum of Squares will be:
+and the *Residual Sum of Squares (RSS)* will be:
 
 ```{r}
 RSS<- crossprod(r)
 RSS
 ```
 
-now to get the values for our unknown parameters we solve the least squares estimate (LSE) for those
+now to get the values for our unknown parameters we solve the *least squares estimate (LSE)* for those
 
 ```{r}
 betahat <- solve(crossprod(X))%*% crossprod(X,d)
@@ -499,11 +572,11 @@ fit <- lm(d~tt+tt2)
 summary(fit)
 ```
 
-# Standard Error in the context of linear models
+## Standard Error in the context of linear models
 
 We have shown how to find the least squares estimates with matrix algebra. These estimates are random variables as they are linear combinations of the data. For these estimates to be useful we also need to compute the standard errors.
 
-It is useful to think about where randomness comes from. In our falling object example, randomnes was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will be random. This implies that our estimate of the gravitational constant will change. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeteadly and compute the estimate for the quadratic term each time.
+It is useful to think about where randomness comes from. In our falling object example, randomness was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will be random. This implies that our estimate of the gravitational constant will change. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeatedly and compute the estimate for the quadratic term each time.
 
 ```{r}
 g = 9.8 ## meters per second
@@ -553,14 +626,13 @@ sd(gs)
 
 ```
 
-Now we are going to use matrix algebra to compute standard errors of regression coefficients. We will start by defining the variance covariance matrix.
+Now we are going to use matrix algebra to compute standard errors of regression coefficients. We will start by defining the *variance covariance matrix*.
 
-#### Variance-covariance matrix (Advanced)
+### Variance-covariance matrix (Advanced)
 
 As a first step we need to define the *variance-covariance matrix*, $\boldsymbol{\Sigma}$. For a vector of random variables, $\mathbf{Y}$, we define $\boldsymbol{\Sigma}$ as the matrix with the $i,j$ entry:
 
-$$ \Sigma_{i,j} \equiv \mbox{Cov}(Y_i, Y_j) $$
-The covariance is equal to the variance if $i = j$ and equal to 0 if the variables are independent. In the kinds of vectors considered up to now, for example, a vector $\mathbf{Y}$ of individual observations $Y_i$ sampled from a population, we have assumed independence of each observation and assumed the $Y_i$ all have the same variance $\sigma^2$, so the variance-covariance matrix has had only two kinds of elements:
+$$ \Sigma_{i,j} \equiv \mbox{Cov}(Y_i, Y_j) $$ The covariance is equal to the variance if $i = j$ and equal to 0 if the variables are independent. In the kinds of vectors considered up to now, for example, a vector $\mathbf{Y}$ of individual observations $Y_i$ sampled from a population, we have assumed independence of each observation and assumed the $Y_i$ all have the same variance $\sigma^2$, so the variance-covariance matrix has had only two kinds of elements:
 
 $$ \mbox{Cov}(Y_i, Y_i) = \mbox{var}(Y_i) = \sigma^2$$
 
@@ -570,7 +642,7 @@ which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$
 
 Later, we will see a case, specifically the estimate coefficients of a linear model, $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonal elements of $\boldsymbol{\Sigma}$. Furthermore, the diagonal elements will not be equal to a single value $\sigma^2$.
 
-#### Variance of a linear combination 
+### Variance of a linear combination
 
 A useful result provided by linear algebra is that the variance covariance-matrix of a linear combination $\mathbf{AY}$ of $\mathbf{Y}$ can be computed as follows:
 
@@ -587,7 +659,7 @@ $$ =\begin{pmatrix}1&1\end{pmatrix} \sigma^2 \mathbf{I}\begin{pmatrix} 1\\1\\ \e
 
 as we expect. We use this result to obtain the standard errors of the LSE (least squares estimate).
 
-#### Least Squares Estimates (LSE) standard errors (Advanced)
+## Least Squares Estimates (LSE) standard errors (Advanced)
 
 Note that the LSE $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{AY}$ with $\mathbf{A}=\mathbf{(X^\top X)^{-1}X}^\top$, so we can use the equation above to derive the variance of our estimates:
 
@@ -601,16 +673,17 @@ $$\sigma^2 \mathbf{(X^\top X)^{-1} X^\top}\mathbf{X} \mathbf{(X^\top X)^{-1}} = 
 
 $$\sigma^2\mathbf{(X^\top X)^{-1}}$$
 
-The diagonal of the square root of this matrix contains the standard error of our estimates. 
+The diagonal of the square root of this matrix contains the standard error of our estimates.
 
-#### Estimating $\sigma^2$ 
+#### Estimating $\sigma^2$
 
-To obtain an actual estimate in practice from the formulas above, we need to estimate $\sigma^2$. Previously we estimated the standard errors from the sample. However, the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
+To obtain an actual estimate in practice from the formulas above, we need to estimate $\sigma^2$. Previously we estimated the standard errors from the sample. However, the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals.
 
-We form the residuals like this: 
+We form the residuals like this:
 
 $$
-\mathbf{r}\equiv\boldsymbol{\hat{\varepsilon}} = \mathbf{Y}-\mathbf{X}\boldsymbol{\hat{\beta}}$$
+\mathbf{r}\equiv\boldsymbol{\hat{\varepsilon}} = \mathbf{Y}-\mathbf{X}\boldsymbol{\hat{\beta}}
+$$
 
 Both $\mathbf{r}$ and $\boldsymbol{\hat{\varepsilon}}$ notations are used to denote residuals.
 
@@ -655,9 +728,8 @@ They are identical because they are doing the same thing. Also, note that we app
 apply(betahat,2,sd)
 ```
 
+## Linear combination of estimates
 
-
-#### Linear combination of estimates
 Imagine that you estimated the effects of several treatments and now you are interested in the difference in the effects of two of those treatments. You already have the $\hat{\beta}$ and want to calculate $\hat{\beta}_2-\hat{\beta}_1$
 
 If we want to compute the standard deviation of a linear combination of estimates such as $\hat{\beta}_2 - \hat{\beta}_1$, this is a linear combination of $\hat{\boldsymbol{\beta}}$:
@@ -673,14 +745,13 @@ $$\hat{\beta}_2 - \hat{\beta}_1 =
 
 Using the above, we know how to compute the variance covariance matrix of $\hat{\boldsymbol{\beta}}$.
 
-
-#### CLT and t-distribution
+## CLT and t-distribution
 
 We have shown how we can obtain standard errors for our estimates. However, as we learned in the first chapter, to perform inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is because the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{\beta}$ and standard errors as described. For small samples, if the $\varepsilon$ are normally distributed, then the $\hat{\beta}-\beta$ follow a t-distribution. We do not derive this result here, but the results are extremely useful since it is how we construct p-values and confidence intervals in the context of linear models.
 
 #### Code versus math
 
-The standard approach to writing linear models either assume the values in $\mathbf{X}$ are fixed or that we are conditioning on them. Thus  $\mathbf{X} \boldsymbol{\beta}$ has no variance as the $\mathbf{X}$ is considered fixed. This is why we write $\mbox{var}(Y_i) = \mbox{var}(\varepsilon_i)=\sigma^2$. This can cause confusion in practice because if you, for example, compute the following:
+The standard approach to writing linear models either assume the values in $\mathbf{X}$ are fixed or that we are conditioning on them. Thus $\mathbf{X} \boldsymbol{\beta}$ has no variance as the $\mathbf{X}$ is considered fixed. This is why we write $\mbox{var}(Y_i) = \mbox{var}(\varepsilon_i)=\sigma^2$. This can cause confusion in practice because if you, for example, compute the following:
 
 ```{r}
 x =  father.son$fheight
@@ -688,7 +759,7 @@ beta =  c(34,0.5)
 var(beta[1]+beta[2]*x)
 ```
 
-it is nowhere near 0. This is an example in which we have to be careful in distinguishing code from math. The function `var` is simply computing the variance of the list we feed it, while the mathematical definition of variance is considering only quantities that are random variables. In the R code above, `x` is not fixed at all: we are letting it vary, but when we write  $\mbox{var}(Y_i) = \sigma^2$ we are imposing, mathematically, `x` to be fixed. Similarly, if we use R to compute the variance of $Y$ in our object dropping example, we obtain something very different than $\sigma^2=1$ (the known variance):
+it is nowhere near 0. This is an example in which we have to be careful in distinguishing code from math. The function `var` is simply computing the variance of the list we feed it, while the mathematical definition of variance is considering only quantities that are random variables. In the R code above, `x` is not fixed at all: we are letting it vary, but when we write $\mbox{var}(Y_i) = \sigma^2$ we are imposing, mathematically, `x` to be fixed. Similarly, if we use R to compute the variance of $Y$ in our object dropping example, we obtain something very different than $\sigma^2=1$ (the known variance):
 
 ```{r}
 n <- length(tt)
@@ -696,4 +767,675 @@ y <- h0 + v0*tt  - 0.5*g*tt^2 + rnorm(n,sd=1)
 var(y)
 ```
 
-Again, this is because we are not fixing `tt`. 
+Again, this is because we are not fixing `tt`.
+
+#### Exercise
+
+We are going to calculate the standard error of $\hat{\beta}$ for the heights of father and son. 
+$$
+SE(\hat{\beta})= sqrt{Var(\hat{\beta})}
+$$
+
+$$
+Var(\hat{\beta})= \sigma^2(X^TX)^{-1}
+$$
+
+First, we want to estimate $\sigma^2$, the variance of Y. As we have seen in the previous unit, the random part of Y is only coming from $\epsilon$, because we assume $X\beta$ is fixed. So we can try to estimate the variance of the epsilons from the residuals: the Y minus the fitted values from the linear model.
+
+```{r}
+x = father.son$fheight
+y = father.son$sheight
+n = length(y)
+N = 50
+set.seed(1)
+index = sample(n,N)
+sampledat = father.son[index,]
+x = sampledat$fheight
+y = sampledat$sheight
+betahat = lm(y~x)$coef
+```
+
+first we calculate the $\hat{Y}$ values from a linear model:
+
+```{r}
+fit = lm(y ~ x)
+Yhat<- fit$fitted.values
+```
+
+and now we can calculate the sum of the squares residuals SSR that will be the diffeence between $y_i$ and $\hat{y_i}$
+
+```{r}
+res2 <- (y- Yhat)^2
+SSR <- sum(res2)
+SSR
+```
+
+Our estimate of $\sigma^2$ will be the sum of squared residuals divided by (N-p), the sample size minus the number of terms in the model. Since we have a sample of 50 and 2 terms in the model (the intercept and a slope), our estimate will be:
+
+```{r}
+sigma2 <- SSR/(N-2)
+sigma2
+```
+
+Now we form the matrix X, this can be done by combining a column of 1s with a column with the father's heights.
+
+```{r}
+X = cbind(rep(1,N),x)
+```
+
+And now we calculate $(X^TX)^{-1}$
+
+```{r}
+I<-solve(t(X)%*%X)
+I
+```
+
+Now we are only one step away from getting the standard error of $\hat{\beta}$ Take the diagonals of $(X^TX)^{-1}$ and multiply by our estimate of $\sigma^2$. This is the estimated variance of $\hat{\beta}$
+
+```{r}
+varianceBeta <- diag(I)*sigma2
+varianceBeta
+```
+
+and finally the SE will be the square root of this
+
+```{r}
+SE<- sqrt(varianceBeta)
+SE
+```
+
+this gives us two numbers, the estandard error of the intercept and the estandard error for the slope. (Note that the standard error estimate is also printed int eh second column of `summary(fit)`)
+
+```{r}
+summary(fit)
+```
+
+# Linear models as matrix multiplication. 
+Suppose we have a linear model with 4 variables 
+$$ 
+Y_i = \beta\_0 + \beta*1 X*{i1} + \beta*2 X*{i2} + \beta*3 X*{i3} + \beta*4 X*{i4} + \epsilon\_i
+$$
+that can be writen as:
+$$ 
+\mathbf{Y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon} 
+$$
+where 
+$$ 
+\mathbf{Y} =\begin{pmatrix} Y_1 \ Y_2 \ \vdots \ Y_N \end{pmatrix}
+$$
+
+$$ 
+\mathbf{X} =
+\begin{pmatrix} 1 & X_{11} & X_{12} & X_{13} & X_{14} \ 1 & X_{21} & X_{22} & X_{23} & X_{24} \ \vdots & \vdots & \vdots & \vdots & \vdots \ 1 & X_{N1} & X_{N2} & X_{N3} & X_{N4} \end{pmatrix}
+$$
+
+$$ 
+\boldsymbol{\beta} =\begin{pmatrix} \beta_0 \ \beta_1 \ \beta_2 \ \beta_3 \ \beta_4 \end{pmatrix}
+$$
+and
+$$ 
+\boldsymbol{\epsilon} =
+\begin{pmatrix} \epsilon_1 \ \epsilon_2 \ \vdots \ \epsilon_N \end{pmatrix}
+$$
+
+$$
+\begin{equation}
+\begin{bmatrix}
+Y_1 \\
+Y_2 \\
+Y_3 \\
+Y_4 \\
+Y_5 \\
+Y_6
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & X_{11} & X_{12} & X_{13} & X_{14} \\
+1 & X_{21} & X_{22} & X_{23} & X_{24} \\
+1 & X_{31} & X_{32} & X_{33} & X_{34} \\
+1 & X_{41} & X_{42} & X_{43} & X_{44} \\
+1 & X_{51} & X_{52} & X_{53} & X_{54} \\
+1 & X_{61} & X_{62} & X_{63} & X_{64}
+\end{bmatrix}
+\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\beta_2 \\
+\beta_3 \\
+\beta_4
+\end{bmatrix}
++
+\begin{bmatrix}
+\epsilon_1 \\
+\epsilon_2 \\
+\epsilon_3 \\
+\epsilon_4 \\
+\epsilon_5 \\
+\epsilon_6
+\end{bmatrix}
+\end{equation}
+$$
+
+
+the sum of least squares will be:
+$$ 
+\sum_{i=1}^{N} (Y_i - \beta_0 - \beta*1 X*{i1} - \beta*2 X*{i2} - \beta*3 X*{i3} - \beta*4 X*{i4})^2
+$$
+in matrix notation that would be
+$$
+(Y-\beta X)^T(Y-\beta X) 
+$$ 
+
+# t-test 
+
+When we are doing a t-test we calculate the average in one group and substract from the average in the other group and that is an estimate of the population average.
+
+We are going to make something difference. We will get a baseline, $\hat{\beta_0}$ and we are going to calculate the difference between the two groups $\hat{\beta_1}$
+
+```{r, fig.align='center'}
+set.seed(123)
+
+# Generate data for two groups
+group <- rep(c("A", "B"), each = 20)
+x <- c(rnorm(20, mean = 1, sd = 0.5), rnorm(20, mean = 3, sd = 0.5))  # Shift x-values for group B
+y <- 5 + 3 * x + rnorm(40, sd = 2)
+
+data <- data.frame(group, x, y)
+
+mean_A <- mean(data$y[data$group == "A"])
+mean_B <- mean(data$y[data$group == "B"])
+sd_A <- sd(data$y[data$group == "A"])
+sd_B <- sd(data$y[data$group == "B"])
+
+# Plot the data
+ggplot(data, aes(x = x, y = y, color = group)) +
+  geom_point() +
+  geom_hline(aes(yintercept = mean_A), color = "#f8766d", linetype = "dashed") +
+  geom_hline(aes(yintercept = mean_B), color = "#00bfc4", linetype = "dashed") +
+  geom_segment(aes(x = 4, y = mean_A, xend = 4, yend = mean_B), linetype = "dashed", color="#7cae00") +
+  annotate("text", x = 5, y = mean_A + 1, label = expression(bar(Y)[A] == hat(beta)[b]), color = "#f8766d") +
+  annotate("text", x = 5, y = mean_B + 1, label = expression(bar(Y)[B]), color = "#00bfc4") +
+  annotate("text", x = 4.2, y = (mean_A + mean_B) / 2, label = expression(hat(beta)[1]), vjust = -1, color="#7cae00") +
+  geom_errorbar(aes(x = 1, ymin = mean_A - sd_A, ymax = mean_A + sd_A), width = 0.2, color = "#f8766d") +
+  geom_errorbar(aes(x = 3, ymin = mean_B - sd_B, ymax = mean_B + sd_B), width = 0.2, color = "#00bfc4") +
+  labs(title = "Linear Model of 2 groups = t-test",
+       x = "X-axis",
+       y = "Observations") +
+  theme_minimal()
+
+```
+
+$$
+\bar{Y_A} = \hat{\beta_0} 
+$$ 
+$$
+\bar{Y_B}= \hat{\beta_0}+\hat{\beta_1}
+$$ 
+$$
+\bar{Y_A} = 1 \times \hat{\beta_0}+ 0 \times \hat{\beta_1}
+$$ 
+$$
+\bar{Y_B}= 1 \times \hat{\beta_0}+ 1 \times \hat{\beta_1}
+$$
+
+And if we had three groups:
+
+$$
+\bar{Y_A} = \hat{\beta_0}
+$$ 
+$$
+\bar{Y_B}= \hat{\beta_0}+\hat{\beta_1}
+$$ 
+$$
+\bar{Y_C}= \hat{\beta_0}+\hat{\beta_2}
+$$ 
+$$
+\bar{Y_A} = 1 \times \hat{\beta_0}+ 0 \times \hat{\beta_1}+0 \times\hat{\beta_2} 
+$$ 
+
+$$
+\bar{Y_B}= 1 \times \hat{\beta_0}+ 1 \times \hat{\beta_1}+0 \times\hat{\beta_2}
+$$ 
+$$
+\bar{Y_C}= 1 \times \hat{\beta_0}+ 0 \times \hat{\beta_1}+1 \times\hat{\beta_2}
+$$ 
+how can we create this using r:
+
+```{r}
+x<- factor(c(1,1,2,2,3,3))
+model.matrix(~ x)
+```
+
+with two parameters:
+
+```{r}
+x<- factor(c(1,1,1,1,2,2,2))
+y<- factor(c("a","a","b","b","a","a","b"))
+cbind(as.character(x),as.character(y))
+model.matrix(~ x+y)
+```
+
+and we can compute some calculations if we want using `I()`
+
+```{r}
+x<-c(1,2,3,4,5)
+model.matrix(~x +I(x^2))
+```
+
+example: Suppose we have an experiment with the following design: on three different days, we perform an experiment with two treated and two control samples. We then measure some outcome $y_i$ and we want to test the effect of condition, while controlling for whatever differences might have occurred due to the different day. Assume that the true condition effect is the same for each day:
+
+```{r}
+day<- c("A","B","C")
+treated<- c(2,2,2)
+control<-c(2,2,2)
+```
+
+produce a design matrix that let's us analyse the effect of condition, controlling for the different days:
+
+```{r}
+condition<- cbind(factor(treated),factor(control))
+model.matrix(~factor(day)+condition)
+
+```
+
+Example:
+
+we are going to use the dataset of female mice bodyweight to see how matrices apply to linear models.
+
+We load the dataset and create the matrix. Notice how we can change the reference level using relevel or factor, this will change which values for the variable diet get 0 and which ones get a 1. We will usually use the control group as our reference group.
+
+```{r, fig.align='center'}
+femaleMiceWeights <- read_csv("data/femaleMiceWeights.csv")
+View(femaleMiceWeights)
+
+
+stripchart(femaleMiceWeights$Bodyweight ~ femaleMiceWeights$Diet,
+  vertical= TRUE, method = "jitter",
+  main = "Bodyweight over Diet")
+
+model.matrix(~ Diet, data= femaleMiceWeights)
+```
+
+if we run a linear model over the data:
+
+```{r}
+fit <- lm(Bodyweight ~ Diet, data= femaleMiceWeights)
+summary(fit)
+
+```
+
+we see we get in the coefficients part we get a value for each column in the matrix, in our case one for the intercept and one for the non reference Diet.\
+The estimate for the Diet hf is 3.021 which means that the difference in weight between the control group (chow diet) and the high fat diet is 3.021 grams.
+
+The second column gives us the standard error.
+
+The third column gives us a t-value that is the estimate divided by the standard error `23.813/1.039` for the intercept and `3.021/1.470`
+
+The fourth column gives us a p.value that is the probability of seeing such a large t-value in absolute value.
+
+The fifth column gives you starts or a dot that symbolizes whether that p-value is below the usual cut-off significant levels $\alpha$
+
+if we want to get only the coefficients we can do it by using `coef(fit)` 
+
+We know that the maths behind the linear model are
+$$
+\hat{\beta}= (X^t X)^{-1} X^t y
+$$
+
+and to prove it with our data:
+```{r}
+y<- femaleMiceWeights$Bodyweight
+X<- model.matrix(~ Diet, data= femaleMiceWeights)
+solve(t(X) %*% X) %*% t(X) %*% y
+```
+
+visualizing it:
+```{r, fig.align='center', fig.height=5, fig.width=6}
+
+stripchart(femaleMiceWeights$Bodyweight ~ femaleMiceWeights$Diet,
+  vertical= TRUE, method = "jitter",
+  main = "Bodyweight over Diet",
+  ylim=c(0,40),
+  xlim=c(0,3)
+  )
+a<- -0.25
+lgth<- .1
+
+cols<- brewer.pal(3,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a, #position
+  coef(fit)[1], #where the arrow ends (intercept)
+  lwd=3, #
+  col=cols[1], #color
+  length= lgth #arrow point size.
+  )
+abline(h=coef(fit)[1], col=cols[1]) #intercept (mean of chow)
+arrows(2+a,coef(fit)[1],2+a,
+  coef(fit)[1]+coef(fit)[2],
+  lwd=3,
+  col=cols[2],
+  length= lgth)
+abline(h=coef(fit)[1]+coef(fit)[2], col=cols[2])
+legend("bottomright", names(coef(fit)), fill=cols, cex=.75, bg="white")
+
+```
+
+Finally, we can check that we obtain the same results if we run a t-test:
+
+```{r}
+s<- split(femaleMiceWeights$Bodyweight, femaleMiceWeights$Diet)
+s
+testResult <- t.test(s[["hf"]],s[["chow"]], var.equal=TRUE)
+testResult
+
+summary(fit)$coefficients[2,3]
+testResult$statistic
+```
+
+Though the linear model in this case is equivalent to a t-test, we will soon explore more complicated designs, whre the linear model is a useful extension (cofounging variables, testing contrast of terms, testing interactions, testing many terms at once etc.) but for now we can review the mathematics on why these produce the same t-value and therefore the same p-value.
+
+We already know that the numerator of the t-value is the difference between the average of the groups, so we only have to see that the denominator is also the same. 
+In the linear model, we saw how to calculate the standard error using the design matrix X and the estimate of $\sigma^2$ from the residuals. 
+The estimate of the variance $\sigma^2$ was the sum of the squared residuals divided by (N-p) where N is the total number of samples and p is the number of terms (in our example an intercept and a group indicator so p=2).
+
+In the t-test, the denominator of the t-value is the standard error of the difference. 
+
+The t-test formula for the standard error of the difference, if we assume equal variance in the two groups is:
+
+$$
+SE =\sqrt{var(diff)} = \sqrt{\sigma_{\Delta}^2}
+$$
+and we know that:
+$$
+\sigma^2 = \frac{1}{N}\sum^N_{i=1}(x_i-\mu)^ 2
+$$
+
+now the *variance of the difference between the means of two samples*:
+
+$$
+var(diff) = \left(\frac{1}{n_x}+\frac{1}{n_y}\right)\frac {\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2}}{(n_x+n_y-2)}
+$$
+
+this formula calculates the variance of the difference between two sample means where
+- $n_x$ and $n_y$ are the sample sizes of the two groups.
+- $x_i$ and $y_i$ are individual data points within each group
+- $\mu_x$ and $\mu_y$ are the means of the two groups.
+- $(\frac{1}{n_x}+\frac{1}{n_y})$ adjusts for the sample sizes.
+- $\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2$ this sums up the squared deviations from the mean for each group.
+- $\frac {\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2}}{(n_x+n_y-2)}$ this calculates the pooled variance, considering both groups together.
+- `2` is the degrees of freedom for the pooled variance calculation. 
+
+The variance of the difference tells you how spread out the difference between the group means are likely to be. 
+
+The standard Error of the estimated coefficient $\hat{\beta}$ is :
+$$
+se(\hat{\beta})=\sqrt{s^2(X^TX)^{-1}_{ii}}
+$$
+where $(X^TX)^{-1}_{ii}$ is the i-th diagonal element of this inverse matrix, which corresponds to the variance of the i-th coefficient estimate.
+
+## Crossed designs
+imagine we are running an experiment and we have two different treatments, group A is the control group and receives no treatment (a), group B receives treatment 1 (b), group C receives treatment 2 (c) and a fourth group receives treatment 1 and 2 (d).
+In this case we consider the effects of receiving both treatments additive. 
+If we write down a model it will look like this:
+$$
+\begin{pmatrix}
+\color{red}1 & \color{red}0 & \color{red}0 \\
+\color{red}1 & \color{red}0 & \color{red}0 \\
+\color{blue}1 & \color{blue}1 & \color{blue}0 \\
+\color{blue}1 & \color{blue}1 & \color{blue}0 \\
+\color{green}1 & \color{green}0 & \color{green}1 \\
+\color{green}1 & \color{green}0 & \color{green}1 \\
+1 & 1 & 1 \\
+1 & 1 & 1
+\end{pmatrix}
+\begin{pmatrix}
+\color{red}{\beta_0 }\\
+\color{blue}{\beta_1 }\\
+\color{green}{\beta_2}
+\end{pmatrix}
+$$
+
+we can see that the first two rows are no treatment, the rows 3rd and 4th receive treatment 1 but no treatment 2 , the 5th and the 6th rows receive treatment 2 but no treatment 1 and the last two rows receive both treatments. 
+
+If the effects of treatment 1 + treatment 2 are not additive, then we need to plug in a fourth element that will gives us a different mean for each group and we call that fourth term *interaction* 
+
+$$
+\begin{pmatrix}
+1 & 0 & 0 & 0\\
+1 & 1 & 0 & 0\\
+1 & 0 & 1 & 0\\
+1 & 1 & 0 & 0\\
+1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0\\
+1 & 0 & 1 & 1\\
+1 & 1 & 1 & 1
+\end{pmatrix}
+\begin{pmatrix}
+\beta_0 \\
+\beta_1 \\
+\beta_2\\
+\beta_{1:2}
+\end{pmatrix}
+$$
+
+# Interactions and Contrast
+As a running example to learn about more complex linear models, we will be using a dataset which compares the different frictional coefficients on the different legs of a spider. Specifically, we will be determining whether more friction comes from a pushing or pulling motion of the leg. 
+
+To remind ourselves how the simple two-group linear model looks, we will subset the data to include only the L1 leg pair, and run `lm`:
+
+```{r}
+spider <- read.csv2("data/spider_wolff_gorb_2013.csv")  
+spider$friction <- as.numeric(spider$friction)
+spider.sub <- spider[spider$leg == "L1",]
+fit <- lm(friction ~ type, data=spider.sub)
+summary(fit)
+(coefs <- coef(fit))
+```
+These two estimated coefficients are the mean of the pull observations (the first estimated coefficient)
+and the difference between the means of the two groups (the second coefficient). We can show this
+with R code:
+
+```{r}
+s <- split(spider.sub$friction, spider.sub$type)
+mean(s[["pull"]])
+mean(s[["push"]]) - mean(s[["pull"]])
+```
+
+We can form the design matrix, which was used inside `lm`:
+
+```{r}
+X <- model.matrix(~ type, data=spider.sub)
+colnames(X)
+head(X)
+tail(X)
+```
+Now we'll make a plot of the $\mathbf{X}$ matrix by putting a black block for the 1's and a white block for the 0's. This plot will be more interesting for the linear models later on in this script. Along the y-axis is the sample number (the row number of the `data`) and along the x-axis is the column of the design matrix $\mathbf{X}$. If you have installed the *rafalib* library, you can make this plot with the `imagemat` function:
+
+```{r model_matrix_image, fig.cap="Model matrix for linear model with one variable."}
+
+imagemat(X, main="Model matrix for linear model with one variable")
+```
+The black represent a 1 and the white represents 0 in the matrix. 
+
+We can visualize the data in a strip plot as well 
+
+```{r spider_main_coef, fig.cap="Diagram of the estimated coefficients in the linear model. The green arrow indicates the Intercept term, which goes from zero to the mean of the reference group (here the 'pull' samples). The orange arrow indicates the difference between the push group and the pull group, which is negative in this example. The circles show the individual samples",echo=FALSE}
+set.seed(1) #same jitter in stripchart
+stripchart(split(spider.sub$friction, spider.sub$type), 
+           vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,3), ylim=c(0,2))
+a <- -0.25
+lgth <- .1
+
+cols <- brewer.pal(3,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+abline(h=coefs[1],col=cols[1])
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+abline(h=coefs[1]+coefs[2],col=cols[2])
+legend("topright",names(coefs),fill=cols,cex=.75,bg="white")
+```
+## linear model with two variables
+Now we are going to use the 4 pairs of legs to show a more complex linear model.
+
+```{r model_matrix_image2, fig.cap="Image of the model matrix for a formula with type + leg"}
+X <- model.matrix(~ type + leg, data=spider)
+colnames(X)
+head(X)
+imagemat(X, main="Model matrix for linear model with two factors")
+```
+We have a row for each data point.
+The first column is the intercept, and so it has 1's (black) for all samples. 
+The second column expresses if the data is for a pull or push: it has 1's for the push samples, and we can see that there are four groups of them (one for each pair of legs). 
+Finally, the third, fourth and fifth columns expresses what leg pair we are referencing and have 1's for the L2, L3 and L4 samples. 
+The L1 samples do not have a column, because *L1* is the reference level for `leg`. Similarly, there is no *pull* column, because *pull* is the reference level for the `type` variable.
+
+To estimate coefficients for this model, we use `lm` with the formula `~ type + leg`. We'll save the linear model to `fitTL` standing for a *fit* with *Type* and *Leg*.
+
+```{r}
+fitTL <- lm(friction ~ type + leg, data=spider)
+summary(fitTL)
+(coefs <- coef(fitTL))
+```
+R uses the name `coefficient` to denote the component containing the least squares **estimates**. It is important to remember that the coefficients are parameters that we do not observe, but only estimate.
+
+We can make the same plot as before, with arrows for each of the estimated coefficients in the model. 
+
+```{r spider_interactions, fig.cap="Diagram of the estimated coefficients in the linear model. As before, the teal-green arrow represents the Intercept, which fits the mean of the reference group (here, the pull samples for leg L1). The purple, pink, and yellow-green arrows represent differences between the three other leg groups and L1. The orange arrow represents the difference between the push and pull samples for all groups.",echo=FALSE}
+
+spider$group <- factor(paste0(spider$leg, spider$type))
+stripchart(split(spider$friction, spider$group), 
+           vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
+cols <- brewer.pal(5,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+abline(h=coefs[1],col=cols[1])
+arrows(3+a,coefs[1],3+a,coefs[1]+coefs[3],lwd=3,col=cols[3],length=lgth)
+arrows(5+a,coefs[1],5+a,coefs[1]+coefs[4],lwd=3,col=cols[4],length=lgth)
+arrows(7+a,coefs[1],7+a,coefs[1]+coefs[5],lwd=3,col=cols[5],length=lgth)
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+segments(3+a,coefs[1]+coefs[3],4+a,coefs[1]+coefs[3],lwd=3,col=cols[3])
+arrows(4+a,coefs[1]+coefs[3],4+a,coefs[1]+coefs[3]+coefs[2],lwd=3,col=cols[2],length=lgth)
+segments(5+a,coefs[1]+coefs[4],6+a,coefs[1]+coefs[4],lwd=3,col=cols[4])
+arrows(6+a,coefs[1]+coefs[4],6+a,coefs[1]+coefs[4]+coefs[2],lwd=3,col=cols[2],length=lgth)
+segments(7+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5],lwd=3,col=cols[5])
+arrows(8+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5]+coefs[2],lwd=3,col=cols[2],length=lgth)
+par(xpd = TRUE, mar = par()$mar + c(0,0,0,6))
+legend("topright",  inset = c(-0.2, 0),names(coefs),fill=cols,cex=.75,bg="white")
+
+group_means <- tapply(spider$friction, spider$group, mean)
+points(seq_along(group_means), group_means, pch = 18, col = "red")
+```
+The intercept is the coefficient for L1 Pull. (dark green)
+The typepush is the difference between pull and push. (orange)
+The LegL2 is the difference between L1 Pull and L2 Pull
+The LegL3 is the difference between L1 Pull and L3 Pull
+The LegL4 is the difference between L1 Pull and L4 Pull
+
+The red diamonds represent the mean of each group. 
+
+Notice that the intercept is no longer exactly equal to the mean of the L1 Pull values:
+```{r}
+s <- split(spider$friction, spider$group)
+cat('mean:' , mean(s[["L1pull"]]))
+
+```
+and same for the other coefficients, the linear model with 8 groups does not manage to accurately fit the LSE in a way that the coefficients match the exact mean for each group. 
+
+Here we can demonstrate that the push vs. pull estimated coefficient, `coefs[2]`, is a *weighted average of the difference of the means for each group*. Furthermore, the weighting is determined by the sample size of each group. The math works out simply here because the sample size is equal for the push and pull subgroups within each leg pair. If the sample sizes were not equal for push and pull within each leg pair, the weighting is more complicated.
+
+```{r}
+(means <- sapply(s, mean))
+##the sample size of push or pull groups for each leg pair
+ns <- sapply(s, length)[c(1,3,5,7)]
+(w <- ns/sum(ns))
+sum(w * (means[c(2,4,6,8)] - means[c(1,3,5,7)]))
+coefs[2]
+```
+
+
+## contrasting coefficients
+
+So all these coefficients are comparing each leg to Leg 1. What do we do if we want to compare one group to another group that is not the reference level, for example we want to compare L2 vs L3? We can use the library `contrast` 
+
+If we want to compare leg pairs L3 and L2, this is equivalent to contrasting two coefficients from the linear model because, in this contrast, the comparison to the reference level *L1* cancels out:
+
+$$ (\mbox{L3} - \mbox{L1}) - (\mbox{L2} - \mbox{L1}) = \mbox{L3} - \mbox{L2 }$$
+
+An easy way to make these contrasts of two groups is to use the `contrast` function from the *contrast* package. We just need to specify which groups we want to compare. We have to pick one of *pull* or *push* types, although the answer will not differ, as we will see below.
+
+```{r,message=FALSE,warning=FALSE}
+
+L3vsL2 <- contrast::contrast(fitTL,list(leg="L3",type="pull"),list(leg="L2",type="pull"))
+L3vsL2
+```
+
+The first column `Contrast` gives the L3 vs. L2 estimate from the model we fit above.
+
+```{r,message=FALSE,warning=FALSE}
+L3vsL2 <- contrast::contrast(fitTL,list(leg="L3",type="push"),list(leg="L2",type="push"))
+L3vsL2
+```
+
+
+## Linear model with interactions
+
+In the previous linear model, we assumed that the push vs. pull effect was the same for all of the leg pairs (the same orange arrow). You can easily see that this does not capture the trends in the data that well. That is, the tips of the arrows did not line up perfectly with the group averages. For the L1 leg pair, the push vs. pull estimated coefficient was too large, and for the L3 leg pair, the push vs. pull coefficient was somewhat too small.
+
+_Interaction terms_ will help us overcome this problem by introducing additional coefficients to compensate for differences in the push vs. pull effect across the 4 groups. As we already have a push vs. pull term in the model, we only need to add three more terms to have the freedom to find leg-pair-specific push vs. pull differences. As we will see, interaction terms are added to the design matrix by multiplying the columns of the design matrix representing existing terms. 
+
+We can rebuild our linear model with an interaction between `type` and `leg`, by including an extra term in the formula `type:leg`. The `:` symbol adds an interaction between the two variables surrounding it. An equivalent way to specify this model is `~ type*leg`, which will expand to the formula `~ type + leg + type:leg`, with main effects for `type`, `leg` and an interaction term `type:leg`.
+
+```{r model_matrix_with_interaction_image, fig.cap="Image of model matrix with interactions."}
+X <- model.matrix(~ type + leg + type:leg, data=spider)
+colnames(X)
+head(X)
+imagemat(X, main="Model matrix for linear model with interactions")
+```
+Columns 6-8 (`typepush:legL2`, `typepush:legL3`, and `typepush:legL4`) are the product of the 2nd column (`typepush`) and columns 3-5 (the three `leg` columns). Looking at the last column, for example, the `typepush:legL4` column is adding an extra coefficient $\beta_{\textrm{push,L4}}$ to those samples which are both push samples and leg pair L4 samples. This accounts for a possible difference when the mean of samples in the L4-push group are not at the location which would be predicted by adding the estimated intercept, the estimated push coefficient `typepush`, and the estimated L4 coefficient `legL4`.
+
+We can run the linear model using the same code as before:
+
+```{r}
+fitX <- lm(friction ~ type + leg + type:leg, data=spider)
+summary(fitX)
+coefs <- coef(fitX)
+```
+
+Here is where the plot with arrows really helps us interpret the coefficients. The estimated interaction coefficients (the yellow, brown and silver arrows) allow leg-pair-specific differences in the push vs. pull difference. The orange arrow now represents the estimated push vs. pull difference only for the reference leg pair, which is L1. If an estimated interaction coefficient is large, this means that the push vs. pull difference for that leg pair is very different than the push vs. pull difference in the reference leg pair.
+
+Now, as we have eight terms in the model and eight parameters, you can check that the tips of the arrowheads are exactly equal to the group means (code not shown).
+
+```{r spider_interactions2, fig.cap="Diagram of the estimated coefficients in the linear model. In the design with interaction terms, the orange arrow now indicates the push vs. pull difference only for the reference group (L1), while three new arrows (yellow, brown and grey) indicate the additional push vs. pull differences in the non-reference groups (L2, L3 and L4) with respect to the reference group.",echo=FALSE, fig.width=7 }
+stripchart(split(spider$friction, spider$group), 
+           vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
+cols <- brewer.pal(8,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+abline(h=coefs[1],col=cols[1])
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(3+a,coefs[1],3+a,coefs[1]+coefs[3],lwd=3,col=cols[3],length=lgth)
+arrows(5+a,coefs[1],5+a,coefs[1]+coefs[4],lwd=3,col=cols[4],length=lgth)
+arrows(7+a,coefs[1],7+a,coefs[1]+coefs[5],lwd=3,col=cols[5],length=lgth)
+#now the interactions:
+segments(3+a,coefs[1]+coefs[3],4+a,coefs[1]+coefs[3],lwd=3,col=cols[3])
+arrows(4+a,coefs[1]+coefs[3],4+a,coefs[1]+coefs[3]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(4+a,coefs[1]+coefs[2]+coefs[3],4+a,coefs[1]+coefs[2]+coefs[3]+coefs[6],lwd=3,col=cols[6],length=lgth)
+
+segments(5+a,coefs[1]+coefs[4],6+a,coefs[1]+coefs[4],lwd=3,col=cols[4])
+arrows(6+a,coefs[1]+coefs[4],6+a,coefs[1]+coefs[4]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(6+a,coefs[1]+coefs[4]+coefs[2],6+a,coefs[1]+coefs[4]+coefs[2]+coefs[7],lwd=3,col=cols[7],length=lgth)
+
+segments(7+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5],lwd=3,col=cols[5])
+arrows(8+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(8+a,coefs[1]+coefs[5]+coefs[2],8+a,coefs[1]+coefs[5]+coefs[2]+coefs[8],lwd=3,col=cols[8],length=lgth)
+
+legend("topright",  names(coefs),fill=cols,cex=.75,bg="white")
+group_means <- tapply(spider$friction, spider$group, mean)
+points(seq_along(group_means), group_means, pch = 18, col = "red")
+```
+
+
+
+
+
+

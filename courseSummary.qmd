@@ -1674,7 +1674,7 @@ print(t_test_result)
 At the start of a significance test, the hypothesized value might be true or false. At the end, it may be rejected or not. Altogether, there are four possible combinations of these outcomes:
 
 |                       |           $H_0$ is true           |           $H_0$ is false            |
-|-----------------:|:------------------------:|:--------------------------:|
+|----------------------:|:---------------------------------:|:-----------------------------------:|
 |     $H_0$ is rejected | **Type I error** -false positive- |            True Negative            |
 | $H_0$ is not rejected |           True Positive           | **Type II error** -False negative - |
 
@@ -3004,7 +3004,7 @@ It is easy to confuse the testing for homogeneity and the testing for independen
 ### Comparing the different uses of the chi-square test:
 
 |                 | sample                                                  | research question                                                                   |
-|-----------------|----------------------|---------------------------------|
+|-----------------|---------------------------------------------------------|-------------------------------------------------------------------------------------|
 | goodness of fit | single categorical variable. one sample                 | Are the counts of the different categories matching our expected results            |
 | homogeneity     | single categorical variable measured on several samples | Are the groups homogeneous (have the same distribution of the categorical variable) |
 | independence    | two categorical variables measured on one sample        | Are the two categorical variables independent?                                      |
