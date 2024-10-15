@@ -48,6 +48,7 @@ library(UsingR)
 library(dplyr)
 library(RColorBrewer)
 library(contrast) 
+library(multcomp)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -1353,7 +1354,7 @@ coefs[2]
 ```
 
 
-## contrasting coefficients
+## Contrasting coefficients
 
 So all these coefficients are comparing each leg to Leg 1. What do we do if we want to compare one group to another group that is not the reference level, for example we want to compare L2 vs L3? We can use the library `contrast` 
 
@@ -1375,7 +1376,16 @@ The first column `Contrast` gives the L3 vs. L2 estimate from the model we fit a
 L3vsL2 <- contrast::contrast(fitTL,list(leg="L3",type="push"),list(leg="L2",type="push"))
 L3vsL2
 ```
+we can check the matrix of the contrast like this:
+```{r}
+L3vsL2$X
+```
+and we see that it gives us 0,0,-1,1,0 which means that to find the contrast we are interested in we need to go take the third coefficient from the linear model times -1 and sum the 4th coefficient. Let's check if that applies:
 
+```{r}
+coefs<- coef(fitTL)
+-coefs[3]+coefs[4]
+```
 
 ## Linear model with interactions
 
@@ -1386,6 +1396,7 @@ _Interaction terms_ will help us overcome this problem by introducing additional
 We can rebuild our linear model with an interaction between `type` and `leg`, by including an extra term in the formula `type:leg`. The `:` symbol adds an interaction between the two variables surrounding it. An equivalent way to specify this model is `~ type*leg`, which will expand to the formula `~ type + leg + type:leg`, with main effects for `type`, `leg` and an interaction term `type:leg`.
 
 ```{r model_matrix_with_interaction_image, fig.cap="Image of model matrix with interactions."}
+
 X <- model.matrix(~ type + leg + type:leg, data=spider)
 colnames(X)
 head(X)
@@ -1433,9 +1444,226 @@ legend("topright",  names(coefs),fill=cols,cex=.75,bg="white")
 group_means <- tapply(spider$friction, spider$group, mean)
 points(seq_along(group_means), group_means, pch = 18, col = "red")
 ```
+Now we want to compare push vs pull in L2:
+```{r contrastPushvsPull}
+L2push.vs.pull <- contrast::contrast(fitX,
+  list(leg="L2", type = "push"),
+  list(leg="L2", type = "pull")
+)
+L2push.vs.pull
+```
+we can look at the contrast vector that will be : 
+```{r}
+(C<- L2push.vs.pull$X)
+```
+wich is: 0,1,0,0,0,1,0 and means we need to add the 2nd coefficient to the 6th coefficient 
+```{r}
+coefs[2]+coefs[6]
+```
+
+Now we are interested in comparing if the difference between push and pull from one leg with the difference between push and pull from another leg, let's say L3 and L4. This is a differences of differences and we cannot use the same contrast package. We will use the library `multcomp`.
+Remember we had 8 coefficients from the linear model:
+```{r}
+coefs
+```
+
+If we look in the plot we are interested in the difference between the brown line and the yellow line and those are represented by the coefficients 6 and 7. So we have to construct a matrix with 1 on the coefficients we are interested in and 0 in the rest:
+
+```{r}
+C<- matrix(c(0,0,0,0,0,-1,1,0),1)
+L3vsL2interaction <- multcomp::glht(fitX, linfct=C)
+summary(L3vsL2interaction)
+
+```
+
+and we see that it is the same as subtracting the coefficients, but the function above gives us also a t-statistic and a p-value.
+```{r}
+coefs[7]-coefs[6]
+```
+
+Finally we can ask if the pull vs push difference is different for each pair of legs, and this can be answered using anova. 
+```{r}
+anova(fitX)
+```
+the `Sum Sq` column in the anova results is the variance of the aggregated coefficients and it is telling us what variables are responsible for the variance, so for example in our results the `Sum Sq` for the `type` (push vs pull) is `42.783` it's the highest of them all, which means that this is most responsible for the variance in the coefficients. Then we have a `Sum Sq`  for the leg (in our graph are the purple, pink and green arrows) with a value of of `2.921` so they also explain part of the variance. Finally we also have a `2.098` value in `Sum Sq` for the interaction type:leg (push vs pull by Leg pair) (in our graph the yellow, brown and grey arrows) which means that there is also a difference attributed to that.
+The f-value is like the t-value in a t-test. 
+The p-value works the same as in a t-test, in our case it is smaller than 0.05 so it means that the difference we are seeing in those values are more than what we would expect by chance.
+
+# Collinearity
+If an experiment is designed incorrectly we may not be able to estimate the parameters of interest. Similarly, when analyzing data we may incorrectly decide to use a model that can't be fit. If we are using linear models then we can detect these problems mathematically by looking for collinearity in the design matrix.
+
+
+Some system of equations can have more than one solution:
+$$
+\begin{align*}
+a+c &=1\\
+b-c &=1\\
+a+b &=2
+\end{align*}
+$$
+there are an infinite number of triplets that satisfy  $a=1-c, b=1+c$.
+
+The system of equations above can be written like this:
+
+$$
+\,
+\begin{pmatrix}
+1&0&1\\
+0&1&-1\\
+1&1&0\\
+\end{pmatrix}
+\begin{pmatrix}
+a\\
+b\\
+c
+\end{pmatrix}
+=
+\begin{pmatrix}
+1\\
+1\\
+2
+\end{pmatrix}
+$$
+
+and we can notice that the third column is a linear combination of the first two:
+$$
+\,
+\begin{pmatrix}
+1\\
+0\\
+1
+\end{pmatrix}
++
+-1 \begin{pmatrix}
+0\\
+1\\
+1
+\end{pmatrix}
+=
+\begin{pmatrix}
+1\\
+-1\\
+0
+\end{pmatrix}
+$$
+
+
+The third column does not add a constraint and what we really have are three equations and two unknowns: $a+c$ and $b-c$. Once we have values for those two quantities, there are an infinity number of triplets that can be used.
+
+## Collinearity and Least Squares
+Consider a design matrix $\mathbf{X}$ with two collinear columns. Here we create an extreme example in which one column is the opposite of another:
+
+$$
+\mathbf{X} = \begin{pmatrix}
+\mathbf{1}&\mathbf{X}_1&\mathbf{X}_2&\mathbf{X}_3\\
+\end{pmatrix}
+\mbox{ with, say, }
+\mathbf{X}_3 = - \mathbf{X}_2
+$$
+
+This means that we can rewrite the residuals like this:
+
+$$
+\mathbf{Y}- \left\{ \mathbf{1}\beta_0 + \mathbf{X}_1\beta_1 + \mathbf{X}_2\beta_2 + \mathbf{X}_3\beta_3\right\}\\ 
+= \mathbf{Y}- \left\{ \mathbf{1}\beta_0 + \mathbf{X}_1\beta_1 + \mathbf{X}_2\beta_2 - \mathbf{X}_2\beta_3\right\}\\
+= \mathbf{Y}- \left\{\mathbf{1}\beta_0 + \mathbf{X}_1 \beta_1 + \mathbf{X}_2(\beta_2  - \beta_3)\right\}
+$$
+so if we have a solution, adding one to both beta2 and beta3 will also be a solution, so there is not a single value that minimizes the error.
 
 
 
+and if $\hat{\beta}_1$, $\hat{\beta}_2$, $\hat{\beta}_3$ is a least squares solution, then, for example, $\hat{\beta}_1$, $\hat{\beta}_2+1$, $\hat{\beta}_3+1$ is also a solution.
+
+#### Confounding as an example
+
+Now we will demonstrate how collinearity helps us determine problems with our design using one of the most common errors made in current experimental design: confounding. To illustrate, let's use an imagined experiment in which we are interested in the effect of four treatments A, B, C and D. We assign two mice to each treatment. After starting the experiment by giving A and B to female mice, we realize there might be a sex effect. 
+We decide to give C and D to males with hopes of estimating this effect. But can we estimate the sex effect? The described design implies the following design matrix:
 
 
+$$
+\,
+\begin{pmatrix}
+Sex & A & B & C & D\\
+0 & 1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 1 & 0 \\
+1 & 0 & 0 & 1 & 0 \\
+1 & 0 & 0 & 0 & 1 \\
+1 & 0 & 0 & 0 & 1\\
+\end{pmatrix}
+$$
+
+Here we can see that sex and treatment are confounded. Specifically, the sex column can be written as a linear combination of the C and D matrices.
+
+$$
+\,
+\begin{pmatrix}
+Sex \\
+0\\
+0 \\
+0 \\
+0 \\
+1\\
+1\\
+1 \\
+1 \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+C \\
+0\\
+0\\
+0\\
+0\\
+1\\
+1\\
+0\\
+0\\
+\end{pmatrix}
++
+\begin{pmatrix}
+D \\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+1\\
+1\\
+\end{pmatrix}
+$$
+
+This implies that a unique least squares estimate is not achievable.
+
+It can be difficult to perceive that just looking at the matrix. In r we have a function that will help us with this:
+
+### Rank
+
+The _rank_ of a matrix columns is the number of columns that are independent of all the others. If the rank is smaller than the number of columns, then the LSE are not unique. In R, we can obtain the rank of matrix with the function `qr`, which we will describe in more detail in a following section.
+
+```{r}
+Sex <- c(0,0,0,0,1,1,1,1)
+A <-   c(1,1,0,0,0,0,0,0)
+B <-   c(0,0,1,1,0,0,0,0)
+C <-   c(0,0,0,0,1,1,0,0)
+D <-   c(0,0,0,0,0,0,1,1)
+X <- model.matrix(~Sex+A+B+C+D-1)
+cat("ncol=",ncol(X),"rank=", qr(X)$rank,"\n")
+```
+
+This particular experiment could have been designed better. Using the same number of male and female mice, we can easily design an experiment that allows us to compute the sex effect as well as all the treatment effects. Specifically, when we balance sex and treatments, the confounding is removed as demonstrated by the fact that the rank is now the same as the number of columns:
+```{r}
+Sex <- c(0,1,0,1,0,1,0,1)
+A <-   c(1,1,0,0,0,0,0,0)
+B <-   c(0,0,1,1,0,0,0,0)
+C <-   c(0,0,0,0,1,1,0,0)
+D <-   c(0,0,0,0,0,0,1,1)
+X <- model.matrix(~Sex+A+B+C+D-1)
+cat("ncol=",ncol(X),"rank=", qr(X)$rank,"\n")
+```
+
+Here we will not be able to estimate the effect of sex.
 
