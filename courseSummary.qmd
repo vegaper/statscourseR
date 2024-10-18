@@ -1,7 +1,7 @@
 ---
 title: "Mastering Statistics: Fundamentals of Data Analysis."
-format:
-  html:
+format: 
+  html: 
     toc: true
     toc-depth: 3
     toc-title: Contents
@@ -14,21 +14,31 @@ format:
     fig-height: 4
     css: custom-style.css
     page-layout: full
-    grid:
+    crossrefs-hover: true
+    footnotes-hover: true
+    citations-hover: true
+    grid: 
       sidebar-width: 10px
       body-width: 1300px
       gutter-width: 0.5rem
     margin-left: 50px
     margin-right: 10px
-  pdf:
+    anchor-sections: true
+  pdf: 
     toc: true
     number-sections: true
     colorlinks: true
 editor: visual
-execute:
+html-math-method: mathjax
+execute: 
   engine: knitr
   warning: false
   echo: true
+knitr:
+  opts_chunk:
+    label: true
+    number: true
+    echo: true
 ---
 
 ```{r}
@@ -46,6 +56,7 @@ library(BSDA)
 library(rafalib)
 library(UsingR)
 library(dplyr)
+library(ISLR2)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -58,15 +69,17 @@ This document is a summary of different stats courses:
 
 -   Statistics and R (HarvardX PH525.1x via Edx)
 
--   Statistical Learning (Stanford Online STATSX0001 via Edx)
+-   Statistical Learning (Stanford Online STATSX0001 via Edx) [additional resources in https://www.statlearning.com/resources-second-edition]
 
 # Exploratory Analysis (EDA)
 
 ## Mean
 
-The mean (or arithmetic mean) is a measure of central tendency that represents the average value of a set of numbers. It is calculated by summing all the values in the dataset and then dividing by the number of values. $$
+The mean (or arithmetic mean) is a measure of central tendency that represents the average value of a set of numbers. It is calculated by summing all the values in the dataset and then dividing by the number of values. 
+$$
 \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
-$$ When we talk about the population mean we use the greek letter $\mu$ and when we talk about the sample mean we use our variable with a bar on top $\bar{x}$ .
+$$ {#eq-mean}
+When we talk about the population mean we use the greek letter $\mu$ and when we talk about the sample mean we use our variable with a bar on top $\bar{x}$ .
 
 ## Variance
 
@@ -74,9 +87,10 @@ Variance measures the average squared deviations from the mean. To calculate it:
 
 Find the mean of the data set. Subtract the mean from each data point and square the result. Average these squared differences.
 
-Mathematically, for a population, the variance $\sigma^2$ is: $$
-\sigma^2 = \frac{1}{N}\sum^N_{i=1}(x_i-\mu)^ 2
+Mathematically, for a population, the variance $\sigma^2$ is: 
 $$
+\sigma^2 = \frac{1}{N}\sum^N_{i=1}(x_i-\mu)^ 2
+$$ {#eq-variance}
 
 where (N) is the number of data points, $x_i$ are the data points, and $\mu$ is the mean.
 
@@ -88,7 +102,7 @@ Population standard deviation:
 
 $$
 \sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (X_i - \mu)^2}
-$$
+$$ {#eq-standardDeviation}
 
 where:
 
@@ -119,7 +133,9 @@ The sample standard deviation formula is very similar:
 
 $$
 s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})^2}
-$$ \### The empirical rule:
+$$ {#eq-sampleStandarDeviation}
+
+### The empirical rule:
 
 If the data follows the normal curve then
 
@@ -129,7 +145,7 @@ If the data follows the normal curve then
 
 -   99.7% fall within 3 standard deviations of the mean
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE}
 #| warning= FALSE
 data <- data.frame (values = rnorm(1000, mean = 10, sd = 3))
 # Calculate mean, median, and standard deviation
@@ -160,13 +176,15 @@ Graphing data is a powerful approach to detecting these problems. We refer to th
 
 ## Median, Median Absolute Deviation (MAD) and outliers
 
-The median is a measure of central tendency that represents the middle value in a sorted list of numbers. If the list has an odd number of observations, the median is the middle number. If the list has an even number of observations, the median is the average of the two middle numbers. The median is less affected by outliers and skewed data compared to the mean.
+The **median** is a measure of central tendency that represents the middle value in a sorted list of numbers. If the list has an odd number of observations, the median is the middle number. If the list has an even number of observations, the median is the average of the two middle numbers. The median is less affected by outliers and skewed data compared to the mean.
 
-The *Median Absolute Deviation (MAD)* is a robust measure of statistical dispersion. It is defined as the median of the absolute deviations from the data's median. MAD is less sensitive to outliers compared to the standard deviation. $$
+The *Median Absolute Deviation (MAD)* is a robust measure of statistical dispersion. It is defined as the median of the absolute deviations from the data's median. MAD is less sensitive to outliers compared to the standard deviation. 
+$$
 MAD= median(|X_i-median(X)|)
-$$ For example, I create a vector with 100 values following a normal distribution with average 0 and standard deviation 1, but then I change one of the points to a value of 100.
+$$ {#eq-mad}
+For example, I create a vector with 100 values following a normal distribution with average 0 and standard deviation 1, but then I change one of the points to a value of 100.
 
-```{r boxplot_showing_outlier, fig.cap="Normally distributed data with one point that is very large due to a mistake.", fig.align='center'}
+```{r boxplot_showing_outlier, fig.cap="Normally distributed data with one point that is very large due to a mistake.", fig.align='center',echo=FALSE}
 set.seed(1)
 x=c(rnorm(100,0,1)) ##real distribution
 x[23] <- 100 ##mistake made in 23th measurement
@@ -175,7 +193,7 @@ boxplot(x)
 
 now we are going to see how this datapoint is affecting our statistics:
 
-```{r}
+```{r,echo=FALSE}
 cat("The average is",mean(x))
 cat("The SD is",sd(x))
 cat("The median is ", median(x))
@@ -186,7 +204,7 @@ cat("The MAD is ", mad(x))
 
 The correlation (it will be presented later in [another chapter](#confidenceIntvsSignifTest)) is also very sensitive to outliers. In this example we create two datasets with no correlation whatsoever:
 
-```{r, fig.align='center'}
+```{r, fig.align='center',echo=FALSE}
 set.seed(1)
 x=rnorm(100,0,1) 
 y=rnorm(100,0,1) 
@@ -198,7 +216,7 @@ abline(0,1)
 
 now we introduce as we did before one datapoint of a much higher value for x and y. This is affecting our correlation coefficient:
 
-```{r, scatter_plot_showing_outlier,fig.cap="Scatterplot showing bivariate normal data with one signal outlier resulting in large values in both dimensions.", fig.align='center' }
+```{r, scatter_plot_showing_outlier,fig.cap="Scatterplot showing bivariate normal data with one signal outlier resulting in large values in both dimensions.", fig.align='center',echo=FALSE}
 set.seed(1)
 x[23] <- 100 ##mistake made in 23th measurement
 y[23] <- 84 ##similar mistake made in 23th measurement
@@ -210,7 +228,7 @@ abline(0,1)
 
 The Spearman correlation follows the general idea of median and MAD, that of using quantiles. The idea is simple: we convert each dataset to ranks and then compute correlation:
 
-```{r spearman_corr_illustration, fig.cap="Scatterplot of original data (left) and ranks (right). Spearman correlation reduces the influence of outliers by considering the ranks instead of original data.",fig.width=10.5,fig.height=5.25, fig.align='center'}
+```{r spearman_corr_illustration, fig.cap="Scatterplot of original data (left) and ranks (right). Spearman correlation reduces the influence of outliers by considering the ranks instead of original data.",fig.width=10.5,fig.height=5.25, fig.align='center',echo=FALSE}
 mypar(1,2)
 plot(x,y,main=paste0("correlation=",round(cor(x,y),3)),pch=21,bg=1,xlim=c(-3,100),ylim=c(-3,100))
 plot(rank(x),rank(y), main=paste0("correlation=",round(cor(x,y,method="spearman"),3)),
@@ -228,7 +246,7 @@ Although not as popular as the histogram for EDA, the empirical cumulative densi
 
 $$
 F(a) \equiv Pr(x \leq a)
-$$
+$$ {#eq-cdf}
 
 This is called the cumulative distribution function (CDF). When the CDF is derived from data, as opposed to theoretically, we also call it the empirical CDF (ECDF).
 
@@ -240,9 +258,9 @@ round(sample(heights,20),1)
 myCDF <- ecdf(heights) 
 ```
 
-The `ecdf` function is a function that returns a function, which is not typical behavior of R functions. We create a function called myCDF based on our data *heights* that can then be used to generate a plot:
+The `ecdf` function is a function that returns a function, which is not typical behavior of R functions. We create a function called myCDF based on our data *heights* that can then be used to generate a plot:
 
-```{r ecdffunction, fig.align='center'}
+```{r ecdffunction, fig.align='center',echo=FALSE}
 ##We will evaluate the function at these values:
 xs<-seq(floor(min(heights)),ceiling(max(heights)),0.1) 
 ### and then plot them:
@@ -253,7 +271,7 @@ plot(xs,myCDF(xs),type="l",xlab="x=Height",ylab="F(x)")
 
 When the data is not normally distributed the mean and the standard deviation are not enough to summarise the data. A better approach would be to present the data in a boxplot.
 
-```{r, fig.align='center'}
+```{r, fig.align='center',echo=FALSE}
 # Create a not normally distributed sample (exponential distribution)
 set.seed(123)  # For reproducibility
 data <- rexp(100, rate = 0.2)
@@ -293,7 +311,7 @@ p + annotate("text", x = 1.2, y = quantile(data, 0.75)+1.5, label = "Q3 (75th pe
 
 -   Outliers: Points beyond the whiskers, marked in red.
 
-## Histogram
+## Histogram {#histogram}
 
 We can think of any given dataset as a list of numbers. Suppose you have measured the heights of all men in a population. Imagine you need to describe these numbers to someone that has no idea what these heights are, for example an alien that has never visited earth. One approach is to simply list out all the numbers for the alien to see. Here are 20 randomly selected heights of 1,078
 
@@ -301,7 +319,7 @@ From scanning through these numbers we start getting a rough idea of what the en
 
 We can specify the bins and add better labels in the following way:
 
-```{r histogramofnormaldist,fig.align='center'}
+```{r histogramofnormaldist,fig.align='center',echo=FALSE}
 bins <- seq(floor(min(heights)),ceiling(max(heights)))  
 hist(heights,breaks=bins,xlab="Height",main="Adult men heights") 
 ```
@@ -310,18 +328,19 @@ Showing this plot is much more informative than showing the numbers. Note that w
 
 This denotes the probability that the random variable ( x ) is between ( a ) and ( b )
 
-$P(a \leq x \leq b) = F(b) - F(a)$
+$$P(a \leq x \leq b) = F(b) - F(a)$$ {#eq-probabilityHistogram}
 
 ## Probability Distribution
 
-Summarizing lists of numbers is one powerful use of distribution. An even more important use is describing the possible outcomes of a random variable. Unlike a fixed list of numbers, we don't actually observe all possible outcomes of random variables, so instead of describing proportions, we describe probabilities. For instance, if we pick a random height from our list, then the probability of it falling between a and b is denoted with: $P(a \leq X \leq b) = F(b) - F(a)$
+Summarizing lists of numbers is one powerful use of distribution. An even more important use is describing the possible outcomes of a random variable. Unlike a fixed list of numbers, we don't actually observe all possible outcomes of random variables, so instead of describing proportions, we describe probabilities. For instance, if we pick a random height from our list, then the probability of it falling between $a$ and $b$ is denoted with: $P(a \leq X \leq b) = F(b) - F(a)$
 
-Note that the X is now capitalized to distinguish it as a random variable and that the equation above defines the probability distribution of the random variable.
+Note that the $X$ is now capitalized to distinguish it as a random variable and that the equation above defines the probability distribution of the random variable.
 
 ### The p-value
 
-Knowing this distribution is incredibly useful in science. If we know the distribution of our data when the null hypothesis is true, referred to as the *null distribution*, we can compute the probability of observing a value as large as we did in our experiment, referred to as a *p-value*.
+Knowing this distribution is incredibly useful in science. If we know the distribution of our data when the null hypothesis is true, referred to as the *null distribution*, we can compute the probability of observing a value as large as we did in our experiment, referred to as a *p-value*.
 
+::: exercise-block
 Example.
 
 We have data from 24 mice fed two different diets. We want to know if the mice fed with high fat diet increased their body weight more than the mice fed with the control diet.
@@ -356,7 +375,7 @@ for (i in 1:n) {
 head(null)
 ```
 
-The values in \`null\` form what we call the *null distribution*.
+The values in `null` form what we call the *null distribution*.
 
 What percentage of our 10000 experiments have a difference weight between control and treatment higher or equal to the one we observed for the different diets?
 
@@ -366,12 +385,16 @@ mean(null >= obsdiff)
 
 We see a difference as big as the one we observed only a small percentage of the time. This is what is known as a p-value. We can plot the null histogram and mark the line with our observed weight difference for the high fat diet.
 
-```{r null_and_obs,fig.cap="Null distribution with observed difference marked with vertical red line.", fig.align='center'}
+```{r null_and_obs,fig.cap="Null distribution with observed difference marked with vertical red line.", fig.align='center', echo=FALSE}
 hist(null, freq=TRUE)
 abline(v=obsdiff, col="red", lwd=2)
 ```
 
+:::
+
 An important point to keep in mind here is that while we defined $\mbox{Pr}(a)$ by counting cases, we will learn that, in some circumstances, mathematics gives us formulas for $\mbox{Pr}(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation.
+
+We will see later on [how to calculate the p-values](#pvalues)
 
 # Normal distribution
 
@@ -383,7 +406,7 @@ Key properties of a normal distribution include
 
 -   **Mean, Median, and Mode**: All three measures of central tendency are equal and located at the center of the distribution.
 
-```{r, fig.align='center'}
+```{r, fig.align='center',echo=FALSE}
 data <- data.frame (values = rnorm(1000, mean = 10, sd = 3))
 
 gg<- ggplot(data, aes(x = values))+
@@ -395,15 +418,15 @@ probability density function (PDF) of a normal distribution
 
 $$
 f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x - \mu)^2}{2\sigma^2}}
-$$
+$$ {#eq-PDF}
 
 we can use a mathematical formula to approximate the proportion of values or outcomes in any given interval:
 
 $$
 \mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma^2}} \exp{\left( \frac{-(x-\mu)^2}{2 \sigma^2} \right)} \, dx
-$$
+$$ {#eq-pnorm}
 
-While the formula may look intimidating, don't worry, you will neveractually have to type it out, as it is stored in a more convenient form (as `pnorm` in R which sets *a* to $-\infty$, and takes *b* as an argument). We can compute the proportion of values below a value `x` with `pnorm(x,mu,sigma)`. A very useful characteristic of this approximation is that one only needs to know $\mu$ and $\sigma$ to describe the entire distribution. From this, we can compute the proportion of values in any interval.
+While the formula may look intimidating, don't worry, you will never actually have to type it out, as it is stored in a more convenient form (as `pnorm` in R which sets *a* to $-\infty$, and takes *b* as an argument). We can compute the proportion of values below a value `x` with `pnorm(x,mu,sigma)`. A very useful characteristic of this approximation is that one only needs to know $\mu$ and $\sigma$ to describe the entire distribution. From this, we can compute the proportion of values in any interval.
 
 ## Standardizing data
 
@@ -411,11 +434,11 @@ A normal curve is determined by the mean $\bar{x}$ and the standard deviation $s
 
 $$
 z = \frac{x_1 - \bar{x}}{s}
-$$
+$$ {#eq-zscore}
 
 After standardizing all points in our data we will get a distribution with mean = 0 and standard deviation =1
 
-```{r,fig.align='center'}
+```{r,fig.align='center',echo=FALSE}
 standardizedValues <- data.frame(values = scale(data$values))
 mean_val <- mean(standardizedValues$values)
 median_val <- median(standardizedValues$values)
@@ -442,7 +465,7 @@ gg
 
 So now, the value of z for a specific value $x_1$ is indicating how many standard deviations our value is away from the mean, and just by simple approximation using the empirical rule, if for example you standardize your height and you get a value of 1, you already know without having to look into more detail that you are approximately higher than 84% of the population.
 
-```{r empiricalRule, fig.height=4,fig.width=6, fig.align='center'}
+```{r empiricalRule, fig.height=4,fig.width=6, fig.align='center',echo=FALSE}
 
 # Plot the cumulative percentages
 # Define the range for the x-axis
@@ -472,13 +495,19 @@ grid()
 
 ## Normal approximation
 
-When the histogram of a list of numbers approximates the normal distribution we can use a convenient mathematical formula to approximate the proportion of individuals in any given interval:
+When the histogram of a list of numbers approximates the normal distribution we can use a convenient mathematical formula to approximate the proportion of individuals in any given interval. We already saw this equation (@eq-pnorm)
 
 $$
 P(a < x < b) = \int_{a}^{b} \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(\frac{-(x - \mu)^2}{2\sigma^2}\right) \, dx
-$$ If this approximation holds for our data then the population mean and variance of our data can be used in the formula above.
+$$ {#eq-pnorm1}
 
-To see this with an example let's calculate the number of individuals that are taller than 72 inches. First we are going to calculate the number manually:
+If this approximation holds for our data then the population mean and variance of our data can be used in the formula above.
+
+::: exercise-box
+Example
+
+*Let's calculate the number of individuals that are taller than 72 inches.* 
+First we are going to calculate the number manually:
 
 ```{r}
 n_individuals = length(heights)
@@ -487,17 +516,19 @@ propTaller = taller/n_individuals
 propTaller
 ```
 
-so we have roughly 6.4% of the individuals taller than 72 inches. Using normal approximation we can calculate it like this and it will gives us an similar number:
+so we have roughly 6.4% of the individuals taller than 72 inches. 
+Now wee can calculate it using normal approximation and it will gives us an similar number:
 
 ```{r}
-1-pnorm(72,mean(heights),popsd(heights)) 
+1-pnorm(72,mean(heights),rafalib::popsd(heights)) 
 ```
+:::
 
 if we do this check for different values and continue to see that the two values are similar we can assume a normal distribution, but a better way to do it is using a QQ plot:
 
 ## QQ plot
 
-To corroborate that the normal distribution is in fact a good approximation we can use quantile-quantile plots (QQ-plots). Quantiles are best understood by considering the special case of percentiles. The p-th percentile of a list of a distribution is defined as the number q that is bigger than p% of numbers. For example, the median 50-th percentile is the median. We can compute the percentiles for our list and for the normal distribution.
+To corroborate that the normal distribution is in fact a good approximation we can use **quantile-quantile plots (QQ-plots)**. Quantiles are best understood by considering the special case of percentiles. The p-th percentile of a list of a distribution is defined as the number q that is bigger than p% of numbers. For example, the median 50-th percentile is the median. We can compute the percentiles for our list and for the normal distribution.
 
 ```{r, fig.align='center'}
 #generate the percentiles
@@ -505,7 +536,7 @@ ps <- seq(0.01,0.99,0.01)
 # The quantile function returns the values below which a given percentage of data falls. 
 qs <- quantile(heights,ps)
 #calculates the theoretical quantiles from a normal distribution with the same mean and standard deviation as the heights data. The qnorm function returns the quantiles of the normal distribution for the given probabilities (ps), mean, and standard deviation
-normalqs <- qnorm(ps,mean(heights),popsd(heights))
+normalqs <- qnorm(ps,mean(heights),rafalib::popsd(heights))
 plot(normalqs,qs,xlab="Normal percentiles",ylab="Height percentiles")
 abline(0,1) ##identity line
 ```
@@ -521,13 +552,13 @@ qqline(heights)
 
 Data is not always normally distributed. Income is widely cited example. In these cases the average and standard deviation are not necessarily informative since one can't infer the distribution from just these two numbers. The properties described above are specific to the normal. For example, the normal distribution does not seem to be a good approximation for the direct compensation for 199 United States CEOs in the year 2000
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE}
 hist(exec.pay)
 ```
 
 the QQ plot would look like this:
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE}
 qqnorm(exec.pay)
 qqline(exec.pay)
 ```
@@ -556,13 +587,13 @@ But when the number of experiments grows it gets complicated to just find out al
 
 $$
 \binom{n}{k} = \frac{n!}{k!(n-k)!}
-$$
+$$ {#eq-binomialCoefficient}
 
-and to calculate the probability we use the coefficient with the probability formula:
+and to calculate the probability we use the coefficient with the *binomial probability formula. It’s used to find the probability of getting exactly k successes in n independent Bernoulli trials, where each trial has a success probability p.
 
 $$
 P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}
-$$
+$$ {#eq-binomialProbabilityFormula}
 
 if we calculate this manually:
 
@@ -585,7 +616,7 @@ print(probability)
 
 but in r we would do it like this
 
-```{r}
+```{r #binomialprobability}
 
 # Calculate binomial probability
 probability <- dbinom(k, n, p)
@@ -593,7 +624,10 @@ print(probability)
 
 ```
 
-If we have more than two outcomes but we are interested in one of them only we can still use the binomial formula. For example, we are playing an online game, the probability of winning a big prize is 10%, the probability of winning a small prize is 20% and the probability of not winning anything is 70%. We want to know, in 10 repetitions, what is the probability that we win two small prizes:
+If we have more than two outcomes but we are interested in one of them only we can still use the binomial formula. 
+
+**Example**
+*We are playing an online game, the probability of winning a big prize is 10%, the probability of winning a small prize is 20% and the probability of not winning anything is 70%. We want to know, in 10 repetitions, what is the probability that we win two small prizes:*
 
 -   success = win small prize
 
@@ -615,27 +649,26 @@ probability <- binom_coeff * (p^k) * ((1 - p)^(n - k))
 print(probability)
 ```
 
-but now, what is the probability of winning **at most**, 12 small prizes in 50 repetitions? we would have to calculate the probability of winning 12 small prizes, 11 small prizes etc. but we can use standardization instead to achieve the same goal:
+*but now, what is the probability of winning **at most**, 12 small prizes in 50 repetitions?* 
+we would have to calculate the probability of winning 12 small prizes, 11 small prizes etc. but we can use standardization instead to achieve the same goal:
 
-To standardize the data:
-
-To standardize data for a binomial experiment, you typically use the **z-score** formula. This formula converts the binomial distribution to a standard normal distribution. The z-score formula is: $$
-z=\frac{X-\mu}{\sigma}
+To standardize data for a binomial experiment, you typically use the **z-score** formula. This formula converts the binomial distribution to a standard normal distribution. The z-score (@eq-zscore) formula is: 
 $$
+z=\frac{X-\mu}{\sigma}
+$$ {#eq-zscore2}
 
 -   ( $X$ ) is the number of successes.
 
 -   ( $\mu$ ) is the mean of the binomial distribution, calculated as ( $\mu = np$ ). where $n$ is the number of repetitions and $p$ is the the probability of success.
 
--   ( $\sigma$ ) is the standard deviation of the binomial distribution, calculated as $\sigma = \sqrt{np(1-p)}$ .
+-   ( $\sigma$ ) is the **standard deviation of the binomial distribution**, calculated as 
+$$\sigma = \sqrt{np(1-p)}$${#eq-standardDeviationBinomialDistribution}
 
 So, the complete formula for the z-score in a binomial experiment is:
 
 $$
 z = \frac{X - np}{\sqrt{np(1-p)}}
-$$
-
-​
+$$ {#eq-zscoreBinomial}
 
 This formula allows you to standardize the number of successes ( X ) by subtracting the mean and dividing by the standard deviation, converting it to a z-score.
 
@@ -652,10 +685,11 @@ print(zScore)
 
 ```
 
+## Calculating the p-values{#pvalues}
 once we have calculated the z-Score we can calculate the area on the left of that number under the normal distribution curve, and that will be the probability we are looking for.
 
-```{r, fig.align='center'}
-#| echo =FALSE
+```{r, fig.align='center', echo=FALSE}
+
 # Create a sequence of x values
 x <- seq(-4, 4, length=100)
 
@@ -668,29 +702,30 @@ plot(x, y, type="l", lwd=2, col="blue", xlab="Z", ylab="Density", main="Standard
 abline(v = 0.71, col = "red", lwd = 2, lty = 2)
 ```
 
-We can now can find manually the probability using z-score tables.\
-In R, we may use the pnorm() function to find the p-value associated with a z-score, which has the following syntax.
+We can now can find manually the probability using z-score tables.
+In R, we may use the `pnorm()` function to find the p-value associated with a z-score, which has the following syntax.
 
-```         
-pnorm(q, mean = 0, sd = 1, lower.tail = TRUE)
-```
+`pnorm(q, mean = 0, sd = 1, lower.tail = TRUE)`
 
-Where q = z-Score value. lower.tail: If TRUE, the probability in the normal distribution to the left of zScore is returned. The probability to the right is returned if FALSE. TRUE is the default value.
+Where 
+- `q = z-Score value`. 
+- lower.tail: If TRUE, the probability in the normal distribution to the left of z-Score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
 
-To find the p-value for the two-tailed test:
+To find the **p-value for the two-tailed test**:
+       
+`2*pnorm(q=0.71, lower.tail=FALSE)` 
 
-```         
-2*pnorm(q=0.71, lower.tail=FALSE) 
-```
 
 ```{r}
 # Calculate the area to the left of the z-score
-area_left <- pnorm(zScore)
+(area_left <- pnorm(zScore))
 
 # Calculate the area to the right of the z-score
-area_right <- 1 - area_left
+(area_right <- 1 - area_left)
+#or
+(area_rigt<- pnorm(zScore,lower.tail=FALSE))
 
-# Calculate the cumulative probability using the z-score, in our case we use:
+# Calculate the cumulative probability using the z-score, in our case we use the left area:
 probability <- pnorm(zScore)
 print(probability)
 ```
@@ -707,9 +742,10 @@ probability <- pnorm((k - n * p) / sqrt(n * p * (1 - p)))
 print(probability)
 ```
 
+
 # Introduction to Inference
 
-```{r}
+```{r, echo=FALSE}
 #| echo: false
 file <- here("data", "optical_full.xlsx")
 optical <- read_excel(file)
@@ -731,7 +767,7 @@ The mean of the eye difference variable in our optical dataset is `r mean(optica
 
 If we extract 100 samples with three observations each from our data and visually show their means we can see every time we got a different value, sometimes they will be very close to the target parameter, but sometimes they can be quite far.
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE}
 #| eval: true
 
 kable(head(optical))%>%
@@ -759,14 +795,14 @@ ggplot(sample_summary, aes(x = sample_mean)) +
 
 A **Biased statistics**, on the other hand, misses the mark on average, for example if we increase the value of all our sample means by 1:
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE}
 ggplot(sample_summary, aes(x = sample_mean+1)) + 
   geom_histogram() + 
   geom_vline(xintercept = mean(optical$eye_difference),
              linetype = "dotted")
 ```
 
-::: {.callout-note style="border: 2px solid #f0ad4e;  border-radius: 8px;   background-color: #fff3cd;   padding: 10px;" appearance="simple" icon="false"}
+::: {.callout-orange appearance="simple" icon="false"}
 **Reproducibility and Replicability**
 
 Replicating means to get the same conclusion with slightly different samples, procedures, and data analysis methods.
@@ -814,7 +850,7 @@ If we are interested in the average height of adult males in USA and we extract 
 
 $$ 
 \text{SE} (\bar{x_n})= \frac{\sigma}{\sqrt{n}} 
-$$
+$$ {#eq-standardErrorMean}
 
 where n is the sample size. **We can actually use this formula to decide what is the sample size we need to use for a desired accuracy in our statistic**.
 
@@ -830,7 +866,9 @@ The percentage of Democratic voters in the sample is equal to the mean of the sa
 
 ### Expected value and standard error for the sum
 
-If we are interested in the sum of n draws $S_n$, the sum and the average are related by $S_n = n\bar{x_n}$ so $SE(S_n)=\sqrt{n}\sigma$ which tells us that the variability of the sum of n draws increases at the rate of $\sqrt{n}$ so while increasing the sample size reduces the standard error of the average, it actually increases the standard error for the sum.
+If we are interested in the sum of n draws $S_n$, the sum and the average are related by $S_n = n\bar{x_n}$ so the standard error of the sum:
+$$SE(S_n)=\sqrt{n}\sigma$${#eq-standardErrorSum} 
+which tells us that the variability of the sum of n draws increases at the rate of $\sqrt{n}$ so **while increasing the sample size reduces the standard error of the average, it actually increases the standard error for the sum.**
 
 ::: exercise-box
 Exercise1 (Expected Value):
@@ -849,14 +887,19 @@ Exercise2 (Standard error for the sum)
 
 *What are the chances that the 100 pledges total more than \$5,700 ?*
 
-The standard error of the sample sum is $SE(S_n)=\sqrt{n}\sigma$ , where n is the sample size and σ is the standard deviation of the population. Since n is 100 and we're told that the standard deviation of the population is \$37, we know the standard error of the sample sum is \$370.
+The standard error of the sample sum is $SE(S_n)=\sqrt{n}\sigma$  where n is the sample size and σ is the standard deviation of the population. 
+
+Since n is 100 and we're told that the standard deviation of the population is \$37, we know the standard error of the sample sum is \$370.
 
 Using the normal approximation to the sampling distribution, this tells us that \$5700 is roughly one standard deviation (5700 - 5333 = 366) above the mean of the sampling distribution. From the **empirical rule**, we know that one half of 68% of the data lies within one standard deviation to the right of the mean, so that 50 + (1/2)68 = 84% of the data lies to the left of \$5700. That is, 16% percent of the data lies to right of \$5700.
 :::
 
 ### Expected value and standard error for percentages.
 
-for percentages, the expected value is $E = \mu * 100\%$ and the Standard Error $SE=\frac{\sigma}{\sqrt{n}} *100\%$
+For percentages, the expected value is 
+$$E = \mu * 100\%$${#eq-expectedValuePerc} 
+and the Standard Error 
+$$SE=\frac{\sigma}{\sqrt{n}} *100\%$${#eq-standardErrorPerc}
 
 All the above formulas are for sampling with replacement, but they are still approximately true when sampling without replacement if the sample size is much smaller than the size of the population.
 
@@ -930,7 +973,8 @@ cat("Expected standard error percentage:", sigma /sqrt(n), "% \n")
 
 If we toss a fair coin 100 times, we can get any number of tails from 0 to 100. How likely is each outcome?
 
-The number of tails has the binomial distribution with n=100 and p=0.5 where success = tails. So if the statistic of interest is $S_n=number\ of \ tails$ , then $S_n$ is a random variable whose probability histogram is given by the binomial distribution. This is called the sampling distribution of the statistic $S_n$ . The sampling distribution provides more detailed information about the chance properties of $S_n$ than the summary numbers given by the expected value and the standard error alone.
+The number of tails has the binomial distribution with `n=100` and `p=0.5` where `success = tails`. So if the statistic of interest is $S_n=number\ of \ tails$ , then $S_n$ is a random variable whose probability histogram is given by the binomial distribution. This is called the *sampling distribution of the statistic $S_n$*. 
+The sampling distribution provides more detailed information about the chance properties of $S_n$ than the summary numbers given by the expected value and the standard error alone.
 
 There are three histograms to take into consideration:
 
@@ -961,7 +1005,7 @@ print(gg)
 
 If we toss the coins, we will have am empirical histogram
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE}
 # Set the number of coin tosses
 num_tosses <- 100
 
@@ -984,7 +1028,7 @@ print(gg)
 
 And finally we can do the probability histogram of the statistic $s_{100}$, which shows the sampling distribution:
 
-```{r, fig.align='center'}
+```{r, fig.align='center' , echo=FALSE}
 # Set the parameters
 n <- 100
 p <- 0.5
@@ -1009,13 +1053,13 @@ print(gg)
 
 ```
 
-# Central limit theorem
+# Central limit theorem (CLT)
 
 When sampling with replacement and n is large, then the sampling distribution of the sample average approximately follows the normal curve.
 
 For example, going back to the example of of the online gambling where we had a probability of winning a small prize with p=0.2, we can see how the probability histogram for the binomial distribution approximates more and more to the normal distribution as we increase the number of trials n.
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE}
 # Set the parameters
 n <- 1
 p <- 0.2
@@ -1079,9 +1123,11 @@ That means that we can use normal approximation to compute probabilities. The ke
 
 The mathematical theory behind that:
 
-The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error: $$ 
+The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): 
+$$ 
 \text{SE} (\bar{x_n})= \frac{\sigma}{\sqrt{n}} 
-$$ This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
+$$ 
+This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
 
 **Standardized sample mean**
 
@@ -1089,7 +1135,7 @@ This implies that if we take many samples of size $N$, then the quantity is appr
 
 $$
 \frac{\bar{Y} - \mu}{\sigma_Y/\sqrt{N}}
-$$
+$${#eq-standardizedSampleMean} 
 
 -   $\bar{Y}$: The sample mean, which is the average of your sample data.
 
@@ -1129,15 +1175,17 @@ Remember that in practice we do not get to compute these population parameters. 
 
 As we described, the CLT tells us that for large N, each of these is approximately normal with average population mean and standard error population variance divided by N. We mentioned that a rule of thumb is that N should be 30 or more. However, that is just a rule of thumb since the preciseness of the approximation depends on the population distribution. Here we can actually check the approximation and we do that for various values of N.
 
-We are going to create 10,000 samples of N number of mice for N= 3,12,25 and 50 and calculate the difference for the means between treatment and control bodyweight and we calculate the t-statistic for each sample size (t-statistic is explained later)
+We are going to create 10,000 samples of N number of mice for N= 3,12,25 and 50 and calculate the difference for the means between treatment and control bodyweight. We then calculate the t-statistic for each sample size (t-statistic is explained later)
 
 Statistical theory tells us that if we divide a random variable by its SE, we get a new random variable with an SE of 1.This ratio is what we call the t-statistic.
 
 $$
 t = \frac{\bar{x} - \mu}{SE}
-$$ where $SE = \frac{s}{\sqrt{n}}$
+$${#eq-tstatistic} 
+where $SE = \frac{s}{\sqrt{n}}$
 
-In the specific case of our experiment (comparing the means of two samples) this translates into: $$ 
+In the specific case of our experiment (comparing the means of two samples) this translates into: 
+$$ 
 t = \frac{\bar{y} - \bar{x}}{SE}=\frac{\bar{y} - \bar{x}}{\sqrt{\frac{s_y^2}{n} + \frac{s_x^2}{n}}} 
 $$
 
@@ -1168,7 +1216,7 @@ This simulation only proves that $N=12$ is large enough in this case, not in gen
 
 For populations that are already normally distributed, even small sample sizes will result in sample means that are approximately normally distributed. For populations that are not normally distributed, larger sample sizes are required for the sample means to approximate a normal distribution.
 
-We will see later that we don't usually calculate our p-values like this using the CLT, instead we will use a *t-test* that will give us a slightly different result. This is to be expected because our CLT approximation considered the denominator of tstat practically fixed (with large samples it practically is), while the t-distribution approximation takes into account that the denominator (the standard error of the difference) is a random variable. The smaller the sample size, the more the denominator varies.
+We will see later that we don't usually calculate our p-values like this using the CLT, instead we will use a *t-test* that will give us a slightly different result. This is to be expected because our CLT approximation considered the denominator of t-stat practically fixed (with large samples it practically is), while the t-distribution approximation takes into account that the denominator (the standard error of the difference) is a random variable. The smaller the sample size, the more the denominator varies.
 
 ::: {.callout-orange appearance="simple" icon="false"}
 **When does the central limit theorem apply?** For the normal approximation to work, the key requirements are:
@@ -1185,7 +1233,8 @@ Exercise:
 
 Suppose we are interested in the proportion of times we see a 6 when rolling n=100 dice. This is a random variable which we can simulate with x=sample(1:6, n, replace=TRUE) and the proportion we are interested in can be expressed as an average: mean(x==6). Because the die rolls are independent, the CLT applies.
 
-We want to roll n dice 10,000 times and keep these proportions. This random variable (proportion of 6s) has mean p=1/6 and variance $\frac{p(1-p)}{n}$. So according to the CLT: $$
+We want to roll n dice 10,000 times and keep these proportions. This random variable (proportion of 6s) has mean p=1/6 and variance $\frac{p(1-p)}{n}$. So according to the CLT: 
+$$
 z = \frac{observed_p - p}{\sqrt{(p\times(1-p))/n)}}
 $$
 
@@ -1237,22 +1286,22 @@ Significance tests consider specific individual values, while confidence interva
 A confidence interval is a way of reporting an estimate of a parameter that includes information about how much variability could reasonably be expected due to random chance. A confidence interval for the mean of a quantitative variable has the form
 
 $$
-\mu = \bar{x} \pm E
+\mu = \bar{x} \pm ME
 $$
 
-where $\mu$ is the population mean, $\bar{x}$ is the observed sample mean and $E$ is a **margin of error.**
+where $\mu$ is the population mean, $\bar{x}$ is the observed sample mean and $ME$ is a **margin of error.**
 
 ## Manual calculation:
 
 A confidence interval gives a range of plausible values for a population parameter. Usually the confidence interval is centered at an estimate for $\mu$ which is an average. Since the central limit theorem applies for averages, the confidence interval has a simple form:
 
-$CI = estimate \mp ME$
+$$CI = estimate \mp ME$$
 
 where **ME is the margin of error** and can be decomposed like this:
 
-$CI=estimate \mp z\ * SE = \mu \mp z*SE$
+$$CI=estimate \mp z\ * SE = \mu \mp z*SE$${#eq-confidenceInterval}
 
-where SE is the *standard error* of the sample and if that is an average or a percentage then it is $SE= \frac{\sigma}{\sqrt{n}}$ .
+where SE is the *standard error* of the sample. If that is an average or a percentage then it is $SE= \frac{\sigma}{\sqrt{n}}$ as we saw in (@eq-standardErrorMean).
 
 And $z$ is the z-score corresponding to the desired confidence level. For example, if we would like to have a 95% confidence level, our $z=1.96$
 
@@ -1292,7 +1341,7 @@ z_score <- qnorm(0.975)
 z_score
 ```
 
-The `0.975` value is used because for a 95% confidence interval, you need to capture the central 95% of the distribution, leaving 2.5% in each tail. Therefore, you look up the 97.5th percentile (0.975) to get the z-score.
+The `0.975`value is used because for a 95% confidence interval, you need to capture the central 95% of the distribution, leaving 2.5% in each tail. Therefore, you look up the 97.5th percentile (0.975) to get the z-score.
 
 For 90% confidence interval we are looking for the z value in the normalized distribution where 90% of the data falls in our center range and 10% outside, so 5% in each tail.
 
@@ -1319,19 +1368,21 @@ z_score
 
 **Estimating the SE with bootstrap principle**
 
-We still have a problem for calculating the confidence interval following this, and it is that we need to know the standard deviation of the population $\sigma$ and we usually don't know it, but the bootstrap principle states that we can calculate sigma by its sample version $s$ and still get an approximately correct confidence interval.
+We still have a problem for calculating the confidence interval following this, and it is that we need to know the standard deviation of the population $\sigma$ and we usually don't know it, but the [bootstrap principle](#bootstrap) states that we can calculate sigma by its sample version $s$ and still get an approximately correct confidence interval.
 
-> Example:
->
-> We poll 1000 likely voters and find that 58% approve of the way the president handles his job.
->
-> $SE= \frac{\sigma}{\sqrt{n}} * 100$ where $\sigma = \sqrt{p(1-p)}$ where $p$ is the proportion of **all voters** who approve, but we don't know p, but the bootstrap principle tells us that we can replace $\sigma$ by $s$ so we can plug in the values from our survey here: $=\sqrt{0.58(1-0.58)} = 0.49$
->
-> So a 95% confidence interval for p is: $$
-> 58\% \mp 1.96 \frac{0.49}{\sqrt{1000}}*100
-> $$
->
-> which is approximately \[54.9%,61.1%\]
+::: exercise-box
+Example:
+We poll 1000 likely voters and find that 58% approve of the way the president handles his job.
+
+$SE= \frac{\sigma}{\sqrt{n}} * 100$ where $\sigma = \sqrt{p(1-p)}$ where $p$ is the proportion of **all voters** who approve, but we don't know p, but the bootstrap principle tells us that we can replace $\sigma$ by $s$ so we can plug in the values from our survey here: $=\sqrt{0.58(1-0.58)} = 0.49$
+
+So a 95% confidence interval for p is:
+$$
+58\% \mp 1.96 \frac{0.49}{\sqrt{1000}}*100
+$$
+
+ which is approximately \[54.9%,61.1%\]
+:::
 
 The width of the confidence interval is determined by z and the standard error SE. To reduce that margin of error we have two options, we can increase the sample size or decrease the confidence level. The sample size is square rooted so this means that to cut the width of the confidence level in half we need four times the sample size, and to reduce it 10 times we would need 100 times the sample size.
 
@@ -1517,11 +1568,11 @@ The situation in which the parameter has that value is referred to as the **null
 
 A test statistic measures how far away the data in our sample are from what we would expect if the null hypothesis $H_0$ were true.
 
-The most common test statistic is the z-statistic.
+The most common test statistic is the z-statistic. It determines how far an observed value is from the expected value, measured in standard errors.We already saw this formula before (@eq-zscore)
 
 $$
 z= \frac{observed - expected}{SE}
-$$
+$${#eq-zscore3}
 
 Observed is a statistic that is appropriate for assessing $H_0$. For example, if we toss a coin ten times and want to know if it is a fair coin, the appropriate statistic would be the number of tails or the percentage of tails.
 
@@ -1561,11 +1612,13 @@ p_value
 In other words, we have a 20.4% probability of observing 7 tails in 10 tosses given that the coin is fair.
 :::
 
-If the z value is large, that means that there is a great difference between the observed and the expected, so large values of z are evidence against $H_0$. The strength of the evidence is measured by the p-value or observed significance level.
+If the z-value is large, that means that there is a great difference between the observed and the expected, so large values of z are evidence against $H_0$. The strength of the evidence is measured by the p-value or observed significance level.
 
 The p-value is the probability of getting a value of z as extreme or more extreme than the observed, assuming the null hypothesis is true. As we can see in the graph below, as z becomes larger, there is less probability of finding data outside of its limits, so the p-value will be smaller. We multiply the p value times 2 because we have to consider the two tails of the graph for this experiment.
 
-```{r, fig.align='center'}
+The Z-score tells you how far an observed value is from the expected value in terms of standard errors. The p-value tells you the probability of observing a test statistic as extreme as, or more extreme than, the observed statistic, under the null hypothesis.
+
+```{r, fig.align='center', echo=FALSE}
 #| echo = FALSE
 x <- seq(-4, 4, length=100)
 
@@ -1609,7 +1662,6 @@ A t-significance test is appropriate for quantitative data under the exact same 
 The value of $\mu$ (mu) is the value we want to test against (our null hypothesis)
 
 ```{r}
-
 file1 <- here("data", "optical_sample.xlsx")
 optical_sample <- read_excel(file1)
 
@@ -1625,12 +1677,11 @@ We can change the null theory to whatever value we want to measure against. For 
 ```{r}
 testResult <- t.test(optical_sample$Age, mu = 59)
 testResult$p.value 
-
 ```
 
 our p-value is `{r}testResult$p.value` which does not allow us to reject the null theory.
 
-::: {#SignificanceTestQuickFacts style="border: 2px solid #f0ad4e;  border-radius: 8px;   background-color: #fff3cd;   padding: 10px;"}
+::: {#SignificanceTestQuickFacts .callout-orange}
 Quick Facts
 
 1.  A p-value below 0.05 doesn't mean there's a 5% chance the null hypothesis is true. Instead, it means if the null were true, there's a 5% chance of observing data as extreme as, or more extreme than the one that was observed in the sample.
@@ -1812,14 +1863,15 @@ ggplot(data_to_plot, aes(x = x, y = density, color = degree_of_freedom)) +
 ```
 
 In the graph we can see the purple line where the degrees of freedom are high (large sample) is just the normal curve. The rest of the lines are showing how with less degrees of freedom the tails of the curve get bigger, representing higher uncertainty.
+We saw the **sample standard deviation formula**  (@eq-sampleStandarDeviation): 
 
 $$
 s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})^2}
 $$
 
-In this case we also need to adjust our confidence interval formula from: $CI=estimate\mp z\  SE$
+In this case we also need to adjust our **confidence interval** formula from: $CI=estimate\mp z\  SE$
 
-to $CI= estimate (\mu) \mp t_{n-1}SE$
+to $$CI= estimate (\mu) \mp t_{n-1}SE$${#eq-confidenceIntervalTStudent}
 
 ::: {.callout-orange appearance="simple" icon="false"}
 ::: centered-text
@@ -1920,7 +1972,7 @@ There are any number of statistical methods for computing confidence intervals f
 
 $$
 p = \hat{p} \pm \sqrt{\frac{\hat{p} \cdot (1 - \hat{p})}{n}}
-$$
+$${#eq-confidenceIntervalProportions}
 
 where $p$ is the actual population proportion and $\hat{p}$ is the observed proportion.
 
@@ -1979,7 +2031,6 @@ If our categorical variable is not binary, we still can use this same test to ca
 For example, to calculate the proportion of women in our pm_survey dataset:
 
 ```{r}
-
 file2 <- here("data", "pm_survey.xlsx")
 pm_survey <- read_excel(file2)
 
@@ -3088,7 +3139,7 @@ For example for the case of mice weights, we know that mice typically weight 24 
 controls<- rnorm(5000, mean=24, sd=3.5) 
 ```
 
-# The bootstrap principle
+# The bootstrap principle {#bootstrap}
 
 The bootstrap method will work were we cannot extract as many samples.
 
@@ -3378,7 +3429,7 @@ ggplot(data, aes(x = x, y = y)) +
   geom_point()
 ```
 
-The correlation coefficient formula:
+The **correlation coefficient formula**:
 
 $$
 r = \frac{1}{n} \sum_{i=1}^{n} \left( \frac{x_i - \bar{x}}{s_x} \right) \times \left( \frac{y_i - \bar{y}}{s_y} \right)
@@ -3448,15 +3499,16 @@ In the next chapters we will learn how to find out if the correlation found in o
 
 Remember that we already saw that the correlation coefficient is very sensitive to outliers. (See [spearman correlation](#spearman-correlation))
 
-## Regression Line and the Method of Least Squares
+## Regression Line and the Method of Least Squares {#Residualsumofsquares}
 
 If the scatterplot shows a linear association, then this relationship between our data points can be summarized by a line. The equation for a line is $\hat{y}*i=a+bx_*i$. The idea is to choose the line that minimizes the sum of the squared distances between the observed $y_i$ and the predicted $\hat{y_i}$
 
 The method of least squares is the method we use to minimize this **Residual sum of squares (RSS)**
 
 $$
-\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - (\hat{\beta_o} + \hat{\beta_1} x_i) \right)^2
-$$ 
+RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - (\hat{\beta_o} + \hat{\beta_1} x_i) \right)^2
+$${#eq-RSSsimpleRegression} 
+
 $$
 RSS = (y_1 - \beta_0 - \beta_1 x_{1})^2 + (y_2 - \beta_0 - \beta_1 x_{2})^2 + \cdots + (y_n - \beta_0 - \beta_1 x_{n})^2
 $$
@@ -3477,13 +3529,15 @@ It turns out that $\beta_1=r\frac{s_y}{s_x}$ where $r$ is the correlation coeffi
 The main use of regression is to predict y from x. If we are given x, then we need $r, \bar{x},\bar{y},s_x, s_y$ to calculate the regression line. In code, we can compute that line using 'lm' in r language
 
 ::: exercise-box
-Exercise:
+Exercise: midterm vs final exam student's grades (cont)
 
 *We know that the average score for the midterm exams was 49.5 and the average score for the final exam is 69.1, and the standard deviation for the midterm exams was 10.2 while the standard deviation for the final exams was 11.8. We also know that the correlation coefficient is 0.67.*
 
 *Predict the final exam score of a student who scored 41 on the midterm.*
 
-Sol: 41 is 8,5 below the midterm average. We want to standardize this value. We already know how to calculate this: $z = \frac{x_1-\bar{x}}{sd} = \frac{41-49.5}{10.2}=-0.83$ so now looking at the formula for the regression line we expect y to be r times 0.83 times the standard deviation of the final exam below the average final score. $\bar{y}\pm r*sd_{final}*0.83 =69.1 -0.67*11.8*0.83=62.5$
+Sol: 41 is 8,5 below the midterm average. We want to standardize this value. We already know how to calculate this: 
+$$z = \frac{x_1-\bar{x}}{sd} = \frac{41-49.5}{10.2}=-0.83$$ 
+so now looking at the formula for the regression line we expect $y$ to be r times 0.83 times the standard deviation of the final exam below the average final score. $$\bar{y}\pm r*sd_{final}*0.83 =69.1 -0.67*11.8*0.83=62.5$$
 :::
 
 ### Predicting x from y:
@@ -3494,8 +3548,8 @@ When predicting x from y it is a mistake to use the regression line that we calc
 
 Linear regression requires that the data in the scatter plot is more or less following an elypse shape. Once we have the scatter plot with the regression line, we know that given a value of X, the value of Y will be close to the y point of the regression line for the x value. In the image below, given x, we trace a vertical line to the regression line and then we trace a perpendicular line to the y axis (green line) and that is approximately the expected value of y.
 
-```{r, fig.align='center'}
-#| echo: FALSE
+```{r, fig.align='center', echo=FALSE}
+
 set.seed(412)
 x <- rnorm(100)
 y <- 2 * x + rnorm(100)
@@ -3517,14 +3571,11 @@ ggplot(data, aes(x = x, y = y)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   geom_vline(xintercept = random_x, linetype = "dashed", color = "red") +
-  geom_hline(yintercept = predicted_y, linetype = "dashed", color = "green") +
-  labs(title = "Scatter Plot with Regression Line and Reference Lines",
-       x = "X-axis",
-       y = "Y-axis")
+  geom_hline(yintercept = predicted_y, linetype = "dashed", color = "green") 
 
 ```
 
-but we also know that y will not be necessarily exactly at that point, but at certain distance of it, and that approximation follows the normal curve, so we can then use normal approximation to calculate the value of y: subtract off the predicted value $\hat{y}$, then divide by $\sqrt{1-r^2} * s_y$.
+but we also know that $y$ will not be necessarily exactly at that point, but at certain distance of it, and that approximation follows the normal curve, so we can then use normal approximation to calculate the value of $y$: subtract off the predicted value $\hat{y}$, then divide by $\sqrt{1-r^2} * s_y$.
 
 $$ 
 z = \frac{y_1-\bar{y}}{\sqrt{1-r^2}\cdot s_y} 
@@ -3592,7 +3643,7 @@ in our case we are interested to the area to the right, so our answer is 61.41%
 :::
 
 ::: exercise-box
-Exercise:
+Exercise: midterm vs final exam student's grades 
 
 *In a biology class, both the midterm scores and the final exam scores have an average of 50 and a standard deviation of 10. The scatterplot looks football-shaped and the correlation coefficient is 0.6.*
 
@@ -3611,13 +3662,11 @@ $$
 $$
 :::
 
-
-
 ## Residuals
 
-The observed values of Y will not fall directly over the regression line. At each value of X=x there is typically a distribution of possible Y values.
+As mentioned before, the observed values of $Y$ will not fall directly over the regression line. At each value of $X=x$ there is typically a distribution of possible $Y$ values.
 
-For each observation we will have the predicted value $\hat{y}$ and the observed value $y$ . That difference is called the residual. The residual plot is a scatter plot of the residuals against the x-values. It should show an unstructured horizontal band and it is used to check if the regression you are using is appropriate.
+For each observation we will have the predicted value $\hat{y}$ and the observed value $y$ . That difference is called the residual. The **residual plot** is a scatter plot of the residuals against the x-values. It should show an unstructured horizontal band and it is used to check if the regression you are using is appropriate.
 
 For example if we have data following a linear correlation:
 
@@ -3757,7 +3806,7 @@ legend("bottomright", legend = c("With High Leverage Point", "Without High Lever
 Beware of data that are summaries (e.g. averages of data). Those are less variable than individual observations and correlations between averages tend to overstate the strength of the relationship
 :::
 
-## Assessing the Accuracy of the Coefficient Estimates.
+## Assessing the Accuracy of the Coefficient Estimates and Confidence Intervals
 The *standard error* of an estimator reflects how it varies under repeated sampling. 
 
 $$
@@ -3780,13 +3829,20 @@ $$
 
 The most important thing to remember about correlation testing is that **it only applies to quantitative variables that have a generally linear relationship**.
 
-A correlation test checks the **null hypothesis that the population correlation** $\rho$ **is equal to 0**
+A correlation test checks the **null hypothesis that the population correlation** $\rho$ **is equal to 0**. This is, there is no relationship between X and Y. $H_0:\beta_1=0$
 
-The test also **assumes that the data isn't too skewed in any other direction and that there aren't extreme outliers**. As usual, a larger sample provides a certain degree of protection.
+To test the null hypothesis, we compute a *t-statistic* 
+$$
+t= \frac{\hat{\beta_1}-0}{SE(\hat{\beta_1})}
+$$
+This will have a t-distribution with n-2 degrees of freedom. Using statistical software, it is easy to compute the probability of observing any value equal to *t* or larger. We call this probability the *p-value*.
+The confidence intervals can also tell us if we should reject the null hypothesis. If 0 falls in between the range of the confidence interval, that means that we cannot exclude the possibility that the slope is 0, meaning that there is no relation between the parameters. The confidence interval is also going to tell you how big the effect is, so it is always a good practice to compute confidence intervals as well as doing a hypothesis testing. 
+
+The test **assumes that the data isn't too skewed in any other direction and that there aren't extreme outliers**. As usual, a larger sample provides a certain degree of protection.
 
 **If the sample is very small, the test will be unlikely to rule out the possibility that** $\rho = 0$ even if that is the case. That is, the test will be underpowered.
 
-Similarly, **if the sample is very large, the test will be likely to conclude that** $\rho \neq 0$ **.** This gets to an important idea that we've touched on before which is that there is a difference between a sample statistic being statistically significant and it actually being important or meaningful. For instance in a very large sample you may get a sample correlation of 0.001 but it may come back as statistically significant. In the real world, you should always take into consideration not just statistical significance but also effect size when you make real world decisions.
+Similarly, **if the sample is very large, the test will be likely to conclude that** $\rho \neq 0$ **. This gets to an important idea that we've touched on before which is that there is a difference between a sample statistic being statistically significant and it actually being important or meaningful. For instance in a very large sample you may get a sample correlation of 0.001 but it may come back as statistically significant. In the real world, you should always take into consideration not just statistical significance but also effect size when you make real world decisions.
 
 ```{r}
 testResult<- cor.test(treatment$DLA2,
@@ -3794,9 +3850,9 @@ testResult<- cor.test(treatment$DLA2,
 report(testResult)
 ```
 
-In this type of test our null hypothesis is that the true correlation between those two variables is 0. In our exanple the test is giving us a sample correlation of `r testResult$estimate` and a p-value `r testResult$p.value` which in simple terms mean that the probability of getting this correlation results in our sample if the true correlation in the population was actually 0 would be less than 0.001, so highly unlikely. The test also gives us a confidence interval, in our case `r testResult$conf.int` and its interpretation is exactly the same as it always is for our confidence interval: if we were to go out and get many many samples from the same population and compute correlations of them, 95% of the time that confidence interval would capture the true parameter, in our case the true population correlation.
+In this type of test our null hypothesis is that the true correlation between those two variables is 0. In our example, the test is giving us a sample correlation of `r testResult$estimate` and a p-value `r testResult$p.value` which in simple terms mean that the probability of getting this correlation results in our sample if the true correlation in the population was actually 0 would be less than 0.001, so highly unlikely. The test also gives us a confidence interval, in our case `r testResult$conf.int` and its interpretation is exactly the same as it always is for our confidence interval: if we were to go out and get many many samples from the same population and compute correlations of them, 95% of the time that confidence interval would capture the true parameter, in our case the true population correlation.
 
-With this new kwnoledge we are going to test the sample we created before showing a relationship between age and DLA_improvement and compare it with the correlation for the population (all records in our file)
+With this new knowledge we are going to test the sample we created before showing a relationship between age and DLA_improvement and compare it with the correlation for the population (all records in our file)
 
 ```{r, fig.align='center'}
 #population correlation between age and dla improvement
@@ -3827,7 +3883,6 @@ A significant correlation means that the likelihood of observing such a correlat
 Any statistical package will have a function to calculate the line that fits the linear relationship in our data. In r it is lm command. We put the response variable first, and then the explanatory variable, finally the dataset.
 
 ```{r}
-
 lm(DLA2 ~ DLA1, data = treatment)
 ```
 
@@ -3862,11 +3917,47 @@ testResult<- summary(lm(DLA2 ~ DLA1, data = treatment))
 testResult$coefficients[,4]
 ```
 
+We can use the `names()` function in order to find out what other pieces of information  are stored.
+Although we can extract these quantities by name---e.g. `testResults$coefficients`---it is safer to use the extractor functions like `coef()` to access them.
+
+```{r }
+lm.fit<- lm(DLA2 ~ DLA1, data = treatment)
+names(lm.fit)
+coef(lm.fit)
+``` 
+In order to obtain a confidence interval for the coefficient estimates, we can use the `confint()` command.
+
+```{r }
+confint(lm.fit)
+```
+
+The `predict()` function can be used to produce confidence intervals and prediction intervals for the prediction of Y for a given value of X.
+
+```{r chunk8}
+# Choose a random value in x
+random_x <- sample(x, 1)
+
+predict(lm.fit, newdata = data.frame(x = random_x),
+    interval = "confidence")
+predict(lm.fit, newdata = data.frame(x = random_x),
+    interval = "prediction")
+```
 R is also retrieving a p value for the overall model that's coming from an Anova F-Test. that corresponds with the coefficient for the slope.
 
-### R-square
+our diagnostic plots are automatically
+produced by applying the `plot()` function directly to the output
+from `lm()`. In general, this command will produce one plot at a
+time, and hitting *Enter* will generate the next plot. However,
+it is often convenient to view all four plots together. We can achieve
+this by using the `par()` and `mfrow()` functions, which tell `R` to split
+the display screen into separate panels so that multiple plots can be
+viewed simultaneously. For example,  `par(mfrow = c(2, 2))` divides the plotting
+region into a $2 \times 2$ grid of panels.
 
-Regression analyses often report 'R-squared' It gives the fraction of the variation in the y-values that is explained by the regression line, so $1-r^2$ is the fraction of the variation in the y-values that is left in the residuals.
+```{r, fig.align='center', fig.width=7}
+par(mfrow = c(2, 2))
+plot(lm.fit)
+```
 
 ::: exercise-box
 Exercises:
@@ -3926,13 +4017,16 @@ Linear regression models the relationship between a dependent variable and one o
 
 In this section, we discuss some of the most important concepts that arise in selecting a statistical learning procedure for a specific data set.
 
-### Measuring the Quality of Fit. Mean Squared Error
+### Measuring the Quality of Fit. Mean Squared Error (MSE) {#MeanSquaredError}
 
-In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)* $$
+In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)* 
+$$
 MSE = \frac{1}{n}\sum^n_{i=1}(y_i-\hat{f}(x_i))^2 =\frac{1}{n}\sum^n_{i=1}(y_i-\hat{y_i})^2
-$$ that is the squared difference between the observed values and the predicted values divided by the number of data points. The MSE is computed using the training data that was used to fit the model, and should be referred as training MSE, but we are more interested in the accuracy of the predictions that we obtain when we apply our method to previously unseen test data. We want to choose the method that gives the lowest test MSE, as opposed to the lowest training MSE. There is no guarantee that the method with the lowest training MSE will also have the lowest test MSE. Roughly speaking, the problem is that many statistical methods specifically estimate coefficients so as to minimize the training set MSE. For these methods, the training set MSE can be small, but the test MSE is often much larger.
+$$ 
+that is the squared difference between the observed values and the predicted values divided by the number of data points. The MSE is computed using the training data that was used to fit the model, and should be referred as training MSE, but we are more interested in the accuracy of the predictions that we obtain when we apply our method to previously unseen test data. We want to choose the method that gives the lowest test MSE, as opposed to the lowest training MSE. There is no guarantee that the method with the lowest training MSE will also have the lowest test MSE. Roughly speaking, the problem is that many statistical methods specifically estimate coefficients so as to minimize the training set MSE. For these methods, the training set MSE can be small, but the test MSE is often much larger.
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE}
+
 set.seed(123)
 X <- seq(0, 10, length.out = 30)
 Y <- 2 + 5 * X + X^2 + rnorm(30, sd = 5)
@@ -3957,7 +4051,7 @@ ggplot(data, aes(x = X, y = Y)) +
   geom_line(aes(y = linear_pred), color = "blue") +
   geom_line(aes(y = polynomial_pred), color = "red") +
   geom_line(aes(y = overfitted_pred), color = "green") +
-  labs(title = "Scatter Plot with Regression Lines", x = "X", y = "Y")
+  labs(title = "Scatter Plot with 3 different Regression Lines", x = "X", y = "Y")
 ```
 
 the graph above shows a linear regression line, and two polynomial lines one of them over fitted. If we calculate the Mean Square Error of each regression we can see that the over-fit model is not the best predictor over new data:
@@ -4009,6 +4103,240 @@ High Bias, Low Variance: A very simple model that doesn't capture the data well,
 
 Optimal Bias-Variance Trade-Off: A balanced model that captures the underlying trend without overfitting.
 
+### R-square {#Rsquare}
+We already talked about [how to assess the slope of an individual predictor](#MeanSquaredError)
+
+Regression analyses often report 'R-squared' It gives the fraction of the variation in the y-values that is explained by the regression line, so $1-r^2$ is the fraction of the variation in the y-values that is left in the residuals.
+This helps to assess the overall accuracy of the model. 
+
+We already saw the [residual sum of squared (RSS)](#Residualsumofsquares)
+RSS is a measure of the discrepancy between the actual data and the model's predictions. It represents the sum of the squared differences between the observed values and the predicted values.
+
+$$
+RSS=\sum^n_{i=1}(y_1-\hat{y_1})^2 
+$$ {#eq-rss}
+
+And the **total Sum of Squares (TSS)**:
+TSS is a measure of the total variability in the observed data. It represents the sum of the squared differences between the observed values and the mean of the observed values.
+
+$$
+TSS=\sum^n_{i=1}(y_1-\bar{y_1})^2
+$${#eq-tss}
+
+The R-squared value measures the proportion of the variance in the dependent variable that is predictable from the independent variables. It's calculated as:
+
+$$
+R^2 = 1-\frac{RSS}{TSS}
+$$ {#eq-rsquared}
+
+A larger R-squared value indicates a better fit of the model to the data. An R-squared value closer to 1 means that the model explains a large proportion of the variance in the dependent variable, signifying a good fit. Conversely, a smaller R-squared value indicates that the model explains less of the variance, signifying a poorer fit.
+
+### Residual Standard Error (RSE) {#ResidualStandardError}
+Another measure of the model fit is the **Residual Standard Error (RSE)** The RSE is an estimate of the standard deviation of the error term, representing the average amount that the observed values deviate from the model's predictions. Essentially, it gives you an idea of the typical size of the residuals (errors) made by the model. It’s like a measure of how well the model fits the data.
+
+$$
+RSE = \sqrt{\frac{1}{n-p-1}RSS}
+$${#eq-RSE}
+
+where $n$ is the number of observations and $p$ is the number of predictors or independent variables in the model. $n-p-1$ is the *degrees of freedom*.
+A smaller RSE indicates a better fit, implying that the model’s predictions are close to the actual data.
+ - RSS helps calculate RSE, giving you the scale of the errors.
+ - TSS is used to calculate $R^2$, which, together with RSE, helps you understand the overall model fit.
+
+Both RSE and $R^2$ provide insight into the model's performance, but from slightly different angles. While $R^2$ tells you how much variance in the dependent variable is explained by the model, RSE tells you about the typical size of the prediction errors.
+
+By using these metrics together, you can get a comprehensive view of how well your regression model is performing
+
+## Multiple Linear regression. 
+
+When we have more than one predictor, the model will create a plane instead of a curve that tries to minimize the sum of squared errors:
+
+```{r, fig.align='center', echo=FALSE}
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate sample data with a stronger linear relationship
+n <- 100
+X1 <- runif(n, 0, 10)
+X2 <- runif(n, 0, 10)
+Y <- 5 + 1.5*X1 + 2*X2 + rnorm(n, sd = 2)  # Adjusted coefficients and smaller noise
+
+# Create data frame
+data <- data.frame(X1, X2, Y)
+
+# Fit the linear model
+model <- lm(Y ~ X1 + X2, data = data)
+
+# Predict values for plotting the hyperplane
+x1_seq <- seq(min(data$X1), max(data$X1), length.out = 30)
+x2_seq <- seq(min(data$X2), max(data$X2), length.out = 30)
+grid <- expand.grid(X1 = x1_seq, X2 = x2_seq)
+grid$Y_pred <- predict(model, newdata = grid)
+
+p <- plot_ly(data, x = ~X1, y = ~X2, z = ~Y, type = 'scatter3d', mode = 'markers', marker = list(size = 3)) %>%
+  add_trace(x = grid$X1, y = grid$X2, z = grid$Y_pred, type = 'mesh3d', opacity = 0.5, color = 'blue') %>%
+  layout(scene = list(
+    xaxis = list(title = 'X1'),
+    yaxis = list(title = 'X2'),
+    zaxis = list(title = 'Y')
+  ))
+p
+```
+
+Remember the formula for RSS for a simple linear model was explained already (@eq-RSSsimpleRegression) now we have a similar version including all the predictors:
+
+$$
+RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - \hat{\beta_0} - \hat{\beta_1} x_{i1} - \hat{\beta_2} x_{i2}\dots... - - \hat{\beta_p} x_{ip}\right)^2
+$${#eq-RSSmultipleRegression} 
+
+This is done using statistical software. The values $\hat{\beta_o} ,\hat{\beta_1},\dots ,\hat{\beta_p}$ that minimize RSS are the **multiple least square regression coefficient estimates** 
+
+The ideal scenario is when the predictors are uncorrelated: each coefficient can be estimated and tested separately, a unit change in $X_j$ is associated with a $\beta_j$ change in $Y$ while all the other variables stay fixed. 
+
+Correlations amongst predictors cause problems: the variance of all coefficients tends to increase, sometimes dramatically and interpretations become hazardous, when $X_j$ changes, everything else changes. We cannot attribute the change to a specific predictor. For example height and weight are two predictors that are correlated. 
+
+When looking at multiple regression models we have to ask ourselves some questions:
+- Is at least one of the predictors useful in predicting the response
+- Do all the predictors help to explain Y or only some of them are useful?
+
+- How well does the model fit the data?
+
+### F-statistic. 
+For the first question we can use the **F-statistic**
+$$
+F= \frac{TSS-RSS/p}{RSS/(n-p-1)}
+$${#eq-fStatistic}
+The F-statistic in a multiple regression model assesses the overall significance of the model. It tells you whether your model's variables are jointly significant in explaining the variation in the dependent variable.
+High F-statistic: Indicates that the group of predictors has a significant relationship with the dependent variable. The larger the F, the more likely the observed relationship is not due to random chance.
+Low F-statistic: Suggests that the group of predictors does not have a significant explanatory power.
+
+Whether an F value is high or low is determined by comparing it to a critical value from the F-distribution table, which depends on the degrees of freedom and the chosen significance level (commonly 0.05).
+Steps to Determine High or Low F-value:
+- Degrees of Freedom: Calculate the degrees of freedom for the numerator (df1 = number of predictors) and the denominator (df2 = total number of observations - number of predictors - 1).
+
+F-distribution Table: Use the degrees of freedom to find the critical F-value from the F-distribution table at your chosen significance level (usually 0.05).
+
+Compare: If the calculated F-value from your regression output is greater than the critical F-value from the table, it means your predictors are collectively significant (high F-value).
+
+Example:
+Suppose you have 3 predictors in your model and a sample size of 100. The degrees of freedom are:
+
+df1 (numerator) = 3
+
+df2 (denominator) = 100 - 3 - 1 = 96
+
+Looking up the critical value for df1 = 3 and df2 = 96 at the 0.05 significance level in an F-table, you might find it to be around 2.70.
+
+If your calculated F-value is, say, 5.2, since 5.2 > 2.70, your model is significant (high F-value).
+
+If it were 1.8, since 1.8 < 2.70, your model isn't significant (low F-value).
+
+In r, the f-value will also come with its p-value, indicating its significance. 
+
+### Deciding on the important variables. 
+The most direct approach to answer this question is called *all subsets* or *best subsets* regression. We compute teh least squares fit for all possible subsets and then choose between them based on some criterion that balances training error with model size. This gets really hard when the number of variables is high, the number of possible models is $2^p$ so for example for p=40 there are over a billion models. Instead, we need an automated approach that searches through a subset of them. We discuss two commonly use approaches next.
+
+#### Forward selection
+We start with the *null model* that is a model that contains the intercept but no predictors. The intercept is the mean of $y$
+Now you start adding variables one at a time: for each variable you fit $p$ simple linear models each with one of the variables and the intercept, and you look at each of them. After that you choose the variable that results in the lowest RSS.
+Now, having picked that, you fix that variable in the model and now you add one by one all the variables to this model again, and choose the one that best improve the residual sum of squares. 
+You can continue like this until some stopping rule is satisfied, for example, when all the remaining variables have a p value above some threshold.
+
+#### Backward selection
+It runs a similar process but starting with a model with all the variables, then you run the model removing each variable and see which one is the least statistically significant one. 
+The new (p-1) variable model is fit, and the variable iwth the largest p-value is removed. 
+Continue until a stopping rule is reached, for instance, we may stop when all remaining variables have a significant p-value defined by some significance threshold. 
+
+## Interactions
+In our previous examples, we have assume independence from one parameter to the others, but that is not always the case, sometimes the change in one predictor affects the results in another. 
+
+:::{exercise-box}
+Example
+Imagine we run a campaign to sell a product, and we advertise in three mediums, newspapers, radio and tv. It could be that the effect of radio increases the effectiveness of the adds in tv, this in marketing is called synergy effect, and in statistics we refer to it as interaction effect. If we detect this interaction, spending part of our budget in radio and part on tv could be more effective than spending all in only the media with the most effect. 
+
+```{r}
+Advertising <- read_csv("data/Advertising.csv")
+
+lm.fit<- lm(sales ~ TV + radio, data = Advertising)
+summary(lm.fit)
+```
+
+to include interactions in our model we create a new variable with the product of the two predictors. If we ignore newspaper our equation would be:
+
+$$
+sales = \beta_0+\beta_1\times TV+\beta_2\times Radio + \beta_3 \times(radio\times TV)+ \epsilon
+$$
+$$
+sales = \beta_0+(\beta_1 + \beta_3\times Radio) \times TV+\beta_2\times Radio + \epsilon
+$$
+and if we get a summary of the linear model we will see if the interaction between tv and radio is indeed significant or not:
+
+```{r}
+lm.fit_interaction <- lm(sales ~ TV * radio , data = Advertising)
+summary(lm.fit_interaction)
+# or
+lm.fit_interaction <- lm(sales ~ TV + radio + TV:radio , data = Advertising)
+summary(lm.fit_interaction)
+
+```
+
+the p-value of the interaction indicates that in our example this interaction is significant, we can also see how our R-squared is higher now (0.9678) than when we did not include the interaction in our model (0.8972).
+This means that (96.8-89.7)/(100-89.7)=69% of the variability in sales that remains after fitting the initial model has been explained by the interaction term.
+
+The coefficients estimates in the table suggest that an increase in radio advertising of \$1000 is associated with increased sales of $(\hat{\beta_2}+\hat{\beta_3}\times TV)\times 1000 = 29+1.1\times TV units$
+An increase in TV advertising of \$1000 is associated with an increase of sales of $(\hat{\beta_1}+\hat{\beta_3}\times radio)\times 1000 = 19+1.1\times radio units$
+:::
+
+Sometimes it is the case that an interaction term has a very small p-value, but the associated main effects do not. The *hierarchy principle* states that if we include an interaction in a model, we should also include the main effects, even if the p-values associated with their coefficients are not significant.
+
+
+## Categorical predictors in regression models.
+Sometimes we may want to include in the model a variable that is not numeric, for example gender. To do that we create what we call a dummy variable, for example $x_i = 1$ if the person is female and $x_i = 0$ if it is a male. 
+The resulting model will be:
+$$
+y_i=\beta_o+\beta_1x_i+\epsilon_i
+$$
+which will result in this if the person is female:
+$$
+y_i=\beta_o+\beta_1+\epsilon_i
+$$
+and if the person is male:
+$$
+y_i=\beta_o+\epsilon_i
+$$
+so what this is telling us is that $\beta_1$ is the effect of being female vs the baseline (in this case male)
+
+If we have more than two levels what we do is create more dummy variables. For example we look at three different etnicities, Asian, Caucasian and African American, we create:
+
+$x_{i1} = 0$ if person is Asian and $x_{i1} = 1$ if the person is not Asian
+$x_{i2} = 0$ if person is Caucasian and $x_{i2} = 1$ if the person is not.
+We don't need a level for African American because that will be deducted when $x_{i1} = 0$ and $x_{i2} = 0$.
+So for categorical variables we create $k-1$ dummy variables. The level with no dummy variable is known as *baseline*. The choice of a baseline will not affect the fit of the model, the residual sum of squares  would be the same, but the coefficient and the p-values will change because each other category will be compared with the baseline. 
+
+The equation will now look like this:
+$$
+y_1 = \beta_o+\beta_1x_{i1}+\beta_2x_{i2}+\epsilon_i
+\begin{cases} 
+\beta_0 + \beta_1 + e_1 & \text{if condition 1} \\
+\beta_0 + \beta_2 + e_1 & \text{if condition 2} \\
+\beta_0 + e_1 & \text{if condition 3}
+\end{cases}
+$$
+:::exercise-box
+Example
+*The Carseats data from the library ISLR2 includes qualitative predictors such as shelveloc, an indicator of the quality of the shelving location—that is, the space within a store in which the car seat is displayed—at each location. The predictor shelveloc takes on three possible values: Bad, Medium, and Good. Given a qualitative variable such as shelveloc, R generates dummy variables automatically. *
+
+```{r}
+lm.fit <- lm(Sales ~ ShelveLoc, 
+    data = Carseats)
+summary(lm.fit)
+contrasts(Carseats$ShelveLoc)
+```
+The contrasts() function returns the coding that R uses for the dummy variables.
+
+R has created a ShelveLocGood dummy variable that takes on a value of 1 if the shelving location is good, and 0 otherwise. It has also created a ShelveLocMedium dummy variable that equals 1 if the shelving location is medium, and 0 otherwise. A bad shelving location corresponds to a zero for each of the two dummy variables. The fact that the coefficient for ShelveLocGood in the regression output is positive indicates that a good shelving location is associated with high sales (relative to a bad location). And ShelveLocMedium has a smaller positive coefficient, indicating that a medium shelving location is associated with higher sales than a bad shelving location but lower sales than a good shelving location.
+:::
+
 # Introduction to ANOVA (Analysis of Variance)
 
 Analysis of variance, or ANOVA, is used to test **the relationship between a categorical and a quantitative variable**. Specifically, it test the null hypothesis that the population mean of the quantitative variable is the same in each of the groups. A low p-value indicates that the data would be unlikely if in fact those population means where equal.
@@ -4052,7 +4380,7 @@ $$
 now we generalize this idea to the instance when we have several groups. If the differences between the samples means are large relative to the variability within the groups, this suggest that our null hypothesis is not true. In contrast, if the differences in the means are quite small compared with the variability within each groups, that suggest that the differences in the means are due to variability in the sample.
 
 ```{r , fig.height=6, fig.width=12, fig.align='center'}
-
+#|echo: FALSE
 # Set seed for reproducibility
 set.seed(123)
 
@@ -4266,16 +4594,13 @@ Recap:
 
 # Classification Problems
 
-Variables can be characterized as either quantitative or qualitative (also quantitative qualitative known as categorical). Quantitative variables take on numerical values. Categorical examples include a person's age, height, or income or the value of a house. In contrast, qualitative variables take on values in one of K different classes, or categories. Examples of qualitative variables include a person's marital status (married or not), the brand of product class purchased (brand A, B, or C) etc. We tend to refer to problems with a quantitative response as regression problems, while those involving a qualitative response are often referred to as classification problems.
+Variables can be characterized as either quantitative or qualitative (also known as categorical). Quantitative variables take on numerical values. Examples include a person's age, height, or income or the value of a house. In contrast, qualitative variables take on values in one of K different classes, or categories. Examples of qualitative variables include a person's marital status (married or not), the brand of product class purchased (brand A, B, or C) etc. We tend to refer to problems with a quantitative response as regression problems, while those involving a qualitative response are often referred to as classification problems.
 
 Classification problems are about predicting discrete categories or labels for given inputs. Here our goal is to build up a classifier, that assigns a class label from our set `c` to a future, unlabeled observation `x` where `x` is the feature vector. We'd also like to assess the uncertainty in each classification and the roles of the different predictors amongst the x's in producing that classify. One example is using the words in an email to classify it as legit (ham) or spam.
 
 To graphically visualize a very simple classification problem we have a range of X values and the Y can have only two categories, which we represent here as 0 or 1. The line in the graph will be the probability of 1 given a certain X:
 
-```{r, fig.align='center'}
-library(ggplot2)
-library(dplyr)
-
+```{r, fig.align='center', echo=FALSE}
 # Generate sample data
 set.seed(123)
 X <- seq(0, 10, length.out = 30)
@@ -4303,9 +4628,6 @@ ggplot(data, aes(x = X, y = Y)) +
   geom_line(aes(y = overfitted_pred), color = "green") +
   labs(title = "Scatter Plot with Regression Lines", x = "X", y = "Y")
 
-# Load necessary library
-library(ggplot2)
-
 # Simulate random data
 set.seed(123) # Setting seed for reproducibility
 x <- runif(500, min = 1, max = 7) # Random uniform distribution between 1 and 7
@@ -4330,9 +4652,11 @@ ggplot() +
 
 ```
 
-In this simle example above we only have two k elements (0 and 1) but there may be many K elements, so we express the probability of k for a given value of x like this: $$
+In this simple example above we only have two k elements (0 and 1) but there may be many K elements, so we express the probability of k for a given value of x like this: 
+$$
 p_k(x)=Pr(Y=k|X=x),k=1,2,\dots,K
-$$ These are the *conditional class probabilities* at x.
+$${#eq-conditionalClassProbabilities}
+These are the *conditional class probabilities* at x.
 
 The *Bayes optimal classifier* is essentially the gold standard in classification. It represents the best possible classifier that can be achieved if we had perfect knowledge of the probability distribution of the data.
 
@@ -4342,6 +4666,8 @@ In formula terms, if $P(CxX)$ is the posterior probability of class C given the 
 
 In practice, we often don't have perfect knowledge of these probabilities, so we use various methods to approximate the Bayes optimal classifier, like Naive Bayes, which assumes independence between features.
 
-Typically we measure the performance of the classifier $\hat{C(x)}$ using the misclassification error rate, that is the number of mistakes we make and it's represented by the formula $$
+Typically we measure the performance of the classifier $\hat{C(x)}$ using the misclassification error rate, that is the number of mistakes we make and it's represented by the formula 
+$$
 Err_{Te}=Ave_{i\epsilon Te}I[y_i\ne\hat{C(x_i)]}
-$$ :::
+$${#eq-misclassificationErrorRate} 
+
