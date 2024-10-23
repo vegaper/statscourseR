@@ -53,11 +53,15 @@ library(plotly)
 library(ggplot2)
 library(patchwork)
 library(BSDA)
+library(MASS)
 library(rafalib)
 library(UsingR)
 library(dplyr)
 library(ISLR2)
 library(scatterplot3d)
+library(gridExtra)
+library(caret)
+library(pROC)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -1308,8 +1312,8 @@ And $z$ is the z-score corresponding to the desired confidence level. For exampl
 
 This comes from calculating the value of z where 95 of our data is in the middle:
 
-```{r, fig.align='center'}
-#| echo = FALSE
+```{r, fig.align='center', echo=FALSE}
+
 x <- seq(-4, 4, length=100)
 
 # Calculate the corresponding y values for the standard normal distribution
@@ -3915,16 +3919,17 @@ We can get more information about our model if we ask for their summary:
 summary(lm(DLA2 ~ DLA1, data = treatment))
 ```
 
-the p-value that corresponds with the intercept is a the p-value of a test done against the null hypothesis that the intercept is actually 0.
+The p-value that corresponds with the intercept is a the p-value of a test done against the null hypothesis that the intercept is actually 0.
 
-the p-value that corresponds with the dependent variable is the result of a test done against the null hypothesis that the slope is actually 0.
+The p-value that corresponds with the dependent variable is the result of a test done against the null hypothesis that the slope is actually 0.
 
-we can retrieve those p-values using the coefficients table from our lm result:
+We can retrieve those p-values using the coefficients table from our lm result:
 
 ```{r}
 testResult<- summary(lm(DLA2 ~ DLA1, data = treatment))
 testResult$coefficients[,4]
 ```
+When looking at coefficients one must be aware that the units we used in our data will affect them. The z-statistic is not affected by units. 
 
 We can use the `names()` function in order to find out what other pieces of information  are stored.
 Although we can extract these quantities by name---e.g. `testResults$coefficients`---it is safer to use the extractor functions like `coef()` to access them.
@@ -4829,3 +4834,649 @@ $$
 Err_{Te}=Ave_{i\epsilon Te}I[y_i\ne\hat{C(x_i)]}
 $${#eq-misclassificationErrorRate} 
 
+## Logistic regression
+The formula for the logistic regression is:
+$$
+{p}(X) = \frac{e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}{1 + e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
+$${#eq-logisticRegression}
+This reads as p of X for the probability that y is 1 given X  
+-p(x) is the predicted probability of the dependent variable being 1 (or positive outcome) given the predictors $x_1,x_2,\dots,x_n$
+- $\beta_0$ is the intercept of the linear model
+- $\beta_1,\beta_2\dots,\beta_n$ are the coefficients for the predictors.
+- $e$ is a mathematical constant (2.71828) (Euler's number)
+The result will be always between 0 and .
+
+This formula can also be written as:
+$$
+log\left( \frac{p(X)}{1-p(X)} \right)=\beta_0+\beta_1X_1+\dots+\beta_nX_n
+$${#eq-logodds}
+
+and it is called *log odds* or *logit transformacion of p(X)*
+
+### Maximum Likelihood Estimation (MLE) {#MaximumLikelihoodEstimation}
+Maximum Likelihood Estimation (MLE) is used to find the parameters (coefficients) in logistic regression. Here's the lowdown:
+MLE aims to find the parameter values that make the observed data most probable. It identifies the set of parameters (in our case, the regression coefficients) that maximize the likelihood function.
+
+In Logistic Regression:
+For binary outcomes (0 or 1), logistic regression models the probability of the outcome. The likelihood Function:
+ for logistic regression is: 
+ $$ L(\beta) = \prod_{i=1}^n \hat{p}(x_i)^{y_i} [1 - \hat{p}(x_i)]^{1 - y_i}
+ $${}#eq-maximumLikelihoodFunction
+
+Where: $p^(xi)$ is the predicted probability for the i-th observation.
+$y_i$ is the observed outcome (0 or 1) for the i-th observation.
+
+Log-Likelihood:
+For computational simplicity, we usually work with the natural logarithm of the likelihood function (log-likelihood): $ \ell(\beta) = \sum_{i=1}^n [y_i \log(\hat{p}(x_i)) + (1 - y_i) \log(1 - \hat{p}(x_i))] $
+
+Optimization:
+The goal is to find the parameter values (β0,β1,β2,…,βn) that maximize the log-likelihood function.
+
+This is usually done using numerical optimization methods since there's no closed-form solution.
+
+Intuition:
+MLE in logistic regression finds the best-fit model that maximizes the probability of observing the given data.
+
+It adjusts the coefficients to maximize the match between the predicted probabilities and the actual outcomes.
+
+In r we use the function `glm()`
+
+The package ISLR2 has a dataset 'Default' and we want to use to see what variables (student, balance(credit balance), and income) are relevant to predict if a person is going to default their credit card payments.
+
+First we are going to see each variable independently:
+
+```{r}
+head(Default)
+
+glm.income<- glm(default ~ income, data=Default, family = binomial)
+summary(glm.income)
+glm.student<- glm(default ~ student, data=Default, family = binomial)
+summary(glm.student)
+glm.balance<- glm(default ~ balance, data=Default, family = binomial)
+summary(glm.balance)
+```
+### Interpreting the results:
+For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units.
+Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `p-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. 
+### Making predictions
+Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. 
+we will use the logistic regression formula we already saw (@eq-logisticRegression)
+$$
+\hat{p}(X) = \frac{e^{\hat{\beta_0} + \hat{\beta_1} X_1}}{1 + e^{\hat{\beta_0} + \hat{\beta_1} X_1 }}
+$$
+we just plug in the values from our glm, for example for a balance of 1000:
+$$
+\hat{p}(X) = \frac{e^{-10.65 + 0.0055 \times 1000}}{1 + e^{-10.65 + 0.0055 \times 1000}} =0.00576
+$$
+using R we are going to calculate the probability of default for a balance of 1000 and 2000 USD:
+```{r}
+new_data<- data.frame(balance= c(1000,2000))
+glm.probs <- predict(glm.balance,new_data, type = "response")
+glm.probs
+```
+We can use qualitative predictors the same way, we will now see the student predictor:
+Student: Yes
+$$
+\hat{p}(X) = \frac{e^{-3.50 + 0.4049 \times 1}}{1 + e^{-3.50 + 0.4049 \times 1}} =0.0431
+$$
+Student:No
+$$
+\hat{p}(X) = \frac{e^{-3.50 + 0.4049 \times 0}}{1 + e^{-3.50 + 0.4049 \times 0}} =0.0292
+$$
+In this case this indicates that students tend to have higher default probabilities than non-students.
+```{r}
+new_data= data.frame(student= as.factor(c('Yes','No')))
+glm.probs <- predict(glm.student,new_data, type = "response")
+glm.probs
+```
+### Multiple Logistic Regression.{#MultipleLogisticRegression}
+
+So far we have just considered one predictor at a time, but like in linear models, we can use them combined:
+```{r}
+glm.fit<- glm(default ~ income+balance+student, data=Default, family = binomial)
+summary(glm.fit)
+```
+If we pay attention now to the coefficient of student, it is negative, indicating that students are less likely to default than non-students. This is not what we saw when we looked at the model with only the student variable. This is because The variables student and balance are correlated. Students tend to hold higher levels of debt, which is in turn associated with higher probability of default. In other words, students are more likely to have large credit card balances, which, as we know, tend to be associated with high default rates. Thus, even though an individual student with a given credit card balance will tend to have a lower probability of default than a non-student with the same credit card balance, the fact that students on the whole tend to have higher credit card balances means that overall, students tend to default at a higher rate than non-students.
+
+This simple example illustrates the dangers and subtleties associated
+with performing regressions involving only a single predictor when other predictors may also be relevant. As in the linear regression setting, the results obtained using one predictor may be quite different from those obtained using multiple predictors, especially when there is correlation among the predictors. In general, the phenomenon seen here is known as *confounding*.
+
+```{r, fig.align='center',fig.width=10, echo=FALSE}
+pred <- predict(glm.fit, type = "response")
+pred_data<- data.frame(
+  balance = Default$balance,
+  student = Default$student
+)
+p1 <- ggplot(Default, aes(x = balance, y = pred, color = student)) + 
+  geom_line(size = 1) + 
+  labs(title = "Probability of Defaulting",
+       x = "Balance",
+       y = "Probability of Defaulting") + 
+  theme_minimal()
+
+p2 <- ggplot(Default, aes(x = student, y = balance, fill = student)) + 
+  geom_boxplot() + 
+  labs(title = "Boxplot of Balance",
+       x = "Student Status",
+       y = "Balance") + 
+  theme_minimal()
+
+# Arrange plots side by side
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+#### Misclassification rate 
+How many values does our model get right and how many get wrong? for that we can use a *confusion matrix* :
+
+```{r}
+# Get predicted probabilities
+glm.probs <- predict(glm.fit, type = "response")
+
+# Convert probabilities to binary predictions (threshold = 0.5)
+glm.pred <- ifelse(glm.probs > 0.5, "Yes", "No")
+
+# Print confusion matrix
+print('Confusion Matrix')
+
+table(Default$default, glm.pred)
+
+
+cat('missclassification rate: ', (228+40)/10000)
+
+```
+But this values are over estimated because we are using the same data that we used to train our model, so this is the training error. As we already know, to get the real fit of our model we should train our model with a subset of data and test it with unseen data. 
+
+#### Null rate
+Although this missclassification rate might seem very small, we need to take into consideration, that the data has a majority of 'No' in the response, so if we would fit every single value to 'No' without using any model, we would only get 333/10000 errors, so only 3.33% misclassification. 
+This is called the *null rate*
+
+Another way of looking at it would be seeing what percentage of No's and Yes's we have missclassified.
+
+For No's we have missclassified 40 out of 9667 = 0.4%
+For Yes's we have missclassified 228 out of 333 = 68.5%
+
+
+#### Visualizing the relationship between variables
+
+A way of checking the relationship between different predictors in our model is to visualize a scatter matrix using `pairs()`. We will use the `SAheart` dataset for this:
+
+In this case we are not trying to predict the probability of getting a heart disease, we are going to assess the risk factors
+
+```{r, fig.width=10, fig.height=10}
+# Load the SAheart dataset
+library(bestglm)
+data(SAheart)
+
+# Select columns to include in the pairs plot (excluding 'typea')
+SAheart_selected <- SAheart %>%
+  dplyr::select(-c(typea)) %>%
+  mutate(famhist = ifelse(famhist == "Present", 1, 0))
+
+# Define colors based on 'chd'
+color_chd <- ifelse(SAheart_selected$chd == 1, "darkred", "darkblue")
+
+# Exclude the 'chd' column from the pair plot
+SAheart_selected <- SAheart_selected %>%
+  dplyr::select(-chd)
+
+# Create the scatter plot matrix
+pairs(SAheart_selected, 
+      col = color_chd, 
+      pch = 19,           # Use solid points
+      cex = 0.5,          # Reduce point size
+      labels = colnames(SAheart_selected),
+      cex.labels = 0.9,   # Reduce label text size
+      main = "Scatter-plot Matrix",
+      oma = c(2, 2, 2, 2)) # Reduce outer margins
+
+```
+to fit a model for this data:
+```{r}
+heartfit <- glm(chd~.,data=SAheart, family=binomial)
+summary(heartfit)
+```
+Interestingly, obesity and alcohol does not show as significant and this is due to correlation. 
+
+
+::: {.exercise-box}
+Example:
+
+We will begin by examining some numerical and graphical summaries of the Smarket data, which is part of the ISLR2 library. This data set consists of percentage returns for the S&P 500 stock index over 1,250 days, from the beginning of 2001 until the end of 2005. For each date, we have recorded the percentage returns for each of the five previous trading days, `lagone` through `lagfive`. We have also recorded volume (the number of shares traded on the previous day, in billions), Today (the percentage return on the date in question) and direction (whether the market was Up or Down on this date). Our goal is to predict direction (a qualitative response) using the other features.
+
+```{r}
+head(Smarket)
+
+glm.fits <- glm(
+    Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume,
+    data = Smarket, family = binomial
+  )
+summary(glm.fits)
+```
+The 'contrast()` function tells us what value of Direction is 0 and which one is 1: 
+```{r}
+contrasts(Smarket$Direction)
+```
+
+The negative predictor in lag1, lag2 suggest that if the market had a positive return yesterday, then it is less likely to go up today, however, the p-value is large, so there is no clear association. 
+
+The `predict()` function can be used to predict the probability that the market will go up, given the values of the predictors. The `type="response"` option tesll R to output probabilities of the form $P(Y=1|X)$, as opposed to other information such as the logit. If no data set is supplied to the `predict()` function,
+then  the probabilities are computed for the training data that was used to fit the logistic regression model. Here we have printed only the first ten probabilities. We know that these values correspond to the probability of the market going up, rather than down, because the `contrasts()` function indicates that `R` has created a dummy variable with a 1 for `Up`.
+
+```{r }
+glm.probs <- predict(glm.fits, type = "response")
+glm.probs[1:10]
+
+```
+In order to make a prediction as to whether the market will go up or down on a particular day, we must convert these predicted probabilities into class labels, `Up` or `Down`.
+The following two commands create a vector of class predictions based on whether the predicted probability of a market increase is greater than or less than $0.5$.
+
+```{r }
+glm.pred <- rep("Down", 1250)
+glm.pred[glm.probs > .5] = "Up"
+```
+
+The first command creates a vector of 1,250  `Down` elements. The second line transforms to `Up` all of the elements for which the predicted probability of a market increase exceeds $0.5$. Given these predictions, the `table()` function can be used to produce a *confusion matrix*  in order to determine how many observations were correctly or incorrectly classified.
+
+```{r }
+table(glm.pred, Smarket$Direction)
+(507 + 145) / 1250
+mean(glm.pred == Smarket$Direction)
+```
+The diagonal elements of the confusion matrix indicate correct predictions, while the off-diagonals represent incorrect predictions. Hence our model correctly predicted that the market would go up on $507$ days and that it would go down on $145$ days, for a total of $507+145 = 652$ correct predictions. The `mean()` function can be used to compute the fraction of days for which the prediction was correct. In this case, logistic regression correctly predicted the movement of the market  $52.2$% of the time.
+
+At first glance, it appears that the logistic regression model is working a little better than random guessing. However, this result is misleading because we trained and tested the  model on the same set of $1,250$ observations. In other words,
+ $100\%-52.2\%=47.8\%$, is **the *training* error  rate**. As we have seen previously, the training error rate is often overly optimistic -it tends to underestimate the  test error rate-.  In order to better assess the accuracy of the logistic regression model in this setting, we can fit the model using part of the data, and then examine how well it predicts the *held out* data.
+This will yield a more realistic error rate, in the sense that in practice we will be interested in our model's performance not on the data that we used to fit the model, but rather on days in the future for which the market's movements are unknown.
+To implement this strategy, we will first create a vector corresponding to the observations from 2001 through 2004. We will then use this vector to create a held out data set of observations from 2005:
+```{r}
+train <- (Smarket$Year < 2005)
+Smarket.2005 <- Smarket[!train, ]
+dim(Smarket.2005)
+Direction.2005 <- Smarket$Direction[!train]
+```
+We now fit a logistic regression model using only the subset of the observations that correspond to dates before 2005, using the subset argument. We then obtain predicted probabilities of the stock market going up for each of the days in our test set—that is, for the days in 2005.
+```{r}
+glm.fits <- glm(
+    Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume,
+    data = Smarket, family = binomial, subset = train
+  )
+glm.probs <- predict(glm.fits, Smarket.2005,
+    type = "response")
+```
+Notice that we have trained and tested our model on two completely separate data sets: training was performed using only the dates before 2005, and testing was performed using only the dates in 2005. Finally, we compute the predictions for 2005 and compare them to the actual movements of the market over that time period.
+
+```{r}
+glm.pred <- rep("Down", 252)
+glm.pred[glm.probs > .5] <- "Up"
+table(glm.pred, Direction.2005)
+mean(glm.pred == Direction.2005)
+```
+
+and our test set error rate:
+```{r}
+mean(glm.pred != Direction.2005)
+```
+
+Suppose that we want to predict the returns associated with particular values. We do this using the predict() function.
+
+```{r}
+
+predict(glm.fits,
+    newdata = data.frame(Lag1 = c(1.2, 1.5),  Lag2 = c(1.1, -0.8),  Lag3 = c(1.1, -0.8), Lag4 = c(1.1, -0.8), Lag5 = c(1.1, -0.8), Volume= c(10,100), type = "response"
+  ))
+```
+:::
+
+### Case-control sampling and logistic regression. 
+We know because medicine tells us, that the risk of heart disease in this type of population of South Africans is actually 5%. But in our dataset we used 160 cases (people with heart disease) and 302 controls. This results in an estimated proportion of $\tilde{\pi} = 0.35$, yet the prevalence of the heart disease is $\pi=0.05$
+
+We can still use these data set to fit our model, and the model will be correct, but the constant term will be incorrect. We can correct the constant using a simple transformation.
+$$
+\hat{\beta_0^*}=\hat{\beta_0}+log\frac{\pi}{1-\pi}-log\frac{\tilde{\pi}}{1-\tilde{\pi}}
+$$
+This formula is a re-calibration or re-centering of the logistic regression intercept $\hat{\beta_0}$ where:
+- $\hat{\beta_0}$ is the original estimated intercept.
+- $\hat{\beta_0^*}$ is the adjusted intercept after re-calibration.
+- $\pi$ is the baseline probability in the population.
+- $\tilde{\pi}$ is the target probability or prevalence rate you are adjusting to.
+
+This is an approach often followed in epidemiology because the cases that we want to study are rare, so we want to take them all, up to five or six times that number of controls is sufficient. Another example is in advertising, where the click-through ratio for an add is very low, we need usually hundreds or thousands of people that saw the add but did not click on it, for just a few clicks, so following this approach we can reduce our dataset and not include all the control data. 
+
+### Multinomial regression
+So far we have only considered two classes in the response, but we can extend the model to k number of classes:
+$$
+Pr(Y = k \mid X = x) = \frac{e^{\beta_{k0} + \beta_{k1}x_1 + \cdots + \beta_{kp}x_p}}{1 + \sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1}x_1 + \cdots + \beta_{lp}x_p}}
+$${#eq-multinomialLogisticRegression}
+
+To do this, we first select a single class to serve as a baseline. The decision to treat one specific class as a baseline is unimportant. The coefficient
+estimates will differ between two fitted models to different baselines variables due to the differing choice of baseline, but the fitted values (predictions), the log odds between any pair of classes, and the other key model outputs will remain the same.
+
+Although we can use multinomial regression for k values, it has its limitations:
+- When the classes are well separated, the parameter estimates for the logistic regression model are surprisingly unstable.
+- If n is small and the distribution of the predictors X is approximately normla in each of the classes, the linear discriminant model that we will see next is more stable than the logistic regression model. 
+
+## Discriminant Analysis. 
+Linear discriminant analysis is popular when we have more than two response classes. 
+
+We can model de distribution of X in each of the classess separately and then use Bayes theorem to flip things around to get the probabilty of Y given X. When we use normal distributions for each class, this leads to linear or quadractic discriminant analysis. 
+
+### Bayes theorem for classification. 
+$$
+P(Y=k \mid X=x) = \frac{Pr(X=x \mid Y=k) \times  Pr(Y=k)}{Pr(X=x)}
+$$ {#eq-bayestheorem}
+
+- Posterior Probability $P(Y=k \mid X=x) $ this is the probability that the target variable Y is in class k given the observed data X=x
+- Likelihood: $Pr(X=x \mid Y=k)$ this is the probability of observing the data X=x given that the variable Y is in class k.
+- Prior Probability: $Pr(Y=k)$ This is the initial probability of class k before observing the data, it's your prior belief about the class distribution.
+- Marginal Likelihood:  $Pr(X=x)$ this is the overall probability of observing the data X=x across all classes. 
+
+### Linear Discriminant Analysis for one variable.
+To classify Y at the value X=x we only need to see which of the $p_x(x)$ is the largest. For this we use the *discriminant score* 
+
+$$
+\delta_k(x) = x \frac{\mu_k}{\sigma^{2}} - \frac{\mu_k^2}{2\sigma^{2}}+ \log(\pi_k)
+$${#eq-discriminantScore}
+
+Where $\pi$ is the prior probability
+
+Note that $\delta_k(x)$ is a linear function of x
+
+If there are k=2 classes and the prior is the same for both (0.5) then the formula simplifies to:
+$$
+x = \frac{\mu_1+\mu_2}{2}
+$$
+Below we have a visualization for two classes of Y and its probabilities given x when the prior is the same for both classes. The dashed line shows the decision boundary, anything on the left of the line will be classified as class 'blue' and anything on the right as class 'red' 
+
+
+```{r, echo=FALSE}
+# Set seed for reproducibility
+set.seed(123)
+
+# Simulate data for normal density functions
+x <- seq(-3, 6, length.out = 200)
+mu1 <- 0
+mu2 <- 3
+y1 <- dnorm(x, mean = mu1, sd = 1)
+y2 <- dnorm(x, mean = mu2, sd = 1)
+
+dbound = (mu2-mu1)/2
+
+# Plot normal density functions
+p1 <- ggplot(data.frame(x, y1, y2), aes(x)) +
+  geom_line(aes(y = y1), color = "blue") +
+  geom_line(aes(y = y2), color = "red") +
+  geom_vline(xintercept = dbound, linetype = "dashed") +  # Bayes decision boundary
+  labs(title = "Normal Density Functions",
+       y = "Density",
+       x = "X") +
+  theme_minimal()
+```
+When the priors are different, we have take them into consideration and compare $\pi_k f_x(x)$
+
+We usually don't know the prior, so we have to estimate it looking at the data. The estimated prior in each class will be the total number of elements in that class divided by the total number of cases
+$$
+\hat{\pi_k}=\frac{n_k}{n}
+$$
+
+The mean of each class is calculated normally. 
+The estimated variance is a bit more complex because it is not using the variance of each class but the *pooled variance estimate* 
+$$
+\hat{\sigma^2}= \frac{1}{n-K} \sum^K_{k=1} \sum_{y_i=k}(x_1-\hat{\mu_k})^2= \sum^K_{k=1}\frac{n_k-1}{n-K}\times\hat{\sigma^2_k}
+$${#eq-pooledVarianceEstimate}
+
+Where $\hat{\sigma^2_k}$ is the usual formula for the estimated variance in the kth class. 
+$$
+\frac{1}{n_k-1}\sum^N_{i:y_i=k}(x_i-\hat{\mu_k})^ 2
+$$ 
+so basically what we are doing in the pooled variance is to calculate the variance for each of the classes and then do a weighted average of them.
+
+### Multivariate linear discrimination.
+The discriminant score function for multivariate takes this quite complicated form:
+$$
+\delta_k(x) = x^T\Sigma^{-1} \mu_k -\frac{1}{2}\mu_k^T\Sigma^{-1}\mu_k+ \log(\pi_k)
+$${#eq-discriminantScoreMulti}
+
+Once we have the estimates for the different parameters $\hat{\delta}_k(x)$ we can turn these into estimates for class probabilities:
+$$
+\hat{P_{r}}(Y = k | X = x) = \frac{e^{\hat{\delta_k} (x)}}{\sum_{l=1}^{K} e^{\hat{\delta_l}(x)}}
+$${#eq-conditionalProbabilityFormula1}
+
+With these estimates we will classify Y=k to the largest probability for the value of x we are interested in.  
+
+We can run a classification over the Default dataset that we already used in [multiple logistic regression](@MultipleLogisticRegression). To do so we use the function LDA from library MASS, but first we are going to check the levels of the response variable to know which value  the reference (the first one):
+
+```{r}
+levels(Default$default)
+```
+So our reference level is default= 'No' 
+
+```{r}
+fit.LDA = lda( default ~ income+balance+student, data=Default, )
+fit.LDA
+fit.LDA.p = predict(fit.LDA, newdata=Default[,2:4])
+fit.LDA.Classes = predict(fit.LDA, newdata=Default[,2:4])$class
+
+```
+
+**How to interpret the results of the LDA**
+
+- *Prior Probabilities of Groups*: These are the probabilities assigned to each class (No and Yes) before observing any data, based on the proportion of each class in the training data.
+  - No: 0.9667 (96.67% of the data is in the "No" category)
+  - Yes: 0.0333 (3.33% of the data is in the "Yes" category)
+- *Group Means*: These are the mean values of each predictor variable for each class.
+
+- *Coefficients of Linear Discriminants*: These coefficients are used to form the linear discriminant functions (LD1 in this case). The linear discriminant function combines the predictor variables to maximize the separation between the classes. Larger absolute values of coefficients indicate more significant contributions to the discriminant function.
+
+The negative coefficient of the Student(Yes) indicates that being a Student reduces the possibility of defaulting = 'yes'. 
+
+In a two-class LDA model with reference level A, a positive coefficient for a predictor indicates that an increase in that predictor increases the discriminant score. A higher discriminant score makes it more likely for the observation to be classified as B rather than A.
+
+Conversely, a negative coefficient indicates that an increase in the predictor decreases the discriminant score, making it more likely for the observation to be classified as A.
+
+**Histogram of Linear Discriminants**:
+We can also use plots to see the overlapping of our groups: This plot shows a histogram of the discriminant function values for each class. The histograms should ideally show distinct peaks for each class, indicating good separation.
+
+Overlapping histograms suggest some misclassification, as the discriminant function values are not clearly separated.
+
+```{r, fig.align='center'}
+plot(fit.LDA)
+```
+
+
+create a confusion matrix:
+
+```{r}
+table(Default$default,fit.LDA.Classes)
+```
+
+And as before, we can use the confusion matrix to calculate our misclassification rate:
+```{r}
+cat('missclassification rate: ', (254+22)/10000)
+```
+
+For No's we have missclassified 22 out of 9667 = 0.2% this is our *False positive rate*
+For Yes's we have missclassified 254 out of 333 = 76.3% this is our *False negative rate*
+
+We can also use the function `confusionMatrix()` from the package `caret` to create and analyse the results. It takes two parameters the first one is the predicted values and the second one the real values (reference)
+
+```{r}
+# Create confusion matrix
+confusion_matrix <- caret::confusionMatrix(data=factor(fit.LDA.Classes), reference=Default$default)
+
+print(confusion_matrix)
+```
+
+**Interpreting the results of the confusion matrix**
+- *Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.
+
+- *95% CI (Confidence Interval)*: It provides a range within which the true accuracy lies with 95% confidence.
+
+- *No Information Rate (NIR)*:It represents the accuracy if the model always predicted the majority class (No).
+
+- *P-Value [Acc > NIR]*: This p-value tests if the accuracy is significantly better than the NIR.
+
+- *Kappa*: It measures the agreement between the observed and predicted classifications, adjusted for chance. Values close to 1 indicate better agreement.
+- *Mcnemar's Test P-Value*: Tests if there is a significant difference between the number of false positives and false negatives.
+
+Class-Specific Metrics:
+
+- *Sensitivity (Recall)*:Proportion of actual positives correctly identified.
+
+- *Specificity*: Proportion of actual negatives correctly identified.
+
+- *Positive Predictive Value (Precision)*: Proportion of positive results that are true positives.
+
+- *Negative Predictive Value*: Proportion of negative results that are true negatives.
+
+- *Prevalence*: Proportion of the actual positive cases in the dataset.
+
+- *Detection Rate*: Proportion of actual positives correctly identified by the model.
+
+- *Detection Prevalence*:Proportion of the predicted positives out of the total predictions.
+
+- *Balanced Accuracy*: It’s the average of sensitivity and specificity, providing a balanced measure for imbalanced datasets.
+
+Summary:
+The model has a high overall accuracy (97.24%), but its specificity (23.72%) is low, indicating it struggles to correctly identify the negative class (Yes).
+
+The high sensitivity (99.77%) suggests it’s good at identifying the majority class (No), but at the cost of false positives.
+
+Adjusting the model or the decision threshold can help to balance sensitivity and specificity better.
+
+In order to reduce the false negative rate we can take change the threshold at which we classify one class to yes or no. By default we have been using equal priors for all variables, but we can change this to put more weight on the minority class (default = yes). This swill increase the false positive rate, so we need to evaluate for our data what type of errors we prefer depending on the risk of making the wrong classifications. 
+
+ROC Curve:{#rocCurve}
+We can use A ROC plot and AUC (Area under the curve) to summarize the overall performance of our model. A higher AUC is desired.
+```{r}
+# Fit the LDA model
+fit.LDA <- lda(default ~ income + balance + student, data = Default)
+
+# Get predicted probabilities
+fit.LDA.prob <- predict(fit.LDA, newdata = Default[, 2:4])$posterior[, 2]
+
+# Generate ROC curve
+roc_curve <- roc(Default$default, fit.LDA.prob)
+
+# Plot ROC curve
+plot(roc_curve, main = "ROC Curve", col = "blue", lwd = 2)
+
+# Add AUC to the plot
+auc(roc_curve)
+```
+
+
+The *Receiver Operating Characteristic* (ROC) curve is a graphical representation used to evaluate the performance of a classification model. It plots the True Positive Rate (Sensitivity) against the False Positive Rate (1-Specificity) at various threshold settings.
+
+- *True Positive Rate* (TPR): Also known as sensitivity, it measures the proportion of actual positives correctly identified by the model.
+
+- *False Positive Rate* (FPR): It measures the proportion of actual negatives incorrectly identified as positives by the model.
+
+The ROC curve helps visualize the trade-off between sensitivity and specificity for different threshold values.
+It is also used to compare Models: By comparing the ROC curves of different models, you can assess which model performs better.
+
+*The Area Under the ROC Curve* (AUC) is a single scalar value that summarizes the performance of a classification model.
+- AUC = 1: Perfect model (perfectly separates positive and negative classes).
+- AUC = 0.5: Random model (no better than random guessing).
+- AUC < 0.5: Worse than random guessing.
+
+Use of AUC:
+- Model Comparison: A higher AUC value indicates a better-performing model.
+- Robustness: AUC is insensitive to the threshold chosen for classification, providing a more robust evaluation metric.
+
+In essence, the ROC curve and AUC provide a comprehensive way to evaluate and compare classification models, ensuring you pick the most accurate and reliable one.
+
+Following what we see in the plot we think that a prior of 0.9 and 0.1 can be better, so we adjust our model accordingly:
+
+```{r}
+# Fit LDA model with adjusted prior probabilities
+fit.LDA <- lda(default ~ income + balance + student, data = Default, prior = c(0.9, 0.1))
+
+# Predict and evaluate
+fit.LDA.Classes <- predict(fit.LDA, newdata = Default[, 2:4])$class
+confusion_matrix <- caret::confusionMatrix(factor(fit.LDA.Classes), Default$default)
+
+# Print confusion matrix
+print('Confusion Matrix')
+print(confusion_matrix)
+
+# Extract the confusion matrix values
+cm <- confusion_matrix$table
+
+# Calculate False Positive Rate (FPR) and False Negative Rate (FNR)
+false_positive_rate <- cm[2, 1] / sum(cm[, 1])
+false_negative_rate <- cm[1, 2] / sum(cm[, 2])
+
+# Print the rates
+cat('False Positive Rate: ', false_positive_rate, '\n')
+cat('False Negative Rate: ', false_negative_rate, '\n')
+```
+
+----
+::: {.exercise-box}
+As an example we can see Fisher's Iris dataset. It has 3 classes (Iris Species) and uses 4 different parameters to classify the different species: Sepal Length, Sepal Width, Petal Length and Petal Width. If we plot each variable against each other using `pairs()` we can see that we can actually see quite a clear differentiation between the species using these variables. 
+
+```{r, fig.align='center', fig.width=10, fig.height=7, echo=FALSE}
+# Adjust layout to include extra space for the legend
+layout(matrix(c(1, 2), ncol = 1), heights = c(4, 1))
+
+# Create the pairs plot
+par(mar = c(5, 4, 4, 2) + 0.1)
+pairs(iris[, 1:4], col = as.numeric(iris$Species),
+      main = "Pairs Plot of Iris Dataset")
+
+# Add a blank plot for the legend
+par(mar = c(0, 0, 0, 0))
+plot.new()
+legend("center", legend = levels(iris$Species), 
+       col = 1:3, pch = 19, title = "Species", horiz = TRUE)
+```
+
+We are going to fit a model for our iris data and see how well it works predicting the species. 
+
+```{r}
+fit.LDA = lda( Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, iris)
+fit.LDA
+```
+
+
+Now we are going to perform the classification:
+
+```{r}
+fit.LDA.C = predict(fit.LDA, newdata=iris[,c(1,2,3,4)])$class
+
+head(fit.LDA.C)
+```
+
+We can quickly create a confusion matrix using table:
+
+```{r}
+table(iris$Species, fit.LDA.C)
+```
+As we have seen before we can also use the confusion matrix function from the package caret:
+
+```{r}
+caret::confusionMatrix(data=fit.LDA.C, reference=iris$Species )
+```
+
+WE can also visualize a plot that will allow us to see how clear is the differenciation between our classes:
+```{r, fig.align='center', fig.width=10}
+# Predict the LDA values
+lda.pred <- predict(fit.LDA, newdata=iris[,c(1,2,3,4)])$x
+
+# Combine the LDA values with the original dataset
+lda.data <- data.frame(lda.pred, Species = iris$Species)
+
+# Define colors for each species
+species_colors <- c(setosa = "red", versicolor = "green", virginica = "blue")
+
+# Plot the LDA results using base R plot
+plot(lda.data$LD1, lda.data$LD2, col = species_colors[lda.data$Species],
+     pch = 19, xlab = "Linear Discriminant 1", ylab = "Linear Discriminant 2",
+     main = "LDA of Iris Dataset")
+
+# Add a legend
+legend("topright", legend = levels(iris$Species), 
+       col = species_colors, pch = 19, title = "Species")
+
+```
+
+:::
