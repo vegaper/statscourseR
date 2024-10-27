@@ -17,6 +17,7 @@ format:
     crossrefs-hover: true
     footnotes-hover: true
     citations-hover: true
+    code-fold: true
     grid: 
       sidebar-width: 10px
       body-width: 1300px
@@ -43,6 +44,7 @@ knitr:
 
 ```{r}
 #| echo: false
+library(dplyr)
 library(tidyverse)
 library(here)
 library(readxl)
@@ -52,16 +54,17 @@ library(kableExtra)
 library(plotly)
 library(ggplot2)
 library(patchwork)
-library(BSDA)
+library(BSDA) 
 library(MASS)
 library(rafalib)
-library(UsingR)
-library(dplyr)
-library(ISLR2)
+library(UsingR) #datasets
+library(ISLR2) #datasets
 library(scatterplot3d)
 library(gridExtra)
-library(caret)
+library(caret) #confusionMatrix
 library(pROC)
+library(class)
+library(boot) #crossvalidation
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -70,21 +73,23 @@ This document is a summary of different stats courses:
 
 -   Mastering Statistics: Fundamentals of Data Analysis (Udemy)
 
--   Introduction to Statistics (Standford University via Coursera)
+-   Introduction to Statistics (Standford University  [Coursera](https://www.coursera.org/learn/stanford-statistics))
 
 -   Statistics and R (HarvardX PH525.1x via Edx)
 
--   Statistical Learning (Stanford Online STATSX0001 via Edx) [additional resources in https://www.statlearning.com/resources-second-edition]
+-   Statistical Learning with R (Stanford Online STATSX0001 via Edx)
+
+    -   [additional resources](https://www.statlearning.com/resources-second-edition)
+
+    -   [video Series in youtube](https://www.youtube.com/watch?v=LvySJGj-88U&list=PLoROMvodv4rOzrYsAxzQyHb8n_RWNuS1e)
 
 # Exploratory Analysis (EDA)
 
 ## Mean
 
-The mean (or arithmetic mean) is a measure of central tendency that represents the average value of a set of numbers. It is calculated by summing all the values in the dataset and then dividing by the number of values. 
-$$
+The mean (or arithmetic mean) is a measure of central tendency that represents the average value of a set of numbers. It is calculated by summing all the values in the dataset and then dividing by the number of values. $$
 \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
-$$ {#eq-mean}
-When we talk about the population mean we use the greek letter $\mu$ and when we talk about the sample mean we use our variable with a bar on top $\bar{x}$ .
+$$ {#eq-mean} When we talk about the population mean we use the greek letter $\mu$ and when we talk about the sample mean we use our variable with a bar on top $\bar{x}$ .
 
 ## Variance
 
@@ -92,8 +97,7 @@ Variance measures the average squared deviations from the mean. To calculate it:
 
 Find the mean of the data set. Subtract the mean from each data point and square the result. Average these squared differences.
 
-Mathematically, for a population, the variance $\sigma^2$ is: 
-$$
+Mathematically, for a population, the variance $\sigma^2$ is: $$
 \sigma^2 = \frac{1}{N}\sum^N_{i=1}(x_i-\mu)^ 2
 $$ {#eq-variance}
 
@@ -183,11 +187,9 @@ Graphing data is a powerful approach to detecting these problems. We refer to th
 
 The **median** is a measure of central tendency that represents the middle value in a sorted list of numbers. If the list has an odd number of observations, the median is the middle number. If the list has an even number of observations, the median is the average of the two middle numbers. The median is less affected by outliers and skewed data compared to the mean.
 
-The *Median Absolute Deviation (MAD)* is a robust measure of statistical dispersion. It is defined as the median of the absolute deviations from the data's median. MAD is less sensitive to outliers compared to the standard deviation. 
-$$
+The *Median Absolute Deviation (MAD)* is a robust measure of statistical dispersion. It is defined as the median of the absolute deviations from the data's median. MAD is less sensitive to outliers compared to the standard deviation. $$
 MAD= median(|X_i-median(X)|)
-$$ {#eq-mad}
-For example, I create a vector with 100 values following a normal distribution with average 0 and standard deviation 1, but then I change one of the points to a value of 100.
+$$ {#eq-mad} For example, I create a vector with 100 values following a normal distribution with average 0 and standard deviation 1, but then I change one of the points to a value of 100.
 
 ```{r boxplot_showing_outlier, fig.cap="Normally distributed data with one point that is very large due to a mistake.", fig.align='center',echo=FALSE}
 set.seed(1)
@@ -394,7 +396,6 @@ We see a difference as big as the one we observed only a small percentage of the
 hist(null, freq=TRUE)
 abline(v=obsdiff, col="red", lwd=2)
 ```
-
 :::
 
 An important point to keep in mind here is that while we defined $\mbox{Pr}(a)$ by counting cases, we will learn that, in some circumstances, mathematics gives us formulas for $\mbox{Pr}(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation.
@@ -511,8 +512,7 @@ If this approximation holds for our data then the population mean and variance o
 ::: exercise-box
 Example
 
-*Let's calculate the number of individuals that are taller than 72 inches.* 
-First we are going to calculate the number manually:
+*Let's calculate the number of individuals that are taller than 72 inches.* First we are going to calculate the number manually:
 
 ```{r}
 n_individuals = length(heights)
@@ -521,8 +521,7 @@ propTaller = taller/n_individuals
 propTaller
 ```
 
-so we have roughly 6.4% of the individuals taller than 72 inches. 
-Now wee can calculate it using normal approximation and it will gives us an similar number:
+so we have roughly 6.4% of the individuals taller than 72 inches. Now wee can calculate it using normal approximation and it will gives us an similar number:
 
 ```{r}
 1-pnorm(72,mean(heights),rafalib::popsd(heights)) 
@@ -594,7 +593,7 @@ $$
 \binom{n}{k} = \frac{n!}{k!(n-k)!}
 $$ {#eq-binomialCoefficient}
 
-and to calculate the probability we use the coefficient with the *binomial probability formula. It’s used to find the probability of getting exactly k successes in n independent Bernoulli trials, where each trial has a success probability p.
+and to calculate the probability we use the coefficient with the \*binomial probability formula. It's used to find the probability of getting exactly k successes in n independent Bernoulli trials, where each trial has a success probability p.
 
 $$
 P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}
@@ -629,10 +628,9 @@ print(probability)
 
 ```
 
-If we have more than two outcomes but we are interested in one of them only we can still use the binomial formula. 
+If we have more than two outcomes but we are interested in one of them only we can still use the binomial formula.
 
-**Example**
-*We are playing an online game, the probability of winning a big prize is 10%, the probability of winning a small prize is 20% and the probability of not winning anything is 70%. We want to know, in 10 repetitions, what is the probability that we win two small prizes:*
+**Example** *We are playing an online game, the probability of winning a big prize is 10%, the probability of winning a small prize is 20% and the probability of not winning anything is 70%. We want to know, in 10 repetitions, what is the probability that we win two small prizes:*
 
 -   success = win small prize
 
@@ -654,11 +652,9 @@ probability <- binom_coeff * (p^k) * ((1 - p)^(n - k))
 print(probability)
 ```
 
-*but now, what is the probability of winning **at most**, 12 small prizes in 50 repetitions?* 
-we would have to calculate the probability of winning 12 small prizes, 11 small prizes etc. but we can use standardization instead to achieve the same goal:
+*but now, what is the probability of winning **at most**, 12 small prizes in 50 repetitions?* we would have to calculate the probability of winning 12 small prizes, 11 small prizes etc. but we can use standardization instead to achieve the same goal:
 
-To standardize data for a binomial experiment, you typically use the **z-score** formula. This formula converts the binomial distribution to a standard normal distribution. The z-score (@eq-zscore) formula is: 
-$$
+To standardize data for a binomial experiment, you typically use the **z-score** formula. This formula converts the binomial distribution to a standard normal distribution. The z-score (@eq-zscore) formula is: $$
 z=\frac{X-\mu}{\sigma}
 $$ {#eq-zscore2}
 
@@ -666,8 +662,7 @@ $$ {#eq-zscore2}
 
 -   ( $\mu$ ) is the mean of the binomial distribution, calculated as ( $\mu = np$ ). where $n$ is the number of repetitions and $p$ is the the probability of success.
 
--   ( $\sigma$ ) is the **standard deviation of the binomial distribution**, calculated as 
-$$\sigma = \sqrt{np(1-p)}$${#eq-standardDeviationBinomialDistribution}
+-   ( $\sigma$ ) is the **standard deviation of the binomial distribution**, calculated as $$\sigma = \sqrt{np(1-p)}$$ {#eq-standardDeviationBinomialDistribution}
 
 So, the complete formula for the z-score in a binomial experiment is:
 
@@ -690,7 +685,8 @@ print(zScore)
 
 ```
 
-## Calculating the p-values{#pvalues}
+## Calculating the p-values {#pvalues}
+
 once we have calculated the z-Score we can calculate the area on the left of that number under the normal distribution curve, and that will be the probability we are looking for.
 
 ```{r, fig.align='center', echo=FALSE}
@@ -707,19 +703,15 @@ plot(x, y, type="l", lwd=2, col="blue", xlab="Z", ylab="Density", main="Standard
 abline(v = 0.71, col = "red", lwd = 2, lty = 2)
 ```
 
-We can now can find manually the probability using z-score tables.
-In R, we may use the `pnorm()` function to find the p-value associated with a z-score, which has the following syntax.
+We can now can find manually the probability using z-score tables. In R, we may use the `pnorm()` function to find the p-value associated with a z-score, which has the following syntax.
 
 `pnorm(q, mean = 0, sd = 1, lower.tail = TRUE)`
 
-Where 
-- `q = z-Score value`. 
-- lower.tail: If TRUE, the probability in the normal distribution to the left of z-Score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
+Where - `q = z-Score value`. - lower.tail: If TRUE, the probability in the normal distribution to the left of z-Score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
 
 To find the **p-value for the two-tailed test**:
-       
-`2*pnorm(q=0.71, lower.tail=FALSE)` 
 
+`2*pnorm(q=0.71, lower.tail=FALSE)`
 
 ```{r}
 # Calculate the area to the left of the z-score
@@ -746,7 +738,6 @@ p <- 0.20
 probability <- pnorm((k - n * p) / sqrt(n * p * (1 - p)))
 print(probability)
 ```
-
 
 # Introduction to Inference
 
@@ -871,9 +862,7 @@ The percentage of Democratic voters in the sample is equal to the mean of the sa
 
 ### Expected value and standard error for the sum
 
-If we are interested in the sum of n draws $S_n$, the sum and the average are related by $S_n = n\bar{x_n}$ so the standard error of the sum:
-$$SE(S_n)=\sqrt{n}\sigma$${#eq-standardErrorSum} 
-which tells us that the variability of the sum of n draws increases at the rate of $\sqrt{n}$ so **while increasing the sample size reduces the standard error of the average, it actually increases the standard error for the sum.**
+If we are interested in the sum of n draws $S_n$, the sum and the average are related by $S_n = n\bar{x_n}$ so the standard error of the sum: $$SE(S_n)=\sqrt{n}\sigma$$ {#eq-standardErrorSum} which tells us that the variability of the sum of n draws increases at the rate of $\sqrt{n}$ so **while increasing the sample size reduces the standard error of the average, it actually increases the standard error for the sum.**
 
 ::: exercise-box
 Exercise1 (Expected Value):
@@ -892,7 +881,7 @@ Exercise2 (Standard error for the sum)
 
 *What are the chances that the 100 pledges total more than \$5,700 ?*
 
-The standard error of the sample sum is $SE(S_n)=\sqrt{n}\sigma$  where n is the sample size and σ is the standard deviation of the population. 
+The standard error of the sample sum is $SE(S_n)=\sqrt{n}\sigma$ where n is the sample size and σ is the standard deviation of the population.
 
 Since n is 100 and we're told that the standard deviation of the population is \$37, we know the standard error of the sample sum is \$370.
 
@@ -901,10 +890,7 @@ Using the normal approximation to the sampling distribution, this tells us that 
 
 ### Expected value and standard error for percentages.
 
-For percentages, the expected value is 
-$$E = \mu * 100\%$${#eq-expectedValuePerc} 
-and the Standard Error 
-$$SE=\frac{\sigma}{\sqrt{n}} *100\%$${#eq-standardErrorPerc}
+For percentages, the expected value is $$E = \mu * 100\%$$ {#eq-expectedValuePerc} and the Standard Error $$SE=\frac{\sigma}{\sqrt{n}} *100\%$$ {#eq-standardErrorPerc}
 
 All the above formulas are for sampling with replacement, but they are still approximately true when sampling without replacement if the sample size is much smaller than the size of the population.
 
@@ -978,8 +964,7 @@ cat("Expected standard error percentage:", sigma /sqrt(n), "% \n")
 
 If we toss a fair coin 100 times, we can get any number of tails from 0 to 100. How likely is each outcome?
 
-The number of tails has the binomial distribution with `n=100` and `p=0.5` where `success = tails`. So if the statistic of interest is $S_n=number\ of \ tails$ , then $S_n$ is a random variable whose probability histogram is given by the binomial distribution. This is called the *sampling distribution of the statistic $S_n$*. 
-The sampling distribution provides more detailed information about the chance properties of $S_n$ than the summary numbers given by the expected value and the standard error alone.
+The number of tails has the binomial distribution with `n=100` and `p=0.5` where `success = tails`. So if the statistic of interest is $S_n=number\ of \ tails$ , then $S_n$ is a random variable whose probability histogram is given by the binomial distribution. This is called the *sampling distribution of the statistic* $S_n$. The sampling distribution provides more detailed information about the chance properties of $S_n$ than the summary numbers given by the expected value and the standard error alone.
 
 There are three histograms to take into consideration:
 
@@ -1128,11 +1113,9 @@ That means that we can use normal approximation to compute probabilities. The ke
 
 The mathematical theory behind that:
 
-The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): 
-$$ 
+The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): $$ 
 \text{SE} (\bar{x_n})= \frac{\sigma}{\sqrt{n}} 
-$$ 
-This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
+$$ This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
 
 **Standardized sample mean**
 
@@ -1140,7 +1123,7 @@ This implies that if we take many samples of size $N$, then the quantity is appr
 
 $$
 \frac{\bar{Y} - \mu}{\sigma_Y/\sqrt{N}}
-$${#eq-standardizedSampleMean} 
+$$ {#eq-standardizedSampleMean}
 
 -   $\bar{Y}$: The sample mean, which is the average of your sample data.
 
@@ -1186,11 +1169,9 @@ Statistical theory tells us that if we divide a random variable by its SE, we ge
 
 $$
 t = \frac{\bar{x} - \mu}{SE}
-$${#eq-tstatistic} 
-where $SE = \frac{s}{\sqrt{n}}$
+$$ {#eq-tstatistic} where $SE = \frac{s}{\sqrt{n}}$
 
-In the specific case of our experiment (comparing the means of two samples) this translates into: 
-$$ 
+In the specific case of our experiment (comparing the means of two samples) this translates into: $$ 
 t = \frac{\bar{y} - \bar{x}}{SE}=\frac{\bar{y} - \bar{x}}{\sqrt{\frac{s_y^2}{n} + \frac{s_x^2}{n}}} 
 $$
 
@@ -1238,8 +1219,7 @@ Exercise:
 
 Suppose we are interested in the proportion of times we see a 6 when rolling n=100 dice. This is a random variable which we can simulate with x=sample(1:6, n, replace=TRUE) and the proportion we are interested in can be expressed as an average: mean(x==6). Because the die rolls are independent, the CLT applies.
 
-We want to roll n dice 10,000 times and keep these proportions. This random variable (proportion of 6s) has mean p=1/6 and variance $\frac{p(1-p)}{n}$. So according to the CLT: 
-$$
+We want to roll n dice 10,000 times and keep these proportions. This random variable (proportion of 6s) has mean p=1/6 and variance $\frac{p(1-p)}{n}$. So according to the CLT: $$
 z = \frac{observed_p - p}{\sqrt{(p\times(1-p))/n)}}
 $$
 
@@ -1304,7 +1284,7 @@ $$CI = estimate \mp ME$$
 
 where **ME is the margin of error** and can be decomposed like this:
 
-$$CI=estimate \mp z\ * SE = \mu \mp z*SE$${#eq-confidenceInterval}
+$$CI=estimate \mp z\ * SE = \mu \mp z*SE$$ {#eq-confidenceInterval}
 
 where SE is the *standard error* of the sample. If that is an average or a percentage then it is $SE= \frac{\sigma}{\sqrt{n}}$ as we saw in (@eq-standardErrorMean).
 
@@ -1376,17 +1356,15 @@ z_score
 We still have a problem for calculating the confidence interval following this, and it is that we need to know the standard deviation of the population $\sigma$ and we usually don't know it, but the [bootstrap principle](#bootstrap) states that we can calculate sigma by its sample version $s$ and still get an approximately correct confidence interval.
 
 ::: exercise-box
-Example:
-We poll 1000 likely voters and find that 58% approve of the way the president handles his job.
+Example: We poll 1000 likely voters and find that 58% approve of the way the president handles his job.
 
 $SE= \frac{\sigma}{\sqrt{n}} * 100$ where $\sigma = \sqrt{p(1-p)}$ where $p$ is the proportion of **all voters** who approve, but we don't know p, but the bootstrap principle tells us that we can replace $\sigma$ by $s$ so we can plug in the values from our survey here: $=\sqrt{0.58(1-0.58)} = 0.49$
 
-So a 95% confidence interval for p is:
-$$
+So a 95% confidence interval for p is: $$
 58\% \mp 1.96 \frac{0.49}{\sqrt{1000}}*100
 $$
 
- which is approximately \[54.9%,61.1%\]
+which is approximately \[54.9%,61.1%\]
 :::
 
 The width of the confidence interval is determined by z and the standard error SE. To reduce that margin of error we have two options, we can increase the sample size or decrease the confidence level. The sample size is square rooted so this means that to cut the width of the confidence level in half we need four times the sample size, and to reduce it 10 times we would need 100 times the sample size.
@@ -1577,7 +1555,7 @@ The most common test statistic is the z-statistic. It determines how far an obse
 
 $$
 z= \frac{observed - expected}{SE}
-$${#eq-zscore3}
+$$ {#eq-zscore3}
 
 Observed is a statistic that is appropriate for assessing $H_0$. For example, if we toss a coin ten times and want to know if it is a fair coin, the appropriate statistic would be the number of tails or the percentage of tails.
 
@@ -1867,8 +1845,7 @@ ggplot(data_to_plot, aes(x = x, y = density, color = degree_of_freedom)) +
 
 ```
 
-In the graph we can see the purple line where the degrees of freedom are high (large sample) is just the normal curve. The rest of the lines are showing how with less degrees of freedom the tails of the curve get bigger, representing higher uncertainty.
-We saw the **sample standard deviation formula**  (@eq-sampleStandarDeviation): 
+In the graph we can see the purple line where the degrees of freedom are high (large sample) is just the normal curve. The rest of the lines are showing how with less degrees of freedom the tails of the curve get bigger, representing higher uncertainty. We saw the **sample standard deviation formula** (@eq-sampleStandarDeviation):
 
 $$
 s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})^2}
@@ -1876,7 +1853,7 @@ $$
 
 In this case we also need to adjust our **confidence interval** formula from: $CI=estimate\mp z\  SE$
 
-to $$CI= estimate (\mu) \mp t_{n-1}SE$${#eq-confidenceIntervalTStudent}
+to $$CI= estimate (\mu) \mp t_{n-1}SE$$ {#eq-confidenceIntervalTStudent}
 
 ::: {.callout-orange appearance="simple" icon="false"}
 ::: centered-text
@@ -1977,7 +1954,7 @@ There are any number of statistical methods for computing confidence intervals f
 
 $$
 p = \hat{p} \pm \sqrt{\frac{\hat{p} \cdot (1 - \hat{p})}{n}}
-$${#eq-confidenceIntervalProportions}
+$$ {#eq-confidenceIntervalProportions}
 
 where $p$ is the actual population proportion and $\hat{p}$ is the observed proportion.
 
@@ -3114,131 +3091,6 @@ Examples:
 
 -   A county wants to check whether the racial composition of the teachers in the county corresponds to that of the population in the county. It samples 500 teachers at random and wants to compare that sample with the census numbers about the racial groups in that county. --\> chi-square test for goodness of fit
 
-# Monte Carlo Method
-
-The Monte Carlo method is a powerful statistical technique used to understand the impact of risk and uncertainty in prediction and forecasting models.
-
-If for example we want to know the average height of all people living in USA, we estimate the parameter we are interested in (average height of the population) using a statistic estimator that is the average height of a sample of the population drawn at random. $\theta$ is the parameter we want to calculate and we use $\hat{\theta}$ that is the average o four sample. By the law of large numbers, the approximation error can be made arbitrarily small by using a large enough sample size.
-
-What if we are interested in an estimator $\hat{\theta}$ for some parameter $\theta$ of the population and the normal approximation is not valid for that estimator? In such situations, simulations can often be used to estimate the parameters.
-
-The Monte Carlo method relies on repeated random sampling to obtain numerical results. The core idea is to use randomness to solve problems that might be deterministic in nature. This method is named after the Monte Carlo Casino in Monaco, reflecting the element of chance and randomness.
-
-In our example to estimate the height of the population of USA adults we get many (let's say 1000) samples of n=100 observations. We then compute the estimator $\hat{\theta}$ for each sample (in our case the average height), resulting in 1000 estimates. Now we compute the standard deviation of these 1000 estimates and it results to be close to the standard error of my estimator. :
-
-$$
-SE(\hat{\theta})=\sqrt{E(\hat{\theta}-E(\hat{\theta}))^ 2}
-$$
-
-$$
-s(\hat{\theta}_1,...,\hat{\theta}_{1000})= \sqrt{\frac{1}{999}\sum^{1000}_{i=1}(\hat{\theta}-mean(\hat{\theta_i}))^ 2} \approx SE(\hat{\theta})
-$$
-
-The caveat of this method is that it will only work where we can extract as many samples as we wish.
-
-Usually we cannot have as many samples as we wish, when we want to use the Monte Carlo Method in practice, it is typical to assume a parametric distirbution and generate a population from this, which is called a **parametric simulation**. This means that we take parameters estimated from the real data and using the mean and standard deviation, we plug these into a model of normal distribution and generate new samples.
-
-For example for the case of mice weights, we know that mice typically weight 24 gr with a SD of about 3.5 gr. and that the distribution is approximately normal, to generate population data:
-
-```{r}
-controls<- rnorm(5000, mean=24, sd=3.5) 
-```
-
-# The bootstrap principle {#bootstrap}
-
-The bootstrap method will work were we cannot extract as many samples.
-
-We have an estimate $\hat{\theta}$ for a parameter $\theta$ and want to know how accurate our estimate is. For that we need to know the SE of the estimate or give a confidence interval for the parameter $\theta$. The bootstrap can do this in quite general settings:
-
-Example $\theta$= average heigth of all people in the US. It is unknown but estimated with the average height of 100 randomly selected people. We can't compute the population mean because we can't access the whole population. So we ' plug in' the sample in place of the population and compute the mean of the sample instead. The rationale for the plug-in principle is that the sample mean will be close to the population mean because the sample histogram is close to the population histogram.
-
-The bootstrap uses the plug-in principle and the Monte Carlo Method to approximate quantities such as $SE(\hat{ \theta})$ when we cannot get many samples. The bootstrap pretends that the sample histogram is the population histogram and uses the Monte Carlo to simulate the quantity of interest. What we do is we draw n samples with replacement from the original sample, and with those samples we use the Monte Carlo principle to calculate the quantity of interest.
-
-Drawing a bootstrap sample by sampling with replacement from the data is called nonparametric bootstrap. Sometimes, we know more about the data. For example, we may know that the data follow a normal distribution, but we don't know the mean on the standard deviation. In that case, we may want to use that information. Of course, the obvious thing to do there is to simply estimate the unknown mean and standard deviation, and then simply sample from the normal distribution, with that mean and standard deviation. That's called parametric bootstrap.
-
-This type of sampling works if the data are independent, that is, X1 to Xn are really generated independently. But oftentimes, there's dependence in the data. For example, the data are observed over time.
-
-If the sampling distribtuion of $\hat{\theta}$ is approximately normal, then the confidence interval formula is :
-
-$$
-\left[ \hat{\theta} - z_{\alpha/2} SE(\hat{\theta}), \hat{\theta} + z_{\alpha/2} SE(\hat{\theta}) \right]
-$$
-
-This formula represents a confidence interval for an estimator ( $\hat{\theta}$ ), where:
-
--   ( $\hat{\theta}$ ) is the point estimate.
-
--   ( $z_{\alpha/2}$ ) is the critical value from the standard normal distribution for a given confidence level. For example for a confidence level of 95% $\alpha =(1-0.95)=0.05$ ; $\frac{\alpha}{2}=0.025$, $z_{\frac{\alpha}{2}}=1.96$
-
--   ( $SE(\hat{\theta})$ ) is the standard error of the estimator.
-
-If the distribution is not normal, we can still use the bootstrap by estimating that the distribution of the estimate can be approximated by the distribution of the bootstrap copies extracted from it, so we can draw a distribution curve and calculate the 95% confidence interval using that curve:
-
-$$
-\left[ \hat{\theta}^*_{\alpha/2}, \hat{\theta}^*_{1-\alpha/2} \right]
-$$
-
-where $\hat{\theta}^*_{\alpha/2}$ is the $\alpha/2$ percentile of the $\hat{\theta}^*_{1},....\hat{\theta}^*_{B}$
-
-## Use of Monte Carlo Simulation and Bootstrap
-
-Simulations can also be used to check theoretical or analytical results. Also, many of the theoretical results we use in statistics are based on asymptotics: they hold when the sample size goes to infinity. In practice, we never have an infinite number of samples so we may want to know how well the theory works with our actual sample size. Sometimes we can answer this question analytically, but not always. Simulations are extremely useful in these cases.
-
-As an example we are going to use simulation to compare the Central Limit Theorem to the t-distribution for different sample sizes. We will use our mice data and extrac control and 'fake' treatment samples. The fake treatment samples are just samples labeled as treatment but extracted from the control population.
-
-We will build a function that automatically generates a t-statistic under the null hypothesis for a sample size of `n`.
-
-```{r}
-dat <- read.csv("data/mice_pheno.csv")
-controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  
-  dplyr::select(Bodyweight) %>% unlist
-
-ttestgenerator <- function(n) {
-  cases <- sample(controlPopulation,n)
-  controls <- sample(controlPopulation,n)
-  tstat <- (mean(cases)-mean(controls)) / 
-      sqrt( var(cases)/n + var(controls)/n ) 
-  return(tstat)
-  }
-ttests <- replicate(1000, ttestgenerator(10))
-```
-
-```{r ttest_hist, fig.cap="Histogram of 1000 Monte Carlo simulated t-statistics.", fig.align='center'}
-hist(ttests)
-```
-
-we can use quantile-quantile plots to see how well this distribution approximates to the normal:
-
-```{r ttest_qqplot, fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics to theoretical normal distribution.", fig.align='center'}
-qqnorm(ttests)
-abline(0,1)
-```
-
-This looks like a very good approximation. For this particular population, a sample size of 10 was large enough to use the CLT approximation. How about sample size 3?
-
-```{r, ttest_df3_qqplot, fig.align='center',fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics with three degrees of freedom to theoretical normal distribution."}
-ttests <- replicate(1000, ttestgenerator(3))
-qqnorm(ttests)
-abline(0,1)
-```
-
-Now we see that the large quantiles, referred to by statisticians as the *tails*, are larger than expected (below the line on the left side of the plot and above the line on the right side of the plot). In the previous module, we explained that when the sample size is not large enough and the *population values* follow a normal distribution, then the t-distribution is a better approximation. Our simulation results seem to confirm this:
-
-In the code below first we generate the percentiles: `ps <- (seq(0,999)+0.5)/1000` seq(0,999) generates a sequence of numbers from 0 to 999. Adding 0.5 to each element centers the sequence values. Dividing by 1000 scales the values to be between 0 and 1. This results in 1000 equally spaced percentiles between 0.0005 and 0.9995. `qt(ps, df=2*3-2)` computes the quantiles of the t-distribution for the given percentiles `ps` with degrees of freedom `df=2*3-2` qqplot creates a QQ plot comparing the quantiles of our t-test results to the theoretical quantiles of the t-distribution.
-
-```{r, ttest_v_tdist_qqplot,fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics with three degrees of freedom to theoretical t-distribution.", fig.align='center'}
-ps <- (seq(0,999)+0.5)/1000
-qqplot(qt(ps,df=2*3-2),ttests,xlim=c(-6,6),ylim=c(-6,6))
-abline(0,1)
-```
-
-The QQ plot helps you visually assess how well your t-test results follow the theoretical t-distribution. The t-distribution is a much better approximation in this case, but it is still not perfect. This is due to the fact that the original data is not that well approximated by the normal distribution. We can see this plotting the qqplot for the full population data:
-
-```{r, dat_qqplot, fig.cap="Quantile-quantile of original data compared to theoretical quantile distribution.", fig.align='center'}
-qqnorm(controlPopulation)
-qqline(controlPopulation)
-```
-
 # Permutation Tests
 
 Suppose we have a situation in which none of the standard mathematical statistical approximations apply. We have computed a summary statistic, such as the difference in mean, but do not have a useful approximation, such as that provided by the CLT. In practice, we do not have access to all values in the population so we can't perform a simulation. Permutation tests can be useful in these scenarios.
@@ -3396,12 +3248,9 @@ $$
 Y=\beta_0+\beta_1X_1+\beta_2X_2+\dots\beta_pX_p+\epsilon
 $$
 
-Where $\epsilon$ is some noise or errors in the function, 
-$\beta_0$ and $\beta_p$ are unknown constants that represent the intercept and the slope, also known as coefficients or parameters. 
+Where $\epsilon$ is some noise or errors in the function, $\beta_0$ and $\beta_p$ are unknown constants that represent the intercept and the slope, also known as coefficients or parameters.
 
-Given some estimates $\hat{\beta_0}$ and $\hat{\beta_p}$ for the model coefficients we predict the values of Y using the model:
-$\hat{y} = \hat{\beta_0}+\hat{\beta_1}x+\dots\hat{\beta_p}x$
-the hat symbol over the variables indicate that they are an estimated value. 
+Given some estimates $\hat{\beta_0}$ and $\hat{\beta_p}$ for the model coefficients we predict the values of Y using the model: $\hat{y} = \hat{\beta_0}+\hat{\beta_1}x+\dots\hat{\beta_p}x$ the hat symbol over the variables indicate that they are an estimated value.
 
 A linear model is almost never correct, but it is usually a good approximation to the real function of the data. There are other models that may fit the data better, but there is a trade off in interpretability. Linear model have less prediction accuracy but are easy to interpret.
 
@@ -3504,6 +3353,70 @@ In the next chapters we will learn how to find out if the correlation found in o
 
 Remember that we already saw that the correlation coefficient is very sensitive to outliers. (See [spearman correlation](#spearman-correlation))
 
+## Covariance
+
+Covariance measures the extent to which two variables change together. If the variables tend to increase together, the covariance is positive. If one tends to increase while the other decreases, the covariance is negative. For variables X and Y: 
+$$ \text{Cov}(X, Y) = \frac{1}{n-1} \sum_{i=1}^{n} (X_i - \bar{X})(Y_i - \bar{Y})$${#eq-covariance}
+
+Covariance and correlation are related, but they're not the same thing:
+
+Covariance:
+
+-   Measures: The degree to which two variables change together.
+
+-   Scale: It's dependent on the units of the variables, making it difficult to interpret the strength of the relationship.
+
+Correlation:
+
+-   Measures: The strength and direction of the linear relationship between two variables.
+
+-   Scale: Standardizes the measure of covariance, ranging between -1 and 1.
+
+Summary:
+
+Covariance tells you if two variables tend to increase or decrease together, but not how strong that relationship is.
+
+Correlation standardizes this measure, making it easier to interpret the strength and direction of the relationship on a consistent scale.
+
+So, while covariance gives you a raw measure of how two variables vary together, correlation refines it to a standardized measure of that relationship.
+
+Calculating the *covariance matrix* in r is easy using the `cov()` function:
+
+```{r}
+# Sample data frame
+data <- data.frame(X = c(4, 6, 8, 10, 12), Y = c(2, 4, 6, 8, 10), Z = c(1, 2, 3, 4, 5))
+
+# Calculate covariance matrix
+cov_matrix <- cov(data)
+print(cov_matrix)
+```
+
+How to Interpret: Diagonal Elements: These are the variances of the individual variables.
+
+-   Var(X): 10.00
+
+-   Var(Y): 10.00
+
+-   Var(Z): 2.50
+
+Off-Diagonal Elements: These are the covariances between pairs of variables.
+
+-   Cov(X, Y): 10.00
+
+-   Cov(X, Z): 5.00
+
+-   Cov(Y, Z): 5.00
+
+Example Interpretation: Variance: The variance of X is 10, meaning X values are spread out with a variance of 10 around their mean.
+
+Covariance (X and Y): The positive covariance of 10 between X and Y suggests that when X increases, Y tends to increase as well.
+
+Covariance (X and Z): The positive covariance of 5 between X and Z indicates a positive relationship, though not as strong as between X and Y.
+
+Covariance (Y and Z): The positive covariance of 5 between Y and Z also indicates a positive relationship.
+
+In essence, the covariance matrix provides insights into how pairs of variables vary together, helping you understand relationships and dependencies in your data.
+
 ## Regression Line and the Method of Least Squares {#Residualsumofsquares}
 
 If the scatterplot shows a linear association, then this relationship between our data points can be summarized by a line. The equation for a line is $\hat{y}*i=a+bx_*i$. The idea is to choose the line that minimizes the sum of the squared distances between the observed $y_i$ and the predicted $\hat{y_i}$
@@ -3512,7 +3425,7 @@ The method of least squares is the method we use to minimize this **Residual sum
 
 $$
 RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - (\hat{\beta_o} + \hat{\beta_1} x_i) \right)^2
-$${#eq-RSSsimpleRegression} 
+$$ {#eq-RSSsimpleRegression}
 
 $$
 RSS = (y_1 - \beta_0 - \beta_1 x_{1})^2 + (y_2 - \beta_0 - \beta_1 x_{2})^2 + \cdots + (y_n - \beta_0 - \beta_1 x_{n})^2
@@ -3522,14 +3435,11 @@ The intercept $\beta_0$ is the expected value of Y when X=0, in other words, the
 
 $$
 \hat{\beta_1}=\frac{\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^n(x_i-\bar{x})^2}
-$$
-$$
+$$ $$
 \hat{\beta_0}=\bar{y}-\hat{\beta_1}\bar{x}
-$$
-where $\bar{x}$ and $\bar{y}$ are the sample means
+$$ where $\bar{x}$ and $\bar{y}$ are the sample means
 
 It turns out that $\beta_1=r\frac{s_y}{s_x}$ where $r$ is the correlation coefficient and $s_y$ and $s_x$ are the two standard deviations and $\hat{\beta_0} = \bar{y} - \hat{\beta_i}\bar{x}$.
-
 
 The main use of regression is to predict y from x. If we are given x, then we need $r, \bar{x},\bar{y},s_x, s_y$ to calculate the regression line. In code, we can compute that line using 'lm' in r language
 
@@ -3540,9 +3450,7 @@ Exercise: midterm vs final exam student's grades (cont)
 
 *Predict the final exam score of a student who scored 41 on the midterm.*
 
-Sol: 41 is 8,5 below the midterm average. We want to standardize this value. We already know how to calculate this: 
-$$z = \frac{x_1-\bar{x}}{sd} = \frac{41-49.5}{10.2}=-0.83$$ 
-so now looking at the formula for the regression line we expect $y$ to be r times 0.83 times the standard deviation of the final exam below the average final score. $$\bar{y}\pm r*sd_{final}*0.83 =69.1 -0.67*11.8*0.83=62.5$$
+Sol: 41 is 8,5 below the midterm average. We want to standardize this value. We already know how to calculate this: $$z = \frac{x_1-\bar{x}}{sd} = \frac{41-49.5}{10.2}=-0.83$$ so now looking at the formula for the regression line we expect $y$ to be r times 0.83 times the standard deviation of the final exam below the average final score. $$\bar{y}\pm r*sd_{final}*0.83 =69.1 -0.67*11.8*0.83=62.5$$
 :::
 
 ### Predicting x from y:
@@ -3648,7 +3556,7 @@ in our case we are interested to the area to the right, so our answer is 61.41%
 :::
 
 ::: exercise-box
-Exercise: midterm vs final exam student's grades 
+Exercise: midterm vs final exam student's grades
 
 *In a biology class, both the midterm scores and the final exam scores have an average of 50 and a standard deviation of 10. The scatterplot looks football-shaped and the correlation coefficient is 0.6.*
 
@@ -3770,9 +3678,7 @@ Sometimes we can fix a non linear relationship by modifying y values, x values o
 
 ### Outliers, leverage and influential points
 
-Points with very large residuals are called outliers and they should be examined to see if they represent an interesting phenomena or an error in the data.
-{#highLeverage}
-When the value that deviates is the $x$ value and not the $y$ we say that it is a high leverage point, and it has the potential to cause a big change in the regression line.
+Points with very large residuals are called outliers and they should be examined to see if they represent an interesting phenomena or an error in the data. {#highLeverage} When the value that deviates is the $x$ value and not the $y$ we say that it is a high leverage point, and it has the potential to cause a big change in the regression line.
 
 ```{r, fig.align='center'}
 #|echo = FALSE
@@ -3805,31 +3711,27 @@ abline(model_without_point, col = "green", lwd = 2, lty = 2)
 legend("bottomright", legend = c("With High Leverage Point", "Without High Leverage Point"), 
        col = c("red", "green"), lty = c(1, 2), lwd = 2)
 ```
-In order to quantify and observation's leverage we can compute the *leverage statistic*. A large value of this statistic indicates an observation with high leverage. The formula for simple linear regression is:
-$$
+
+In order to quantify and observation's leverage we can compute the *leverage statistic*. A large value of this statistic indicates an observation with high leverage. The formula for simple linear regression is: $$
 h_i=\frac{1}{n}+\frac{(x_i-\bar{x})^2}{\sum^n_{i'=1}(x_{i'}-\bar{x})^2}
-$${#leverageStatistic}
-There is another formula for multiple predictors, but we won't see the formula here. 
-The leverage statistic is always between $1/n$ and 1 and the average leverage for all the observations is always equal to $(p+1)/n$. So if a given observation has a leverage statistic that greatly exceeds $(p+1)/n$ then we may suspect that the corresponding point has leverage. 
+$${#leverageStatistic} There is another formula for multiple predictors, but we won't see the formula here. The leverage statistic is always between $1/n$ and 1 and the average leverage for all the observations is always equal to $(p+1)/n$. So if a given observation has a leverage statistic that greatly exceeds $(p+1)/n$ then we may suspect that the corresponding point has leverage.
 
-
-
-
-::: {.callout-orange #summarieswarn }
+::: {#summarieswarn .callout-orange}
 Beware of data that are summaries (e.g. averages of data). Those are less variable than individual observations and correlations between averages tend to overstate the strength of the relationship
 :::
 
 ## Assessing the Accuracy of the Coefficient Estimates and Confidence Intervals
-The *standard error* of an estimator reflects how it varies under repeated sampling. 
+
+The *standard error* of an estimator reflects how it varies under repeated sampling.
 
 $$
 SE(\hat{\beta_1})^2 = \frac{\sigma^2}{\sum_{i=1}^ n(x_i-\bar{x})^2}
-$$
-What the denominator in this formula is telling us is that the more spread out our values are along the x axis, the better we will be able to predict the correct slope. 
+$${#eq-standardErrorSlope}
+What the denominator in this formula is telling us is that the more spread out our values are along the x axis, the better we will be able to predict the correct slope.
 
 $$
 SE(\hat{\beta_0})^2 = \sigma^2 \left[\frac{1}{n}+\frac{\bar{x}^2}{\sum_{i=1}^ n(x_i-\bar{x})^2}\right]
-$$
+$${#eq-standardErrorIntercept}
 where $\sigma^2$ is the variance of the error $\sigma^2=Var(\epsilon)$
 
 These standard errors can be used to compute *confidence intervals* For example for 95 confidence:
@@ -3844,18 +3746,15 @@ The most important thing to remember about correlation testing is that **it only
 
 A correlation test checks the **null hypothesis that the population correlation** $\rho$ **is equal to 0**. This is, there is no relationship between X and Y. $H_0:\beta_1=0$
 
-To test the null hypothesis, we compute a *t-statistic* 
-$$
+To test the null hypothesis, we compute a *t-statistic* $$
 t= \frac{\hat{\beta_1}-0}{SE(\hat{\beta_1})}
-$$
-This will have a t-distribution with n-2 degrees of freedom. Using statistical software, it is easy to compute the probability of observing any value equal to *t* or larger. We call this probability the *p-value*.
-The confidence intervals can also tell us if we should reject the null hypothesis. If 0 falls in between the range of the confidence interval, that means that we cannot exclude the possibility that the slope is 0, meaning that there is no relation between the parameters. The confidence interval is also going to tell you how big the effect is, so it is always a good practice to compute confidence intervals as well as doing a hypothesis testing. 
+$$ This will have a t-distribution with n-2 degrees of freedom. Using statistical software, it is easy to compute the probability of observing any value equal to *t* or larger. We call this probability the *p-value*. The confidence intervals can also tell us if we should reject the null hypothesis. If 0 falls in between the range of the confidence interval, that means that we cannot exclude the possibility that the slope is 0, meaning that there is no relation between the parameters. The confidence interval is also going to tell you how big the effect is, so it is always a good practice to compute confidence intervals as well as doing a hypothesis testing.
 
 The test **assumes that the data isn't too skewed in any other direction and that there aren't extreme outliers**. As usual, a larger sample provides a certain degree of protection.
 
 **If the sample is very small, the test will be unlikely to rule out the possibility that** $\rho = 0$ even if that is the case. That is, the test will be underpowered.
 
-Similarly, **if the sample is very large, the test will be likely to conclude that** $\rho \neq 0$ **. This gets to an important idea that we've touched on before which is that there is a difference between a sample statistic being statistically significant and it actually being important or meaningful. For instance in a very large sample you may get a sample correlation of 0.001 but it may come back as statistically significant. In the real world, you should always take into consideration not just statistical significance but also effect size when you make real world decisions.
+Similarly, **if the sample is very large, the test will be likely to conclude that** $\rho \neq 0$ \*\*. This gets to an important idea that we've touched on before which is that there is a difference between a sample statistic being statistically significant and it actually being important or meaningful. For instance in a very large sample you may get a sample correlation of 0.001 but it may come back as statistically significant. In the real world, you should always take into consideration not just statistical significance but also effect size when you make real world decisions.
 
 ```{r}
 testResult<- cor.test(treatment$DLA2,
@@ -3929,16 +3828,17 @@ We can retrieve those p-values using the coefficients table from our lm result:
 testResult<- summary(lm(DLA2 ~ DLA1, data = treatment))
 testResult$coefficients[,4]
 ```
-When looking at coefficients one must be aware that the units we used in our data will affect them. The z-statistic is not affected by units. 
 
-We can use the `names()` function in order to find out what other pieces of information  are stored.
-Although we can extract these quantities by name---e.g. `testResults$coefficients`---it is safer to use the extractor functions like `coef()` to access them.
+When looking at coefficients one must be aware that the units we used in our data will affect them. The z-statistic is not affected by units.
+
+We can use the `names()` function in order to find out what other pieces of information are stored. Although we can extract these quantities by name---e.g. `testResults$coefficients`---it is safer to use the extractor functions like `coef()` to access them.
 
 ```{r }
 lm.fit<- lm(DLA2 ~ DLA1, data = treatment)
 names(lm.fit)
 coef(lm.fit)
-``` 
+```
+
 In order to obtain a confidence interval for the coefficient estimates, we can use the `confint()` command.
 
 ```{r }
@@ -3956,17 +3856,10 @@ predict(lm.fit, newdata = data.frame(x = random_x),
 predict(lm.fit, newdata = data.frame(x = random_x),
     interval = "prediction")
 ```
+
 R is also retrieving a p value for the overall model that's coming from an Anova F-Test. that corresponds with the coefficient for the slope.
 
-our diagnostic plots are automatically
-produced by applying the `plot()` function directly to the output
-from `lm()`. In general, this command will produce one plot at a
-time, and hitting *Enter* will generate the next plot. However,
-it is often convenient to view all four plots together. We can achieve
-this by using the `par()` and `mfrow()` functions, which tell `R` to split
-the display screen into separate panels so that multiple plots can be
-viewed simultaneously. For example,  `par(mfrow = c(2, 2))` divides the plotting
-region into a $2 \times 2$ grid of panels.
+our diagnostic plots are automatically produced by applying the `plot()` function directly to the output from `lm()`. In general, this command will produce one plot at a time, and hitting *Enter* will generate the next plot. However, it is often convenient to view all four plots together. We can achieve this by using the `par()` and `mfrow()` functions, which tell `R` to split the display screen into separate panels so that multiple plots can be viewed simultaneously. For example, `par(mfrow = c(2, 2))` divides the plotting region into a $2 \times 2$ grid of panels.
 
 ```{r, fig.align='center', fig.width=7}
 par(mfrow = c(2, 2))
@@ -4033,10 +3926,9 @@ In this section, we discuss some of the most important concepts that arise in se
 
 ### Measuring the Quality of Fit. Mean Squared Error (MSE) {#MeanSquaredError}
 
-In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)* 
-$$
+In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)* $$
 MSE = \frac{1}{n}\sum^n_{i=1}(y_i-\hat{f}(x_i))^2 =\frac{1}{n}\sum^n_{i=1}(y_i-\hat{y_i})^2
-$${#eq-MSEMeanSquaredError}
+$$ {#eq-MSEMeanSquaredError}
 
 that is the squared difference between the observed values and the predicted values divided by the number of data points. The MSE is computed using the training data that was used to fit the model, and should be referred as training MSE, but we are more interested in the accuracy of the predictions that we obtain when we apply our method to previously unseen test data. We want to choose the method that gives the lowest test MSE, as opposed to the lowest training MSE. There is no guarantee that the method with the lowest training MSE will also have the lowest test MSE. Roughly speaking, the problem is that many statistical methods specifically estimate coefficients so as to minimize the training set MSE. For these methods, the training set MSE can be small, but the test MSE is often much larger.
 
@@ -4102,7 +3994,7 @@ ggplot(mse_data, aes(x = Model, y = MSE, fill = Model)) +
 
 ```
 
-### Bias-Variance Trade-off
+### Bias-Variance Trade-off {#bias-variance-trade-off}
 
 Imagine you're trying to build a model to predict house prices. You could use a simple model or a complex one. The bias-variance trade-off is all about balancing simplicity and complexity.
 
@@ -4119,57 +4011,58 @@ High Bias, Low Variance: A very simple model that doesn't capture the data well,
 Optimal Bias-Variance Trade-Off: A balanced model that captures the underlying trend without overfitting.
 
 ### R-squared {#Rsquare}
+
 We already talked about [how to assess the slope of an individual predictor](#MeanSquaredError)
 
-The [Residual Standard Error (RSE)](#ResidualStandardError) provides an absolute measure of lack of fit of the model to the data. But since it is measured in the units of Y , it is not always clear what constitutes a good RSE. The $R^2$ statistic provides an alternative measure of fit. It takes the form of a proportion —the proportion of variance explained— and so it always takes on a value between 0 and 1, and is independent of the scale of Y .
+The [Residual Standard Error (RSE)](#ResidualStandardError) provides an absolute measure of lack of fit of the model to the data. But since it is measured in the units of Y , it is not always clear what constitutes a good RSE. The $R^2$ statistic provides an alternative measure of fit. It takes the form of a proportion ---the proportion of variance explained--- and so it always takes on a value between 0 and 1, and is independent of the scale of Y .
 
-We already saw the [residual sum of squared (RSS)](#Residualsumofsquares)
-RSS is a measure of the discrepancy between the actual data and the model's predictions. It represents the sum of the squared differences between the observed values and the predicted values.
+We already saw the [residual sum of squared (RSS)](#Residualsumofsquares) RSS is a measure of the discrepancy between the actual data and the model's predictions. It represents the sum of the squared differences between the observed values and the predicted values.
 
 $$
 RSS=\sum^n_{i=1}(y_1-\hat{y_1})^2 
 $$ {#eq-rss}
 
-RSS measures the amount of variability that is left unexplained after performing the regression. 
+RSS measures the amount of variability that is left unexplained after performing the regression.
 
-The **total Sum of Squares (TSS)**:
-TSS is a measure of the total variability in the observed data. It represents the sum of the squared differences between the observed values and the mean of the observed values. TSS measures the total variance in the response Y and can be thourhg of as the amount of variability inherent in the response before the regression is performed. 
+The **total Sum of Squares (TSS)**: TSS is a measure of the total variability in the observed data. It represents the sum of the squared differences between the observed values and the mean of the observed values. TSS measures the total variance in the response Y and can be thourhg of as the amount of variability inherent in the response before the regression is performed.
 
 $$
 TSS=\sum^n_{i=1}(y_1-\bar{y_1})^2
-$${#eq-tss}
+$$ {#eq-tss}
 
-TSS - RSS measures the amount of variability in the response that is explained (or removed) by performing the regressin, and $R^2$ measures the proportion of variability in Y that can be explained using X.
-$$
+TSS - RSS measures the amount of variability in the response that is explained (or removed) by performing the regressin, and $R^2$ measures the proportion of variability in Y that can be explained using X. $$
 R^2 = \frac{TSS-RSS}{TSS}= 1-\frac{RSS}{TSS}
-$${#eq-rsquared}
-The R-squared value measures the proportion of the variance in the dependent variable that is predictable from the independent variables. It's calculated as:
+$$ {#eq-rsquared} The R-squared value measures the proportion of the variance in the dependent variable that is predictable from the independent variables. It's calculated as:
 
-A larger R-squared value indicates a better fit of the model to the data. An R-squared value closer to 1 means that the model explains a large proportion of the variance in the dependent variable, signifying a good fit. Conversely, a smaller R-squared value indicates that the model explains less of the variance, signifying a poorer fit, or the error variance is high, or both. 
+A larger R-squared value indicates a better fit of the model to the data. An R-squared value closer to 1 means that the model explains a large proportion of the variance in the dependent variable, signifying a good fit. Conversely, a smaller R-squared value indicates that the model explains less of the variance, signifying a poorer fit, or the error variance is high, or both.
 
-However, it can still be challenging to determine what is a good R2 value, and in general, this will depend on the application. For instance, in certain problems in physics, we may know that the data truly comes from a linear model with a small residual error. In this case, we would expect to see an R2 value that is extremely close to 1, and a substantially smaller R2 value might indicate a serious problem with the experiment in which the data were generated. On the other hand, in typical applications in biology, psychology, marketing,
-and other domains, the linear model is at best an extremely rough approximation to the data, and residual errors due to other unmeasured factors are often very large. In this setting, we would expect only a very small proportion of the variance in the response to be explained by the predictor, and an R2 value well below 0.1 might be more realistic.
+However, it can still be challenging to determine what is a good R2 value, and in general, this will depend on the application. For instance, in certain problems in physics, we may know that the data truly comes from a linear model with a small residual error. In this case, we would expect to see an R2 value that is extremely close to 1, and a substantially smaller R2 value might indicate a serious problem with the experiment in which the data were generated. On the other hand, in typical applications in biology, psychology, marketing, and other domains, the linear model is at best an extremely rough approximation to the data, and residual errors due to other unmeasured factors are often very large. In this setting, we would expect only a very small proportion of the variance in the response to be explained by the predictor, and an R2 value well below 0.1 might be more realistic.
 
 The $R^2$ statistic is a measure of the linear relationship between X and Y, and if we recall [correlation](#correlation-coefficient), it also measures the linear relationship between X and Y, this suggest that we might be able to use correlation $r-Cor(X,Y)$ instead of $R^2$ in order to assess the fit of the model, and in fact, it can be shown that in the simple linear regression setting, $R^2 = r^2$.
 
-
 ### Residual Standard Error (RSE) {#ResidualStandardError}
-Another measure of the model fit is the **Residual Standard Error (RSE)** The RSE is an estimate of the standard deviation of the error term, representing the average amount that the observed values deviate from the model's predictions. Essentially, it gives you an idea of the typical size of the residuals (errors) made by the model. It’s like a measure of how well the model fits the data.
+
+Another measure of the model fit is the **Residual Standard Error (RSE)** The RSE is an estimate of the standard deviation of the error term, representing the average amount that the observed values deviate from the model's predictions. Essentially, it gives you an idea of the typical size of the residuals (errors) made by the model. It's like a measure of how well the model fits the data.
 
 $$
 RSE = \sqrt{\frac{1}{n-p-1}RSS}
-$${#eq-RSE}
+$$ {#eq-RSE}
 
-where $n$ is the number of observations and $p$ is the number of predictors or independent variables in the model. $n-p-1$ is the *degrees of freedom*.
-A smaller RSE indicates a better fit, implying that the model’s predictions are close to the actual data.
- - RSS helps calculate RSE, giving you the scale of the errors.
- - TSS is used to calculate $R^2$, which, together with RSE, helps you understand the overall model fit.
+where $n$ is the number of observations and $p$ is the number of predictors or independent variables in the model. $n-p-1$ is the *degrees of freedom*. A smaller RSE indicates a better fit, implying that the model's predictions are close to the actual data. - RSS helps calculate RSE, giving you the scale of the errors. - TSS is used to calculate $R^2$, which, together with RSE, helps you understand the overall model fit.
 
 Both RSE and $R^2$ provide insight into the model's performance, but from slightly different angles. While $R^2$ tells you how much variance in the dependent variable is explained by the model, RSE tells you about the typical size of the prediction errors.
 
 By using these metrics together, you can get a comprehensive view of how well your regression model is performing
 
-## Multiple Linear regression. 
+### Testing error and training error {#testingtrainingerror}
+
+The *training error rate* is the proportion of mistakes that are made if we apply our model to the training data-set.
+
+The *test error* is the average error that results from using a statistical learning method to predict the response on a new observation, that is, a measurement that was not used in training the method.
+
+The test error can be easily calculated if a designated test set is available. Unfortunately, this is usually not the case.In contrast, the training error can be easily calculated by applying the statistical learning method to the observations used in its training. But the training error rate often is quite different from the test error rate, and in particular the former can dramatically underestimate the latter.
+
+## Multiple Linear regression.
 
 When we have more than one predictor, the model will create a plane instead of a curve that tries to minimize the sum of squared errors:
 
@@ -4209,40 +4102,33 @@ Remember the formula for RSS for a simple linear model was explained already (@e
 
 $$
 RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - \hat{\beta_0} - \hat{\beta_1} x_{i1} - \hat{\beta_2} x_{i2}\dots... - - \hat{\beta_p} x_{ip}\right)^2
-$${#eq-RSSmultipleRegression} 
+$$ {#eq-RSSmultipleRegression}
 
-This is done using statistical software. The values $\hat{\beta_o} ,\hat{\beta_1},\dots ,\hat{\beta_p}$ that minimize RSS are the **multiple least square regression coefficient estimates** 
+This is done using statistical software. The values $\hat{\beta_o} ,\hat{\beta_1},\dots ,\hat{\beta_p}$ that minimize RSS are the **multiple least square regression coefficient estimates**
 
-The ideal scenario is when the predictors are uncorrelated: each coefficient can be estimated and tested separately, a unit change in $X_j$ is associated with a $\beta_j$ change in $Y$ while all the other variables stay fixed. 
+The ideal scenario is when the predictors are uncorrelated: each coefficient can be estimated and tested separately, a unit change in $X_j$ is associated with a $\beta_j$ change in $Y$ while all the other variables stay fixed.
 
-Correlations amongst predictors cause problems: the variance of all coefficients tends to increase, sometimes dramatically and interpretations become hazardous, when $X_j$ changes, everything else changes. We cannot attribute the change to a specific predictor. For example height and weight are two predictors that are correlated. 
+Correlations amongst predictors cause problems: the variance of all coefficients tends to increase, sometimes dramatically and interpretations become hazardous, when $X_j$ changes, everything else changes. We cannot attribute the change to a specific predictor. For example height and weight are two predictors that are correlated.
 
-When looking at multiple regression models we have to ask ourselves some questions:
-- Is at least one of the predictors useful in predicting the response
-- Do all the predictors help to explain Y or only some of them are useful?
+When looking at multiple regression models we have to ask ourselves some questions: - Is at least one of the predictors useful in predicting the response - Do all the predictors help to explain Y or only some of them are useful?
 
-- How well does the model fit the data?
+-   How well does the model fit the data?
 
-### F-statistic. 
-For the first question we can use the **F-statistic**
-$$
+### F-statistic.
+
+For the first question we can use the **F-statistic** $$
 F= \frac{TSS-RSS/p}{RSS/(n-p-1)}
-$${#eq-fStatistic}
+$$ {#eq-fStatistic}
 
-The F-statistic in a multiple regression model assesses the overall significance of the model. It tells you whether your model's variables are jointly significant in explaining the variation in the dependent variable.
-High F-statistic: Indicates that the group of predictors has a significant relationship with the dependent variable. The larger the F, the more likely the observed relationship is not due to random chance.
-Low F-statistic: Suggests that the group of predictors does not have a significant explanatory power.
+The F-statistic in a multiple regression model assesses the overall significance of the model. It tells you whether your model's variables are jointly significant in explaining the variation in the dependent variable. High F-statistic: Indicates that the group of predictors has a significant relationship with the dependent variable. The larger the F, the more likely the observed relationship is not due to random chance. Low F-statistic: Suggests that the group of predictors does not have a significant explanatory power.
 
-Whether an F value is high or low is determined by comparing it to a critical value from the F-distribution table, which depends on the degrees of freedom and the chosen significance level (commonly 0.05).
-Steps to Determine High or Low F-value:
-- Degrees of Freedom: Calculate the degrees of freedom for the numerator (df1 = number of predictors) and the denominator (df2 = total number of observations - number of predictors - 1).
+Whether an F value is high or low is determined by comparing it to a critical value from the F-distribution table, which depends on the degrees of freedom and the chosen significance level (commonly 0.05). Steps to Determine High or Low F-value: - Degrees of Freedom: Calculate the degrees of freedom for the numerator (df1 = number of predictors) and the denominator (df2 = total number of observations - number of predictors - 1).
 
 F-distribution Table: Use the degrees of freedom to find the critical F-value from the F-distribution table at your chosen significance level (usually 0.05).
 
 Compare: If the calculated F-value from your regression output is greater than the critical F-value from the table, it means your predictors are collectively significant (high F-value).
 
-Example:
-Suppose you have 3 predictors in your model and a sample size of 100. The degrees of freedom are:
+Example: Suppose you have 3 predictors in your model and a sample size of 100. The degrees of freedom are:
 
 df1 (numerator) = 3
 
@@ -4250,41 +4136,33 @@ df2 (denominator) = 100 - 3 - 1 = 96
 
 Looking up the critical value for df1 = 3 and df2 = 96 at the 0.05 significance level in an F-table, you might find it to be around 2.70.
 
-If your calculated F-value is, say, 5.2, since 5.2 > 2.70, your model is significant (high F-value).
+If your calculated F-value is, say, 5.2, since 5.2 \> 2.70, your model is significant (high F-value).
 
-If it were 1.8, since 1.8 < 2.70, your model isn't significant (low F-value).
+If it were 1.8, since 1.8 \< 2.70, your model isn't significant (low F-value).
 
-In r, the f-value will also come with its p-value, indicating its significance. 
+In r, the f-value will also come with its p-value, indicating its significance.
 
-### Deciding on the important variables. 
-The most direct approach to answer this question is called *all subsets* or *best subsets* regression. We compute teh least squares fit for all possible subsets and then choose between them based on some criterion that balances training error with model size. This gets really hard when the number of variables is high, the number of possible models is $2^p$ so for example for p=40 there are over a billion models. Instead, we need an automated approach that searches through a subset of them. We discuss two commonly use approaches next.
+### Deciding on the important variables.
+
+The most direct approach to answer this question is called *all subsets* or *best subsets* regression. We compute the least squares fit for all possible subsets and then choose between them based on some criterion that balances training error with model size. This gets really hard when the number of variables is high, the number of possible models is $2^p$ so for example for p=40 there are over a billion models. Instead, we need an automated approach that searches through a subset of them. We discuss two commonly use approaches next.
 
 #### Forward selection
-We start with the *null model* that is a model that contains the intercept but no predictors. The intercept is the mean of $y$
-Now you start adding variables one at a time: for each variable you fit $p$ simple linear models each with one of the variables and the intercept, and you look at each of them. After that you choose the variable that results in the lowest RSS.
-Now, having picked that, you fix that variable in the model and now you add one by one all the variables to this model again, and choose the one that best improve the residual sum of squares. 
-You can continue like this until some stopping rule is satisfied, for example, when all the remaining variables have a p value above some threshold.
+
+We start with the *null model* that is a model that contains the intercept but no predictors. The intercept is the mean of $y$ Now you start adding variables one at a time: for each variable you fit $p$ simple linear models each with one of the variables and the intercept, and you look at each of them. After that you choose the variable that results in the lowest RSS. Now, having picked that, you fix that variable in the model and now you add one by one all the variables to this model again, and choose the one that best improve the residual sum of squares. You can continue like this until some stopping rule is satisfied, for example, when all the remaining variables have a p value above some threshold.
 
 #### Backward selection
-It runs a similar process but starting with a model with all the variables, then you run the model removing each variable and see which one is the least statistically significant one. 
-The new (p-1) variable model is fit, and the variable iwth the largest p-value is removed. 
-Continue until a stopping rule is reached, for instance, we may stop when all remaining variables have a significant p-value defined by some significance threshold. 
+
+It runs a similar process but starting with a model with all the variables, then you run the model removing each variable and see which one is the least statistically significant one. The new (p-1) variable model is fit, and the variable iwth the largest p-value is removed. Continue until a stopping rule is reached, for instance, we may stop when all remaining variables have a significant p-value defined by some significance threshold.
 
 ### Model fit
-Two of the most common numerical measures of model fit are the RSE and
-$R^2$, the fraction of variance explained. These quantities are computed and interpreted in the same fashion as for simple linear regression.
-Recall that [in simple regression, $R^2$ is the square of the correlation of the response and the variable](#Rsquare). In multiple linear regression, it turns out that it equals $Cor(Y, \hat{Y} )^2$, the square of the correlation between the response and the fitted linear model.
-It turns out that $R^2$ will always increase when more variables are introduced, even if those variables are only weekly associated with the response. 
-If we notice that the increase in $R^2$ is minimal after adding another variable, it is probably best to leave that variable out of the model. 
-We can check RSE in combination with $R^2$, as RSE will increase despite RSS increasing as well if the new variable is not adding enough value. Remember the formula for RSE (#eq-RSE):
-$$
-RSE = \sqrt{\frac{1}{n-p-1}RSS}
-$$
-Thus, models with more variables can have higher RSE if the decrease in RSS is small relative to the increase in p.
 
-:::{.exercise-box}
-Example:
-We run a campaign to sell a product, and we advertise in three mediums, newspapers, radio and tv. We have the amount spent in each of the mediums and the sales. We will first run a simple linear model over the three variables:
+Two of the most common numerical measures of model fit are the RSE and $R^2$, the fraction of variance explained. These quantities are computed and interpreted in the same fashion as for simple linear regression. Recall that [in simple regression, $R^2$ is the square of the correlation of the response and the variable](#Rsquare). In multiple linear regression, it turns out that it equals $Cor(Y, \hat{Y} )^2$, the square of the correlation between the response and the fitted linear model. It turns out that $R^2$ will always increase when more variables are introduced, even if those variables are only weekly associated with the response. If we notice that the increase in $R^2$ is minimal after adding another variable, it is probably best to leave that variable out of the model. We can check RSE in combination with $R^2$, as RSE will increase despite RSS increasing as well if the new variable is not adding enough value. Remember the formula for RSE (#eq-RSE): $$
+RSE = \sqrt{\frac{1}{n-p-1}RSS}
+$$ Thus, models with more variables can have higher RSE if the decrease in RSS is small relative to the increase in p.
+
+::: exercise-box
+Example: We run a campaign to sell a product, and we advertise in three mediums, newspapers, radio and tv. We have the amount spent in each of the mediums and the sales. We will first run a simple linear model over the three variables:
+
 ```{r}
 Advertising <- read_csv("data/Advertising.csv")
 tv<- lm(sales ~ TV, data = Advertising)
@@ -4297,27 +4175,31 @@ newspaper<- lm(sales ~ newspaper, data = Advertising)
 summary(newspaper)
 ```
 
-We see that independently, all three variables have a p-value below or significance level. 
+We see that independently, all three variables have a p-value below or significance level.
 
-If we fit the model to the three variables instead newspaper stops showing as significant. 
+If we fit the model to the three variables instead newspaper stops showing as significant.
+
 ```{r}
 lm.fit<- lm(sales ~ TV+radio+newspaper, data = Advertising)
 summary(lm.fit)
 
 ```
+
 The Adjusted Rsquared is 0.8956 and the RSE 1.686
 
 If we fit the model with only the two significant variables:
+
 ```{r}
 lm.fit<- lm(sales ~ TV+radio, data = Advertising)
 summary(lm.fit)
 
 ```
-The adjusted R-squared is 0.8962 instead of 0.8956 but the RSE has decreased from 1.686 in the model with three predictors to 1.681 in the simpler model. 
-So, the model sales ~ TV + radio is more parsimonious and just as effective. Plus, it’s always good to avoid unnecessary complexity when you can.
+
+The adjusted R-squared is 0.8962 instead of 0.8956 but the RSE has decreased from 1.686 in the model with three predictors to 1.681 in the simpler model. So, the model sales \~ TV + radio is more parsimonious and just as effective. Plus, it's always good to avoid unnecessary complexity when you can.
 :::
 
 Sometimes visualizing the data is helpful:
+
 ```{r, fig.align='center', fig.width=10}
 # Calculate predicted values
 Advertising$predicted_sales <- predict(lm.fit)
@@ -4342,36 +4224,24 @@ for (i in 1:nrow(Advertising)) {
 ```
 
 ## Collinearity {#collinearity}
-Collinearity refers to the situation in which two or more predictor variables are closely related to one another. The presence of collinearity can pose problems in the regression context, since it can be difficult to separate out the individual effects of collinear variables on the response.
-Since collinearity reduces the accuracy of estimates of the regression coefficients, it causes the standard error to grow. Recall that the t-statistic for each predictor is calculated by dividing $\hat{\beta_j}$ by its standard error. Consequently, collinearity results in a decline in the t-statistic. As a result, in the presence of collinearity, we may fail to reject the null hypothesis, this means that the probability of correctly detecting a non-zero coefficient is reduced. 
-A simple way to detect collinearty between two variables is to look at the correlation matrix of the predictors, but it is also possible that there is collinearity between three variables, even if no pair of variables have a high correlation, and this will not be detected in the correlation matrix. For this we can calculate the *variance inflaction factor (VIF)* but this is out of the scope here. 
 
+Collinearity refers to the situation in which two or more predictor variables are closely related to one another. The presence of collinearity can pose problems in the regression context, since it can be difficult to separate out the individual effects of collinear variables on the response. Since collinearity reduces the accuracy of estimates of the regression coefficients, it causes the standard error to grow. Recall that the t-statistic for each predictor is calculated by dividing $\hat{\beta_j}$ by its standard error. Consequently, collinearity results in a decline in the t-statistic. As a result, in the presence of collinearity, we may fail to reject the null hypothesis, this means that the probability of correctly detecting a non-zero coefficient is reduced. A simple way to detect collinearty between two variables is to look at the correlation matrix of the predictors, but it is also possible that there is collinearity between three variables, even if no pair of variables have a high correlation, and this will not be detected in the correlation matrix. For this we can calculate the *variance inflaction factor (VIF)* but this is out of the scope here.
 
 ## Categorical predictors in regression models.
-Sometimes we may want to include in the model a variable that is not numeric, for example gender. To do that we create what we call a dummy variable, for example $x_i = 1$ if the person is female and $x_i = 0$ if it is a male. 
-The resulting model will be:
-$$
+
+Sometimes we may want to include in the model a variable that is not numeric, for example gender. To do that we create what we call a dummy variable, for example $x_i = 1$ if the person is female and $x_i = 0$ if it is a male. The resulting model will be: $$
 y_i=\beta_o+\beta_1x_i+\epsilon_i
-$$
-which will result in this if the person is female:
-$$
+$$ which will result in this if the person is female: $$
 y_i=\beta_o+\beta_1+\epsilon_i
-$$
-and if the person is male:
-$$
+$$ and if the person is male: $$
 y_i=\beta_o+\epsilon_i
-$$
-so what this is telling us is that $\beta_1$ is the effect of being female vs the baseline (in this case male)
+$$ so what this is telling us is that $\beta_1$ is the effect of being female vs the baseline (in this case male)
 
 If we have more than two levels what we do is create more dummy variables. For example we look at three different etnicities, Asian, Caucasian and African American, we create:
 
-$x_{i1} = 0$ if person is Asian and $x_{i1} = 1$ if the person is not Asian
-$x_{i2} = 0$ if person is Caucasian and $x_{i2} = 1$ if the person is not.
-We don't need a level for African American because that will be deducted when $x_{i1} = 0$ and $x_{i2} = 0$.
-So for categorical variables we create $k-1$ dummy variables. The level with no dummy variable is known as *baseline*. The choice of a baseline will not affect the fit of the model, the residual sum of squares  would be the same, but the coefficient and the p-values will change because each other category will be compared with the baseline. 
+$x_{i1} = 0$ if person is Asian and $x_{i1} = 1$ if the person is not Asian $x_{i2} = 0$ if person is Caucasian and $x_{i2} = 1$ if the person is not. We don't need a level for African American because that will be deducted when $x_{i1} = 0$ and $x_{i2} = 0$. So for categorical variables we create $k-1$ dummy variables. The level with no dummy variable is known as *baseline*. The choice of a baseline will not affect the fit of the model, the residual sum of squares would be the same, but the coefficient and the p-values will change because each other category will be compared with the baseline.
 
-The equation will now look like this:
-$$
+The equation will now look like this: $$
 y_1 = \beta_o+\beta_1x_{i1}+\beta_2x_{i2}+\epsilon_i
 \begin{cases} 
 \beta_0 + \beta_1 + e_1 & \text{if condition 1} \\
@@ -4380,9 +4250,8 @@ y_1 = \beta_o+\beta_1x_{i1}+\beta_2x_{i2}+\epsilon_i
 \end{cases}
 $$
 
-:::exercise-box
-Example
-*The Carseats data from the library ISLR2 includes qualitative predictors such as shelveloc, an indicator of the quality of the shelving location—that is, the space within a store in which the car seat is displayed—at each location. The predictor shelveloc takes on three possible values: Bad, Medium, and Good. Given a qualitative variable such as shelveloc, R generates dummy variables automatically. *
+::: exercise-box
+Example *The Carseats data from the library ISLR2 includes qualitative predictors such as shelveloc, an indicator of the quality of the shelving location---that is, the space within a store in which the car seat is displayed---at each location. The predictor shelveloc takes on three possible values: Bad, Medium, and Good. Given a qualitative variable such as shelveloc, R generates dummy variables automatically.*
 
 ```{r}
 lm.fit <- lm(Sales ~ ShelveLoc, 
@@ -4390,18 +4259,18 @@ lm.fit <- lm(Sales ~ ShelveLoc,
 summary(lm.fit)
 contrasts(Carseats$ShelveLoc)
 ```
+
 The contrasts() function returns the coding that R uses for the dummy variables.
 
 R has created a ShelveLocGood dummy variable that takes on a value of 1 if the shelving location is good, and 0 otherwise. It has also created a ShelveLocMedium dummy variable that equals 1 if the shelving location is medium, and 0 otherwise. A bad shelving location corresponds to a zero for each of the two dummy variables. The fact that the coefficient for ShelveLocGood in the regression output is positive indicates that a good shelving location is associated with high sales (relative to a bad location). And ShelveLocMedium has a smaller positive coefficient, indicating that a medium shelving location is associated with higher sales than a bad shelving location but lower sales than a good shelving location.
 :::
 
-
 ## Interactions
-In our previous examples, we have assume independence from one parameter to the others, but that is not always the case, sometimes the change in one predictor affects the results in another. 
 
-:::{exercise-box}
-Example
-Imagine we run a campaign to sell a product, and we advertise in three mediums, newspapers, radio and tv. It could be that the effect of radio increases the effectiveness of the adds in tv, this in marketing is called synergy effect, and in statistics we refer to it as interaction effect. If we detect this interaction, spending part of our budget in radio and part on tv could be more effective than spending all in only the media with the most effect. 
+In our previous examples, we have assume independence from one parameter to the others, but that is not always the case, sometimes the change in one predictor affects the results in another.
+
+::: {exercise-box}
+Example Imagine we run a campaign to sell a product, and we advertise in three mediums, newspapers, radio and tv. It could be that the effect of radio increases the effectiveness of the adds in tv, this in marketing is called synergy effect, and in statistics we refer to it as interaction effect. If we detect this interaction, spending part of our budget in radio and part on tv could be more effective than spending all in only the media with the most effect.
 
 ```{r}
 lm.fit<- lm(sales ~ TV + radio, data = Advertising)
@@ -4412,11 +4281,9 @@ to include interactions in our model we create a new variable with the product o
 
 $$
 sales = \beta_0+\beta_1\times TV+\beta_2\times Radio + \beta_3 \times(radio\times TV)+ \epsilon
-$$
-$$
+$$ $$
 sales = \beta_0+(\beta_1 + \beta_3\times Radio) \times TV+\beta_2\times Radio + \epsilon
-$$
-and if we get a summary of the linear model we will see if the interaction between tv and radio is indeed significant or not:
+$$ and if we get a summary of the linear model we will see if the interaction between tv and radio is indeed significant or not:
 
 ```{r}
 lm.fit_interaction <- lm(sales ~ TV * radio , data = Advertising)
@@ -4427,16 +4294,15 @@ summary(lm.fit_interaction)
 
 ```
 
-the p-value of the interaction indicates that in our example this interaction is significant, we can also see how our R-squared is higher now (0.9678) than when we did not include the interaction in our model (0.8972).
-This means that (96.8-89.7)/(100-89.7)=69% of the variability in sales that remains after fitting the initial model has been explained by the interaction term.
+the p-value of the interaction indicates that in our example this interaction is significant, we can also see how our R-squared is higher now (0.9678) than when we did not include the interaction in our model (0.8972). This means that (96.8-89.7)/(100-89.7)=69% of the variability in sales that remains after fitting the initial model has been explained by the interaction term.
 
-The coefficients estimates in the table suggest that an increase in radio advertising of \$1000 is associated with increased sales of $(\hat{\beta_2}+\hat{\beta_3}\times TV)\times 1000 = 29+1.1\times TV units$
-An increase in TV advertising of \$1000 is associated with an increase of sales of $(\hat{\beta_1}+\hat{\beta_3}\times radio)\times 1000 = 19+1.1\times radio units$
+The coefficients estimates in the table suggest that an increase in radio advertising of \$1000 is associated with increased sales of $(\hat{\beta_2}+\hat{\beta_3}\times TV)\times 1000 = 29+1.1\times TV units$ An increase in TV advertising of \$1000 is associated with an increase of sales of $(\hat{\beta_1}+\hat{\beta_3}\times radio)\times 1000 = 19+1.1\times radio units$
 :::
 
 Sometimes it is the case that an interaction term has a very small p-value, but the associated main effects do not. The *hierarchy principle* states that if we include an interaction in a model, we should also include the main effects, even if the p-values associated with their coefficients are not significant.
 
-## Non-linear transformations of the predictors. 
+## Non-linear transformations of the predictors.
+
 If a linear model does not quite fit our data:
 
 ```{r, fig.align='center'}
@@ -4446,6 +4312,7 @@ plot(mtcars$hp, mtcars$mpg)
 abline(lm.fit)
 summary(lm.fit)
 ```
+
 we can transform this into a polynomial regression by making extra variables to accomodate polynomials, for example we add another variable horsepower squared:
 
 ```{r}
@@ -4467,7 +4334,9 @@ lines(hp_seq, predicted_mpg, col = "blue", lwd = 2)
 summary(lm.fit)
 
 ```
+
 but there is a better way of fitting polynomials with r using the `poly()` function:
+
 ```{r, fig.align='center'}
 lm.fit <- lm(mpg ~ poly(hp,4), data = mtcars) 
 plot(mtcars$mpg ~ mtcars$hp)
@@ -4475,28 +4344,23 @@ points(mtcars$hp, fitted(lm.fit), col = "pink", lwd = 2)
 
 ```
 
-
 ## Potential problems in linear models
+
 We already talked about most of them, but let's do a summary:
 
-:::{.callout-orange}
+::: callout-orange
+1.  **Non linearity**: The linear regression model assumes that there is a straight-line relationship between the predictors and the response. If the true relationship is far from linear, then virtually all of the conclusions that we draw from the fit are suspect. We saw how we can make use of the residual plot to see if the relation is liner or not when we talked about [residuals](%7B#residualplots%7D)
 
-1. **Non linearity**: The linear regression model assumes that there is a straight-line relationship between the predictors and the response. If the true relationship is far from linear, then virtually all of the conclusions that we draw from the fit are suspect. We saw how we can make use of the residual plot to see if the relation is liner or not when we talked about [residuals]({#residualplots}) 
+2.  **Correlation of error terms**: An important assumption of the linear regression model is that the error terms are uncorrelated.If in fact there is correlation among the error terms, then the estimated standard errors will tend to underestimate the true standard errors and this will affect the p-values, confidence intervals etc. Why might correlations among the error terms occur? Such correlations frequently occur in the context of time series data, which consists of observations for which measurements are obtained at discrete points in time. time series. In many cases, observations that are obtained at adjacent time points will have positively correlated errors. In order to determine if this is the case for a given data set, we can plot the residuals from our model as a function of time. If the errors are uncorrelated, then there should be no discernible pattern. On the other hand, if the error terms are positively correlated, then we may see tracking in the residuals.Correlation among the error terms can also occur outside of time series data. For instance, consider a study in which individuals' heights are predicted from their weights. The assumption of uncorrelated errors could be violated if some of the individuals in the study are members of the same family, eat the same diet,or have been exposed to the same environmental factors. In general, the assumption of uncorrelated errors is extremely important for linear regression as well as for other statistical methods, and good experimental design is crucial in order to mitigate the risk of such correlations.
 
-2. **Correlation of error terms**: An important assumption of the linear regression model is that the error terms are uncorrelated.If in fact there is correlation among the error terms, then the estimated standard errors will tend to underestimate the true standard errors and this will affect the p-values, confidence intervals etc. Why might correlations among the error terms occur? Such correlations frequently occur in the context of time series data, which consists of observations for which measurements are obtained at discrete points in time. time series. In many cases, observations that are obtained at adjacent time points will
-have positively correlated errors. In order to determine if this is the case for a given data set, we can plot the residuals from our model as a function of time. If the errors are uncorrelated, then there should be no discernible pattern.
-On the other hand, if the error terms are positively correlated, then we may see tracking in the residuals.Correlation among the error terms can also occur outside of time series data. For instance, consider a study in which individuals’ heights are predicted from their weights. The assumption of uncorrelated errors could be violated if some of the individuals in the study are members of the same family, eat the same diet,or have been exposed to the same environmental factors. In general, the assumption of uncorrelated errors is extremely important for linear regression
-as well as for other statistical methods, and good experimental design is crucial in order to mitigate the risk of such correlations.
+3.  **Non-constant variance of error terms [(heteroscedasticity)](#heteroscedasticity)** : error terms have a constant variance, Var(ϵi) = σ2. The standard errors, confidence intervals, and hypothesis tests associated with the linear model rely upon this assumption. Unfortunately, it is often the case that the variances of the error terms are non-constant. For instance, the variances of the error terms may increase with the value of the response
 
-3. **Non-constant variance of error terms [(heteroscedasticity)](#heteroscedasticity) **: error terms have a constant variance, Var(ϵi) = σ2. The standard errors, confidence intervals, and hypothesis tests associated with the linear model rely upon this assumption. Unfortunately, it is often the case that the variances of the error terms are non-constant. For instance, the variances of the error terms may increase with the value of the response
+4.  **Outliers**: An outlier is a point for which $y$ is far from the value predicted by the model. It is typical for an outlier that does not have an unusual predictor value to have little effect on the least squares fit. However, even if an outlier does not have much effect on the least squares fit, it can cause other problems. For instance it affects the RSE. Since the RSE is used to compute all confidence intervals and p-values, such a dramatic increase caused by a single data point can have implications for the interpretation of the fit. Residual plots can be used to identify outliers.
 
-4. **Outliers**: An outlier is a point for which $y$ is far from the value predicted by the model. It is typical for an outlier that does not have an unusual predictor value to have little effect on the least squares fit. However, even if an outlier does not have much effect on the least squares fit, it can cause other problems. For instance it affects the RSE. Since the RSE is used to compute all confidence intervals and p-values, such a dramatic increase caused by a single data point can have implications for the interpretation of the fit. Residual plots can be used to identify outliers.
+5.  **High-leverage points**: Observations with [high leverage](#highLeverage) have an unusual value for $x_i$. Removing a high leverage point has much more impact than removing an outlier. In a simple linear regression, high leverage observations are fairly easy to identify, since we can simply look for observations for which the predictor value is outside of the normal range of the observations. But in a multiple linear regression with many predictors, it is possible to have an observation that is well within the range of each individual predictor's values, but that is unusual in terms of the full set of predictors.
 
-5. **High-leverage points**: Observations with [high leverage](#highLeverage) have an unusual value for $x_i$. Removing a high leverage point has much more impact than removing an outlier. In a simple linear regression, high leverage observations are fairly easy to identify, since we can simply look for observations for which the predictor value is outside of the normal range of the observations. But in a multiple linear regression with many predictors, it is possible to have an observation that is well within the range of each individual predictor’s values, but that is unusual in terms of the full set of predictors.
-
-6. **Collinearity**: we already dedicated [a section](#collinearity) to these problem. 
+6.  **Collinearity**: we already dedicated [a section](#collinearity) to these problem.
 :::
-
 
 # Introduction to ANOVA (Analysis of Variance)
 
@@ -4598,7 +4462,7 @@ The analysis of variance compute two important variables, one is the **treatment
 
 $$
 SST=\sum_j\sum_i(\bar{y_j}-\bar{\bar{y}})^2 
-$${#eq-SSTTreatmentSumSquares}
+$$ {#eq-SSTTreatmentSumSquares}
 
 and has k-1 degrees of freedom.
 
@@ -4606,13 +4470,13 @@ If we divide this by its degrees of freedom we get what is called the **treatmen
 
 $$
 MST= \frac{SST}{k-1}
-$${#eq-MSTTreatmentMeanSquare}
+$$ {#eq-MSTTreatmentMeanSquare}
 
 The other quantity we are interested in is the **error sum of squares (SSE)**{#SSEErrorSumSquares} where we look at the difference between each observation and the group mean.
 
 $$
 SSE= \sum_j\sum_i({y_{ij}}-\bar{y_j})^2
-$${#eq-SSEErrorSumSquares}
+$$ {#eq-SSEErrorSumSquares}
 
 and has N-k degrees of freedom.
 
@@ -4620,13 +4484,13 @@ Dividing the error sum of square by its degrees of freedom we get what is called
 
 $$
 MSE= \frac{SSE}{N-k}
-$${#eq-MSEErrorMeanSquare}
+$$ {#eq-MSEErrorMeanSquare}
 
 Since we want to compare the variation between the groups to the variation within the groups we look at the ratio
 
 $$
 F= \frac{MST}{MSE}
-$${#eq-Fstatistic}
+$$ {#eq-Fstatistic}
 
 Under the null hypothesis of equal group means this ratio should be about 1. It will not be exactly one due to sampling variability. It follows a F-distribution with k-1 and N-k degrees of freedom. Large values of F suggest that the variation between groups is unusually large. We reject the null hypothesis if F is the right 5% of the tail, i.e. when the p-value is smaller than 5%.
 
@@ -4642,7 +4506,7 @@ Where **TSS is the Total Sum of Squares** and measures the total variability in 
 
 $$
 TSS=\sum_j\sum_i({y_j}-\bar{\bar{y}})^2 
-$${#eq-TSS1}
+$$ {#eq-TSS1}
 
 ### The one-way ANOVA model
 
@@ -4652,8 +4516,7 @@ $$
 y_{ij}=\mu_j+\epsilon_{ij}
 $$
 
-our null hypothesis is that all treatment means are the same $\mu_1=\mu_2=\cdots=\mu_k$ Instead of looking at the group means it is helpful to look at deviations from an overall mean $\mu$ that deviation is represented by the greek letter 'tau' and called the **treatment effect** $\tau_j=\mu_j-\mu$ so the model is the overall mean plus the deviation plus an error term 
-$$
+our null hypothesis is that all treatment means are the same $\mu_1=\mu_2=\cdots=\mu_k$ Instead of looking at the group means it is helpful to look at deviations from an overall mean $\mu$ that deviation is represented by the greek letter 'tau' and called the **treatment effect** $\tau_j=\mu_j-\mu$ so the model is the overall mean plus the deviation plus an error term $$
 y_{ij}=\mu+\tau_j+\epsilon_{ij}
 $$
 
@@ -4678,8 +4541,7 @@ which is equal to say:
 
 $$
 TSS=SST+SSE
-$${#eq-TSS2} 
-Which means that total variation can be split into two sources, the treatment sum of squares and the error sum of squares. This is the decomposition that is behind the ANOVA table.
+$$ {#eq-TSS2} Which means that total variation can be split into two sources, the treatment sum of squares and the error sum of squares. This is the decomposition that is behind the ANOVA table.
 
 ::: {#anovaassump style="border: 2px solid #f0ad4e;  border-radius: 8px;   background-color: #fff3cd;   padding: 10px;" icon="false"}
 ANOVA Assumptions
@@ -4815,11 +4677,9 @@ ggplot() +
 
 ```
 
-In this simple example above we only have two k elements (0 and 1) but there may be many K elements, so we express the probability of k for a given value of x like this: 
-$$
+In this simple example above we only have two k elements (0 and 1) but there may be many K elements, so we express the probability of k for a given value of x like this: $$
 p_k(x)=Pr(Y=k|X=x),k=1,2,\dots,K
-$${#eq-conditionalClassProbabilities}
-These are the *conditional class probabilities* at x.
+$$ {#eq-conditionalClassProbabilities} These are the *conditional class probabilities* at x.
 
 The *Bayes optimal classifier* is essentially the gold standard in classification. It represents the best possible classifier that can be achieved if we had perfect knowledge of the probability distribution of the data.
 
@@ -4829,53 +4689,39 @@ In formula terms, if $P(CxX)$ is the posterior probability of class C given the 
 
 In practice, we often don't have perfect knowledge of these probabilities, so we use various methods to approximate the Bayes optimal classifier, like Naive Bayes, which assumes independence between features.
 
-Typically we measure the performance of the classifier $\hat{C(x)}$ using the misclassification error rate, that is the number of mistakes we make and it's represented by the formula 
-$$
+Typically we measure the performance of the classifier $\hat{C(x)}$ using the misclassification error rate{#misclassificationErrorRate}, that is the number of mistakes we make and it's represented by the formula $$
 Err_{Te}=Ave_{i\epsilon Te}I[y_i\ne\hat{C(x_i)]}
-$${#eq-misclassificationErrorRate} 
+$$ {#eq-misclassificationErrorRate}
 
 ## Logistic regression
-The formula for the logistic regression is:
-$$
-{p}(X) = \frac{e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}{1 + e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
-$${#eq-logisticRegression}
-This reads as p of X for the probability that y is 1 given X  
--p(x) is the predicted probability of the dependent variable being 1 (or positive outcome) given the predictors $x_1,x_2,\dots,x_n$
-- $\beta_0$ is the intercept of the linear model
-- $\beta_1,\beta_2\dots,\beta_n$ are the coefficients for the predictors.
-- $e$ is a mathematical constant (2.71828) (Euler's number)
-The result will be always between 0 and .
 
-This formula can also be written as:
-$$
+The formula for the logistic regression is: $$
+{p}(X) = \frac{e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}{1 + e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
+$$ {#eq-logisticRegression} This reads as p of X for the probability that y is 1 given X\
+-p(x) is the predicted probability of the dependent variable being 1 (or positive outcome) given the predictors $x_1,x_2,\dots,x_n$ - $\beta_0$ is the intercept of the linear model - $\beta_1,\beta_2\dots,\beta_n$ are the coefficients for the predictors. - $e$ is a mathematical constant (2.71828) (Euler's number) The result will be always between 0 and .
+
+This formula can also be written as: $$
 log\left( \frac{p(X)}{1-p(X)} \right)=\beta_0+\beta_1X_1+\dots+\beta_nX_n
-$${#eq-logodds}
+$$ {#eq-logodds}
 
 and it is called *log odds* or *logit transformacion of p(X)*
 
 ### Maximum Likelihood Estimation (MLE) {#MaximumLikelihoodEstimation}
-Maximum Likelihood Estimation (MLE) is used to find the parameters (coefficients) in logistic regression. Here's the lowdown:
-MLE aims to find the parameter values that make the observed data most probable. It identifies the set of parameters (in our case, the regression coefficients) that maximize the likelihood function.
 
-In Logistic Regression:
-For binary outcomes (0 or 1), logistic regression models the probability of the outcome. The likelihood Function:
- for logistic regression is: 
- $$ L(\beta) = \prod_{i=1}^n \hat{p}(x_i)^{y_i} [1 - \hat{p}(x_i)]^{1 - y_i}
+Maximum Likelihood Estimation (MLE) is used to find the parameters (coefficients) in logistic regression. Here's the lowdown: MLE aims to find the parameter values that make the observed data most probable. It identifies the set of parameters (in our case, the regression coefficients) that maximize the likelihood function.
+
+In Logistic Regression: For binary outcomes (0 or 1), logistic regression models the probability of the outcome. The likelihood Function: for logistic regression is: $$ L(\beta) = \prod_{i=1}^n \hat{p}(x_i)^{y_i} [1 - \hat{p}(x_i)]^{1 - y_i}
  $${}#eq-maximumLikelihoodFunction
 
-Where: $p^(xi)$ is the predicted probability for the i-th observation.
-$y_i$ is the observed outcome (0 or 1) for the i-th observation.
+Where: $p^(xi)$ is the predicted probability for the i-th observation. $y_i$ is the observed outcome (0 or 1) for the i-th observation.
 
-Log-Likelihood:
-For computational simplicity, we usually work with the natural logarithm of the likelihood function (log-likelihood): $ \ell(\beta) = \sum_{i=1}^n [y_i \log(\hat{p}(x_i)) + (1 - y_i) \log(1 - \hat{p}(x_i))] $
+Log-Likelihood: For computational simplicity, we usually work with the natural logarithm of the likelihood function (log-likelihood): \$ \ell(\beta) = \sum\_{i=1}\^n \[y_i \log(\hat{p}(x_i)) + (1 - y_i) \log(1 - \hat{p}(x_i))\] \$
 
-Optimization:
-The goal is to find the parameter values (β0,β1,β2,…,βn) that maximize the log-likelihood function.
+Optimization: The goal is to find the parameter values (β0,β1,β2,...,βn) that maximize the log-likelihood function.
 
 This is usually done using numerical optimization methods since there's no closed-form solution.
 
-Intuition:
-MLE in logistic regression finds the best-fit model that maximizes the probability of observing the given data.
+Intuition: MLE in logistic regression finds the best-fit model that maximizes the probability of observing the given data.
 
 It adjusts the coefficients to maximize the match between the predicted probabilities and the actual outcomes.
 
@@ -4895,51 +4741,45 @@ summary(glm.student)
 glm.balance<- glm(default ~ balance, data=Default, family = binomial)
 summary(glm.balance)
 ```
+
 ### Interpreting the results:
-For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units.
-Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `p-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. 
-### Making predictions
-Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. 
-we will use the logistic regression formula we already saw (@eq-logisticRegression)
-$$
+
+For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `p-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. \### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression) $$
 \hat{p}(X) = \frac{e^{\hat{\beta_0} + \hat{\beta_1} X_1}}{1 + e^{\hat{\beta_0} + \hat{\beta_1} X_1 }}
-$$
-we just plug in the values from our glm, for example for a balance of 1000:
-$$
+$$ we just plug in the values from our `glm`, for example for a balance of 1000: $$
 \hat{p}(X) = \frac{e^{-10.65 + 0.0055 \times 1000}}{1 + e^{-10.65 + 0.0055 \times 1000}} =0.00576
-$$
-using R we are going to calculate the probability of default for a balance of 1000 and 2000 USD:
+$$ using R we are going to calculate the probability of default for a balance of 1000 and 2000 USD:
+
 ```{r}
 new_data<- data.frame(balance= c(1000,2000))
 glm.probs <- predict(glm.balance,new_data, type = "response")
 glm.probs
 ```
-We can use qualitative predictors the same way, we will now see the student predictor:
-Student: Yes
-$$
+
+We can use qualitative predictors the same way, we will now see the student predictor: Student: Yes $$
 \hat{p}(X) = \frac{e^{-3.50 + 0.4049 \times 1}}{1 + e^{-3.50 + 0.4049 \times 1}} =0.0431
-$$
-Student:No
-$$
+$$ Student:No $$
 \hat{p}(X) = \frac{e^{-3.50 + 0.4049 \times 0}}{1 + e^{-3.50 + 0.4049 \times 0}} =0.0292
-$$
-In this case this indicates that students tend to have higher default probabilities than non-students.
+$$ In this case this indicates that students tend to have higher default probabilities than non-students.
+
 ```{r}
 new_data= data.frame(student= as.factor(c('Yes','No')))
 glm.probs <- predict(glm.student,new_data, type = "response")
 glm.probs
 ```
-### Multiple Logistic Regression.{#MultipleLogisticRegression}
+
+### Multiple Logistic Regression. {#MultipleLogisticRegression}
 
 So far we have just considered one predictor at a time, but like in linear models, we can use them combined:
+
 ```{r}
 glm.fit<- glm(default ~ income+balance+student, data=Default, family = binomial)
 summary(glm.fit)
 ```
+
 If we pay attention now to the coefficient of student, it is negative, indicating that students are less likely to default than non-students. This is not what we saw when we looked at the model with only the student variable. This is because The variables student and balance are correlated. Students tend to hold higher levels of debt, which is in turn associated with higher probability of default. In other words, students are more likely to have large credit card balances, which, as we know, tend to be associated with high default rates. Thus, even though an individual student with a given credit card balance will tend to have a lower probability of default than a non-student with the same credit card balance, the fact that students on the whole tend to have higher credit card balances means that overall, students tend to default at a higher rate than non-students.
 
-This simple example illustrates the dangers and subtleties associated
-with performing regressions involving only a single predictor when other predictors may also be relevant. As in the linear regression setting, the results obtained using one predictor may be quite different from those obtained using multiple predictors, especially when there is correlation among the predictors. In general, the phenomenon seen here is known as *confounding*.
+This simple example illustrates the dangers and subtleties associated with performing regressions involving only a single predictor when other predictors may also be relevant. As in the linear regression setting, the results obtained using one predictor may be quite different from those obtained using multiple predictors, especially when there is correlation among the predictors. In general, the phenomenon seen here is known as *confounding*.
 
 ```{r, fig.align='center',fig.width=10, echo=FALSE}
 pred <- predict(glm.fit, type = "response")
@@ -4964,7 +4804,9 @@ p2 <- ggplot(Default, aes(x = student, y = balance, fill = student)) +
 # Arrange plots side by side
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
-#### Misclassification rate 
+
+#### Misclassification rate
+
 How many values does our model get right and how many get wrong? for that we can use a *confusion matrix* :
 
 ```{r}
@@ -4980,20 +4822,19 @@ print('Confusion Matrix')
 table(Default$default, glm.pred)
 
 
-cat('missclassification rate: ', (228+40)/10000)
+cat('misclassification rate: ', (228+40)/10000)
 
 ```
-But this values are over estimated because we are using the same data that we used to train our model, so this is the training error. As we already know, to get the real fit of our model we should train our model with a subset of data and test it with unseen data. 
+
+But this values are over estimated because we are using the same data that we used to train our model, so this is the training error. As we already know, to get the real fit of our model we should train our model with a subset of data and test it with unseen data.
 
 #### Null rate
-Although this missclassification rate might seem very small, we need to take into consideration, that the data has a majority of 'No' in the response, so if we would fit every single value to 'No' without using any model, we would only get 333/10000 errors, so only 3.33% misclassification. 
-This is called the *null rate*
+
+Although this misclassification rate might seem very small, we need to take into consideration, that the data has a majority of 'No' in the response, so if we would fit every single value to 'No' without using any model, we would only get 333/10000 errors, so only 3.33% misclassification. This is called the *null rate*
 
 Another way of looking at it would be seeing what percentage of No's and Yes's we have missclassified.
 
-For No's we have missclassified 40 out of 9667 = 0.4%
-For Yes's we have missclassified 228 out of 333 = 68.5%
-
+For No's we have missclassified 40 out of 9667 = 0.4% For Yes's we have missclassified 228 out of 333 = 68.5%
 
 #### Visualizing the relationship between variables
 
@@ -5029,71 +4870,83 @@ pairs(SAheart_selected,
       oma = c(2, 2, 2, 2)) # Reduce outer margins
 
 ```
+
 to fit a model for this data:
+
 ```{r}
 heartfit <- glm(chd~.,data=SAheart, family=binomial)
 summary(heartfit)
 ```
-Interestingly, obesity and alcohol does not show as significant and this is due to correlation. 
 
+Interestingly, obesity and alcohol does not show as significant and this is due to correlation.
 
-::: {.exercise-box}
+::: exercise-box
 Example:
 
 We will begin by examining some numerical and graphical summaries of the Smarket data, which is part of the ISLR2 library. This data set consists of percentage returns for the S&P 500 stock index over 1,250 days, from the beginning of 2001 until the end of 2005. For each date, we have recorded the percentage returns for each of the five previous trading days, `lagone` through `lagfive`. We have also recorded volume (the number of shares traded on the previous day, in billions), Today (the percentage return on the date in question) and direction (whether the market was Up or Down on this date). Our goal is to predict direction (a qualitative response) using the other features.
 
-```{r}
+```{r, fig.align='center', fig.height=10, fig.width=10}
 head(Smarket)
+pairs(Smarket[2:7], col = Smarket$Direction, pch = 20, cex = 0.5)
 
+```
+
+The pairs plot seem to not show a lot of correlation.
+
+```{r}
 glm.fits <- glm(
     Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume,
     data = Smarket, family = binomial
   )
 summary(glm.fits)
 ```
-The 'contrast()` function tells us what value of Direction is 0 and which one is 1: 
+
+The 'contrast()\` function tells us what value of Direction is 0 and which one is 1:
+
 ```{r}
 contrasts(Smarket$Direction)
 ```
 
-The negative predictor in lag1, lag2 suggest that if the market had a positive return yesterday, then it is less likely to go up today, however, the p-value is large, so there is no clear association. 
+The negative predictor in lag1, lag2 suggest that if the market had a positive return yesterday, then it is less likely to go up today, however, the p-value is large, so there is no clear association.
 
-The `predict()` function can be used to predict the probability that the market will go up, given the values of the predictors. The `type="response"` option tesll R to output probabilities of the form $P(Y=1|X)$, as opposed to other information such as the logit. If no data set is supplied to the `predict()` function,
-then  the probabilities are computed for the training data that was used to fit the logistic regression model. Here we have printed only the first ten probabilities. We know that these values correspond to the probability of the market going up, rather than down, because the `contrasts()` function indicates that `R` has created a dummy variable with a 1 for `Up`.
+The null deviance and the residual deviance are very similar, which indicates that the model does not perform much better than just using the average.
+
+The `predict()` function can be used to predict the probability that the market will go up, given the values of the predictors. The `type="response"` option tells R to output probabilities of the form $P(Y=1|X)$, as opposed to other information such as the logit. If no data set is supplied to the `predict()` function, then the probabilities are computed for the training data that was used to fit the logistic regression model. Here we have printed only the first ten probabilities. We know that these values correspond to the probability of the market going up, rather than down, because the `contrasts()` function indicates that `R` has created a dummy variable with a 1 for `Up`.
 
 ```{r }
 glm.probs <- predict(glm.fits, type = "response")
 glm.probs[1:10]
 
 ```
-In order to make a prediction as to whether the market will go up or down on a particular day, we must convert these predicted probabilities into class labels, `Up` or `Down`.
-The following two commands create a vector of class predictions based on whether the predicted probability of a market increase is greater than or less than $0.5$.
+
+The first thing that calls our attention is that the values are very close to 50%, so the predictors are not very strong. In order to make a prediction as to whether the market will go up or down on a particular day, we must convert these predicted probabilities into class labels, `Up` or `Down`. The following two commands create a vector of class predictions based on whether the predicted probability of a market increase is greater than or less than $0.5$.
 
 ```{r }
 glm.pred <- rep("Down", 1250)
 glm.pred[glm.probs > .5] = "Up"
 ```
 
-The first command creates a vector of 1,250  `Down` elements. The second line transforms to `Up` all of the elements for which the predicted probability of a market increase exceeds $0.5$. Given these predictions, the `table()` function can be used to produce a *confusion matrix*  in order to determine how many observations were correctly or incorrectly classified.
+The first command creates a vector of 1,250 `Down` elements. The second line transforms to `Up` all of the elements for which the predicted probability of a market increase exceeds $0.5$. Given these predictions, the `table()` function can be used to produce a *confusion matrix* in order to determine how many observations were correctly or incorrectly classified.
 
 ```{r }
 table(glm.pred, Smarket$Direction)
 (507 + 145) / 1250
 mean(glm.pred == Smarket$Direction)
 ```
-The diagonal elements of the confusion matrix indicate correct predictions, while the off-diagonals represent incorrect predictions. Hence our model correctly predicted that the market would go up on $507$ days and that it would go down on $145$ days, for a total of $507+145 = 652$ correct predictions. The `mean()` function can be used to compute the fraction of days for which the prediction was correct. In this case, logistic regression correctly predicted the movement of the market  $52.2$% of the time.
 
-At first glance, it appears that the logistic regression model is working a little better than random guessing. However, this result is misleading because we trained and tested the  model on the same set of $1,250$ observations. In other words,
- $100\%-52.2\%=47.8\%$, is **the *training* error  rate**. As we have seen previously, the training error rate is often overly optimistic -it tends to underestimate the  test error rate-.  In order to better assess the accuracy of the logistic regression model in this setting, we can fit the model using part of the data, and then examine how well it predicts the *held out* data.
-This will yield a more realistic error rate, in the sense that in practice we will be interested in our model's performance not on the data that we used to fit the model, but rather on days in the future for which the market's movements are unknown.
-To implement this strategy, we will first create a vector corresponding to the observations from 2001 through 2004. We will then use this vector to create a held out data set of observations from 2005:
+The diagonal elements of the confusion matrix indicate correct predictions, while the off-diagonals represent incorrect predictions. Hence our model correctly predicted that the market would go up on $507$ days and that it would go down on $145$ days, for a total of $507+145 = 652$ correct predictions. The `mean()` function can be used to compute the fraction of days for which the prediction was correct. In this case, logistic regression correctly predicted the movement of the market $52.2$% of the time.
+
+At first glance, it appears that the logistic regression model is working a little better than random guessing. However, this result is misleading because we trained and tested the model on the same set of $1,250$ observations. In other words, $100\%-52.2\%=47.8\%$, is **the *training* error rate**. As we have seen previously, the training error rate is often overly optimistic -it tends to underestimate the test error rate-. In order to better assess the accuracy of the logistic regression model in this setting, we can fit the model using part of the data, and then examine how well it predicts the *held out* data. This will yield a more realistic error rate, in the sense that in practice we will be interested in our model's performance not on the data that we used to fit the model, but rather on days in the future for which the market's movements are unknown. To implement this strategy, we will first create a vector corresponding to the observations from 2001 through 2004. We will then use this vector to create a held out data set of observations from 2005:
+
 ```{r}
 train <- (Smarket$Year < 2005)
 Smarket.2005 <- Smarket[!train, ]
 dim(Smarket.2005)
 Direction.2005 <- Smarket$Direction[!train]
 ```
-We now fit a logistic regression model using only the subset of the observations that correspond to dates before 2005, using the subset argument. We then obtain predicted probabilities of the stock market going up for each of the days in our test set—that is, for the days in 2005.
+
+We now fit a logistic regression model using only the subset of the observations that correspond to dates before 2005, using the subset argument. We then obtain predicted probabilities of the stock market going up for each of the days in our test set---that is, for the days in 2005.
+
 ```{r}
 glm.fits <- glm(
     Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume,
@@ -5102,6 +4955,7 @@ glm.fits <- glm(
 glm.probs <- predict(glm.fits, Smarket.2005,
     type = "response")
 ```
+
 Notice that we have trained and tested our model on two completely separate data sets: training was performed using only the dates before 2005, and testing was performed using only the dates in 2005. Finally, we compute the predictions for 2005 and compare them to the actual movements of the market over that time period.
 
 ```{r}
@@ -5112,6 +4966,7 @@ mean(glm.pred == Direction.2005)
 ```
 
 and our test set error rate:
+
 ```{r}
 mean(glm.pred != Direction.2005)
 ```
@@ -5126,66 +4981,92 @@ predict(glm.fits,
 ```
 :::
 
-### Case-control sampling and logistic regression. 
+### Case-control sampling and logistic regression.
+
 We know because medicine tells us, that the risk of heart disease in this type of population of South Africans is actually 5%. But in our dataset we used 160 cases (people with heart disease) and 302 controls. This results in an estimated proportion of $\tilde{\pi} = 0.35$, yet the prevalence of the heart disease is $\pi=0.05$
 
-We can still use these data set to fit our model, and the model will be correct, but the constant term will be incorrect. We can correct the constant using a simple transformation.
-$$
+We can still use these data set to fit our model, and the model will be correct, but the constant term will be incorrect. We can correct the constant using a simple transformation. $$
 \hat{\beta_0^*}=\hat{\beta_0}+log\frac{\pi}{1-\pi}-log\frac{\tilde{\pi}}{1-\tilde{\pi}}
-$$
-This formula is a re-calibration or re-centering of the logistic regression intercept $\hat{\beta_0}$ where:
-- $\hat{\beta_0}$ is the original estimated intercept.
-- $\hat{\beta_0^*}$ is the adjusted intercept after re-calibration.
-- $\pi$ is the baseline probability in the population.
-- $\tilde{\pi}$ is the target probability or prevalence rate you are adjusting to.
+$$ This formula is a re-calibration or re-centering of the logistic regression intercept $\hat{\beta_0}$ where: - $\hat{\beta_0}$ is the original estimated intercept. - $\hat{\beta_0^*}$ is the adjusted intercept after re-calibration. - $\pi$ is the baseline probability in the population. - $\tilde{\pi}$ is the target probability or prevalence rate you are adjusting to.
 
-This is an approach often followed in epidemiology because the cases that we want to study are rare, so we want to take them all, up to five or six times that number of controls is sufficient. Another example is in advertising, where the click-through ratio for an add is very low, we need usually hundreds or thousands of people that saw the add but did not click on it, for just a few clicks, so following this approach we can reduce our dataset and not include all the control data. 
+This is an approach often followed in epidemiology because the cases that we want to study are rare, so we want to take them all, up to five or six times that number of controls is sufficient. Another example is in advertising, where the click-through ratio for an add is very low, we need usually hundreds or thousands of people that saw the add but did not click on it, for just a few clicks, so following this approach we can reduce our dataset and not include all the control data.
 
 ### Multinomial regression
-So far we have only considered two classes in the response, but we can extend the model to k number of classes:
-$$
+
+So far we have only considered two classes in the response, but we can extend the model to k number of classes: $$
 Pr(Y = k \mid X = x) = \frac{e^{\beta_{k0} + \beta_{k1}x_1 + \cdots + \beta_{kp}x_p}}{1 + \sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1}x_1 + \cdots + \beta_{lp}x_p}}
-$${#eq-multinomialLogisticRegression}
+$$ {#eq-multinomialLogisticRegression}
 
-To do this, we first select a single class to serve as a baseline. The decision to treat one specific class as a baseline is unimportant. The coefficient
-estimates will differ between two fitted models to different baselines variables due to the differing choice of baseline, but the fitted values (predictions), the log odds between any pair of classes, and the other key model outputs will remain the same.
+To do this, we first select a single class to serve as a baseline. The decision to treat one specific class as a baseline is unimportant. The coefficient estimates will differ between two fitted models to different baselines variables due to the differing choice of baseline, but the fitted values (predictions), the log odds between any pair of classes, and the other key model outputs will remain the same.
 
-Although we can use multinomial regression for k values, it has its limitations:
-- When the classes are well separated, the parameter estimates for the logistic regression model are surprisingly unstable.
-- If n is small and the distribution of the predictors X is approximately normla in each of the classes, the linear discriminant model that we will see next is more stable than the logistic regression model. 
+Although we can use multinomial regression for k values, it has its limitations: - When the classes are well separated, the parameter estimates for the logistic regression model are surprisingly unstable. - If n is small and the distribution of the predictors X is approximately normal in each of the classes, the linear discriminant model that we will see next is more stable than the logistic regression model.
 
-## Discriminant Analysis. 
-Linear discriminant analysis is popular when we have more than two response classes. 
+## Discriminant Analysis.
 
-We can model de distribution of X in each of the classess separately and then use Bayes theorem to flip things around to get the probabilty of Y given X. When we use normal distributions for each class, this leads to linear or quadractic discriminant analysis. 
+### Linear Discriminant Analysis(LDA)
 
-### Bayes theorem for classification. 
+Linear discriminant analysis is popular when we have more than two response classes.
+
+We can model de distribution of X in each of the classes separately and then use Bayes theorem to flip things around to get the probability of Y given X. When we use normal distributions for each class, this leads to linear or quadratic discriminant analysis.
+
+#### Bayes theorem for classification.
+
 $$
 P(Y=k \mid X=x) = \frac{Pr(X=x \mid Y=k) \times  Pr(Y=k)}{Pr(X=x)}
 $$ {#eq-bayestheorem}
 
-- Posterior Probability $P(Y=k \mid X=x) $ this is the probability that the target variable Y is in class k given the observed data X=x
-- Likelihood: $Pr(X=x \mid Y=k)$ this is the probability of observing the data X=x given that the variable Y is in class k.
-- Prior Probability: $Pr(Y=k)$ This is the initial probability of class k before observing the data, it's your prior belief about the class distribution.
-- Marginal Likelihood:  $Pr(X=x)$ this is the overall probability of observing the data X=x across all classes. 
+-   Posterior Probability \$P(Y=k \mid X=x) \$ this is the probability that the target variable Y is in class k given the observed data X=x
+-   Likelihood: $Pr(X=x \mid Y=k)$ this is the probability of observing the data X=x given that the variable Y is in class k.
+-   Prior Probability: $Pr(Y=k)$ This is the initial probability of class k before observing the data, it's your prior belief about the class distribution.
+-   Marginal Likelihood: $Pr(X=x)$ this is the overall probability of observing the data X=x across all classes.
 
-### Linear Discriminant Analysis for one variable.
-To classify Y at the value X=x we only need to see which of the $p_x(x)$ is the largest. For this we use the *discriminant score* 
+### k-Nearest Neighbour classification
+
+In theory we would always like to predict qualitative responses using the Bayes classifier. But for real data, we do not know the conditional distribution of Y given X, and so computing the Bayes classifier is impossible. The k-nearest neighbor classification uses distance to try to classify the predictions: Given a positive integer K and a test observation $x_0$, the KNN classifier first identifies the K points in the training data that are closest to x0, represented by $N_0$. It then estimates the conditional probability for class $j$ as the fraction of points in $N_0$ whose response values equal $j$: $$
+P(Y=j|X=x_0)=\frac{1}{K}\sum_{i\epsilon N_0}I(y_i=j)
+$$ {#eq-probabilityFunctionknearest}
+
+The algorithm relies on a distance metric (commonly Euclidean distance) to measure the similarity between instances. The distance between two points $(x_1, y_1)$ and $(x_2, y_2)$ in a 2D space is calculated as: $d=(x_2-x_1)^2+(y_2-y_1)^2$
+
+Choosing k: The parameter $k$ represents the number of nearest neighbors to consider when making a prediction. For example, if $k = 3$, the algorithm looks at the 3 closest training instances to the query point.
+
+For classification, k-NN uses a majority voting mechanism. The class label that appears most frequently among the $k$ nearest neighbors is assigned to the query point.
+
+k-NN is a non-parametric algorithm, meaning it makes no assumptions about the underlying data distribution. This makes it flexible but also computationally intensive, especially with large datasets.
+
+::: exercise-box
+Example:
+
+We will need the library 'class' and work with the IRIS dataset. First we divide the dataset into training and test subsets and use the `knn` function to get the predicted values for the test dataset. We can use a confusion_matrix to see the successes and failures of the model guessing the species.
+
+```{r}
+set.seed(1)
+sample <- sample(c(TRUE, FALSE), nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
+train <- iris[sample,1:4 ]
+test <- iris[!sample,1:4 ]
+species<- iris[sample,5]
+specietest <- iris[!sample,5]
+knn.pred<- class::knn(train,test,species,k=1)
+table(knn.pred,specietest)
+mean(knn.pred ==specietest)
+```
+:::
+
+#### Linear Discriminant Analysis for one variable.
+
+To classify Y at the value X=x we only need to see which of the $p_x(x)$ is the largest. For this we use the *discriminant score*
 
 $$
 \delta_k(x) = x \frac{\mu_k}{\sigma^{2}} - \frac{\mu_k^2}{2\sigma^{2}}+ \log(\pi_k)
-$${#eq-discriminantScore}
+$$ {#eq-discriminantScore}
 
 Where $\pi$ is the prior probability
 
 Note that $\delta_k(x)$ is a linear function of x
 
-If there are k=2 classes and the prior is the same for both (0.5) then the formula simplifies to:
-$$
+If there are k=2 classes and the prior is the same for both (0.5) then the formula simplifies to: $$
 x = \frac{\mu_1+\mu_2}{2}
-$$
-Below we have a visualization for two classes of Y and its probabilities given x when the prior is the same for both classes. The dashed line shows the decision boundary, anything on the left of the line will be classified as class 'blue' and anything on the right as class 'red' 
-
+$$ Below we have a visualization for two classes of Y and its probabilities given x when the prior is the same for both classes. The dashed line shows the decision boundary, anything on the left of the line will be classified as class 'blue' and anything on the right as class 'red'
 
 ```{r, echo=FALSE}
 # Set seed for reproducibility
@@ -5210,151 +5091,152 @@ p1 <- ggplot(data.frame(x, y1, y2), aes(x)) +
        x = "X") +
   theme_minimal()
 ```
+
 When the priors are different, we have take them into consideration and compare $\pi_k f_x(x)$
 
-We usually don't know the prior, so we have to estimate it looking at the data. The estimated prior in each class will be the total number of elements in that class divided by the total number of cases
-$$
+We usually don't know the prior, so we have to estimate it looking at the data. The estimated prior in each class will be the total number of elements in that class divided by the total number of cases $$
 \hat{\pi_k}=\frac{n_k}{n}
 $$
 
-The mean of each class is calculated normally. 
-The estimated variance is a bit more complex because it is not using the variance of each class but the *pooled variance estimate* 
+The mean of each class is calculated normally. The estimated variance is a bit more complex because it is not using the variance of each class but the *pooled variance estimate*
+
 $$
 \hat{\sigma^2}= \frac{1}{n-K} \sum^K_{k=1} \sum_{y_i=k}(x_1-\hat{\mu_k})^2= \sum^K_{k=1}\frac{n_k-1}{n-K}\times\hat{\sigma^2_k}
-$${#eq-pooledVarianceEstimate}
+$$ {#eq-pooledVarianceEstimate}
 
-Where $\hat{\sigma^2_k}$ is the usual formula for the estimated variance in the kth class. 
-$$
+Where $\hat{\sigma^2_k}$ is the usual formula for the estimated variance in the kth class. $$
 \frac{1}{n_k-1}\sum^N_{i:y_i=k}(x_i-\hat{\mu_k})^ 2
-$$ 
-so basically what we are doing in the pooled variance is to calculate the variance for each of the classes and then do a weighted average of them.
+$$ so basically what we are doing in the pooled variance is to calculate the variance for each of the classes and then do a weighted average of them.
 
 ### Multivariate linear discrimination.
-The discriminant score function for multivariate takes this quite complicated form:
-$$
+
+The discriminant score function for multivariate takes this quite complicated form: $$
 \delta_k(x) = x^T\Sigma^{-1} \mu_k -\frac{1}{2}\mu_k^T\Sigma^{-1}\mu_k+ \log(\pi_k)
-$${#eq-discriminantScoreMulti}
+$$ {#eq-discriminantScoreMulti}
 
-Once we have the estimates for the different parameters $\hat{\delta}_k(x)$ we can turn these into estimates for class probabilities:
-$$
+Once we have the estimates for the different parameters $\hat{\delta}_k(x)$ we can turn these into estimates for class probabilities: $$
 \hat{P_{r}}(Y = k | X = x) = \frac{e^{\hat{\delta_k} (x)}}{\sum_{l=1}^{K} e^{\hat{\delta_l}(x)}}
-$${#eq-conditionalProbabilityFormula1}
+$$ {#eq-conditionalProbabilityFormula1}
 
-With these estimates we will classify Y=k to the largest probability for the value of x we are interested in.  
+With these estimates we will classify Y=k to the largest probability for the value of x we are interested in.
 
-We can run a classification over the Default dataset that we already used in [multiple logistic regression](@MultipleLogisticRegression). To do so we use the function LDA from library MASS, but first we are going to check the levels of the response variable to know which value  the reference (the first one):
+We can run a classification over the Default dataset that we already used in [multiple logistic regression](@MultipleLogisticRegression). To do so we use the function LDA from library MASS, but first we are going to check the levels of the response variable to know which value the reference (the first one):
 
 ```{r}
 levels(Default$default)
 ```
-So our reference level is default= 'No' 
+
+So our reference level is default= 'No'
 
 ```{r}
-fit.LDA = lda( default ~ income+balance+student, data=Default, )
-fit.LDA
-fit.LDA.p = predict(fit.LDA, newdata=Default[,2:4])
-fit.LDA.Classes = predict(fit.LDA, newdata=Default[,2:4])$class
+LDA.fit = lda( default ~ income+balance+student, data=Default, )
+LDA.fit
+LDA.fit.p = predict(LDA.fit, newdata=Default[,2:4])
+LDA.fit.Classes = predict(LDA.fit, newdata=Default[,2:4])$class
 
 ```
 
 **How to interpret the results of the LDA**
 
-- *Prior Probabilities of Groups*: These are the probabilities assigned to each class (No and Yes) before observing any data, based on the proportion of each class in the training data.
-  - No: 0.9667 (96.67% of the data is in the "No" category)
-  - Yes: 0.0333 (3.33% of the data is in the "Yes" category)
-- *Group Means*: These are the mean values of each predictor variable for each class.
+-   *Prior Probabilities of Groups*: These are the probabilities assigned to each class (No and Yes) before observing any data, based on the proportion of each class in the training data.
 
-- *Coefficients of Linear Discriminants*: These coefficients are used to form the linear discriminant functions (LD1 in this case). The linear discriminant function combines the predictor variables to maximize the separation between the classes. Larger absolute values of coefficients indicate more significant contributions to the discriminant function.
+    -   No: 0.9667 (96.67% of the data is in the "No" category)
+    -   Yes: 0.0333 (3.33% of the data is in the "Yes" category)
 
-The negative coefficient of the Student(Yes) indicates that being a Student reduces the possibility of defaulting = 'yes'. 
+-   *Group Means*: These are the mean values of each predictor variable for each class.
+
+-   *Coefficients of Linear Discriminants*: These coefficients are used to form the linear discriminant functions (LD1 in this case). The linear discriminant function combines the predictor variables to maximize the separation between the classes. Larger absolute values of coefficients indicate more significant contributions to the discriminant function.
+
+The negative coefficient of the Student(Yes) indicates that being a Student reduces the possibility of defaulting = 'yes'.
 
 In a two-class LDA model with reference level A, a positive coefficient for a predictor indicates that an increase in that predictor increases the discriminant score. A higher discriminant score makes it more likely for the observation to be classified as B rather than A.
 
 Conversely, a negative coefficient indicates that an increase in the predictor decreases the discriminant score, making it more likely for the observation to be classified as A.
 
-**Histogram of Linear Discriminants**:
-We can also use plots to see the overlapping of our groups: This plot shows a histogram of the discriminant function values for each class. The histograms should ideally show distinct peaks for each class, indicating good separation.
+LD1 is the *Linear Disciminative Function* LDFs are essentially the axes that best separate the different classes in your data. They are linear combinations of your original variables. (\@#eq-discriminantScoreMulti)
+
+In this case we only have a LDF (LD1), but with more classess we will get more. The number of LDFs is always one less than the number of classes.
+
+**Histogram of Linear Discriminants**: We can also use plots to see the overlapping of our groups: This plot shows a histogram of the discriminant function values for each class. The histograms should ideally show distinct peaks for each class, indicating good separation.
 
 Overlapping histograms suggest some misclassification, as the discriminant function values are not clearly separated.
 
 ```{r, fig.align='center'}
-plot(fit.LDA)
+plot(LDA.fit)
 ```
-
 
 create a confusion matrix:
 
 ```{r}
-table(Default$default,fit.LDA.Classes)
+table(Default$default,LDA.fit.Classes)
 ```
 
 And as before, we can use the confusion matrix to calculate our misclassification rate:
+
 ```{r}
-cat('missclassification rate: ', (254+22)/10000)
+cat('misclassification rate: ', (254+22)/10000)
 ```
 
-For No's we have missclassified 22 out of 9667 = 0.2% this is our *False positive rate*
-For Yes's we have missclassified 254 out of 333 = 76.3% this is our *False negative rate*
+For No's we have missclassified 22 out of 9667 = 0.2% this is our *False positive rate* For Yes's we have missclassified 254 out of 333 = 76.3% this is our *False negative rate*
 
 We can also use the function `confusionMatrix()` from the package `caret` to create and analyse the results. It takes two parameters the first one is the predicted values and the second one the real values (reference)
 
 ```{r}
 # Create confusion matrix
-confusion_matrix <- caret::confusionMatrix(data=factor(fit.LDA.Classes), reference=Default$default)
+confusion_matrix <- caret::confusionMatrix(data=factor(LDA.fit.Classes), reference=Default$default)
 
 print(confusion_matrix)
 ```
 
-**Interpreting the results of the confusion matrix**
-- *Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.
+**Interpreting the results of the confusion matrix** - *Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.
 
-- *95% CI (Confidence Interval)*: It provides a range within which the true accuracy lies with 95% confidence.
+-   *95% CI (Confidence Interval)*: It provides a range within which the true accuracy lies with 95% confidence.
 
-- *No Information Rate (NIR)*:It represents the accuracy if the model always predicted the majority class (No).
+-   *No Information Rate (NIR)*:It represents the accuracy if the model always predicted the majority class (No).
 
-- *P-Value [Acc > NIR]*: This p-value tests if the accuracy is significantly better than the NIR.
+-   *P-Value \[Acc \> NIR\]*: This p-value tests if the accuracy is significantly better than the NIR.
 
-- *Kappa*: It measures the agreement between the observed and predicted classifications, adjusted for chance. Values close to 1 indicate better agreement.
-- *Mcnemar's Test P-Value*: Tests if there is a significant difference between the number of false positives and false negatives.
+-   *Kappa*: It measures the agreement between the observed and predicted classifications, adjusted for chance. Values close to 1 indicate better agreement.
+
+-   *Mcnemar's Test P-Value*: Tests if there is a significant difference between the number of false positives and false negatives.
 
 Class-Specific Metrics:
 
-- *Sensitivity (Recall)*:Proportion of actual positives correctly identified.
+-   *Sensitivity (Recall)*:Proportion of actual positives correctly identified.
 
-- *Specificity*: Proportion of actual negatives correctly identified.
+-   *Specificity*: Proportion of actual negatives correctly identified.
 
-- *Positive Predictive Value (Precision)*: Proportion of positive results that are true positives.
+-   *Positive Predictive Value (Precision)*: Proportion of positive results that are true positives.
 
-- *Negative Predictive Value*: Proportion of negative results that are true negatives.
+-   *Negative Predictive Value*: Proportion of negative results that are true negatives.
 
-- *Prevalence*: Proportion of the actual positive cases in the dataset.
+-   *Prevalence*: Proportion of the actual positive cases in the dataset.
 
-- *Detection Rate*: Proportion of actual positives correctly identified by the model.
+-   *Detection Rate*: Proportion of actual positives correctly identified by the model.
 
-- *Detection Prevalence*:Proportion of the predicted positives out of the total predictions.
+-   *Detection Prevalence*:Proportion of the predicted positives out of the total predictions.
 
-- *Balanced Accuracy*: It’s the average of sensitivity and specificity, providing a balanced measure for imbalanced datasets.
+-   *Balanced Accuracy*: It's the average of sensitivity and specificity, providing a balanced measure for imbalanced datasets.
 
-Summary:
-The model has a high overall accuracy (97.24%), but its specificity (23.72%) is low, indicating it struggles to correctly identify the negative class (Yes).
+Summary: The model has a high overall accuracy (97.24%), but its specificity (23.72%) is low, indicating it struggles to correctly identify the negative class (Yes).
 
-The high sensitivity (99.77%) suggests it’s good at identifying the majority class (No), but at the cost of false positives.
+The high sensitivity (99.77%) suggests it's good at identifying the majority class (No), but at the cost of false positives.
 
 Adjusting the model or the decision threshold can help to balance sensitivity and specificity better.
 
-In order to reduce the false negative rate we can take change the threshold at which we classify one class to yes or no. By default we have been using equal priors for all variables, but we can change this to put more weight on the minority class (default = yes). This swill increase the false positive rate, so we need to evaluate for our data what type of errors we prefer depending on the risk of making the wrong classifications. 
+In order to reduce the false negative rate we can take change the threshold at which we classify one class to yes or no. By default we have been using equal priors for all variables, but we can change this to put more weight on the minority class (default = yes). This swill increase the false positive rate, so we need to evaluate for our data what type of errors we prefer depending on the risk of making the wrong classifications.
 
-ROC Curve:{#rocCurve}
-We can use A ROC plot and AUC (Area under the curve) to summarize the overall performance of our model. A higher AUC is desired.
+ROC Curve:{#rocCurve} We can use A ROC plot and AUC (Area under the curve) to summarize the overall performance of our model. A higher AUC is desired.
+
 ```{r}
 # Fit the LDA model
-fit.LDA <- lda(default ~ income + balance + student, data = Default)
+LDA.fit <- lda(default ~ income + balance + student, data = Default)
 
 # Get predicted probabilities
-fit.LDA.prob <- predict(fit.LDA, newdata = Default[, 2:4])$posterior[, 2]
+LDA.fit.prob <- predict(LDA.fit, newdata = Default[, 2:4])$posterior[, 2]
 
 # Generate ROC curve
-roc_curve <- roc(Default$default, fit.LDA.prob)
+roc_curve <- roc(Default$default, LDA.fit.prob)
 
 # Plot ROC curve
 plot(roc_curve, main = "ROC Curve", col = "blue", lwd = 2)
@@ -5363,24 +5245,17 @@ plot(roc_curve, main = "ROC Curve", col = "blue", lwd = 2)
 auc(roc_curve)
 ```
 
-
 The *Receiver Operating Characteristic* (ROC) curve is a graphical representation used to evaluate the performance of a classification model. It plots the True Positive Rate (Sensitivity) against the False Positive Rate (1-Specificity) at various threshold settings.
 
-- *True Positive Rate* (TPR): Also known as sensitivity, it measures the proportion of actual positives correctly identified by the model.
+-   *True Positive Rate* (TPR): Also known as sensitivity, it measures the proportion of actual positives correctly identified by the model.
 
-- *False Positive Rate* (FPR): It measures the proportion of actual negatives incorrectly identified as positives by the model.
+-   *False Positive Rate* (FPR): It measures the proportion of actual negatives incorrectly identified as positives by the model.
 
-The ROC curve helps visualize the trade-off between sensitivity and specificity for different threshold values.
-It is also used to compare Models: By comparing the ROC curves of different models, you can assess which model performs better.
+The ROC curve helps visualize the trade-off between sensitivity and specificity for different threshold values. It is also used to compare Models: By comparing the ROC curves of different models, you can assess which model performs better.
 
-*The Area Under the ROC Curve* (AUC) is a single scalar value that summarizes the performance of a classification model.
-- AUC = 1: Perfect model (perfectly separates positive and negative classes).
-- AUC = 0.5: Random model (no better than random guessing).
-- AUC < 0.5: Worse than random guessing.
+*The Area Under the ROC Curve* (AUC) is a single scalar value that summarizes the performance of a classification model. - AUC = 1: Perfect model (perfectly separates positive and negative classes). - AUC = 0.5: Random model (no better than random guessing). - AUC \< 0.5: Worse than random guessing.
 
-Use of AUC:
-- Model Comparison: A higher AUC value indicates a better-performing model.
-- Robustness: AUC is insensitive to the threshold chosen for classification, providing a more robust evaluation metric.
+Use of AUC: - Model Comparison: A higher AUC value indicates a better-performing model. - Robustness: AUC is insensitive to the threshold chosen for classification, providing a more robust evaluation metric.
 
 In essence, the ROC curve and AUC provide a comprehensive way to evaluate and compare classification models, ensuring you pick the most accurate and reliable one.
 
@@ -5388,11 +5263,11 @@ Following what we see in the plot we think that a prior of 0.9 and 0.1 can be be
 
 ```{r}
 # Fit LDA model with adjusted prior probabilities
-fit.LDA <- lda(default ~ income + balance + student, data = Default, prior = c(0.9, 0.1))
+LDA.fit <- lda(default ~ income + balance + student, data = Default, prior = c(0.9, 0.1))
 
 # Predict and evaluate
-fit.LDA.Classes <- predict(fit.LDA, newdata = Default[, 2:4])$class
-confusion_matrix <- caret::confusionMatrix(factor(fit.LDA.Classes), Default$default)
+LDA.fit.Classes <- predict(LDA.fit, newdata = Default[, 2:4])$class
+confusion_matrix <- caret::confusionMatrix(factor(LDA.fit.Classes), Default$default)
 
 # Print confusion matrix
 print('Confusion Matrix')
@@ -5410,57 +5285,69 @@ cat('False Positive Rate: ', false_positive_rate, '\n')
 cat('False Negative Rate: ', false_negative_rate, '\n')
 ```
 
-----
-::: {.exercise-box}
-As an example we can see Fisher's Iris dataset. It has 3 classes (Iris Species) and uses 4 different parameters to classify the different species: Sepal Length, Sepal Width, Petal Length and Petal Width. If we plot each variable against each other using `pairs()` we can see that we can actually see quite a clear differentiation between the species using these variables. 
+------------------------------------------------------------------------
 
-```{r, fig.align='center', fig.width=10, fig.height=7, echo=FALSE}
-# Adjust layout to include extra space for the legend
-layout(matrix(c(1, 2), ncol = 1), heights = c(4, 1))
+::: exercise-box
+Example with three classes:
 
-# Create the pairs plot
-par(mar = c(5, 4, 4, 2) + 0.1)
+As an example we can see Fisher's Iris dataset. It has 3 classes (Iris Species) and uses 4 different parameters to classify the different species: Sepal Length, Sepal Width, Petal Length and Petal Width. If we plot each variable against each other using `pairs()` we can see that we can actually see quite a clear differentiation between the species using these variables.
+
+```{r, fig.align='center', echo=FALSE, fig.height=10, fig.width=10 }
+par(mar = c(0, 0, 0, 0) + 0.1, pch = 20, cex = 2)
 pairs(iris[, 1:4], col = as.numeric(iris$Species),
       main = "Pairs Plot of Iris Dataset")
 
 # Add a blank plot for the legend
 par(mar = c(0, 0, 0, 0))
-plot.new()
-legend("center", legend = levels(iris$Species), 
+
+legend("bottomright", legend = levels(iris$Species), 
        col = 1:3, pch = 19, title = "Species", horiz = TRUE)
 ```
 
-We are going to fit a model for our iris data and see how well it works predicting the species. 
+We are going to fit a model for our iris data and see how well it works predicting the species.
 
 ```{r}
-fit.LDA = lda( Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, iris)
-fit.LDA
+LDA.fit = lda( Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, iris)
+LDA.fit
 ```
 
+We see that now we have to LDFs LD1 and LD2.
+
+*Proportion of Trace*: The proportion of trace tells you how much of the total between-class variance each linear discriminant function explains.
+
+In this case:
+
+-   LD1: Explains 99.12% of the variance.
+
+-   LD2: Explains 0.88% of the variance.
+
+So, LD1 is the primary driver for separating the species in the iris dataset, while LD2 adds a minor amount of additional discrimination.
 
 Now we are going to perform the classification:
 
 ```{r}
-fit.LDA.C = predict(fit.LDA, newdata=iris[,c(1,2,3,4)])$class
+LDA.fit.C = predict(LDA.fit, newdata=iris[,c(1,2,3,4)])$class
 
-head(fit.LDA.C)
+head(LDA.fit.C)
 ```
 
 We can quickly create a confusion matrix using table:
 
 ```{r}
-table(iris$Species, fit.LDA.C)
+table(iris$Species, LDA.fit.C)
 ```
+
 As we have seen before we can also use the confusion matrix function from the package caret:
 
 ```{r}
-caret::confusionMatrix(data=fit.LDA.C, reference=iris$Species )
+caret::confusionMatrix(data=LDA.fit.C, reference=iris$Species )
 ```
 
-WE can also visualize a plot that will allow us to see how clear is the differenciation between our classes:
+Lastly, we can create an LDA plot to view the linear discriminants of the model and visualize how well it separated the three different species in our dataset:
+
 ```{r, fig.align='center', fig.width=10}
 # Predict the LDA values
-lda.pred <- predict(fit.LDA, newdata=iris[,c(1,2,3,4)])$x
+lda.pred <- predict(LDA.fit, newdata=iris[,c(1,2,3,4)])$x
 
 # Combine the LDA values with the original dataset
 lda.data <- data.frame(lda.pred, Species = iris$Species)
@@ -5478,5 +5365,705 @@ legend("topright", legend = levels(iris$Species),
        col = species_colors, pch = 19, title = "Species")
 
 ```
+:::
+
+### Quadratic Discriminant Analysis (QDA).
+
+So far we have seen how to use discriminant analysis for a normal distribution, with the same variance for each class. If the distribution is still normal but the variance for each class is different, we use *quadratic discriminant analysis* The formula for the discriminant score was quite simple for the linear discriminant analysis because the quadratic terms were cancelling each other, but now, because $\Sigma_k$ are different, we cannot apply that cancellation. $$
+\delta_k(x) = -\frac{1}{2}(x-\mu_k)^T\Sigma_k^{-1}(x-\mu_k) + \log{\pi_k} - \frac{1}{2}\log{|\Sigma_k|}
+$$ {#eq-quadraticDiscriminantFunction}
+
+Where - $\Sigma_k$ represents the covariance matrix for class (k). It describes the spread and orientation of the data points in class (k). - $\pi_k$: This is the prior probability of class (k). It represents the proportion of data points that belong to class (k) in the training dataset.
+
+Quadratic discriminant analysis is good when the number of features is not high, because you need to estimate the covariance matrices.
+
+::: exercise-box
+Example We are going to use the iris dataset to perform quadratic Discriminant Analisys. We will split the dataset into training and testing sets:
+
+```{r}
+str(iris)
+set.seed(1)
+sample <- sample(c(TRUE, FALSE), nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
+train <- iris[sample, ]
+test <- iris[!sample, ]
+
+```
+
+and now we use the `qda` function from the MASS package to fit the model over the training data:
+
+```{r}
+model <- qda(Species ~ ., data=train)
+print(model)
+
+```
+
+*Prior probabilities of group*: These represent the proportions of each Species in the training set. For example, 35.8% of all observations in the training set were of species virginica.
+
+*Group means*: These display the mean values for each predictor variable for each species. As ususal, to use the model to get the fitted values we use `predict`
+
+```{r}
+predictions <- predict(model, test)
+names(predictions)
+
+```
+
+Predict returns a list with two variables: - *class*: the predicted class - *Posterior*: the posterior probability that an observation belong to each class.
+
+```{r}
+head(predictions$class)
+head(predictions$posterior)
+```
+
+We can use the following code to see what percentage of observations the QDA model correctly predicted:
+
+```{r}
+mean(predictions$class==test$Species)
+```
+
+And we create a confusion matrix to see the results:
+
+```{r}
+table(predictions$class, test$Species)
+```
+:::
+
+### Naive Bayes
+
+Naive Bayes is best used when the number of features is high because it does not require to calculate the covariance matrices. It assumes that the features are independent in each class, this means your predictor variables are independent, which is almost never true for real data. Despite the strong assumptions that it does, naive Bayes often produces good classification results.
+
+It can be used for mixed feature vectors (quantitative and qualitative). ::: {.exercise-box} We are going to be working again with the Iris dataset. This time we are going to introduce also a new function `ggpairs()` from the package GGally, this will help us visualize the correlation between the variables before we start our analysis
+
+```{r #ggpairs, fig.align='center', fig.width=8, fig.height=8}
+GGally::ggpairs(iris[-5], title = "The correlation between the predictors")
+```
+
+We are going to split the data for the train and the test:
+
+```{r}
+set.seed(1)
+sample <- sample(c(TRUE, FALSE), nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
+train <- iris[sample, ]
+test <- iris[!sample, ]
+```
+
+We will need the library `naivebayes` for fitting the model:
+
+```{r}
+naive.fit <- naivebayes::naive_bayes(Species ~., data=train)
+naive.fit
+```
+
+Now we can use the model to predict values using the test data subset and create a confusion matrix
+
+```{r}
+predictions <- predict(naive.fit, test)
+
+(confusion_matrix<- table(predictions,test$Species))
+
+(accuracy<- sum(diag(confusion_matrix))/sum(confusion_matrix))
+```
 
 :::
+
+# Generalized Linear Models (GLM)
+
+## Poison regression model
+
+We will use the dataset bikershare from ISLR2 package. The response is *bikers* that are the number of hourly users in bikeshare program in Washington DC.
+
+First we are just going to plot the data in the dataset, without any fitting for the number of riders per hour of the day:
+
+```{r bikeshareScatter, echo=FALSE, fig.align='center', fig.width=6}
+
+plot(jitter(as.numeric(Bikeshare$hr)), jitter(Bikeshare$bikers), 
+     xlab = "Hour", 
+     ylab = "Number of Bikers", 
+     main = "Number of Bikers per Hour",
+     pch = 19, # Point character
+     col = 'lightblue',
+     cex = 0.5
+  )
+smooth.spline.fit <- smooth.spline(as.numeric(Bikeshare$hr), Bikeshare$bikers, spar=0.5)
+lines(smooth.spline.fit, col = "darkblue", lwd = 2)
+```
+
+Now if we use boxplots we can see how as the number of bikers increase, so does the standard deviation:
+
+```{r, echo=FALSE, fig.align='center', fig.width=6}
+plot(Bikeshare$hr, Bikeshare$bikers, col= 'lightblue',
+     xlab = "Hour", 
+     ylab = "Number of Bikers", 
+     main = "Number of Bikers per Hour")
+```
+
+If we use linear model to make predictions and we plot the results as we did before in a scatter plot:
+
+To perform this analysis, first we fit a linear regression model. We are going to show two different ways of doing it:
+
+```{r lmoverbikesharedata1}
+lm.fit <- lm(
+bikers ~ mnth + hr + workingday + temp + weathersit ,
+data = Bikeshare)
+summary(lm.fit)
+```
+
+In this model the first level of hr (0) and mnth (Jan) are treated as the baseline values, and so no coefficient estimates are provided for them: implicitly, their coefficient estimates are zero, and all other levels are measured relative to these baselines.
+
+We created another second model with numbered values for `mnth` and `hr`.
+
+```{r lmoverbikesharedata2}
+contrasts (Bikeshare$hr) = contr.sum (24)
+contrasts (Bikeshare$mnth) = contr.sum (12)
+lm.fit <- lm(
+  bikers ~  mnth + hr + workingday + temp + weathersit ,
+data = Bikeshare)
+summary(lm.fit)
+```
+
+Notice that we used contrast for month and hour. `Bikeshare$hr` and `Bikeshare$mnth` are categorical variables representing hour and month, respectively. Sum-to-Zero contrasts ensure that the coefficients of the categories sum to zero. This makes the interpretation of the regression coefficients easier.
+
+For instance, if you have 24 hours in a day and set up sum-to-zero contrasts (`contr.sum(24)`), the sum of all hour coefficients will be zero.
+
+This helps in comparing each category to the overall mean effect, rather than to a reference category.
+
+By default, categorical variables are typically converted to dummy variables (0/1), which can lead to difficulties in interpreting the results, especially with a large number of categories.
+
+In this second model the coefficient estimate for the last level of `mnth` is not zero: instead, it equals the negative of the sum of the coefficient estimates for all of the other levels. Similarly, the coefficient estimate for the last level of hr is the negative of the sum of the coefficient estimates for all of the other levels. This indicates that the difference between the mean level and the coefficients of `hr` and `mnth` in the second model will always total to zero.
+
+We use the linear model to predict the values:
+
+```{r bikersharepredlm, echo=FALSE, fig.align='center', fig.width=6}
+lm.pred <- predict(lm.fit)
+point_colors <- ifelse(lm.pred < 0, "red", "lightblue")
+plot(jitter(as.numeric(Bikeshare$hr)), jitter(lm.pred), 
+     xlab = "Hour", 
+     ylab = "Number of Bikers", 
+     main = "Number of Bikers per Hour",
+     pch = 19, # Point character
+     col = point_colors,
+     cex = 0.5
+  )
+smooth.spline.fit <- smooth.spline(as.numeric(Bikeshare$hr), lm.pred, spar=0.5)
+lines(smooth.spline.fit, col = "darkblue", lwd = 2)
+```
+
+One of first things that we notice is that there are negative values (red points) predicted, and this is because the linear model does not have any type of constraint for that, so **linear models are not the best choice for counts**, we have a better alternative and this is the *Poisson Regression Model*.
+
+The Probability mass function (PMF) is this for a single variance: $$
+P(Y = k) = \frac{e^{-\lambda} \lambda^k}{k!}
+$$ {#eq-poissonpmf} where:
+
+-   $P(Y = k)$: Probability of observing ( k ) events.
+-   $\lambda$: Average rate (mean number of events) in a given interval.
+-   $e$ : Euler's number (approximately 2.71828).
+-   $k!$ ): Factorial of $k$ (number of events).
+
+Note that for the Poisson distribution, the mean and the variance are directly related, meaning that when the mean is higher, the variance is also higher. In fact we assume that the variance equals the mean.
+
+This formula calculates the probability of exactly $k$ events occurring in a fixed interval when events happen at a constant mean rate and independently of the time since the last event. The Poisson distribution is useful for modeling the number of events in a specific time.
+
+When we have multiple parameters, the model changes to include the covariates:
+
+$$
+\lambda(X_1,\dots,X_p)=e^{\beta_0+\beta_1X_1+\dots+\beta_pX_p}
+$${eq-poissonpmfcovariates}
+
+Now we are going to use `glm()` function with family Poisson in r to fit this model:
+
+```{r bikershareglm}
+glm.fit <- glm(bikers ~  mnth + hr + workingday + temp + weathersit ,
+data = Bikeshare, family=poisson)
+summary(glm.fit)
+```
+
+and the predicted values plot show that we don't have negative counts anymore. We must use the argument type= "response" which tells R to output probabilities of the form $P(Y=1|X)$ as opposed to other information such as the logit.
+
+```{r, #bikersharepredglm, echo=FALSE, fig.align='center', fig.width=6}
+
+glm.pred <- predict(glm.fit, type = "response")
+point_colors <- ifelse(glm.pred < 0, "red", "lightblue")
+plot(jitter(as.numeric(Bikeshare$hr)), jitter(glm.pred), 
+     xlab = "Hour", 
+     ylab = "Number of Bikers", 
+     main = "Number of Bikers per Hour",
+     pch = 19, # Point character
+     col = point_colors,
+     cex = 0.5
+  )
+smooth.spline.fit <- smooth.spline(as.numeric(Bikeshare$hr), glm.pred, spar=0.5)
+lines(smooth.spline.fit, col = "darkblue", lwd = 2)
+```
+
+In order to visualize the outputs of the models, we plot the response estimates against the coefficients for both the linear model and the Poisson model. But first, it is important to obtain the coefficient estimates associated with the last month and hour. The coefficients for January through November can be obtained directly from the lm.fit object. The coefficient for December must be explicitly computed as the negative sum of all the other months. The linear model results:
+
+```{r #mgralph, echo=FALSE, fig.align='center', fig.width=6}
+coef.months <- c( coef (lm.fit)[2:12],-sum ( coef (lm.fit)[2:12]))
+
+plot (coef.months , xlab = " Month ", ylab = "Coefficient",
+xaxt = "n", col = " blue ", pch = 19, type = "o")
+
+axis (side = 1, at = 1:12, labels = c("J", "F", "M", "A",
+"M", "J", "J", "A", "S", "O", "N", "D"))
+```
+
+and the glm results:
+
+```{r #glmcoeffgraphmonth , echo=FALSE, fig.align='center', fig.width=6}
+coef.mnth <- c(coef (glm.fit)[2:12],
+-sum ( coef (glm.fit)[2:12]))
+plot(coef.mnth , xlab = " Month ", ylab = " Coefficient ",
+xaxt = "n", col = " blue ", pch = 19, type = "o")
+axis(side = 1, at = 1:12, labels = c("J", "F", "M", "A", "M",
+"J", "J", "A", "S", "O", "N", "D"))
+```
+
+And for the hours using the linear model:
+
+```{r #plothourscoefficients, echo=FALSE, fig.align='center', fig.width=6}
+coef.hours <- c(coef(lm.fit)[13:35],
+-sum (coef(lm.fit)[13:35]))
+plot(coef.hours , xlab = " Hour ", ylab = " Coefficient ",
+col = " blue ", pch = 19, type = "o")
+```
+
+And the glm poisson model:
+
+```{r #hoursplotglm, echo=FALSE, fig.align='center', fig.width=6}
+coef.hours <- c(coef(glm.fit)[13:35],
+-sum (coef(glm.fit)[13:35]))
+plot(coef.hours , xlab = " Hour ", ylab = " Coefficient ",
+col = " blue ", pch = 19, type = "o")
+```
+
+The predictions from the Poisson regression model are correlated with those from the linear model; however, our Poisson model produces non-negative outputs. For Poisson regression the responses at each level of X become more variable with increasing means, where variance=mean.In addition, the mean values of Y at each level of X fall on a curve, not a line. AS a result, at either very low or very high levels of Y, the Poisson regression predictions tend to be larger than those from the linear model.
+
+::: orange-box
+**Linear Regression:** Use When: You want to predict a continuous outcome based on one or more predictor numerical variables. Example: Predicting house prices based on size, location, and age.
+
+**Logistic Regression:** Use When: You want to predict a binary outcome (0/1) based on one or more predictor variables. Example: Predicting whether a customer will buy a product (Yes/No) based on their browsing history.
+
+**Discriminant Analysis (LDA/QDA):** Use When: You want to classify observations into predefined categories based on predictor variables. LDA is used when the assumptions of equal covariance matrices are valid (same variance in each class), while QDA is used when they are not.
+
+Example: Classifying iris species based on sepal and petal measurements.
+
+**Naive Bayes** is useful when the number of parameters is large
+
+**Generalized Linear Models (GLMs)**: Use When: You need more flexibility in modeling different types of outcomes (e.g., counts, binary, proportions) and you might have predictors that are not normally distributed.
+
+Example: Using Poisson regression (a type of GLM) to model the number of calls received by a call center per hour.
+:::
+
+# Monte Carlo Method
+
+The Monte Carlo method is a powerful statistical technique used to understand the impact of risk and uncertainty in prediction and forecasting models.
+
+If for example we want to know the average height of all people living in USA, we estimate the parameter we are interested in (average height of the population) using a statistic estimator that is the average height of a sample of the population drawn at random. $\theta$ is the parameter we want to calculate and we use $\hat{\theta}$ that is the average o four sample. By the law of large numbers, the approximation error can be made arbitrarily small by using a large enough sample size.
+
+What if we are interested in an estimator $\hat{\theta}$ for some parameter $\theta$ of the population and the normal approximation is not valid for that estimator? In such situations, simulations can often be used to estimate the parameters.
+
+The Monte Carlo method relies on repeated random sampling to obtain numerical results. The core idea is to use randomness to solve problems that might be deterministic in nature. This method is named after the Monte Carlo Casino in Monaco, reflecting the element of chance and randomness.
+
+In our example to estimate the height of the population of USA adults we get many (let's say 1000) samples of n=100 observations. We then compute the estimator $\hat{\theta}$ for each sample (in our case the average height), resulting in 1000 estimates. Now we compute the standard deviation of these 1000 estimates and it results to be close to the standard error of my estimator. :
+
+$$
+SE(\hat{\theta})=\sqrt{E(\hat{\theta}-E(\hat{\theta}))^ 2}
+$$
+
+$$
+s(\hat{\theta}_1,...,\hat{\theta}_{1000})= \sqrt{\frac{1}{999}\sum^{1000}_{i=1}(\hat{\theta}-mean(\hat{\theta_i}))^ 2} \approx SE(\hat{\theta})
+$$
+
+The caveat of this method is that it will only work where we can extract as many samples as we wish.
+
+Usually we cannot have as many samples as we wish, when we want to use the Monte Carlo Method in practice, it is typical to assume a parametric distribution and generate a population from this, which is called a **parametric simulation**. This means that we take parameters estimated from the real data and using the mean and standard deviation, we plug these into a model of normal distribution and generate new samples.
+
+For example for the case of mice weights, we know that mice typically weight 24 gr with a SD of about 3.5 gr. and that the distribution is approximately normal, to generate population data:
+
+```{r}
+controls<- rnorm(5000, mean=24, sd=3.5) 
+```
+
+# Resampling Methods
+
+As the models become more complex (the more features we add to our model), the [training error](#testingtrainingerror) becomes lower. On the other hand, the test error does not reduces at the same rate as the model gets more complex, it starts going down but then it starts increasing again as the model starts overfitting to the training dataset. The prediction error comes from bias and variance. The *bias* is how var off on the average the model is from the truth. The *variance* is how much the estimate varies around its average. The less parameters we fit into our model, the more bias we have (we will find it more difficult to find the true mean) and as we increase the parameters, the bias reduces, but the variance goes up, because we have more and more parameters to estimate from the same amount of data. The solution for this would be a large designated test set, but this is not often available.
+
+There are some methods to try to adjust the training error so it does not over fit and produces an increase in the testing error rate. We randomly divide the available set of samples into two parts: a *training set* and a *validation* or *hold out set*. The model is fit on the training set and the fitted model is used to predict responses for the observations in the validation set. The resulting validation-set error provides an estimate of the test error. This is typically assessed using [Mean Squared Error (MSE)](#MeanSquaredError) in the case of quantitative response and misclassification rate in the case of qualitative (discrete) responses.
+
+```{r, fig.aligh ='center', fig.width=12, fig.height=6, fig.cap='two-fold cross validation'  }
+# Set up the plotting area for two plots side by side
+par(mfrow = c(1, 2))
+
+# Plot 1: MSE with All Data
+# Initialize a vector to store MSE errors for each polynomial degree
+mse_error_all <- rep(0, 10)
+
+# Loop to calculate MSE errors for polynomial degrees 1 to 10
+for (i in 1:10) {
+  glm_fit <- glm(mpg ~ poly(horsepower, i), data = Auto)
+  predictions <- predict(glm_fit)
+  actuals <- Auto$mpg
+  mse_error_all[i] <- mean((predictions - actuals)^2)
+}
+
+# Plot the MSE errors for all data
+plot(1:10, mse_error_all, 
+     type = "b", 
+     col = 1, 
+     ylim= c(0,(max(mse_error_all) + 1)),
+     xlab = "Degree of Polynomial", 
+     ylab = "MSE", 
+     main = "MSE with All Data")
+
+# Plot 2: MSE with Different Samples
+# Initialize a list to store MSE errors for each sample
+mse_error_samples <- list()
+
+# Loop to create different samples and calculate MSE errors
+for (j in 1:10) {
+  # Create a different sample
+  train <- sample(c(TRUE, FALSE), nrow(Auto), replace = TRUE, prob = c(0.6, 0.4))
+  
+  # Initialize a vector to store MSE errors for the current sample
+  mse_error_samples[[j]] <- rep(0, 10)
+  
+  # Loop to calculate MSE errors for polynomial degrees 1 to 10
+  for (i in 1:10) {
+    glm_fit <- glm(mpg ~ poly(horsepower, i), data = Auto[train, ])
+    predictions <- predict(glm_fit, newdata = Auto[!train, ])
+    actuals <- Auto$mpg[!train]
+    mse_error_samples[[j]][i] <- mean((predictions - actuals)^2)
+  }
+}
+
+y_max_samples <- max(unlist(mse_error_samples)) + 1
+
+# Plot the MSE errors for different samples
+plot(1:10, mse_error_samples[[1]], type = "b", col = 1, xlab = "Degree of Polynomial", ylab = "MSE", main = "MSE with Different Samples",
+  ylim = c(0, y_max_samples))
+for (j in 2:10) {
+  lines(1:10, mse_error_samples[[j]], type = "b", col = j)
+}
+legend("bottomleft", legend = paste("Sample", 1:10), col = 1:10, lty = 1, cex = 0.8)
+
+```
+
+In the first graph we can see that a polynomial of level 2 reduces drastically the MSE from a linear model, but more polynomial terms do not have the same effect. The second graph shows us how the MSE vary with different samples, so the choice of the sample will have an effect on the fit of the model. Another drawback of this method is that, by fitting the model to a smaller number of data points, the estimated error will be higher than fitting the model to the whole available data points.
+
+Now we will see some techniques that try to solve some of those drawbacks.
+
+## Crossvalidation
+
+### K-fold Cross-validation
+
+*K-fold cross validation* is a widely used approach for estimating test error. The idea is to randomly divide the data into K equal-sized parts. We leave out part $k$, fit the model to the other $K-1$ parts (combined) and then obtain predictions for the left-out $kth$ part.This is done in turn for each part k, and then the results are combined. K is usually between 5 and 10. Let's the K parts be $C_1,C_2,\dots,C_k$. where $C_k$ denotes the indices of the observations in part k. There are $n_k$ observations in part k. $$
+CV_{(K)}= \sum^K_{k=1}\frac{n_k}{n} MSE_k
+$$ {#eq-kfoldCrossValidationErrorRate}
+
+Where: $CV_{(K)}$: This represents the cross-validation error estimate for K-fold cross-validation. $\sum^K_{k=1}$: This indicates that the sum is taken over all K folds. $\frac{n_k}{n}$: This is the proportion of the total data used in the k-th fold, where $n_k$ is the number of observations in the k-th fold and $n$ is the total number of observations. $MSE_k$: This is the Mean Squared Error for the k-th fold. $MSE_k=\sum_{i\epsilon C_k}(y_i-\hat{y_i})^2/n_k$ and $\hat{y_i}$ is the fit for the observation i, obtained from the data with the part k removed.
+
+One special use of the k-fold cross validation is setting K=n, this is called *leave-one-out cross validation (LOOCV)*: each observation is left out and used as a validation set, while the whole set of other data points are used for training the model. Leave one out cross validation for linear or polynomial model uses this formula: 
+$$
+CV_{(n)}=\frac{1}{n} \sum_{i=1}^n \left(\frac{y_i-\hat{y_i}}{1-h_i} \right)^2
+$$ {#eq-leveoneoutCrossValidationErrorRate}
+
+where $\hat{y_i}$ is the ith fitted value for the original least squares fit and $h_i$ is the leverage (diagonal of the "hat" matrix). This is like the ordinary MSE except the ith residual is divided by $1-h_i$ The $h_i$ tells you how much influence a single point has on the its own fit, it will be a number between 0 and 1.
+
+Cross-validation takes the average of the errors over the n-folds so in LOOCV each sample looks much more like the other ones, because it only leaves one point out. As a result, each error estimate are highly correlated, when you average these highly correlated errors, the resulting average has a high variance -it is more sensitive to slight changes or outliers- because there's little variation in the training data across folds. It's not about the individual errors being different; it's about them moving together because the training sets are too similar. Remember the trade off we talked about between bias and variance in the [Bias-variance trade off](#bias-variance-trade-off) section
+
+For this reason it is often preferred to use k=5 or 10.
+Let's compute the cross-validation in r using the formula we saw above.
+First we are going to fit the model to a linear model. We can use the function glm and if we don't pass any family type it will fit to a linear model. 
+
+```{r, fig.cap='LOOCV linear model'  }
+
+#linear model:
+fit.lm<- glm(mpg ~ horsepower, data = Auto)
+loocv<- function(fit){
+  h <-lm.influence(fit)$h
+  mean((residuals(fit)/(1-h))^2)
+}
+
+loocv(fit.lm)
+```
+But we have a handy function in r that will do this for us: We will use the `library(boot)` to calculate the cross validation errors for the Auto dataset using the function `cv.glm`. If we don't pass any value of k, it will default to leave-one-out cross-validation. 
+```{r, fig.cap='LOOCV linear model'  }
+
+glm.fit <- glm(mpg ~ horsepower, data = Auto)
+cv.err <- boot::cv.glm(Auto, glm.fit)
+cv.err$delta
+```
+And we see that we get the same result that the one we calculated manually above. The first Delta is the cross-validation prediction error, and the second one is a biased corrected version of it, taking into consideration that the dataset is smaller for the dataset in cross validation. This has little effect in leave one out, but it will have a bigger effect in k=n cross-validation. 
+
+Now we are going to fit polynomials of different degrees to our data because it looks non-linear, so we expect some of these to fit better than a linear model. 
+
+```{r, fig.aligh ='center',fig.width=12, fig.height=4, fig.cap='LOOCV for different polynomials'}
+# Leave one out
+cv.error <- rep(0, 10)
+for (i in 1:10) {
+  glm.fit <- glm(mpg ~ poly(horsepower, i), data = Auto)
+  cv.error[i] <- boot::cv.glm(Auto, glm.fit)$delta[1]
+}
+# Plot the MSE errors for all data
+plot(1:10, cv.error, 
+     type = "b", 
+     col = 1, 
+     ylim= c(2,(max(cv.error) + 1)),
+     xlab = "Degree of Polynomial", 
+     ylab = "MSE", 
+     main = "Leave One Out")
+```
+Now let's try 10-k fold cross-validation. 
+
+```{r, fig.aligh ='center', fig.width=12, fig.height=4, fig.cap=' 10k-fold cross validation' }
+## $k$-Fold Cross-Validation
+# Initialize a list to store CV errors for each sample
+cv.error.10 <- list()
+
+# Loop to create different samples and calculate MSE errors
+for (j in 1:10) {
+  # Initialize a vector to store MSE errors for the current sample
+  cv.error.10[[j]] <- rep(0, 10)
+  
+  # Loop to calculate MSE errors for polynomial degrees 1 to 10
+  for (i in 1:10) {
+    glm.fit <- glm(mpg ~ poly(horsepower, i), data = Auto)
+    cv.error.10[[j]][i] <- boot::cv.glm(Auto, glm.fit, K = 10)$delta[1]
+  }
+}
+
+y_max_samples <- max(unlist(cv.error.10)) + 1
+
+# Plot the MSE errors for different samples
+plot(1:10, cv.error.10[[1]], type = "b", col = 1, xlab = "Degree of Polynomial", ylab = "MSE", main = "k=10 fold CV",
+  ylim = c(2, y_max_samples))
+for (j in 2:10) {
+  lines(1:10, cv.error.10[[j]], type = "b", col = j)
+}
+legend("bottomleft", legend = paste("k", 1:10), col = 1:10, lty = 1, cex = 0.8)
+
+```
+
+We can see how the variability in 10-k fold is much less than what we obtained before using half of the data (2-k)
+
+For classification problems the k-fold cross-validation works exactly the same, the only difference is that instead of MSE to measure the cross validation error we use the \[misclassification error rate\] (#misclassificationErrorRate).
+
+### Potential problems with cross-validations.
+
+Consider a simple classifier applied to some two-class data. We have 5000 predictors and 50 samples. With this, we find the 100 predictors having the largest correlation with the class labels. We then apply a classifier such as logistic regression using only those 100 predictors. If we now try to estimate the test set performance of this classifier using cross-validation, we will get a much lower error estimate than real. This is because when we choose the 100 best predictors, this is a form of training for the model, and must be included in the validation process. If for example we simulate data with the class labels independent of the outcome (so our test error is 50%) and then we choose the best predictors and create a model with them, when we calculate the cross-validation, our error estimate will be smaller than it should be.
+
+To avoid this we will have to create our folds and remove our test fold before the process of fitting and choosing the predictors, and then apply the cross validation over the fold we set apart.
+
+You can find more information in the [lectureVideo](#https://www.youtube.com/watch?v=jgoa28FR__Y)
+
+
+## The bootstrap principle {#bootstrap}
+
+The *bootstrap* is a flexible and powerful statistical tool that can be used to quantify the uncertainty associated with a given estimator or statistical method. For example, it can provide an estimate of the standard error of a coefficient, or a confidence interval for that coefficient.
+
+We have an estimate $\hat{\theta}$ for a parameter $\theta$ and want to know how accurate our estimate is. For that we need to know the SE of the estimate or give a confidence interval for the parameter $\theta$. The bootstrap can do this in quite general settings:
+
+Example $\theta$= average height of all people in the US. It is unknown but estimated with the average height of 100 randomly selected people. We can't compute the population mean because we can't access the whole population. So we ' plug in' the sample in place of the population and compute the mean of the sample instead. The rationale for the plug-in principle is that the sample mean will be close to the population mean because the sample histogram is close to the population histogram.
+
+The bootstrap uses the plug-in principle and the Monte Carlo Method to approximate quantities such as $SE(\hat{ \theta})$ when we cannot get many samples.
+
+The bootstrap pretends that the sample histogram is the population histogram and uses the Monte Carlo to simulate the quantity of interest.
+
+What we do is we draw n samples **with replacement** from the original sample, each sample is the same size $n$ as the original dataset, and with those samples we use the Monte Carlo principle to calculate the quantity of interest.
+Example of 4 samples chosen at random from a dataset with three points:
+
+```{r}
+x <- rnorm(3,mean=5,sd=2)
+Y <- 0.2+0.33*x+ rnorm(1, -1.1, .8)
+
+pop<- data.frame(obs=c("A","B","C"),x,Y)
+pop
+#bootstrap samples:
+set.seed(1)
+s<- sample(c(1,2,3),3,replace=TRUE)
+pop[s,]
+set.seed(2)
+s<- sample(c(1,2,3),3,replace=TRUE)
+pop[s,]
+set.seed(3)
+s<- sample(c(1,2,3),3,replace=TRUE)
+pop[s,]
+set.seed(4)
+s<- sample(c(1,2,3),3,replace=TRUE)
+pop[s,]
+```
+
+Drawing a bootstrap sample by sampling with replacement from the data is called *nonparametric bootstrap*.
+
+If we know that the data follow a normal distribution, but we don't know the mean on the standard deviation. The obvious thing to do there is to simply estimate the unknown mean and standard deviation, and then simply sample from the normal distribution, with that mean and standard deviation. That's called *parametric bootstrap*.
+
+This type of sampling works if the data are independent, that is, $X_1$ to $X_n$ are really generated independently. But oftentimes, there's dependence in the data. For example, the data are observed over time.
+
+If the sampling distribution of $\hat{\theta}$ is approximately normal, then the confidence interval formula is :
+
+$$
+\left[ \hat{\theta} - z_{\alpha/2} SE(\hat{\theta}), \hat{\theta} + z_{\alpha/2} SE(\hat{\theta}) \right]
+$${#eq-conficenceIntervalEstimatorNormalDistribution}
+
+This formula represents a confidence interval for an estimator $\hat{\theta}$, where:
+
+-   ( $\hat{\theta}$ ) is the point estimate.
+
+-   ( $z_{\alpha/2}$ ) is the critical value from the standard normal distribution for a given confidence level. For example for a confidence level of 95% $\alpha =(1-0.95)=0.05$ ; $\frac{\alpha}{2}=0.025$, $z_{\frac{\alpha}{2}}=1.96$
+
+-   ( $SE(\hat{\theta})$ ) is the standard error of the estimator.
+
+If the distribution is not normal, we can still use the bootstrap by estimating that the distribution of the estimate can be approximated by the distribution of the bootstrap-copies extracted from it, so we can draw a distribution curve and calculate the 95% confidence interval using that curve:
+
+$$
+\left[ \hat{\theta}^*_{\alpha/2}, \hat{\theta}^*_{1-\alpha/2} \right]
+$${#eq-conficenceIntervalEstimatorNotGaussian}
+
+where $\hat{\theta}^*_{\alpha/2}$ is the $\alpha/2$ percentile of the $\hat{\theta}^*_{1},....\hat{\theta}^*_{B}$
+
+:::{.exercise-box}
+Estimating the accuracy of a linear regression Model
+
+The bootstrap approach can be used to assess the variability of the coefficient estimates and predictions from a statistical learning method. Here we use the bootstrap approach in order to assess the variability of the estimates for $\beta_0$ and $\beta_1$ (intercept and slope) for a linear regression model that uses horsepower to predict mpg (miles per gallon) in the Auto data set.
+
+We first create a simple function `boot.fn()` which takes in the Auto data set as well as the indices for the observations, and returns the intercept and slope estimates for the linear regression model. 
+```{r}
+boot.fn<- function (data, index){
+  coef(lm(mpg ~ horsepower, data= data, subset = index))
+}
+```
+
+We then apply this function to the full set of 392 observations in order to compute get the slope and intersect for the full data set:
+
+```{r}
+boot.fn(Auto,1:392)
+```
+if we use bootstrap principle we just need to create a sample with replacement of the same size of the full data set. This is one sample example:
+```{r}
+boot.fn(Auto, sample(392,392, replace=TRUE))
+```
+
+but what we do in r is to use the `boot()` function from the boot library to compute the standard errors of 1,000 bootstrap estimates for the intercept and the slope:
+```{r}
+set.seed(1)
+boot(Auto, boot.fn,1000)
+```
+This indicates that the bootstrap estimate for $SE(\beta_0)$ is 0.84 and for $SE(\beta_1)$ is 0.0073
+
+Standard formulas can be used to compute the standard errors for the
+regression coefficients in a linear model. These can be obtained using the summary() function.
+```{r}
+summary(lm(mpg ~ horsepower, data= Auto))$coef
+```
+these standard errors are calculated using the formulas we saw in 
+[Assessing the Accuracy of the Coefficient Estimates and Confidence Intervals](#assessing-the-accuracy-of-the-coefficient-estimates-and-confidence-intervals)
+
+The formula for the slope: (@eq-standardErrorSlope)
+and for the intercept1:(@eq-standardErrorIntercept)
+
+These formulas rely on certain assumptions (out of the scope for this document, check the ISLR book for more info). The bootstrap approach does not rely on any of these assumptions, and so, it is likely giving  more accurate estimate of the standard errors than the summary function
+
+:::
+
+If the data is a time series, we can't simply sample the observations with replacement because the data is not independent. There's correlation in time series. For example we want to predict the value of a stock price using the previous days stock price. We expect the stock price for a given day to be correlated with the stock price from the previous day. This creates a problem for the bootstrap because bootstrap assumes the data are independent. 
+
+What people uses for time series is the *block boostrap*, it divides the data up into blocks and we assume that in between blocks, the data is independent. 
+
+Another instance where bootstrap is not a good approach is for estimating the prediction error in cross-validation problems. In cross-validation, each of the K validation folds is distinct from the other K-1 folds used for training, there is no overlap, this is crucial for its success. But each bootstrap sample has significant overlap with the original data. About two-thirds of the original data points appear in each bootstrap sample. This will cause the bootstrap to seriously underestimate the true prediction error. 
+
+:::{.exercise-box}
+Estimating the Accuracy of a Statistic of Interest 
+
+We will be using the dataset Portfolio from LSLR package for this practice. 
+Suppose that we wish to invest a fixed sum of money in two financial
+assets that yield returns of X and Y, respectively, where X and Y are
+random quantities. We will invest a fraction α of our money in X, and will invest the remaining 1 − α in Y . Since there is variability associated with the returns on these two assets, we wish to choose α to minimize the total risk, or variance, of our investment.In other words, we want to minimize Var(αX +(1−α)Y ). The value that minimizes the risk is given by the formula:
+
+$$
+\alpha= \frac{\sigma^2_Y-\sigma_{XY}}{\sigma^2_X+\sigma^2_Y-2\sigma_{XY}}
+$$
+where $\sigma^2_X$= VAR(X),  $\sigma^2_Y$= VAR(Y) and $\sigma_{XY}$ = COV(X,Y). These quantities are unknown, so we will estimate them using our data. 
+We can write that function in r:
+```{r}
+
+alpha.fn <- function(data, index) {
+  X <- data$X[index]
+  Y <- data$Y[index]
+  (var(Y) - cov(X, Y)) / (var(X) + var(Y) - 2 * cov(X, Y))
+}
+
+alpha.fn(Portfolio, 1:nrow(Portfolio))
+```
+but what is the sampling variability of α? we use boostrap for this:
+
+
+```{r}
+set.seed(1)
+boot.out<- boot::boot(Portfolio, alpha.fn, R = 1000)
+boot.out
+
+plot(boot.out)
+
+```
+the statistic came as 0.5758 as before and we now know our standard error that came as 0.093
+
+The plots show you the distribution of the samples and the QQ plot. 
+:::
+
+## Use of Monte Carlo Simulation and Bootstrap
+
+Simulations can also be used to check theoretical or analytical results. Also, many of the theoretical results we use in statistics are based on asymptotics: they hold when the sample size goes to infinity. In practice, we never have an infinite number of samples so we may want to know how well the theory works with our actual sample size. Sometimes we can answer this question analytically, but not always. Simulations are extremely useful in these cases.
+
+As an example we are going to use simulation to compare the Central Limit Theorem to the t-distribution for different sample sizes. We will use our mice data and extract control and 'fake' treatment samples. The fake treatment samples are just samples labeled as treatment but extracted from the control population.
+
+We will build a function that automatically generates a t-statistic under the null hypothesis for a sample size of `n`.
+
+```{r}
+dat <- read.csv("data/mice_pheno.csv")
+controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  
+  dplyr::select(Bodyweight) %>% unlist
+
+ttestgenerator <- function(n) {
+  cases <- sample(controlPopulation,n)
+  controls <- sample(controlPopulation,n)
+  tstat <- (mean(cases)-mean(controls)) / 
+      sqrt( var(cases)/n + var(controls)/n ) 
+  return(tstat)
+  }
+ttests <- replicate(1000, ttestgenerator(10))
+```
+
+```{r ttest_hist, fig.cap="Histogram of 1000 Monte Carlo simulated t-statistics.", fig.align='center'}
+hist(ttests)
+```
+
+we can use quantile-quantile plots to see how well this distribution approximates to the normal:
+
+```{r ttest_qqplot, fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics to theoretical normal distribution.", fig.align='center'}
+qqnorm(ttests)
+abline(0,1)
+```
+
+This looks like a very good approximation. For this particular population, a sample size of 10 was large enough to use the CLT approximation. How about sample size 3?
+
+```{r, ttest_df3_qqplot, fig.align='center',fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics with three degrees of freedom to theoretical normal distribution."}
+ttests <- replicate(1000, ttestgenerator(3))
+qqnorm(ttests)
+abline(0,1)
+```
+
+Now we see that the large quantiles, referred to by statisticians as the *tails*, are larger than expected (below the line on the left side of the plot and above the line on the right side of the plot). In the previous module, we explained that when the sample size is not large enough and the *population values* follow a normal distribution, then the t-distribution is a better approximation. Our simulation results seem to confirm this:
+
+In the code below first we generate the percentiles: `ps <- (seq(0,999)+0.5)/1000` seq(0,999) generates a sequence of numbers from 0 to 999. Adding 0.5 to each element centers the sequence values. Dividing by 1000 scales the values to be between 0 and 1. This results in 1000 equally spaced percentiles between 0.0005 and 0.9995. `qt(ps, df=2*3-2)` computes the quantiles of the t-distribution for the given percentiles `ps` with degrees of freedom `df=2*3-2` qqplot creates a QQ plot comparing the quantiles of our t-test results to the theoretical quantiles of the t-distribution.
+
+```{r, ttest_v_tdist_qqplot,fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics with three degrees of freedom to theoretical t-distribution.", fig.align='center'}
+ps <- (seq(0,999)+0.5)/1000
+qqplot(qt(ps,df=2*3-2),ttests,xlim=c(-6,6),ylim=c(-6,6))
+abline(0,1)
+```
+
+The QQ plot helps you visually assess how well your t-test results follow the theoretical t-distribution. The t-distribution is a much better approximation in this case, but it is still not perfect. This is due to the fact that the original data is not that well approximated by the normal distribution. We can see this plotting the qqplot for the full population data:
+
+```{r, dat_qqplot, fig.cap="Quantile-quantile of original data compared to theoretical quantile distribution.", fig.align='center'}
+qqnorm(controlPopulation)
+qqline(controlPopulation)
+```
