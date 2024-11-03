@@ -66,6 +66,9 @@ library(pROC)
 library(class)
 library(boot) #crossvalidation
 library(leaps) #best subset selection
+library(glmnet) #ridge regression and lasso
+library(survival)
+library(survminer)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -746,7 +749,7 @@ print(probability)
 
 ```{r, echo=FALSE}
 #| echo: false
-file <- here("data", "optical_full.xlsx")
+file <- here::here("data", "optical_full.xlsx")
 optical <- read_excel(file)
 ```
 
@@ -1392,7 +1395,7 @@ cat('margin of error: ',margin_of_error)
 For example in our optical dataset, if we do a t.test over that variable we can get the confidence intervals for a level of confidence 95%:
 
 ```{r, fig.align='center'}
-file1 <- here("data", "optical_sample.xlsx")
+file1 <- here::here("data","optical_sample.xlsx")
 optical_sample <- read_excel(file1)
 
 testResult <- t.test(optical_sample$eye_difference)
@@ -1471,7 +1474,7 @@ Using the pm_sample data set,
 
 ```{r}
 
-file <- here("data", "pm_survey.xlsx") 
+file <- here::here("data", "pm_survey.xlsx") 
 pm_survey <- read_excel(file) 
 
 kable(head(pm_survey))%>%
@@ -1648,7 +1651,7 @@ A t-significance test is appropriate for quantitative data under the exact same 
 The value of $\mu$ (mu) is the value we want to test against (our null hypothesis)
 
 ```{r}
-file1 <- here("data", "optical_sample.xlsx")
+file1 <- here::here("data", "optical_sample.xlsx")
 optical_sample <- read_excel(file1)
 
 testResult <- t.test(optical_sample$eye_difference, mu = 0) 
@@ -1970,7 +1973,7 @@ Practice:
 We are going to calculate the proportion of smokers in our population based on our optical_sample data
 
 ```{r}
-file1 <- here("data", "optical_sample.xlsx")
+file1 <- here::here("data", "optical_sample.xlsx")
 optical_sample <- read_excel(file1)
 
 as.data.frame(report(optical_sample$IsSmoker))
@@ -2016,7 +2019,7 @@ If our categorical variable is not binary, we still can use this same test to ca
 For example, to calculate the proportion of women in our pm_survey dataset:
 
 ```{r}
-file2 <- here("data", "pm_survey.xlsx")
+file2 <- here::here("data", "pm_survey.xlsx")
 pm_survey <- read_excel(file2)
 
 kable(head(pm_survey))%>%
@@ -2046,7 +2049,7 @@ While there are statistical methods for dealing with samples with fewer than 5 o
 We want to know if the proportion of the people taking medication in our sample is the same as the proportion of people in USA taking medication. This data we know is 66% of the USA population so we can plug in that value in our test just like that in the formula using $p=$ where p, in this case is the proportion for our null theory.
 
 ```{r}
-file <- here("data", "optical_sample.xlsx")
+file <- here::here("data", "optical_sample.xlsx")
 optical_sample <- read_excel(file)
 
 as.data.frame(report(optical_sample$TakingMedication))
@@ -2069,7 +2072,7 @@ Exercises
 
 ```{r}
 
-file <- here("data", "pm_survey.xlsx")
+file <- here::here("data", "pm_survey.xlsx")
 pm_survey <- read_excel(file)
 
 pmWithCollegeDegree <- sum(pm_survey$highest_level_of_education_completed == 'College degree')
@@ -2236,7 +2239,7 @@ Exercise:
 In the exercise below we want to know if the age population in our project managers survey data matches the distribution of ages for the USA population. We get the distribution of USA from wikipedia and do some adjustments so the ranges matches those in our survey:
 
 ```{r}
-file1 <- here("data", "pm_survey.xlsx")
+file1 <- here::here("data", "pm_survey.xlsx")
 pm_survey <- read_excel(file1)
 
 us_ages <- c(.117, .176, .168, .158, .166, .215)
@@ -2262,7 +2265,7 @@ obs_ages / sum(obs_ages) - us_ages
 Now we want to see if in our optical sample the customers are evenly distributed between the opticians. If we don't pass a p attribute to the chi squared test it will assume you are asking for even distribution between all categories:
 
 ```{r}
-file2 <- here("data", "optical_full.xlsx")
+file2 <- here::here("data", "optical_full.xlsx")
 optical_full <- read_excel(file2)
 
 counts <- as.numeric(table(optical_full$`Optician Last Name`))
@@ -2285,7 +2288,7 @@ Does the distribution of populations of towns in the United States follow [Benfo
 ```{r}
 theme_set(theme_minimal())
 
-file <- here("data", "towns.xlsx")
+file <- here::here("data", "towns.xlsx")
 towns <- read_excel(file)
 
 benford <- c(.301, .176, .125, .097, .079, .067, .058, .051, .046)
@@ -2445,7 +2448,7 @@ The exercise above shows how to calculate the p value for proportions, if we are
 In the example below we are going to use the attrition dataset to see if the average age of employees in two different departments is different?
 
 ```{r}
-file <- here("data", "attrition1.xlsx")
+file <- here::here("data", "attrition1.xlsx")
 attrition1 <- read_excel(file)
 
 kable(head(attrition1))%>%
@@ -2539,7 +2542,7 @@ In the example below we want to use our substance_abuse data set and know if the
 We can change the confidence level manually if we want:
 
 ```{r}
-file <- here("data", "substance_abuse.xlsx") 
+file <- here::here("data", "substance_abuse.xlsx") 
 substance_abuse <- read_excel(file) 
 substance_abuse$DLA_improvement <- substance_abuse$DLA2 - substance_abuse$DLA1 
 t.test(DLA_improvement ~ Program,         data = substance_abuse,        conf.level = .99)
@@ -3022,7 +3025,7 @@ We are going to use our product_rating dataset to see the relationship between a
 first we can just see the contingency table for those two variables
 
 ```{r}
-file <- here("data", "product_ratings.xlsx")
+file <- here::here("data", "product_ratings.xlsx")
 product_ratings <- read_excel(file)
 t <- table(product_ratings$age,
            product_ratings$product)
@@ -3419,15 +3422,19 @@ Covariance (Y and Z): The positive covariance of 5 between Y and Z also indicate
 
 In essence, the covariance matrix provides insights into how pairs of variables vary together, helping you understand relationships and dependencies in your data.
 
-## Regression Line and the Method of Least Squares {#Residualsumofsquares}
+## Regression Line and the Method of Least Squares (RSS) {#Residualsumofsquares}
 
 If the scatterplot shows a linear association, then this relationship between our data points can be summarized by a line. The equation for a line is $\hat{y}*i=a+bx_*i$. The idea is to choose the line that minimizes the sum of the squared distances between the observed $y_i$ and the predicted $\hat{y_i}$
 
 The method of least squares is the method we use to minimize this **Residual sum of squares (RSS)**
 
 $$
-RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - (\hat{\beta_o} + \hat{\beta_1} x_i) \right)^2
+RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 
 $$ {#eq-RSSsimpleRegression}
+
+$$
+RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - (\hat{\beta_o} + \hat{\beta_1} x_i) \right)^2
+$$ 
 
 $$
 RSS = (y_1 - \beta_0 - \beta_1 x_{1})^2 + (y_2 - \beta_0 - \beta_1 x_{2})^2 + \cdots + (y_n - \beta_0 - \beta_1 x_{n})^2
@@ -3874,7 +3881,7 @@ Exercises:
 -   *Is there a linear relationship between city mileage and highway mileage in this set?*
 
     ```{r, fig.align='center'}
-    file2 <- here("data", "mpg_2008.xlsx")
+    file2 <- here::here("data", "mpg_2008.xlsx")
     mpg_2008 <- read_excel(file2)
 
     ggplot(mpg_2008, aes(x = cty, y = hwy))+
@@ -3926,11 +3933,21 @@ In this section, we discuss some of the most important concepts that arise in se
 
 ## Measuring the Quality of Fit. Mean Squared Error (MSE) {#MeanSquaredError}
 
-In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)* $$
+In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)* 
+
+$$
 MSE = \frac{1}{n}\sum^n_{i=1}(y_i-\hat{f}(x_i))^2 =\frac{1}{n}\sum^n_{i=1}(y_i-\hat{y_i})^2
 $$ {#eq-MSEMeanSquaredError}
 
-that is the squared difference between the observed values and the predicted values divided by the number of data points. The MSE is computed using the training data that was used to fit the model, and should be referred as training MSE, but we are more interested in the accuracy of the predictions that we obtain when we apply our method to previously unseen test data. We want to choose the method that gives the lowest test MSE, as opposed to the lowest training MSE. There is no guarantee that the method with the lowest training MSE will also have the lowest test MSE. Roughly speaking, the problem is that many statistical methods specifically estimate coefficients so as to minimize the training set MSE. For these methods, the training set MSE can be small, but the test MSE is often much larger.
+that is the squared difference between the observed values and the predicted values divided by the number of data points. 
+
+If we remember the formula for the RSS(@eq-RSSsimpleRegression) we see that MSE formula can be written as:
+
+$$
+MSE = \frac{1}{n} RSS
+$$ 
+
+The MSE is computed using the training data that was used to fit the model, and should be referred as training MSE, but we are more interested in the accuracy of the predictions that we obtain when we apply our method to previously unseen test data. We want to choose the method that gives the lowest test MSE, as opposed to the lowest training MSE. There is no guarantee that the method with the lowest training MSE will also have the lowest test MSE. Roughly speaking, the problem is that many statistical methods specifically estimate coefficients so as to minimize the training set MSE. For these methods, the training set MSE can be small, but the test MSE is often much larger.
 
 ```{r, fig.align='center', echo=FALSE}
 
@@ -4020,8 +4037,7 @@ We already saw the [residual sum of squared (RSS)](#Residualsumofsquares) RSS is
 
 $$
 RSS=\sum^n_{i=1}(y_1-\hat{y_1})^2 
-$$ {#eq-rss}
-
+$$ 
 RSS measures the amount of variability that is left unexplained after performing the regression.
 
 The **total Sum of Squares (TSS)**: TSS is a measure of the total variability in the observed data. It represents the sum of the squared differences between the observed values and the mean of the observed values. TSS measures the total variance in the response Y and can be thourhg of as the amount of variability inherent in the response before the regression is performed.
@@ -4030,9 +4046,13 @@ $$
 TSS=\sum^n_{i=1}(y_1-\bar{y_1})^2
 $$ {#eq-tss}
 
-TSS - RSS measures the amount of variability in the response that is explained (or removed) by performing the regressin, and $R^2$ measures the proportion of variability in Y that can be explained using X. $$
+TSS - RSS measures the amount of variability in the response that is explained (or removed) by performing the regression, and $R^2$ measures the proportion of variability in Y that can be explained using X. 
+
+$$
 R^2 = \frac{TSS-RSS}{TSS}= 1-\frac{RSS}{TSS}
-$$ {#eq-rsquared} The R-squared value measures the proportion of the variance in the dependent variable that is predictable from the independent variables. It's calculated as:
+$$ {#eq-rsquared} 
+
+The R-squared value measures the proportion of the variance in the dependent variable that is predictable from the independent variables. It's calculated as:
 
 A larger R-squared value indicates a better fit of the model to the data. An R-squared value closer to 1 means that the model explains a large proportion of the variance in the dependent variable, signifying a good fit. Conversely, a smaller R-squared value indicates that the model explains less of the variance, signifying a poorer fit, or the error variance is high, or both.
 
@@ -4114,9 +4134,13 @@ When looking at multiple regression models we have to ask ourselves some questio
 
 ## Model fit
 
-Two of the most common numerical measures of model fit are the RSE and $R^2$, the fraction of variance explained. These quantities are computed and interpreted in the same fashion as for simple linear regression. Recall that [in simple regression, $R^2$ is the square of the correlation of the response and the variable](#Rsquare). In multiple linear regression, it turns out that it equals $Cor(Y, \hat{Y} )^2$, the square of the correlation between the response and the fitted linear model. It turns out that $R^2$ will always increase when more variables are introduced, even if those variables are only weekly associated with the response. If we notice that the increase in $R^2$ is minimal after adding another variable, it is probably best to leave that variable out of the model. We can check RSE in combination with $R^2$, as RSE will increase despite RSS increasing as well if the new variable is not adding enough value. Remember the formula for RSE (@eq-RSE): $$
+Two of the most common numerical measures of model fit are the RSE and $R^2$, the fraction of variance explained. These quantities are computed and interpreted in the same fashion as for simple linear regression. Recall that [in simple regression, $R^2$ is the square of the correlation of the response and the variable](#Rsquare). In multiple linear regression, it turns out that it equals $Cor(Y, \hat{Y} )^2$, the square of the correlation between the response and the fitted linear model. It turns out that $R^2$ will always increase when more variables are introduced, even if those variables are only weekly associated with the response. If we notice that the increase in $R^2$ is minimal after adding another variable, it is probably best to leave that variable out of the model. We can check RSE in combination with $R^2$, as RSE will increase despite RSS increasing as well if the new variable is not adding enough value. Remember the formula for RSE (@eq-RSE): 
+
+$$
 RSE = \sqrt{\frac{1}{n-p-1}RSS}
-$$ Thus, models with more variables can have higher RSE if the decrease in RSS is small relative to the increase in p.
+$$ 
+
+Thus, models with more variables can have higher RSE if the decrease in RSS is small relative to the increase in p.
 
 ::: exercise-box
 Example:
@@ -4124,7 +4148,7 @@ Example:
 We run a campaign to sell a product, and we advertise in three mediums, newspapers, radio and tv. We have the amount spent in each of the mediums and the sales. We will first run a simple linear model over the three variables:
 
 ```{r}
-Advertising <- read_csv("data/Advertising.csv")
+Advertising <- readr::read_csv("data/Advertising.csv")
 tv<- lm(sales ~ TV, data = Advertising)
 summary(tv)
 
@@ -4221,9 +4245,9 @@ With today's big data there is more availability of data than ever, and it is be
 
 -   *Subset selection*: We identify a subset of the p predictors that we believe to be related to the response. We then fit a model using least squares on the reduced set of variables.
 
--   *Shrinkage*: We fit a model involving all p predictors, but the estimated coefficientes are shrunken towards zero relative to the least squares estimates. This shrinkage (also known as *regularization*) has the effect of reducing variance and can also perform variable selection.
+-   *Shrinkage*: We fit a model involving all p predictors, but the estimated coefficients are shrunken towards zero relative to the least squares estimates. This shrinkage (also known as *regularization*) has the effect of reducing variance and can also perform variable selection.
 
--   *Dimension reduction*: We project the p predictors into a M-dimensional subspace, where M\<p. This is achieved by computing M different *linear cobinations* or *projections*, of the variables. Then these M projections are used as predictors to fit a linear regression model by least squares.
+-   *Dimension reduction*: We project the p predictors into a M-dimensional subspace, where M\<p. This is achieved by computing M different *linear combinations* or *projections*, of the variables. Then these M projections are used as predictors to fit a linear regression model by least squares.
 
 ### Best Subset selection
 
@@ -4242,39 +4266,115 @@ Once we have a correct combination of predictors, to select if the best model is
 ::: exercise-box
 Example
 
-Here we apply the best subset selection approach to the `Hitters` data from ISLR2 library. We wish to predict a baseball player's Salary on the basis of various statistics associated with performance in the previous year. Note that the Salary variable is missing in some rows, so we are going to count them and omit them
+Here we apply the best subset selection approach to the `Hitters` data from ISLR2 library. We wish to predict a baseball player's Salary on the basis of various statistics associated with performance in the previous year. Note that the Salary variable is missing in some rows, so we are going to omit them
 
 ```{r}
 #nubmer of nas. 
 sum(is.na(Hitters$Salary))
-#remove them
+#remove nas
 Hitters<- na.omit(Hitters)
 sum(is.na(Hitters$Salary))
 ```
 
-The `regsubsets()` function (part of the `leaps` library) performs best subset selection by identifying the best model that contains a given number of predictors, where best is quantified using RSS. The syntax is the same as for lm(). The summary() command outputs the best set of variables for each model size.
+The `regsubsets()` function (part of the `leaps` library) performs best subset selection by identifying the best model that contains a given number of predictors, where best is quantified using RSS. The syntax is the same as for 'lm()'. The 'summary()' command outputs the best set of variables for each model size.
 
 ```{r}
 regfit.full <- leaps::regsubsets(Salary ~ ., Hitters)
 (reg.summary<- summary(regfit.full))
 ```
+For each subset size (number of features 1...n) it returns the best subset models. An asterisk indicates that a given variable is included in the corresponding model. For instance, this output indicates that the best two-variable model contains only Hits and CRBI. 
 
-An asterisk indicates that a given variable is included in the corresponding model. For instance, this output indicates that the best two-variable model contains only Hits and CRBI. By default, `regsubsets()` only reports results up to the best eight-variable model. But the `nvmax` option can be used in order to return as many variables as are desired. The summary() function also returns $R^2$,RSS, adjusted $R^2$, Cp, and BIC. We can examine these to try to select the best overall model.
+By default, `regsubsets()` only reports results up to the best eight-variable model. But the `nvmax` option can be used in order to return as many variables as are desired. 
 
 ```{r}
 regfit.full <- regsubsets(Salary ~ ., data = Hitters,
     nvmax = 19)
-reg.summary <- summary(regfit.full)
-names(reg.summary)
+(reg.summary <- summary(regfit.full))
 ```
 
-For instance, we see that the R2 statistic increases from 32% , when only one variable is included in the model, to almost 55%, when all variables are included. As expected, the R2 statistic increases monotonically as more variables are included.
+We can see the R squared using `reg.summary$rsq`. Here we can see that the R2 statistic increases from 32%, when only one variable is included in the model, to almost 55%, when all variables are included. As expected, the R2 statistic increases monotonically as more variables are included, so this is not a good statistic for choosing the right size for the model because it will always recommend the model with more variables.
 
 ```{r}
 reg.summary$rsq
 ```
 
-Plotting RSS, adjusted R Squared, Cp and BIC for all the models at once will help us decide which model to select. Note the `type ="1"` option tells R to connect the plotted points with lines.
+So now that we have the best combination of variables for each model size, we can use cross validation or other methods to select the model with the best number of predictors. 
+
+We will see study Mallow's Cp, AIC or BIC soon, and `regsubset` gives us the statistics for the different models for those methods:
+
+```{r, fig.align='center', fig.width=10, fig.height=4}
+par(mfrow = c(2, 2))
+plot(reg.summary$bic, xlab = "Number of Variables",
+    ylab = "BIC", type = "l")
+plot(reg.summary$cp, xlab = "Number of Variables",
+    ylab = "Cp", type = "l")
+plot(reg.summary$rsq, xlab = "Number of Variables",
+    ylab = "RSS", type = "l")
+plot(reg.summary$rss, xlab = "Number of Variables",
+    ylab = "rss", type = "l")
+```
+with this information we will be able to select the model with the correct number of variables.
+:::
+
+### Stepwise Selection
+
+#### Forward Stepwise selection
+
+The stepwise selection is very similar to the best subset as we start with a model with only the intercept and start aggregating predictors and selecting those with less RSS. The difference with best subset selection is that these models are nested and brings the number of models that we are considering from $2^p$ to $p^2$ which is more manageable. Because we are not considering every possible combination of all the predictors, this method is not guaranteed to find the model with less RSS.
+
+Again, once we have the best version of the model with each number of predictors, we will choose among them using cross-validation or a similar technique.
+
+#### Backward stepwise selection
+
+It runs a similar process but starting with a model with all the variables, then you run the model removing each variable and see which one is the least statistically significant one. The new (p-1) variable model is fit, and the variable with the largest p-value is removed. Continue until a stopping rule is reached, for instance, we may stop when all remaining variables have a significant p-value defined by some significance threshold.
+
+One limitation of the backward stepwise selection is that we can only do it with n\>p (more samples than predictors). This limitation does not apply to forward stepwise selection.
+
+::: {.exercise-box}
+Example
+
+We can also use the `regsubsets()` function to perform forward stepwise or backward stepwise selection, using the argument `method = "forward"` or `method="backward"`. We are going to format a bit the output of the summary so it is more friendly to the reader:
+
+```{r}
+regfit.fwd <- regsubsets(Salary ~ ., data = Hitters,
+    nvmax = 19, method = "forward")
+
+regfit.bwd <- regsubsets(Salary ~ ., data = Hitters,
+    nvmax = 19, method = "backward")
+
+createSummaryTable <- function(regfitObject){
+
+summary <- summary(regfitObject)
+matrix_of_models <- as.data.frame(summary$which)
+matrix_of_models <- matrix_of_models %>%
+  mutate_all(~ifelse(., "**", ""))
+
+kable(matrix_of_models, escape = FALSE) %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(0, bold = TRUE) 
+}
+
+createSummaryTable(regfit.fwd)
+
+createSummaryTable(regfit.bwd)
+```
+
+For instance, we see that using forwards stepwise selection, the best one-variable model contains only CRBI, and the best two-variable model additionally includes Hits. For this data, the best one-variable through six-variable models are each identical for best subset and forward selection. However, the best  model for our number of variabless identified by forward and backward stepwise selection and best subset selection are different. 
+```{r}
+coef(regfit.full, 7)
+
+coef(regfit.fwd, 7)
+
+coef(regfit.bwd, 7)
+```
+As we saw before, the summary() function also returns $R^2$, RSS, adjusted $R^2$, Cp, and BIC. We can examine these to try to select the best overall model.
+
+```{r}
+reg.summary <- summary(regfit.fwd)
+names(reg.summary)
+```
+
+Plotting RSS, adjusted R Squared, Cp and BIC for all the models at once will help us decide which model to select. Note the `type ="1"` option tells R to connect the plotted points with lines. Here we are plotting RSS and Adjusted R Squared
 
 ```{r, fig.align='center', fig.width=10, fig.height=4}
 par(mfrow = c(1, 2))
@@ -4284,7 +4384,7 @@ plot(reg.summary$adjr2, xlab = "Number of Variables",
     ylab = "Adjusted RSq", type = "l")
 ```
 
-The `points()` command works like the `plot()` command, except that it puts points on a plot that has already been created, instead of creating a new plot. The `which.max()` function can be used to identify the location of the maximum point of a vector. We will now plot a red dot to indicate the model with the largest adjusted R2 statistic.
+The `points()` command works like the `plot()` command, except that it puts points on a plot that has already been created, instead of creating a new plot. The `which.max()` function can be used to identify the location of the maximum point of a vector. We will now plot a red dot to indicate the model with the largest adjusted R2 statistic, which would be the preferred one. 
 
 ```{r, fig.align='center'}
 max<- which.max(reg.summary$adjr2)
@@ -4313,74 +4413,48 @@ points(min, reg.summary$bic[min], col = "red", cex = 2,
 
 ```
 
-The regsubsets() function has a built-in plot() command which can be used to display the selected variables for the best model with a given number of predictors, ranked according to the BIC, Cp, adjusted R2, or AIC. To find out more about this function, type ?plot.regsubsets.
+The 'regsubsets()' function has a built-in 'plot()' command which can be used to display the selected variables for the best model with a given number of predictors, ranked according to the BIC, Cp, adjusted R2, or AIC. To find out more about this function, type ?plot.regsubsets.
+We will see the BIC here:
 
 ```{r, fig.align='center', fig.width=10, fig.height=8}
-plot(regfit.full, scale = "bic")
+plot(regfit.fwd, scale = "bic")
 ```
 
 The top row of the plot contains a black square for each variable selected according to the optimal model associated with that statistic. For instance, we see that several models share a BIC close to −150. However, the model with the lowest BIC is the six-variable model that contains only AtBat, Hits, Walks, CRBI, DivisionW, and PutOuts. We can use the `coef()` function to see the coefficient estimates associated with this model.
 
 ```{r}
-coef(regfit.full, 6)
-```
-:::
-
-### Stepwise Selection
-
-#### Forward Stepwise selection
-
-The stepwise selection is very similar to the best subset as we start with a model with only the intercept and start aggregating predictors and selecting those with less RSS. The difference with best subset selection is that these models are nested and brings the number of models that we are considering from $2^p$ to $p^2$ which is more manageable. Because we are not considering every possible combination of all the predictors, this method is not guaranteed to find the model with less RSS.
-
-Again, once we have the best version of the model with each number of predictors, we will choose among them using cross-validation or a similar technique.
-
-#### Backward stepwise selection
-
-It runs a similar process but starting with a model with all the variables, then you run the model removing each variable and see which one is the least statistically significant one. The new (p-1) variable model is fit, and the variable with the largest p-value is removed. Continue until a stopping rule is reached, for instance, we may stop when all remaining variables have a significant p-value defined by some significance threshold.
-
-One limitation of the backward stepwise selection is that we can only do it with n\>p (more samples than predictors). This limitation does not apply to forward stepwise selection.
-
-::: {.exercise-box}
-Example
-
-We can also use the `regsubsets()` function to perform forward stepwise or backward stepwise selection, using the argument `method = "forward"` or `method="backward"`
-
-```{r}
-regfit.fwd <- regsubsets(Salary ~ ., data = Hitters,
-    nvmax = 19, method = "forward")
-summary(regfit.fwd)
-
-regfit.bwd <- regsubsets(Salary ~ ., data = Hitters,
-    nvmax = 19, method = "backward")
-summary(regfit.bwd)
+coef(regfit.fwd, 6)
 ```
 
-For instance, we see that using forwards stepwise selection, the best one-variable model contains only CRBI, and the best two-variable model additionally includes Hits. For this data, the best one-variable through six-variable models are each identical for best subset and forward selection. However, the best seven-variable models identified by forward and backward stepwise selection and best subset selection are different. 
+As we did before we can plot the results for Cp and and see the difference between our bakwards and forward step wise selections:
+
 ```{r}
-coef(regfit.full, 7)
-print('----')
-coef(regfit.fwd, 7)
-print('----')
-coef(regfit.bwd, 7)
+plot(regfit.fwd, scale="Cp")
+plot(regfit.bwd, scale="Cp")
 ```
 :::
 
 ## Estimating the test error
 
 -   We can indirectly estimate the test error by making an adjustment to the training error to account for the bias due to overfitting.
+
 -   We can directly estimate the test error, using validation set approach or a cross-validation approach (see chapter [Resampling Methods](#resampling-methods)). These involve fitting the model in part of the dataset and testing in with unseen data.
 
 We are going to see here other methods:
 
 ### Mallow's Cp
 
-This technique adjust the training error for the model size, and can be used to select among a set of models with different numbers of variables. $$
+This technique adjust the training error for the model size, and can be used to select among a set of models with different numbers of variables. 
+$$
 C_p = \frac{1}{n}(RSS+2d\hat{\sigma}^2)
 $$ {#eq-mallowscp}
 
-Where d is the total number of parameters used and - $\hat{\sigma}^2$ is an estimate of the variance of the error term $\epsilon$ associated with each response measurement, calculated as: $$
+Where d is the total number of parameters used and - $\hat{\sigma}^2$ is an estimate of the variance of the error term $\epsilon$ associated with each response measurement, calculated as: 
+$$
 \hat{\sigma}^2 = \frac{SSE}{n-p}
-$$ {#eq-errorvariance} SSE is the *Sum of Squared Errors* or *Residual Sum of Squares* $$
+$$ {#eq-errorvariance} SSE is the *Sum of Squared Errors* or *Residual Sum of Squares* 
+
+$$
 SSE = \sum^n_{i=1}(y_i-\hat{y_i})^2
 $$ {#eq-SSESumSquaredErrors1}
 
@@ -4450,13 +4524,112 @@ For a least squared model with $d$ variables, the adjusted $R^2$ statistic is ca
 
 $$
 \text{Adjusted } R^2= 1- \frac{RSS/(n-d-1)}{TSS/(n-1)}
-$$ {#eq-adjustedRsquared} where TSS is the total sum of squares.
+$$ {#eq-adjustedRsquared} 
+
+where TSS is the total sum of squares.
 
 Unlike Cp, AIC and BIC, for which a small value indicates a model with low test error, a large value of adjusted R squared indicates a model with small test error. Maximizing the adjusted $R^2$ is equivalent to minimizing RSS/(n-d-1). While RSS always decreases as the number of variables in the model increases, the presence of d in the denominator corrects for that, so the inclusion of unnecessary variables in the model pays a price.
 
 The drawback of Adjusted Rsquared is that it cannot be used for other models, like logistic, for example.
 
-## Resampling Methods {#resampling-methods}
+:::{.exercise-box}
+Example: Validation Set Approach:
+
+We saw how to choose our best models for the `Hitters` dataset using Best subset selection, Stepwise Selection and then using methods like BIC, AIC to select the best size for our model. 
+
+Now we will consider how to do this using the validation set and cross-validation approaches.
+In order for these approaches to yield accurate estimates of the test error, we must use only the training observations to perform all aspects of the model-fitting, including variable selection. If the full data set is used to perform the best subset selection step, the validation set errors and cross-validation errors that we obtain will not be accurate estimates of the test error. 
+In order to use the validation approach, we begin by splitting the observations into a training set and a test set. We choose the size of the train set as 180 (approx 2/3 of the data)
+
+```{r}
+objects_to_remove <- ls(pattern = "^regfit") 
+rm(list = objects_to_remove)
+n<-nrow(Hitters)
+set.seed(1)
+train <- sample(seq(1:n), 180, replace= FALSE)
+
+```
+now we apply `regsubsets()` to the training set in order to perform best subset selection.
+
+```{r}
+regfit.fwd<- regsubsets(Salary ~ ., data = Hitters[train, ], nvmax= 19, method="forward")
+createSummaryTable(regfit.fwd)
+
+```
+
+We now make a model matrix from the test data:
+
+```{r}
+test.mat <- model.matrix(Salary ~ ., data = Hitters[-train, ])
+head(test.mat)
+```
+The `model.matrix()` function is used in many regression packages for building an X matrix from data. Now we run a loop, and for each size i, we extract the coefficients from `regfit.fwd` for the best model that size, multiply them into the appropriate columns of the test model matrix to form the predictions, and compute the test Mean Square for Error (MSE). 
+
+First we will do a sample iteration showing some of the the values so we can see what the loop is doing we choose the model with three variables + the intercept:
+```{r}
+(coefi <- coef(regfit.fwd, id = 3))
+ print(names(coefi))
+ head(test.mat[, names(coefi)])
+ pred <- test.mat[, names(coefi)] %*% coefi
+ head(pred)
+ salaryTestData<- Hitters$Salary[-train]
+ meanSquareError<- mean((salaryTestData - pred)^2)
+```
+Let's run the loop now:
+```{r}
+val.errors <- rep(NA, 19)
+for (i in 1:19){
+  coefi <- coef(regfit.fwd, id = i)
+  pred <- test.mat[, names(coefi)] %*% coefi
+  val.errors[i] <- mean((Hitters$Salary[-train] - pred)^2)
+}
+
+```
+we can now plot the square root of  MSE to see the results. Taking the square root of MSE gives us the *Root Mean Squared Error (RMSE)*, which is on the same scale as the original data. This makes it easier to interpret and compare.
+The model summary does not give us MSE directly, but we can calculate it: $MSE=RSS/n$. In our code: `regfit.fwd$rss[-1]/length(Hitters$Salary[test])` the minus one is to remove the intercept.
+
+```{r, fig.align='center', fig.width=7}
+plot(sqrt(val.errors), ylab= "Sqrt MSE", pch=1,type="b",ylim= c(250,450))
+points(which.min(val.errors), sqrt(val.errors[which.min(val.errors)]), col="red", cex = 2,
+    pch = 20, )
+
+points(sqrt(regfit.fwd$rss[-1]/length(Hitters$Salary[train])),col="blue", pch =1, type="b")
+legend("topright", legend=c("Training","Validation"), col= c("blue","black"), pch=1)
+
+```
+
+the best model is the one with the min error:
+```{r}
+val.errors
+min<-which.min(val.errors)
+coef(regfit.fwd, min)
+```
+
+This was a little tedious because there is no predict method for `regsubsets()`. Since we will be using this function again, we can write our own method:
+```{r}
+predict.regsubsets <- function(object, newdata, id, ...) {
+  form <- as.formula(object$call[[2]]) #extract call formula
+  mat <- model.matrix(form, newdata) 
+  coefi <- coef(object, id = id)
+  xvars <- names(coefi)
+  mat[, xvars] %*% coefi
+ }
+
+```
+Our function pretty much mimics what we did above. The only complex part is how we extracted the formula used in the call to `regsubsets()`. We demonstrate how we use this function below, when we do cross-validation.
+
+Finally, we perform best subset selection on the full data set, and select the best  model for our number of variables. It is important that we make use of the full data set in order to obtain more accurate coefficient estimates. Note that we perform best subset selection on the full data set and select the best  model for our number of variables, rather than simply using the variables that were obtained from the training set, because the best  model for our number of variables on the full data set may differ from the corresponding model on the training set.
+
+In fact, we see that the best  model for our number of variables on the full data set has a different set of variables than the best  model for our number of variables on the training set.
+```{r}
+regfit.best <- regsubsets(Salary ~ ., data = Hitters,
+    nvmax = 19)
+coef(regfit.best, min)
+```
+:::
+
+
+## Resampling Methods{#resampling-methods}
 
 ### Monte Carlo Method
 
@@ -4488,7 +4661,11 @@ For example for the case of mice weights, we know that mice typically weight 24 
 controls<- rnorm(5000, mean=24, sd=3.5) 
 ```
 
-As the models become more complex (the more features we add to our model), the [training error](#testingtrainingerror) becomes lower. On the other hand, the test error does not reduces at the same rate as the model gets more complex, it starts going down but then it starts increasing again as the model starts overfitting to the training dataset. The prediction error comes from bias and variance. The *bias* is how var off on the average the model is from the truth. The *variance* is how much the estimate varies around its average. The less parameters we fit into our model, the more bias we have (we will find it more difficult to find the true mean) and as we increase the parameters, the bias reduces, but the variance goes up, because we have more and more parameters to estimate from the same amount of data. The solution for this would be a large designated test set, but this is not often available.
+### Cross-validation {#crossvalidation}
+
+As the models become more complex (the more features we add to our model), the [training error](#testingtrainingerror) becomes lower. On the other hand, the *test error* does not reduces at the same rate as the model gets more complex, it starts going down but then it starts increasing again as the model starts overfitting to the training dataset. 
+
+The prediction error comes from bias and variance. The *bias* is how var off on the average the model is from the truth. The *variance* is how much the estimate varies around its average. The less parameters we fit into our model, the more bias we have (we will find it more difficult to find the true mean) and as we increase the parameters, the bias reduces, but the variance goes up, because we have more and more parameters to estimate from the same amount of data. The solution for this would be a large designated test set, but this is not often available.
 
 There are some methods to try to adjust the training error so it does not over fit and produces an increase in the testing error rate. We randomly divide the available set of samples into two parts: a *training set* and a *validation* or *hold out set*. The model is fit on the training set and the fitted model is used to predict responses for the observations in the validation set. The resulting validation-set error provides an estimate of the test error. This is typically assessed using [Mean Squared Error (MSE)](#MeanSquaredError) in the case of quantitative response and misclassification rate in the case of qualitative (discrete) responses.
 
@@ -4553,8 +4730,6 @@ legend("bottomleft", legend = paste("Sample", 1:10), col = 1:10, lty = 1, cex = 
 In the first graph we can see that a polynomial of level 2 reduces drastically the MSE from a linear model, but more polynomial terms do not have the same effect. The second graph shows us how the MSE vary with different samples, so the choice of the sample will have an effect on the fit of the model. Another drawback of this method is that, by fitting the model to a smaller number of data points, the estimated error will be higher than fitting the model to the whole available data points.
 
 Now we will see some techniques that try to solve some of those drawbacks.
-
-### Cross-validation {#crossvalidation}
 
 #### K-fold Cross-validation
 
@@ -4658,6 +4833,62 @@ Consider a simple classifier applied to some two-class data. We have 5000 predic
 To avoid this we will have to create our folds and remove our test fold before the process of fitting and choosing the predictors, and then apply the cross validation over the fold we set apart.
 
 You can find more information in the [lectureVideo](#https://www.youtube.com/watch?v=jgoa28FR__Y)
+
+
+:::{.exercise-box}
+Example: Model selection with  Cross Validation:
+
+We now try to choose among the models of different sizes using cross-validation.
+We must perform best subset selection *within each of the $k$ training sets*. Despite this, we see that with its clever subsetting syntax, `R` makes this job quite easy.
+
+First, we create a  vector that allocates each observation to one of $k=10$ folds, and we create a matrix in which we will store the results.
+
+```{r }
+k <- 10
+n <- nrow(Hitters)
+
+folds <- sample(rep(1:k, length = n))
+cv.errors <- matrix(NA, k, 19,
+    dimnames = list(NULL, paste(1:19)))
+```
+
+Now we write a for loop that performs cross-validation. In the $j$th fold, the elements of `folds` that equal `j` are in the test set, and the remainder are in the training set. We make our predictions for each model size (using our new
+`predict()` method), compute the test errors on the appropriate subset, and
+store them in the appropriate slot in the matrix `cv.errors`. Note that in the following code `R` will automatically use our `predict.regsubsets()` function when we call `predict()` because the `best.fit` object has class `regsubsets`.
+
+```{r }
+for (j in 1:k) {
+  best.fit <- regsubsets(Salary ~ .,
+       data = Hitters[folds != j, ],
+       nvmax = 19)
+  for (i in 1:19) {
+    pred <- predict(best.fit, Hitters[folds == j, ], id = i)
+    cv.errors[j, i] <-
+         mean((Hitters$Salary[folds == j] - pred)^2)
+   }
+}
+```
+
+This has given us a $10 \times 19$ matrix, of which the $(j,i)$th element  corresponds to the test MSE for the $j$th cross-validation fold for the best $i$-variable model. We use the `apply()` function to average over the columns of this matrix in order to obtain a vector for which the $i$th element is the cross-validation error for the $i$-variable model.
+
+```{r chunk23}
+(mean.cv.errors <- apply(cv.errors, 2, mean))
+
+par(mfrow = c(1, 1))
+
+plot(sqrt(mean.cv.errors), type = "b", ylab="sqrt MSE")
+
+```
+
+We see that cross-validation selects a 10-variable model. We now perform best subset selection on the full data set in order to obtain the 10-variable model.
+
+```{r chunk24}
+reg.best <- regsubsets(Salary ~ ., data = Hitters,
+    nvmax = 19)
+coef(reg.best, 10)
+```
+
+:::
 
 ### The bootstrap principle {#bootstrap}
 
@@ -4782,7 +5013,9 @@ We will be using the dataset Portfolio from LSLR package for this practice. Supp
 
 $$
 \alpha= \frac{\sigma^2_Y-\sigma_{XY}}{\sigma^2_X+\sigma^2_Y-2\sigma_{XY}}
-$$ where $\sigma^2_X$= VAR(X), $\sigma^2_Y$= VAR(Y) and $\sigma_{XY}$ = COV(X,Y). These quantities are unknown, so we will estimate them using our data. We can write that function in r:
+$$ 
+
+where $\sigma^2_X$= VAR(X), $\sigma^2_Y$= VAR(Y) and $\sigma_{XY}$ = COV(X,Y). These quantities are unknown, so we will estimate them using our data. We can write that function in r:
 
 ```{r}
 
@@ -4874,17 +5107,190 @@ qqline(controlPopulation)
 
 *Ridge regression* and *lasso* The subset selection methods use least squares to fit a linear model that contains a subset of the predictors. As an alternative, we can fit a model containing all p predictors using a technique that constrains or regularizes the coefficients estimates, or equivalently, that shrinks the coefficient estimates towards zero.Shrinking the coefficient estimates can significantly reduce their variance.
 
-**Ridge regression** $$
+**Ridge regression** 
+Also called $L2$ Regularization. It addresses the problem of multicollinearity (when predictor variables are highly correlated). It is useful when you have many predictors and suspect multicollinearity. It works well when the number of predictors is larger than the number of observations.
+
+$$
 \sum^n_{i=1}\left( y_i-\beta_0-\sum^p_{j=1}\beta_jx_{ij}\right) + \lambda\sum^p_{j=1}\beta^2_j
-$$ {#eq-ridgeRegression} the first part of the function is RSS so we can write it like this: $$
+$$ {#eq-ridgeRegression} 
+
+the first part of the function is RSS so we can write it like this: 
+$$
 RSS + \lambda\sum^p_{j=1}\beta^2_j
-$$ where $\lambda$ is called the *tuning parameter*, to be determined separately.
+$$ 
+We call $\lambda\sum^p_{j=1}\beta^2_j$ the *Ridge Penaly* where $\lambda$ is called the *tuning parameter*, to be determined separately.It controls the strength of the penalty. When $\lambda$ is 0, it is just ordinary least square regression, as $\lambda$ increases, the flexibility of the model decreases, helping to reduce overfitting. 
 
 As with least squares, ridge regression seeks coefficient estimates that fit the data well, by making the RSS small, however, the second term of the function, called shrinkage penalty, is small when the coefficients are close to zero, and so it has the effect of shrinking the estimates towards zero.
 
-One thing to take into account with this methods is that while in our regression formulas the units or scales of our variables do not matter, (if we measure the weight in grams or in kilograms) because the coefficient will adapt to that scale, but in this method that actually matters, and as a result is is important to standardize the predictors before applying ridge regression. To standardize he predictors we do as usual, we divide the feature by the standard deviation of that feature. $$
+One thing to take into account with this methods is that while in our regression formulas the units or scales of our variables do not matter, (if we measure the weight in grams or in kilograms) because the coefficient will adapt to that scale, but in this method that actually matters, and as a result is is important to standardize the predictors before applying ridge regression. To standardize he predictors we do as usual, we divide the feature by the standard deviation of that feature. 
+$$
 \tilde x_{ij} = \frac{x_{ij}}{SD(x_{ij})} =\frac{x_{ij}}{\sqrt{\frac{1}{n}\sum_{i=1}^n}(x_{ij-\bar{x_j}})^2}
 $$
+Ridge regression does have one obvious disadvantage: unlike subset selection, which will generally select models that involve just a subset of the variables, ridge regression will include all p predictors in the final model.
+
+**Lasso**
+Also called $L1$ regularization. 
+The Lasso is a relatively recent alternative to ridge regression that overcomes this disadvantage. The formula is very similar to the ridge regression but instead of taking the squares of the coefficients, now it is the sum of the absolute value:
+$$
+RSS + \lambda\sum^p_{j=1}|\beta_j|
+$$ 
+The difference is that it actually sets the coefficients to 0 when lambda is large enough, so it subsets the selection removing the features that are not important.
+
+**Selecting the Tuning Parameter for Ridge Regression and Lasso**
+
+As in ridge regression, selecting a good value of lambda for the lasso is critical, we will use again cross validation for this. Lasso is particularly useful when you expect only a few of predictors to be relevant, leading to a simpler, more interpretable model. If most of the predictors are relevant, ridge regression will do better selecting the best model. We don't know this when we create the model, so it is usual to use both methods, and use cross-validation  to determine the best model coming out of each method by comparing the cross-validated error. 
+
+Cross validation provides a simple way to find the value of $\labmda$ both for lasso and ridge regression. We choose a grid of lambda values, and compute the cross-validation error rate for each value of it. We then select the tuning parameter value for which the cross-validation error is smallest.
+Finally the model is re-fit using all of the available observations and the selected value of the tuning parameters. 
+
+:::{.exercise-box}
+Example: Ridge regression
+
+We will use the `glmnet` package in order to perform ridge regression and the lasso. The main function in this package is `glmnet()`, which can be used to fit ridge regression models, lasso models, and more. This function has slightly different syntax from other model-fitting functions that we have encountered thus far. In particular, we must pass in an x matrix as well as a y vector, and we do not use the y ~ x syntax. We will now perform ridge regression and the lasso in order to predict Salary on the Hitters data. Before proceeding ensure that the missing values have been removed from the data.
+The `model.matrix()` function is particularly useful for creating x; not only does it produce a matrix corresponding to the 19
+ predictors but it also automatically transforms any qualitative variables into dummy variables. The latter property is important because `glmnet()` can only take numerical, quantitative inputs.
+
+```{r}
+Hitters <- na.omit(Hitters)
+x <- model.matrix(Salary ~ . ,data= Hitters)[, -1]
+y <- Hitters$Salary
+```
+The `glmnet()` function has an alpha argument that determines what type of model is fit. If alpha=0 then a ridge regression model is fit, and if alpha=1 then a lasso model is fit. We first fit a ridge regression model.
+
+By default the `glmnet()` function performs ridge regression for an automatically selected range of λ  values. However, here we have chosen to implement the function over a grid of values ranging from $λ=10^{10}$ to $λ=10^{−2}$ , essentially covering the full range of scenarios from the null model containing only the intercept, to the least squares fit. As we will see, we can also compute model fits for a particular value of λ that is not one of the original grid values. Note that by default, the `glmnet()` function standardizes the variables so that they are on the same scale. To turn off this default setting, use the argument `standardize = FALSE`.
+
+```{r}
+grid <- 10^seq(10, -2, length = 100)
+ridge.mod <- glmnet(x, y, alpha = 0, lambda = grid)
+```
+Associated with each value of λ is a vector of ridge regression coefficients, stored in a matrix that can be accessed by coef(). In this case, it is a 20×100 matrix, with 20 rows (one for each predictor, plus an intercept) and 100 columns (one for each value of λ).
+```{r}
+dim(coef(ridge.mod))
+ridge.mod$lambda[50] #the value of lambda at possition 50
+coef(ridge.mod)[,50] #coefficients for that value of lambda
+plot(ridge.mod, xvar="lambda", label=TRUE)
+```
+This plot is showing how the coefficients shrink as we increase the value of lambda. 
+
+We can use predict() function for a number of purposes For instance we can obtain the ridge regression coefficients for a new value of lambda, say 50:
+
+```{r}
+predict(ridge.mod, s=50, type= 'coefficients')[1:20,]
+```
+We now split the samples into a training set and a test set in order to estimate the test error of ridge regression and fit a ridge regression model on the training set and evaluate its MSE on the test set using lambda=4. Note the use of `predict()` this time we get predictions for a test set by replacing the `type="coefficients"` with the `newx` argument
+```{r}
+set.seed(1)
+train<- sample(1:nrow(x), nrow(x)/2)
+test <- (-train)
+y.test <- y[test]
+
+ridge.mod <- glmnet(x[train,], y[train], alpha=0, lambda=grid, thresh= 1e-12)
+ridge.pred <- predict(ridge.mod, s=4, newx=x[test,])
+(MSE<- mean((ridge.pred-y.test)^2))
+```
+the test MSE = `{r} MSE`
+
+We now check whether there is any benefit to performing ridge regression with lambda=4 instead of just performing least squares regression (lambda=0). In order for `glmnet()` to yield exact least squares coefficients when lambda is 0, we use the argument `exact=T` 
+
+```{r}
+ridge.pred <- predict(ridge.mod, s = 0, newx = x[test, ],
+    exact = T, x = x[train, ], y = y[train])
+mean((ridge.pred - y.test)^2)
+
+```
+In general, instead of arbitrarily choosing a value for lambda, it would be better to use cross-validation to choose the tuning parameter. We can do this using the built in cross-validation function. 
+
+The `glmnet` package have a function `cv.glmnet()` that will do the cross validation. By default the function performs ten-fold cross-validation, though this can be changed using the argument `nfold`. 
+
+```{r}
+set.seed(1)
+cv.ridge<- cv.glmnet(x[train, ], y[train], alpha = 0)
+plot(cv.ridge)
+
+```
+WE can see here that with higher values of lambda the mean squares errors are too high (the restricted coefficients are too small to fit the model properly). The vertical lines shows the minimum on the left and the other vertical line is at one standard error from the minimum. The top x axis shows the number of variables in the model. In this case what the graph is showing is that the model without adjustment with the full coefficients for all the variables is doing quite well to fit the model. 
+
+The best value for lambda that results in the smallest cross-validation error is 326. What is the MSE associated with this value of lambda?
+```{r}
+bestlam <- cv.ridge$lambda.min
+bestlam
+ridge.pred <- predict(ridge.mod, s = bestlam,
+    newx = x[test, ])
+mean((ridge.pred - y.test)^2)
+```
+This represents an improvement over lambda 0. 
+Finally we refit our ridge regression model on the full data set, using the value of lambda chosen by cross-validation and examine the coefficient estimates.
+
+```{r}
+out <- glmnet(x, y, alpha = 0)
+predict(out, type = "coefficients", s = bestlam)[1:20, ]
+```
+:::
+
+:::{.exercise-box}
+Example: lasso
+
+We saw that ridge regression with a wise choice of λ can outperform least squares on the Hitters data set. We now ask whether the lasso can yield either a more accurate or a more interpretable model than ridge regression. In order to fit a lasso model, we once again use the `glmnet()` function; however, this time we use the argument `alpha=1`. Other than that change, we proceed just as we did in fitting a ridge model.
+
+```{r chunk39}
+lasso.mod <- glmnet(x[train, ], y[train], alpha = 1,
+    lambda = grid)
+plot(lasso.mod, xvar="lambda", label= TRUE)
+```
+
+We can see from the coefficient plot that depending on the choice of tuning parameter, some of the coefficients will be exactly equal to zero. The top x axes tells us how many variable coefficients are not 0
+We now perform cross-validation and compute the associated test error.
+
+```{r chunk40}
+set.seed(1)
+cv.out <- cv.glmnet(x[train, ], y[train], alpha = 1)
+plot(cv.out)
+bestlam <- cv.out$lambda.min
+
+#test error:
+lasso.pred <- predict(lasso.mod, s = bestlam,
+    newx = x[test, ])
+mean((lasso.pred - y.test)^2)
+```
+
+This is substantially lower than the test set MSE of the null model and of least squares, and very similar to the test MSE of ridge regression with $\lambda$ chosen by cross-validation.
+
+However, the lasso has a substantial advantage over ridge regression in that the resulting coefficient estimates are sparse. Here we see that 8 of the 19 coefficient estimates are exactly zero. So the lasso model with $\lambda$ chosen by cross-validation contains only eleven variables.
+
+We now run the model over the full dataset:
+
+```{r }
+out <- glmnet(x, y, alpha = 1, lambda = grid)
+lasso.coef <- predict(out, type = "coefficients",
+    s = bestlam)[1:20, ]
+lasso.coef[lasso.coef != 0]
+```
+
+:::
+
+
+
+## Dimension Reduction Methods
+
+To recapitulate, we have seen subset selection methods, where we were just taking a subset of the predictors and using least squares models choosing the best model. Then ridge regression and lasso, where we were taking all of the predictors, but it does not use least squares, but a shrinkage approach to fit the model. 
+Now we are going to use least squares but not on the original predictors, instead we are going to come up with new predictors, which are linear combinations of the original ones. 
+
+Let $Z_1,Z_2,\dots,Z_M$ represent linear combination of some of the $p$ original predictors and use them to fit a linear regression model:
+
+$$
+y_i=\theta_0 + \sum_{m=1}^M \theta_mz_{im}+\epsilon_i
+$${#eq-dimensionReductionFunction}
+
+**Principal Components Regression (PCR)**
+
+The first principal component is that (normalized) linear combination of the variables with the largest variance.
+The second principal component has largest variance, subject to being uncorrelated with the first etc. 
+
+**Partial Least Squares (PLS)**
+Like PCR, PLS is a dimension reduction method, which first identifies a new set of features that are linear combinations of the original features, and then fits a linear model.
+After standardizing the p predictors, PLS computes the first direction $Z_1$ by setting each $\phi_{ij}$ equal to the coefficient from the simple linear regression of Y onto $X_j$, hence, PLS places the highest weight on the variables that are most strongly related to the response. 
+Subsequent directions (Z) are found by taking residuals and then repeating the above process. 
+
 
 # Extending the linear models
 
@@ -4902,7 +5308,8 @@ If we have more than two levels what we do is create more dummy variables. For e
 
 $x_{i1} = 0$ if person is Asian and $x_{i1} = 1$ if the person is not Asian $x_{i2} = 0$ if person is Caucasian and $x_{i2} = 1$ if the person is not. We don't need a level for African American because that will be deducted when $x_{i1} = 0$ and $x_{i2} = 0$. So for categorical variables we create $k-1$ dummy variables. The level with no dummy variable is known as *baseline*. The choice of a baseline will not affect the fit of the model, the residual sum of squares would be the same, but the coefficient and the p-values will change because each other category will be compared with the baseline.
 
-The equation will now look like this: $$
+The equation will now look like this: 
+$$
 y_1 = \beta_o+\beta_1x_{i1}+\beta_2x_{i2}+\epsilon_i
 \begin{cases} 
 \beta_0 + \beta_1 + e_1 & \text{if condition 1} \\
@@ -4944,9 +5351,12 @@ to include interactions in our model we create a new variable with the product o
 
 $$
 sales = \beta_0+\beta_1\times TV+\beta_2\times Radio + \beta_3 \times(radio\times TV)+ \epsilon
-$$ $$
+$$ 
+
+$$
 sales = \beta_0+(\beta_1 + \beta_3\times Radio) \times TV+\beta_2\times Radio + \epsilon
-$$ and if we get a summary of the linear model we will see if the interaction between tv and radio is indeed significant or not:
+$$ 
+and if we get a summary of the linear model we will see if the interaction between tv and radio is indeed significant or not:
 
 ```{r}
 lm.fit_interaction <- lm(sales ~ TV * radio , data = Advertising)
@@ -4976,7 +5386,7 @@ abline(lm.fit)
 summary(lm.fit)
 ```
 
-we can transform this into a polynomial regression by making extra variables to accomodate polynomials, for example we add another variable horsepower squared:
+we can transform this into a polynomial regression by making extra variables to accommodate polynomials, for example we add another variable horsepower squared:
 
 ```{r}
 lm.fit <- lm(mpg ~ hp + I(hp^2), data = mtcars)
@@ -5040,7 +5450,7 @@ attrition1 %>% group_by(WorkLifeBalance) %>%
   summarise (mean(MonthlyRate)) 
 ```
 
-this shows that there is in fact a difference but, is this difference important or significative?
+this shows that there is in fact a difference but, is this difference important or significant?
 
 One first approach to answer this question is observing the data in a boxplot:
 
@@ -6098,7 +6508,7 @@ Naive Bayes is best used when the number of features is high because it does not
 
 It can be used for mixed feature vectors (quantitative and qualitative). ::: {.exercise-box} We are going to be working again with the Iris dataset. This time we are going to introduce also a new function `ggpairs()` from the package GGally, this will help us visualize the correlation between the variables before we start our analysis
 
-```{r #ggpairs, fig.align='center', fig.width=8, fig.height=8}
+```{r ggpairs, fig.align='center', fig.width=8, fig.height=8}
 GGally::ggpairs(iris[-5], title = "The correlation between the predictors")
 ```
 
@@ -6243,13 +6653,13 @@ summary(glm.fit)
 
 and the predicted values plot show that we don't have negative counts anymore. We must use the argument type= "response" which tells R to output probabilities of the form $P(Y=1|X)$ as opposed to other information such as the logit.
 
-```{r, #bikersharepredglm, echo=FALSE, fig.align='center', fig.width=6}
+```{r bikersharepredglm, echo=FALSE, fig.align='center', fig.width=6}
 
 glm.pred <- predict(glm.fit, type = "response")
 point_colors <- ifelse(glm.pred < 0, "red", "lightblue")
-plot(jitter(as.numeric(Bikeshare$hr)), jitter(glm.pred), 
-     xlab = "Hour", 
-     ylab = "Number of Bikers", 
+plot(jitter(as.numeric(Bikeshare$hr)), jitter(glm.pred),
+     xlab = "Hour",
+     ylab = "Number of Bikers",
      main = "Number of Bikers per Hour",
      pch = 19, # Point character
      col = point_colors,
@@ -6261,7 +6671,7 @@ lines(smooth.spline.fit, col = "darkblue", lwd = 2)
 
 In order to visualize the outputs of the models, we plot the response estimates against the coefficients for both the linear model and the Poisson model. But first, it is important to obtain the coefficient estimates associated with the last month and hour. The coefficients for January through November can be obtained directly from the lm.fit object. The coefficient for December must be explicitly computed as the negative sum of all the other months. The linear model results:
 
-```{r #mgralph, echo=FALSE, fig.align='center', fig.width=6}
+```{r mgralph, echo=FALSE, fig.align='center', fig.width=6}
 coef.months <- c( coef (lm.fit)[2:12],-sum ( coef (lm.fit)[2:12]))
 
 plot (coef.months , xlab = " Month ", ylab = "Coefficient",
@@ -6273,7 +6683,7 @@ axis (side = 1, at = 1:12, labels = c("J", "F", "M", "A",
 
 and the glm results:
 
-```{r #glmcoeffgraphmonth , echo=FALSE, fig.align='center', fig.width=6}
+```{r glmcoeffgraphmonth , echo=FALSE, fig.align='center', fig.width=6}
 coef.mnth <- c(coef (glm.fit)[2:12],
 -sum ( coef (glm.fit)[2:12]))
 plot(coef.mnth , xlab = " Month ", ylab = " Coefficient ",
@@ -6284,7 +6694,7 @@ axis(side = 1, at = 1:12, labels = c("J", "F", "M", "A", "M",
 
 And for the hours using the linear model:
 
-```{r #plothourscoefficients, echo=FALSE, fig.align='center', fig.width=6}
+```{r plothourscoefficients, echo=FALSE, fig.align='center', fig.width=6}
 coef.hours <- c(coef(lm.fit)[13:35],
 -sum (coef(lm.fit)[13:35]))
 plot(coef.hours , xlab = " Hour ", ylab = " Coefficient ",
@@ -6293,9 +6703,8 @@ col = " blue ", pch = 19, type = "o")
 
 And the glm poisson model:
 
-```{r #hoursplotglm, echo=FALSE, fig.align='center', fig.width=6}
-coef.hours <- c(coef(glm.fit)[13:35],
--sum (coef(glm.fit)[13:35]))
+```{r hoursplotglm, echo=FALSE, fig.align='center', fig.width=6}
+coef.hours <- c(coef(glm.fit)[13:35],-sum (coef(glm.fit)[13:35]))
 plot(coef.hours , xlab = " Hour ", ylab = " Coefficient ",
 col = " blue ", pch = 19, type = "o")
 ```
@@ -6317,3 +6726,211 @@ Example: Classifying iris species based on sepal and petal measurements.
 
 Example: Using Poisson regression (a type of GLM) to model the number of calls received by a call center per hour.
 :::
+
+# Survival Analysis
+Survival analysis concerns a special kind of outcome variable: the time until an event occurs.
+For example, suppose that we have conducted a five-year medical study, in which patients have been treated for cancer. We would like to fit a model to predict patient survival time, using features such a baseline measurements or type of treatment. Sounds like a regression problem, but there is an important complication: some of the patients have survived until the end of the study. Such a patient's survival time is said to be *censored*. We do not want to discard this subset of surviving patients, since the fact that they survived at least 5 years amounts to valuable information.
+
+The applications of survival analysis extend far beyond medicine. For example, consider a company that wishes to model churn, the event when customers cancel subscription to a service. The company might collect data on customers over some period of time, in order to predict each customer's time to cancellation.
+
+For each individual, we suppose that there is a true *failure* or *event* time T, as well as a true censoring time C. The survival time represents the time at which the event of interest occurs. The censoring is the time at which censoring occurs, for example the time at which the patient drops out of the study or the study ends.
+For each observation we compute the min of those times, either the event or the censoring time. If the event occurs before censoring, then we observe the true survival time T, if censoring occurs before the event, then we observe C. We observe a status indicator
+$\delta = 1\ if\  T\leq C$ $\delta = 0\ if\  T > C$
+so in our dataset we observe n pairs (Y,$\delta$) where Y is the time to T or C.
+
+Suppose that a number of patients drop out of a cancer study early because they are very sick. An Analysis that does not take into consideration the reason why the patients dropped out will likely overestimate the true average survival time. Similarly, suppose that males are more likely to drop out of the study than females, then a comparison of male and female survival times may wrongly suggest that males survive longer than females.
+
+In general, we need to assume that, conditional on the features, the event time T is independent of the censoring time C, and the above examples violate that assumption. There is no way of statistically checking if this assumption is right, you will have to think about those variables yourself and find out the reasons why observations are censored.
+
+The **survival curve** is the probability that a true survival time $T$ is higher than a specified time $t$.
+$$
+S(t)=Pr(T>t)
+$${#eq-survivalCurve}
+
+This decreasing function quantifies the probability of surviving past time $t$
+For example, suppose that a company is interested in modeling customer churn. Let $T$ represent the time that a customer cancels a subscription to the service, then $S(t)$ represents the probability that a customer cancels later than time $t$. The larger the value of $S(t)$, the less likely that the customer will cancel before time $t$.
+
+Let's consider the `BrainCancer` dataset, which contains the survival times for patients with primary brain tumors undergoing treatments.
+The predictors are `gtv` (gross tumor volume), `sex`, `diagnosis` (type of cancer), `loc` (location of the tumor), `ki` (Karnofsky index), and `stereo` (stereotactic method). 53 of the 88 patients were still alive at the end of the study.
+
+Suppose we'd like to estimate the probability of surviving past 20 months. $S(20)=Pr(T>20)$. The first approach that would come to our minds would be to just count the proportion of patients that survived past 20 months, and that is 48/88 = 55%. However, this is not right, 17 of the 40 patients who did not survive to 20 months were actually censored, and this way of doing the analysis implicitly assumes they died, hence this probability is an underestimate.
+
+## The Kaplan-Meier Estimate
+
+Suppose we have 5 observations (patients). number 2 and 4 censored and we have the time to event for the rest:
+```{r ,echo=FALSE, fig.align='center'}
+# Sample data
+time <- c(2, 3, 4, 5, 6)
+status <- c(1, 0, 1, 0, 1)  # 1 = event (e.g., death), 0 = censored
+patient <- c(1, 2, 3, 4, 5)
+
+# Create a data frame
+data <- data.frame(time, status, patient)
+# Plot the time vs patient
+plot(data$time, 1:nrow(data), type = "n", xlab = "Time", ylab = "Patient", yaxt = "n", xlim=c(0,6), ylim=c(0,6))
+
+# Add patient labels
+axis(2, at = 1:nrow(data), labels = data$patient)
+
+# Add points for events and censored data
+points(data$time[data$status == 1], data$patient[data$status == 1], pch = 19, col = "red")  # Events
+points(data$time[data$status == 0], data$patient[data$status == 0], pch = 1, col = "blue")  # Censored
+
+for (i in 1:nrow(data)) { lines(c(0, data$time[i]), c(data$patient[i], data$patient[i]), col = "gray", lty = 2) }
+```
+
+when we are observing the first patient's T, 4 out of 5 patients survived past that point in time, so the probabily of surviving past t(2) is 4/5
+
+Then we move to the next T (skip the censored number 2) and we have that 2 out of the 3 patients remaining survived past that point. So the probability of surviving past t(4) is $\frac{4}{5} \times \frac{2}{3}$ so the probability of surviving past t(4) is the probability of surviving t(4) given that you have survived pass the previous T.
+
+The last point, patient 5 in t(6) is the last failure, and no one has survived pass that point, so we have $\frac{4}{5} \times \frac{2}{3} \times 0$
+
+So we see how the role of the censored observations is to participate in the denominator up to the point that they dropped out of the study.
+
+The kaplan-Meier curve for this simple experiment would look like this:
+
+```{r, fig.align='center', fig.width=6}
+fit <- survival::survfit(Surv(time, status) ~ 1, data = data)
+survminer::ggsurvplot(fit, data = data, xlab = "Time", ylab = "Survival Probability", title = "Kaplan-Meier Survival Estimate", censor.shape = 124, censor.size = 4, risk.table = TRUE, risk.table.col = "strata", ggtheme = theme_minimal())
+```
+Now that we have seen this with a simple example, let's run it over the BrainCancer dataset. Each point in the solid step-like curve shows the estimated probability of surviving past the time indicated on the horizontal axis.
+
+
+```{r, fig.align='center', fig.width=6}
+library(survival)
+
+BrainCancer= ISLR2::BrainCancer
+fit.surv <- survfit(Surv(time, status) ~ 1, data = BrainCancer)
+plot(fit.surv, xlab="Months", ylab= "Estimated Pr survival")
+```
+The estimated probability of survival past 20 months is 71%, which is higher than the 55% that we estimated just but counting the amount of survivors.
+
+## Proportional Hazards Model. Log-Rank Test
+
+Now we are going to see how to compare two samples. For example, for our BrainCancer dataset, let's compare females and males. If we plot them we can appreciate a difference until month 50 but is this difference significant?
+
+```{r}
+fit.sex <- survfit(Surv(time, status) ~ sex, data= BrainCancer)
+
+plot(fit.sex, xlab = "Months",
+    ylab = "Estimated Probability of Survival", col = c(2,4))
+
+legend("bottomleft", levels(BrainCancer$sex), col = c(2,4), lty = 1)
+
+```
+
+The proportional Hazard Model allows us to compare two survival samples.
+Being $d_1<d_2<\dots,d_k$ unique death times among non-censored patients, $r_k$ is the number of patients at risk at time $d_k$ and $q_k$ is the number of patients who died at time $d_k$.
+We divide our patients in two groups males and females, and we will call their variables $q_{1k}$ and $q_{2k}$ for the number of male and female patients who died and $r_{1k}$ and $r_{2k}$ are the number of patients at risk in each group.
+So at a specific time $d_k$ we have:
+
+```{r echo=FALSE}
+library(kableExtra)
+data <- data.frame(
+  Group1 = c("$q_{1k}$", "$r_{1k} - q_{1k}$", "$r_{1k}$"),
+  Group2 = c("$q_{2k}$", "$r_{2k} - q_{2k}$", "$r_{2k}$"),
+  Total = c("$q_{k}$", "$r_{k} - q_{k}$", "$r_{k}$") )
+row.names(data) <- c("Died", "Survived", "Total")
+kable(data, format = "html", escape = FALSE)%>% kable_styling(full_width = FALSE, position = "center")
+```
+To test $H_0$, that will be our null hypothesis that the survival rates are the same we construct a test statistic of the form:
+
+$$
+W=\frac{X-E(X)}{\sqrt{Var(X)}}
+$$
+where E(X) is the expectation and Var(X) is the variance of X under the null hypothesis.
+$X=\sum^K_{k=1}q_{1k}$
+
+The resulting formula for the log-rank test statistic is:
+
+$$
+W =\frac{\sum^K_{k=1}(q_{1k}-E(q_{1k}))}{\sqrt{\sum^K_{k=1}Var(q_{1k})}}
+$${#eq-logRankTestStatistic}
+
+We are not going to develop this formula further in this page, but the full definition can be found on the book.
+When the sample size is large, the *log-rank test statistic W* has approximately a standard normal distribution.
+
+This can be used to compute a `p-value` for the null hypothesis that there is no difference between survival curves in the two groups.
+
+Instead of calculating it manually we will use r:
+
+```{r}
+logrank.test <- survdiff(Surv(time, status) ~ sex, data =BrainCancer)
+logrank.test
+```
+We use a two sided test because we want to know if the male survival rate is less or more than those of females, we are not interested only in if they are higher. We see that our p-value for a two-sided test is 0.2, which does not allow us to reject the null hypothesis that there is a difference.
+
+The `survminer` package draws survival curves using ggplot, and can provide logrank p-values:
+```{r, fig.align='center', fig.width= 8, fig.height=6}
+library(survminer)
+fit.sex <- survfit(Surv(time, status) ~ sex, data= BrainCancer)
+survminer::ggsurvplot(fit.sex, data = BrainCancer,
+           pval = TRUE,
+           conf.int = TRUE,
+           risk.table = TRUE,
+           legend.title = "Sex",
+           legend.labs = c("Female", "Male"))
+
+```
+
+## Regression Models with a Survival Response.
+
+We now consider the task of fitting a regression model to survival data. We wish to predict the true survival time T. Because of the censoring, we cannot really just fit a linear or log model. To overcome this difficulty, we instead make use of a sequential construction, similar to the idea used for the Kaplan-Meier survival curve.
+
+**Proportional Hazards Model (Cox Model)**
+This is a statistical technique used to explore the relationship between the survival time of subjects and one or more predictor variables.
+
+We start by defining the *Hazard function* this is the  risk of the event happening at a particular time, given the fact that the subject has survived up to that time. Why do we care about the hazard function? It turns out that a key approach for modeling survival data as a function of covariates relies heavily on the hazard function.
+
+The model assumes that the hazard rate for an individual is a baseline hazard, shared by all individuals, modified by a set of covariates (predictors). The hazard at time t for an individual is given by
+$$
+h(t | X) = h_0(t) \exp\left( \sum^p_{j=1}x_{ij}\beta_j \right)=  h_0(t) \exp(\beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p)
+$${#eq-hazardFunction}
+
+Where $h_0(t)$ is an unspecified function, known as the *baseline hazard*
+The quantity $exp\left( \sum^p_{j=1}x_{ij}\beta_j \right)$ is called the *relative risk*
+
+There is a deeper explanation of this method on the book that we skip here.
+There is no intercept in the proportional hazards model because the intercept is absorbed into the baseline hazard.
+We assume that there are no tied failure times (only one individual Fails at a given time). In the case this is not correct and there are ties, the model is more complicated to calculate and a number of computational approximations must be used.
+Apart from estimating the coefficients, we may also wish to estimate the baseline hazard, so we can estimate the survival curve. These are implemented in the `survival` package in R.
+
+Let's fix Cox proportional hazards models using the `coxph()` function. To begin, we consider a model that uses `sex` as the only predictor.
+
+```{r}
+fit.cox<- survival::coxph(Surv(time, status) ~ sex, data=BrainCancer)
+summary(fit.cox)
+```
+As we saw with the logrank test, there is no evidence to suggest that there is a survival difference by sex.
+
+Now we fit all the predictors:
+
+```{r}
+fit.cox<- survival::coxph(Surv(time, status) ~ sex + diagnosis + loc + ki + gtv +
+   stereo, data = BrainCancer)
+summary(fit.cox)
+```
+
+The `diagnosis` variable has been coded so that the baseline corresponds to meningioma. Results indicate that the risk associated with HG glioma is more than eight times (i.e. $e^{2.15} = 8.62$) the risk associated with meningioma. In addition, larger values of the Karnofsky index (ki) are associated with lower risk. (negative coefficient)
+
+It is possible to plot estimated survival curves for each diagnosis category, adjusting for the other predictors. To make these plots, set the values of the other predictors equal to the mean for quantitative variables, and the modal value for factors
+
+```{r}
+
+with(BrainCancer,{
+  modaldata <<- data.frame(
+       diagnosis = levels(diagnosis),
+       sex = rep("Female", 4),
+       loc = rep("Supratentorial", 4),
+       ki = rep(mean(ki), 4),
+       gtv = rep(mean(gtv), 4),
+       stereo = rep("SRT", 4)
+       )})
+modaldata
+
+survplots <- survfit(fit.cox, newdata = modaldata)
+  plot(survplots, xlab = "Months",
+      ylab = "Survival Probability", col = 2:5)
+  legend("bottomleft", levels(BrainCancer$diagnosis), col = 2:5, lty = 1)
+
+```
