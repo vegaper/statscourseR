@@ -67,8 +67,8 @@ library(class)
 library(boot) #crossvalidation
 library(leaps) #best subset selection
 library(glmnet) #ridge regression and lasso
-library(survival)
-library(survminer)
+library(survival) #survival 
+library(survminer) #survival ggplots
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -349,9 +349,9 @@ Summarizing lists of numbers is one powerful use of distribution. An even more i
 
 Note that the $X$ is now capitalized to distinguish it as a random variable and that the equation above defines the probability distribution of the random variable.
 
-### The p-value
+### The $p$-value
 
-Knowing this distribution is incredibly useful in science. If we know the distribution of our data when the null hypothesis is true, referred to as the *null distribution*, we can compute the probability of observing a value as large as we did in our experiment, referred to as a *p-value*.
+Knowing this distribution is incredibly useful in science. If we know the distribution of our data when the null hypothesis is true, referred to as the *null distribution*, we can compute the probability of observing a value as large as we did in our experiment, referred to as a *$p$-value*.
 
 ::: exercise-block
 Example.
@@ -396,7 +396,7 @@ What percentage of our 10000 experiments have a difference weight between contro
 mean(null >= obsdiff)
 ```
 
-We see a difference as big as the one we observed only a small percentage of the time. This is what is known as a p-value. We can plot the null histogram and mark the line with our observed weight difference for the high fat diet.
+We see a difference as big as the one we observed only a small percentage of the time. This is what is known as a $p$-value. We can plot the null histogram and mark the line with our observed weight difference for the high fat diet.
 
 ```{r null_and_obs,fig.cap="Null distribution with observed difference marked with vertical red line.", fig.align='center', echo=FALSE}
 hist(null, freq=TRUE)
@@ -406,7 +406,7 @@ abline(v=obsdiff, col="red", lwd=2)
 
 An important point to keep in mind here is that while we defined $\mbox{Pr}(a)$ by counting cases, we will learn that, in some circumstances, mathematics gives us formulas for $\mbox{Pr}(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation.
 
-We will see later on [how to calculate the p-values](#pvalues)
+We will see later on [how to calculate the $p$-values](#pvalues)
 
 # Normal distribution
 
@@ -691,7 +691,7 @@ print(zScore)
 
 ```
 
-## Calculating the p-values {#pvalues}
+## Calculating the $p$-values {#pvalues}
 
 once we have calculated the z-Score we can calculate the area on the left of that number under the normal distribution curve, and that will be the probability we are looking for.
 
@@ -709,13 +709,13 @@ plot(x, y, type="l", lwd=2, col="blue", xlab="Z", ylab="Density", main="Standard
 abline(v = 0.71, col = "red", lwd = 2, lty = 2)
 ```
 
-We can now can find manually the probability using z-score tables. In R, we may use the `pnorm()` function to find the p-value associated with a z-score, which has the following syntax.
+We can now can find manually the probability using z-score tables. In R, we may use the `pnorm()` function to find the $p$-value associated with a z-score, which has the following syntax.
 
 `pnorm(q, mean = 0, sd = 1, lower.tail = TRUE)`
 
 Where - `q = z-Score value`. - lower.tail: If TRUE, the probability in the normal distribution to the left of z-Score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
 
-To find the **p-value for the two-tailed test**:
+To find the **$p$-value for the two-tailed test**:
 
 `2*pnorm(q=0.71, lower.tail=FALSE)`
 
@@ -1141,11 +1141,11 @@ $$ {#eq-standardizedSampleMean}
 
 The standardized sample mean is a way to transform the sample mean into a standard normal distribution (mean 0, standard deviation 1). Standardizing the sample mean by subtracting the population mean and dividing by the standard error $\sigma_Y/\sqrt{N}$ allows us to compare it to the standard normal distribution. This is useful because the properties of the normal distribution are well understood and widely applicable in statistical inference.
 
-**Central limit theorem in practice.** The central limit theorem allow us, when we don't have access to the population data, to use the normal approximation so we can compute p-values.
+**Central limit theorem in practice.** The central limit theorem allow us, when we don't have access to the population data, to use the normal approximation so we can compute $p$-values.
 
 We are going to use the mice bodyweight data for our example. We willwork only with female mice because the bodyweight of female and male mice are different. We calculate the mean and the standard deviation of control and treatment groups and those will be the parameteres of our population.
 
-The CLT tells us that when the samples are large, the random variable is normally distributed. Thus we can compute p-values using the function `pnorm`
+The CLT tells us that when the samples are large, the random variable is normally distributed. Thus we can compute $p$-values using the function `pnorm`
 
 ```{r miceexampleCLT}
 dat <- read.csv("data/mice_pheno.csv") 
@@ -1208,7 +1208,7 @@ This simulation only proves that $N=12$ is large enough in this case, not in gen
 
 For populations that are already normally distributed, even small sample sizes will result in sample means that are approximately normally distributed. For populations that are not normally distributed, larger sample sizes are required for the sample means to approximate a normal distribution.
 
-We will see later that we don't usually calculate our p-values like this using the CLT, instead we will use a *t-test* that will give us a slightly different result. This is to be expected because our CLT approximation considered the denominator of t-stat practically fixed (with large samples it practically is), while the t-distribution approximation takes into account that the denominator (the standard error of the difference) is a random variable. The smaller the sample size, the more the denominator varies.
+We will see later that we don't usually calculate our $p$-values like this using the CLT, instead we will use a *t-test* that will give us a slightly different result. This is to be expected because our CLT approximation considered the denominator of t-stat practically fixed (with large samples it practically is), while the t-distribution approximation takes into account that the denominator (the standard error of the difference) is a random variable. The smaller the sample size, the more the denominator varies.
 
 ::: {.callout-orange appearance="simple" icon="false"}
 **When does the central limit theorem apply?** For the normal approximation to work, the key requirements are:
@@ -1586,26 +1586,24 @@ $$
 z= \frac{7-5}{1.58}=1.27
 $$
 
-By the central limit theorem, the p-value can be computed with normal approximation.
+By the central limit theorem, the $p$-value can be computed with normal approximation.
 
 ```{r}
 z <- 1.27
 
 # Calculate the cumulative probability up to z
-p_value <- (1 - pnorm(z))*2
+(p_value <- (1 - pnorm(z))*2)
 
-# Print the p-value
-p_value
 ```
 
 In other words, we have a 20.4% probability of observing 7 tails in 10 tosses given that the coin is fair.
 :::
 
-If the z-value is large, that means that there is a great difference between the observed and the expected, so large values of z are evidence against $H_0$. The strength of the evidence is measured by the p-value or observed significance level.
+If the z-value is large, that means that there is a great difference between the observed and the expected, so large values of z are evidence against $H_0$. The strength of the evidence is measured by the $p$-value or observed significance level.
 
-The p-value is the probability of getting a value of z as extreme or more extreme than the observed, assuming the null hypothesis is true. As we can see in the graph below, as z becomes larger, there is less probability of finding data outside of its limits, so the p-value will be smaller. We multiply the p value times 2 because we have to consider the two tails of the graph for this experiment.
+The $p$-value is the probability of getting a value of z as extreme or more extreme than the observed, assuming the null hypothesis is true. As we can see in the graph below, as z becomes larger, there is less probability of finding data outside of its limits, so the $p$-value will be smaller. We multiply the p value times 2 because we have to consider the two tails of the graph for this experiment.
 
-The Z-score tells you how far an observed value is from the expected value in terms of standard errors. The p-value tells you the probability of observing a test statistic as extreme as, or more extreme than, the observed statistic, under the null hypothesis.
+The Z-score tells you how far an observed value is from the expected value in terms of standard errors. The $p$-value tells you the probability of observing a test statistic as extreme as, or more extreme than, the observed statistic, under the null hypothesis.
 
 ```{r, fig.align='center', echo=FALSE}
 #| echo = FALSE
@@ -1638,13 +1636,13 @@ text(-1.27, dnorm(-1.27), labels = "z = -1.27", pos = 4, col = "red")
 
 ```
 
-The **result of a significance test is a p-value,** which measures how plausible the value of interest is given the sample data. A p-value close to zero indicates the value isn't compatible with the data. As a general rule, if p\<0.05, the value can be considered questionable.
+The **result of a significance test is a $p$-value,** which measures how plausible the value of interest is given the sample data. A $p$-value close to zero indicates the value isn't compatible with the data. As a general rule, if p\<0.05, the value can be considered questionable.
 
 Ideally, you should identify a value of interest (the technical term is null hypothesis) before collecting the data. While this isn't always done in practice, doing so helps prevent wrong conclusions that come from the shotgun effect
 
 > If you run a test because you observed an interesting pattern in your sample data, the overall chance of encountering a significant result increases. Data is like firing a shotgun with many pellets---some are bound to hit the target purely due to randomness, if you create your null theory based on a characteristic observed in your sample you are likely going to find significance, even if that is not characteristics of the overall population and it was there just by chance.
 
-While a p-value might tell you that a parameter is different from a hypothesized value, it won't ever say how different it might be or if that difference is important.
+While a $p$-value might tell you that a parameter is different from a hypothesized value, it won't ever say how different it might be or if that difference is important.
 
 A t-significance test is appropriate for quantitative data under the exact same circumstances as a t-confidence interval: unless the sample is very small and the data is highly non-symmetric. If the data is relatively symmetric and there are no extreme outliers, n=10 is usually enough. Regardless of the shape of the data, n=30 is a safe threshold.
 
@@ -1659,7 +1657,7 @@ testResult <- t.test(optical_sample$eye_difference, mu = 0)
 testResult$p.value
 ```
 
-*p-value* express the probability of observing the values we have in the sample if the eye difference of the population were in fact 0. The smaller the p-value, the smaller the probability. Usually we take the threshold of 5% or p-value \<0.05 to reject the null theory, as it means that it is unlikely that the mean observed in our sample can come from a population whose true mean is 0.
+*$p$-value* express the probability of observing the values we have in the sample if the eye difference of the population were in fact 0. The smaller the $p$-value, the smaller the probability. Usually we take the threshold of 5% or $p$-value \<0.05 to reject the null theory, as it means that it is unlikely that the mean observed in our sample can come from a population whose true mean is 0.
 
 We can change the null theory to whatever value we want to measure against. For example, can we say that the average age of the population is NOT 59?
 
@@ -1668,21 +1666,21 @@ testResult <- t.test(optical_sample$Age, mu = 59)
 testResult$p.value 
 ```
 
-our p-value is `{r}testResult$p.value` which does not allow us to reject the null theory.
+our $p$-value is `{r}testResult$p.value` which does not allow us to reject the null theory.
 
 ::: {#SignificanceTestQuickFacts .callout-orange}
 Quick Facts
 
-1.  A p-value below 0.05 doesn't mean there's a 5% chance the null hypothesis is true. Instead, it means if the null were true, there's a 5% chance of observing data as extreme as, or more extreme than the one that was observed in the sample.
+1.  A $p$-value below 0.05 doesn't mean there's a 5% chance the null hypothesis is true. Instead, it means if the null were true, there's a 5% chance of observing data as extreme as, or more extreme than the one that was observed in the sample.
 
-2.  Statistical power, the ability to detect a true effect is often overlooked. A study can have a high chance of missing real effects (Type II error) even if its p-value threshold is stringent.
+2.  Statistical power, the ability to detect a true effect is often overlooked. A study can have a high chance of missing real effects (Type II error) even if its $p$-value threshold is stringent.
 
 3.  In proportional analysis, Simpson's Paradox can occur where a trend seen in several groups reverses when the groups are combined. It underscores the importance of scrutinizing aggregated data.
 :::
 
 ### One sided vs two sided test.
 
-One has to carefully consider whether the alternative should be one-sided or two-sided test (we are considering the values on the left of -z and the right of z) or only the values on one side. If we are considering a two sided test, the p-value gets doubled. It is not ok to change the alternative afterwards in order to get the p-value under 5%.
+One has to carefully consider whether the alternative should be one-sided or two-sided test (we are considering the values on the left of -z and the right of z) or only the values on one side. If we are considering a two sided test, the $p$-value gets doubled. It is not ok to change the alternative afterwards in order to get the $p$-value under 5%.
 
 Deciding whether to use a one-sided or two-sided t-test depends on the hypothesis you want to test. Here are some guidelines to help you make that decision:
 
@@ -1743,9 +1741,9 @@ At the start of a significance test, the hypothesized value might be true or fal
 
 Bear in mind, however, that we usually don't know whether the null theory is true or not.
 
-We call the *event* of rejecting the null hypothesis, when it is in fact true, a *Type I error*, we call the *probability* of making a Type I error, the *Type I error rate*, and we say that rejecting the null hypothesis when the p-value is less than $\alpha$, *controls* the Type I error rate so that it is equal to $\alpha$
+We call the *event* of rejecting the null hypothesis, when it is in fact true, a *Type I error*, we call the *probability* of making a Type I error, the *Type I error rate*, and we say that rejecting the null hypothesis when the $p$-value is less than $\alpha$, *controls* the Type I error rate so that it is equal to $\alpha$
 
-We may observe a p-value higher than alpha even when the null hypothesis is false. This is a type II error. We ask ourselfs this question: How big does N have to be in order to detect that the absolute value of the difference is greater than zero? Type II error control plays a major role in designing data collection procedures before you actually see the data, so that you know the test you will run has enough sensitivity or power. Power is 1 minus Type II error rate, or the probability that you will reject the null hypothesis when the alternative hypothesis is true.
+We may observe a $p$-value higher than alpha even when the null hypothesis is false. This is a type II error. We ask ourselfs this question: How big does N have to be in order to detect that the absolute value of the difference is greater than zero? Type II error control plays a major role in designing data collection procedures before you actually see the data, so that you know the test you will run has enough sensitivity or power. Power is 1 minus Type II error rate, or the probability that you will reject the null hypothesis when the alternative hypothesis is true.
 
 There are several aspects of a hypothesis test that affect its power for a particular effect size. Intuitively, setting a lower $\alpha$ decreases the power of the test for a given effect size because the null hypothesis will be more difficult to reject (for example from 0.05 to 0.01). This means that for an experiment with fixed parameters (i.e., with a predetermined sample size, recording mechanism, etc), the power of the hypothesis test trades off with its Type I error rate, no matter what effect size you target.
 
@@ -1767,7 +1765,7 @@ print(mu_hf - mu_control)
 print((mu_hf - mu_control)/mu_control * 100) #percent increase
 ```
 
-Depending on our sample size, this difference will be perceived by our test or not. Let's see an example with sample size = 12 and alpha = 0.05. We will do first a single test and see that we cannot reject the null hypothesis based on the p-value:
+Depending on our sample size, this difference will be perceived by our test or not. Let's see an example with sample size = 12 and alpha = 0.05. We will do first a single test and see that we cannot reject the null hypothesis based on the $p$-value:
 
 ```{r}
 set.seed(1)
@@ -1778,7 +1776,7 @@ t.test(hf,control)$p.value
 
 ```
 
-If we ran this experiment multiple times we can get the percentage of times that our p-value manage to actually reject the null hypothesis:
+If we ran this experiment multiple times we can get the percentage of times that our $p$-value manage to actually reject the null hypothesis:
 
 ```{r}
 repetitions<-2000
@@ -2123,7 +2121,7 @@ The typical statistics we use to summarize these results is the odds ratio (OR).
 (tab[2,2]/tab[2,1]) / (tab[1,2]/tab[1,1])
 ```
 
-To compute a p-value, we don't use the `OR` directly. We instead assume that there is no association between genotype and disease, and then compute what we expect to see in each cell of the table under the null hypothesis: ignoring the groups, the probabilty of having the disease according to our data is:
+To compute a $p$-value, we don't use the `OR` directly. We instead assume that there is no association between genotype and disease, and then compute what we expect to see in each cell of the table under the null hypothesis: ignoring the groups, the probabilty of having the disease according to our data is:
 
 ```{r}
 p=mean(disease=="cases")
@@ -2139,7 +2137,7 @@ dimnames(expected)<-dimnames(tab)
 expected
 ```
 
-The Chi-square test uses an asymptotic result (similar to the CLT) related to the sums of independent binary outcomes. Using this approximation, we can compute the probability of seeing a deviation from the expected table as big as the one we saw. The p-value for this table is:
+The Chi-square test uses an asymptotic result (similar to the CLT) related to the sums of independent binary outcomes. Using this approximation, we can compute the probability of seeing a deviation from the expected table as big as the one we saw. The $p$-value for this table is:
 
 ```{r}
 chisq.test(tab)$p.value
@@ -2147,11 +2145,11 @@ chisq.test(tab)$p.value
 
 so we would expect to find this difference in disease ratio by chance approximately 8.8% of the times, which is not enough to reject our null hypothesis.
 
-**Large Samples, Small p-values**
+**Large Samples, Small $p$-values**
 
-Reporting only p-values is not an appropriate way to report the results of your experiment. Studies with large sample sizes will have impressively small p-values. Yet when one looks closely at the results, we realize odds ratios are quite modest: barely bigger than 1.
+Reporting only $p$-values is not an appropriate way to report the results of your experiment. Studies with large sample sizes will have impressively small $p$-values. Yet when one looks closely at the results, we realize odds ratios are quite modest: barely bigger than 1.
 
-To demonstrate, we recalculate the p-value keeping all the proportions identical, but increasing the sample size by 10, which reduces the p-value substantially:
+To demonstrate, we recalculate the $p$-value keeping all the proportions identical, but increasing the sample size by 10, which reduces the $p$-value substantially:
 
 ```{r}
 tab<-tab*10
@@ -2200,7 +2198,7 @@ $$
 \frac{(85 - 98.4)^2}{98.4} + \frac{(79 - 82)^2}{82} + \cdots + \frac{(68 - 53.3)^2}{53.3} = 8.57
 $$
 
-Large values of the chi-square statistic $\chi^2$ are evidence against the null hypothesis. To calculate the p-value we use the chi-square distribution. The p-value is the right tail of the $\chi^2$ distribution with degrees of freedom = number of categories -1.
+Large values of the chi-square statistic $\chi^2$ are evidence against the null hypothesis. To calculate the $p$-value we use the chi-square distribution. The $p$-value is the right tail of the $\chi^2$ distribution with degrees of freedom = number of categories -1.
 
 ```{r, fig.align='center'}
 df <- 5
@@ -2219,7 +2217,7 @@ polygon(c(8.57, x_vector, 40), c(0, y_vector, 0),
         col = adjustcolor("red", alpha.f = 0.3), border = NA)
 ```
 
-in our example, this p-value happens to be 12.7%, which does not allow us to reject the null hypothesis. In r we can calculate the p-value like this:
+in our example, this $p$-value happens to be 12.7%, which does not allow us to reject the null hypothesis. In r we can calculate the $p$-value like this:
 
 ```{r}
 # Set the chi-square value and degrees of freedom
@@ -2253,7 +2251,7 @@ testResult %>% report()
 testResult$p.value
 ```
 
-The very small p-value indicates that is extremely unlikely that our pm_survey data was extracted at random from a population with the us_ages distribution.
+The very small $p$-value indicates that is extremely unlikely that our pm_survey data was extracted at random from a population with the us_ages distribution.
 
 As mentioned, the goodness of fit test does not tell us what categories show the discrepancies in the data, if we want to find out what is the difference between our sample range of ages and the USA data we can just subtract the proportions from each and see what categories are sub represented and vice versa
 
@@ -2320,7 +2318,7 @@ ggplot(benford_df, aes(x = first_digit,
 
 ```
 
-our p-value indicates that we cannot reject the null hypothesis, meaning in this case that the distribution of the first digit in towns across US is compatible with Benford's law.
+our $p$-value indicates that we cannot reject the null hypothesis, meaning in this case that the distribution of the first digit in towns across US is compatible with Benford's law.
 :::
 
 ### Statistical power
@@ -2388,7 +2386,7 @@ In reality we will only have access to one of the samples, and we have to be abl
 
 ### z-test
 
-The significance test for two samples uses the null hypothesis that there is no difference in the means of the two population means. The p-value will be used to reject or not that null hypothesys.
+The significance test for two samples uses the null hypothesis that there is no difference in the means of the two population means. The $p$-value will be used to reject or not that null hypothesys.
 
 we can use a z-test for the difference between the two means:
 
@@ -2429,19 +2427,19 @@ $$
 z = \frac{(0.58 - 0.55) - 0}{0.0202} = \frac{0.03}{0.0202} \approx 1.49
 $$ The calculated z-value is approximately 1.49. To determine if this is statistically significant, you would compare this z-value to the critical value from the standard normal distribution (typically 1.96 for a 95% confidence level). Since 1.49 is less than 1.96, you would fail to reject the null hypothesis at the 95% confidence level, indicating that there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
 
-The p-value can be calculated using standard normal distribution tables or software
+The $p$-value can be calculated using standard normal distribution tables or software
 
 ```{r}
 pValue <- pnorm(1.49)
 pValue
 ```
 
-Since this is a two-tailed test (we are checking if the approval rating has changed, not just increased or decreased), we need to consider both tails of the distribution, so we double our values: The p-value is calculated as $2 \times (1 - \text{cumulative probability})$. $p = 2 \times (1 - 0.9318) = 2 \times 0.0682 = 0.1364$
+Since this is a two-tailed test (we are checking if the approval rating has changed, not just increased or decreased), we need to consider both tails of the distribution, so we double our values: The $p$-value is calculated as $2 \times (1 - \text{cumulative probability})$. $p = 2 \times (1 - 0.9318) = 2 \times 0.0682 = 0.1364$
 
-The p-value for the z-value of 1.49 is approximately 0.1364. Since this p-value is greater than the typical significance level of 0.05, we fail to reject the null hypothesis. This means there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
+The $p$-value for the z-value of 1.49 is approximately 0.1364. Since this $p$-value is greater than the typical significance level of 0.05, we fail to reject the null hypothesis. This means there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
 :::
 
-The exercise above shows how to calculate the p value for proportions, if we are working with average values instead of proportions the calculation is the same, only thing to consider is that in this case is that Standard deviation of each individual sample will be calculated using the formula for the standard deviation for the mean $SE(\bar{x_1})= \frac{\sigma_1}{\sqrt{n_1}}= \frac{s_1}{\sqrt{n_1}}$ . If the sample sizes are not large, then the p-value needs to be computed from the t-distribution instead.
+The exercise above shows how to calculate the p value for proportions, if we are working with average values instead of proportions the calculation is the same, only thing to consider is that in this case is that Standard deviation of each individual sample will be calculated using the formula for the standard deviation for the mean $SE(\bar{x_1})= \frac{\sigma_1}{\sqrt{n_1}}= \frac{s_1}{\sqrt{n_1}}$ . If the sample sizes are not large, then the $p$-value needs to be computed from the t-distribution instead.
 
 ### The Welch Two Sample t-test
 
@@ -2791,7 +2789,7 @@ Both the two-sample paired t-test and the sign test are used to compare paired d
 
 ## Wilcoxon Rank Sum Test
 
-We learned how the sample mean and SD are susceptible to outliers. The t-test is based on these measures and is susceptible as well. The Wilcoxon rank test (equivalent to the Mann-Whitney test) provides an alternative. In the code below, we perform a t-test on data for which the null is true. However, we change one sum observation by mistake in each sample and the values incorrectly entered are different. Here we see that the t-test results in a small p-value, while the Wilcoxon test does not:
+We learned how the sample mean and SD are susceptible to outliers. The t-test is based on these measures and is susceptible as well. The Wilcoxon rank test (equivalent to the Mann-Whitney test) provides an alternative. In the code below, we perform a t-test on data for which the null is true. However, we change one sum observation by mistake in each sample and the values incorrectly entered are different. Here we see that the t-test results in a small $p$-value, while the Wilcoxon test does not:
 
 ```{r}
 set.seed(779) ##779 picked for illustration purposes
@@ -2828,7 +2826,7 @@ text( rep(1.05,length(ws)), xrank, ws, cex=0.8)
 W <-sum(ws) 
 ```
 
-`W` is the sum of the ranks for the first group relative to the second group. We can compute an exact p-value for $W$ based on combinatorics. We can also use the CLT since statistical theory tells us that this `W` is approximated by the normal distribution. We can construct a z-score as follows:
+`W` is the sum of the ranks for the first group relative to the second group. We can compute an exact $p$-value for $W$ based on combinatorics. We can also use the CLT since statistical theory tells us that this `W` is approximated by the normal distribution. We can construct a z-score as follows:
 
 ```{r}
 n1<-length(x);n2<-length(y)
@@ -2836,7 +2834,7 @@ Z <- (mean(ws)-n2/2)/ sqrt(n2*(n1+n2+1)/12/n1)
 print(Z)
 ```
 
-Here the `Z` is not large enough to give us a p-value less than 0.05. These are part of the calculations performed by the R function `wilcox.test`.
+Here the `Z` is not large enough to give us a $p$-value less than 0.05. These are part of the calculations performed by the R function `wilcox.test`.
 
 we are not going to get into mathematical detail about these calculations, but the formula for the z score here is $$
  z=\frac{U - \frac{n_2}{2}}{\sqrt{\frac{n_2(n_1+n_2+1)}{12n_1}}}
@@ -2875,7 +2873,7 @@ testResult <- prop.test(yes_counts, sampleSize)
 testResult
 ```
 
-Our p-value `r testResult$p.value` is very low which means we can reject the default null hypothesis (the difference in the two samples is 0). It is also giving us the proportions for the samples in the two different departments: `r testResult$estimate` . And the confidence intervals is giving us the difference in the proportion of the two departments (as in prop1 - prop2). In this case being negative means that the second department has a higher attrition rate. The order of the variables is as entered in the vectors, so if *yes_counts* had *Research_Development* first and *Sales* second, prop1 will be for *Research_Development* and prop2 for *Sales*
+Our $p$-value `r testResult$p.value` is very low which means we can reject the default null hypothesis (the difference in the two samples is 0). It is also giving us the proportions for the samples in the two different departments: `r testResult$estimate` . And the confidence intervals is giving us the difference in the proportion of the two departments (as in prop1 - prop2). In this case being negative means that the second department has a higher attrition rate. The order of the variables is as entered in the vectors, so if *yes_counts* had *Research_Development* first and *Sales* second, prop1 will be for *Research_Development* and prop2 for *Sales*
 :::
 
 ## Two-samples of categorical variables
@@ -2968,7 +2966,7 @@ t
 chisq.test(t)
 ```
 
-In this case according to our p-value we cannot say that patients that had at least one psychiatric admission in the past have the same proportion of diagnosis than patients without any admission.
+In this case according to our $p$-value we cannot say that patients that had at least one psychiatric admission in the past have the same proportion of diagnosis than patients without any admission.
 :::
 
 Chi squared test for homogeneity is not saying anything specific about any of these diagnosis, it is simply saying that the distribution of these diagnosis between those two groups (admitted vs not admitted) is not the same.
@@ -2995,7 +2993,7 @@ report(result)
 
 ```
 
-In this case the p-value of the test is over 0.05 so that indicates that there is no significance difference by sex for the SUDx variable, so men and women are abusing the different categories of substances in the same proportions. The df in our results are the degrees of freedom that is the number of categories minus one.
+In this case the $p$-value of the test is over 0.05 so that indicates that there is no significance difference by sex for the SUDx variable, so men and women are abusing the different categories of substances in the same proportions. The df in our results are the degrees of freedom that is the number of categories minus one.
 
 In reality this is the same as doing a Goodness of fit test as we saw before, if we remember it was $chisq.test(p_s , p)$ where $p_s$ was the proportions of the different categories in our sample and $p$ the proportion of the population we wanted to test against. Back to our example what we are measuring here is the proportion of women or men against the proportion of the full sample, that will tell us if there is a difference between men and women, so we can also write the test like this getting similar results:
 
@@ -3036,7 +3034,7 @@ t
 chisq.test(t)
 ```
 
-The low p-value from this test is indicating that the theory that these two categorical variables are independent is implausible.
+The low $p$-value from this test is indicating that the theory that these two categorical variables are independent is implausible.
 
 ::: {.callout-orange appearance="simple" icon="false"}
 Chi-Squared is used for testing the independence of categorical variables. It compares observed frequencies in a contingency table to expected frequencies under independence.
@@ -3126,7 +3124,7 @@ hist(avgdiff)
 abline(v=obsdiff, col="red", lwd=2)
 ```
 
-How many of the null means are bigger than the observed value? That proportion would be the p-value for the null. We add a 1 to the numerator and denominator to account for misestimation of the p-value. The p-value here is calculated directly as the percentage of values higher than our number of interest.
+How many of the null means are bigger than the observed value? That proportion would be the $p$-value for the null. We add a 1 to the numerator and denominator to account for misestimation of the $p$-value. The $p$-value here is calculated directly as the percentage of values higher than our number of interest.
 
 ```{r}
 #the proportion of permutations with larger difference
@@ -3153,7 +3151,7 @@ hist(avgdiff)
 abline(v=obsdiff, col="red", lwd=2)
 ```
 
-Now the observed difference is not significant using this approach. Keep in mind that there is no theoretical guarantee that the null distribution estimated from permutations approximates the actual null distribution. For example, if there is a real difference between the populations, some of the permutations will be unbalanced and will contain some samples that explain this difference. This implies that the null distribution created with permutations will have larger tails than the actual null distribution. This is why permutations result in conservative p-values. For this reason, when we have few samples, we can't do permutations.
+Now the observed difference is not significant using this approach. Keep in mind that there is no theoretical guarantee that the null distribution estimated from permutations approximates the actual null distribution. For example, if there is a real difference between the populations, some of the permutations will be unbalanced and will contain some samples that explain this difference. This implies that the null distribution created with permutations will have larger tails than the actual null distribution. This is why permutations result in conservative $p$-values. For this reason, when we have few samples, we can't do permutations.
 
 Note also that permutations tests still have assumptions: samples are assumed to be independent and "exchangeable". If there is hidden structure in your data, then permutation tests can result in estimated null distributions that underestimate the size of tails because the permutations may destroy the existing structure in the original data.
 
@@ -3161,7 +3159,7 @@ Note also that permutations tests still have assumptions: samples are assumed to
 
 The **Bonferroni correction** is a statistical method used to address the problem of multiple comparisons. When you perform multiple hypothesis tests, the chance of making a Type I error (false positive) increases. The Bonferroni correction helps control this by adjusting the significance level.
 
-What we do is, if there are m test, we multiply the p-values by m. This correction makes sure that P(any of the m test rejects in error) is still smaller than 5%. The Bonferroni correction is often very restrictive. It guards against having even one false positive among the m test. As a consequence the adjusted p-values may not be significant any more even if a noticeable effect is present, so it will only work if you don't have a large number of test.
+What we do is, if there are m test, we multiply the $p$-values by m. This correction makes sure that P(any of the m test rejects in error) is still smaller than 5%. The Bonferroni correction is often very restrictive. It guards against having even one false positive among the m test. As a consequence the adjusted $p$-values may not be significant any more even if a noticeable effect is present, so it will only work if you don't have a large number of test.
 
 Alternatively if the number of tests is large, it is better to use the **False Discovery Proportion (FDP)**:
 
@@ -3171,9 +3169,9 @@ $$
 
 where a discovery occurs when a test rejects the null hypothesis. If no hypothesis are rejected, FDP is defined to be 0.
 
-The **False Discovery Rate (FDR)** is the expected proportion of false discoveries among the discoveries. One common method to control the FDR is the Benjamini-Hochberg procedure. This method adjust the p-values to control the FDR at a desired alpha level. The procedure is like this:
+The **False Discovery Rate (FDR)** is the expected proportion of false discoveries among the discoveries. One common method to control the FDR is the Benjamini-Hochberg procedure. This method adjust the $p$-values to control the FDR at a desired alpha level. The procedure is like this:
 
-1.  Sort the p-values in ascending order. $p_{(1)}, p_{(2)}, \ldots, p_{(m)}$
+1.  Sort the $p$-values in ascending order. $p_{(1)}, p_{(2)}, \ldots, p_{(m)}$
 
 2.  Find the largest k value such as $p_k=\frac{k}{m}\alpha$
 
@@ -3192,7 +3190,7 @@ print(p.adjusted)
 
 ```
 
-This will give you the adjusted p-values, and you can compare them to your desired FDR level to decide which hypotheses to reject.
+This will give you the adjusted $p$-values, and you can compare them to your desired FDR level to decide which hypotheses to reject.
 
 The **validation set approach**. With this approach you split your data set into two parts, one is a model building set and a validation set before the analysis. You may use data snooping (multiple testing) in the first set of data to find something interesting. And then you test this hypothesis on the validation set..
 
@@ -3755,7 +3753,7 @@ A correlation test checks the **null hypothesis that the population correlation*
 
 To test the null hypothesis, we compute a *t-statistic* $$
 t= \frac{\hat{\beta_1}-0}{SE(\hat{\beta_1})}
-$$ This will have a t-distribution with n-2 degrees of freedom. Using statistical software, it is easy to compute the probability of observing any value equal to *t* or larger. We call this probability the *p-value*. The confidence intervals can also tell us if we should reject the null hypothesis. If 0 falls in between the range of the confidence interval, that means that we cannot exclude the possibility that the slope is 0, meaning that there is no relation between the parameters. The confidence interval is also going to tell you how big the effect is, so it is always a good practice to compute confidence intervals as well as doing a hypothesis testing.
+$$ This will have a t-distribution with n-2 degrees of freedom. Using statistical software, it is easy to compute the probability of observing any value equal to *t* or larger. We call this probability the *$p$-value*. The confidence intervals can also tell us if we should reject the null hypothesis. If 0 falls in between the range of the confidence interval, that means that we cannot exclude the possibility that the slope is 0, meaning that there is no relation between the parameters. The confidence interval is also going to tell you how big the effect is, so it is always a good practice to compute confidence intervals as well as doing a hypothesis testing.
 
 The test **assumes that the data isn't too skewed in any other direction and that there aren't extreme outliers**. As usual, a larger sample provides a certain degree of protection.
 
@@ -3769,7 +3767,7 @@ testResult<- cor.test(treatment$DLA2,
 report(testResult)
 ```
 
-In this type of test our null hypothesis is that the true correlation between those two variables is 0. In our example, the test is giving us a sample correlation of `r testResult$estimate` and a p-value `r testResult$p.value` which in simple terms mean that the probability of getting this correlation results in our sample if the true correlation in the population was actually 0 would be less than 0.001, so highly unlikely. The test also gives us a confidence interval, in our case `r testResult$conf.int` and its interpretation is exactly the same as it always is for our confidence interval: if we were to go out and get many many samples from the same population and compute correlations of them, 95% of the time that confidence interval would capture the true parameter, in our case the true population correlation.
+In this type of test our null hypothesis is that the true correlation between those two variables is 0. In our example, the test is giving us a sample correlation of `r testResult$estimate` and a $p$-value `r testResult$p.value` which in simple terms mean that the probability of getting this correlation results in our sample if the true correlation in the population was actually 0 would be less than 0.001, so highly unlikely. The test also gives us a confidence interval, in our case `r testResult$conf.int` and its interpretation is exactly the same as it always is for our confidence interval: if we were to go out and get many many samples from the same population and compute correlations of them, 95% of the time that confidence interval would capture the true parameter, in our case the true population correlation.
 
 With this new knowledge we are going to test the sample we created before showing a relationship between age and DLA_improvement and compare it with the correlation for the population (all records in our file)
 
@@ -3825,11 +3823,11 @@ We can get more information about our model if we ask for their summary:
 summary(lm(DLA2 ~ DLA1, data = treatment))
 ```
 
-The p-value that corresponds with the intercept is a the p-value of a test done against the null hypothesis that the intercept is actually 0.
+The $p$-value that corresponds with the intercept is a the $p$-value of a test done against the null hypothesis that the intercept is actually 0.
 
-The p-value that corresponds with the dependent variable is the result of a test done against the null hypothesis that the slope is actually 0.
+The $p$-value that corresponds with the dependent variable is the result of a test done against the null hypothesis that the slope is actually 0.
 
-We can retrieve those p-values using the coefficients table from our lm result:
+We can retrieve those $p$-values using the coefficients table from our lm result:
 
 ```{r}
 testResult<- summary(lm(DLA2 ~ DLA1, data = treatment))
@@ -4159,7 +4157,7 @@ newspaper<- lm(sales ~ newspaper, data = Advertising)
 summary(newspaper)
 ```
 
-We see that independently, all three variables have a p-value below or significance level.
+We see that independently, all three variables have a $p$-value below or significance level.
 
 If we fit the model to the three variables instead newspaper stops showing as significant.
 
@@ -4237,7 +4235,7 @@ If your calculated F-value is, say, 5.2, since 5.2 \> 2.70, your model is signif
 
 If it were 1.8, since 1.8 \< 2.70, your model isn't significant (low F-value).
 
-In r, the f-value will also come with its p-value, indicating its significance.
+In r, the f-value will also come with its $p$-value, indicating its significance.
 
 ## Deciding on the important variables.
 
@@ -4326,7 +4324,7 @@ Again, once we have the best version of the model with each number of predictors
 
 #### Backward stepwise selection
 
-It runs a similar process but starting with a model with all the variables, then you run the model removing each variable and see which one is the least statistically significant one. The new (p-1) variable model is fit, and the variable with the largest p-value is removed. Continue until a stopping rule is reached, for instance, we may stop when all remaining variables have a significant p-value defined by some significance threshold.
+It runs a similar process but starting with a model with all the variables, then you run the model removing each variable and see which one is the least statistically significant one. The new (p-1) variable model is fit, and the variable with the largest $p$-value is removed. Continue until a stopping rule is reached, for instance, we may stop when all remaining variables have a significant $p$-value defined by some significance threshold.
 
 One limitation of the backward stepwise selection is that we can only do it with n\>p (more samples than predictors). This limitation does not apply to forward stepwise selection.
 
@@ -4871,7 +4869,7 @@ for (j in 1:k) {
 
 This has given us a $10 \times 19$ matrix, of which the $(j,i)$th element  corresponds to the test MSE for the $j$th cross-validation fold for the best $i$-variable model. We use the `apply()` function to average over the columns of this matrix in order to obtain a vector for which the $i$th element is the cross-validation error for the $i$-variable model.
 
-```{r chunk23}
+```{r, fig.align='center'}
 (mean.cv.errors <- apply(cv.errors, 2, mean))
 
 par(mfrow = c(1, 1))
@@ -4882,7 +4880,7 @@ plot(sqrt(mean.cv.errors), type = "b", ylab="sqrt MSE")
 
 We see that cross-validation selects a 10-variable model. We now perform best subset selection on the full data set in order to obtain the 10-variable model.
 
-```{r chunk24}
+```{r}
 reg.best <- regsubsets(Salary ~ ., data = Hitters,
     nvmax = 19)
 coef(reg.best, 10)
@@ -5306,7 +5304,7 @@ $$ so what this is telling us is that $\beta_1$ is the effect of being female vs
 
 If we have more than two levels what we do is create more dummy variables. For example we look at three different etnicities, Asian, Caucasian and African American, we create:
 
-$x_{i1} = 0$ if person is Asian and $x_{i1} = 1$ if the person is not Asian $x_{i2} = 0$ if person is Caucasian and $x_{i2} = 1$ if the person is not. We don't need a level for African American because that will be deducted when $x_{i1} = 0$ and $x_{i2} = 0$. So for categorical variables we create $k-1$ dummy variables. The level with no dummy variable is known as *baseline*. The choice of a baseline will not affect the fit of the model, the residual sum of squares would be the same, but the coefficient and the p-values will change because each other category will be compared with the baseline.
+$x_{i1} = 0$ if person is Asian and $x_{i1} = 1$ if the person is not Asian $x_{i2} = 0$ if person is Caucasian and $x_{i2} = 1$ if the person is not. We don't need a level for African American because that will be deducted when $x_{i1} = 0$ and $x_{i2} = 0$. So for categorical variables we create $k-1$ dummy variables. The level with no dummy variable is known as *baseline*. The choice of a baseline will not affect the fit of the model, the residual sum of squares would be the same, but the coefficient and the $p$-values will change because each other category will be compared with the baseline.
 
 The equation will now look like this: 
 $$
@@ -5367,12 +5365,12 @@ summary(lm.fit_interaction)
 
 ```
 
-the p-value of the interaction indicates that in our example this interaction is significant, we can also see how our R-squared is higher now (0.9678) than when we did not include the interaction in our model (0.8972). This means that (96.8-89.7)/(100-89.7)=69% of the variability in sales that remains after fitting the initial model has been explained by the interaction term.
+the $p$-value of the interaction indicates that in our example this interaction is significant, we can also see how our R-squared is higher now (0.9678) than when we did not include the interaction in our model (0.8972). This means that (96.8-89.7)/(100-89.7)=69% of the variability in sales that remains after fitting the initial model has been explained by the interaction term.
 
 The coefficients estimates in the table suggest that an increase in radio advertising of \$1000 is associated with increased sales of $(\hat{\beta_2}+\hat{\beta_3}\times TV)\times 1000 = 29+1.1\times TV units$ An increase in TV advertising of \$1000 is associated with an increase of sales of $(\hat{\beta_1}+\hat{\beta_3}\times radio)\times 1000 = 19+1.1\times radio units$
 :::
 
-Sometimes it is the case that an interaction term has a very small p-value, but the associated main effects do not. The *hierarchy principle* states that if we include an interaction in a model, we should also include the main effects, even if the p-values associated with their coefficients are not significant.
+Sometimes it is the case that an interaction term has a very small $p$-value, but the associated main effects do not. The *hierarchy principle* states that if we include an interaction in a model, we should also include the main effects, even if the $p$-values associated with their coefficients are not significant.
 
 ## Non-linear transformations of the predictors.
 
@@ -5424,11 +5422,11 @@ We already talked about most of them, but let's do a summary:
 ::: callout-orange
 1.  **Non linearity**: The linear regression model assumes that there is a straight-line relationship between the predictors and the response. If the true relationship is far from linear, then virtually all of the conclusions that we draw from the fit are suspect. We saw how we can make use of the residual plot to see if the relation is liner or not when we talked about [residuals](%7B#residualplots%7D)
 
-2.  **Correlation of error terms**: An important assumption of the linear regression model is that the error terms are uncorrelated.If in fact there is correlation among the error terms, then the estimated standard errors will tend to underestimate the true standard errors and this will affect the p-values, confidence intervals etc. Why might correlations among the error terms occur? Such correlations frequently occur in the context of time series data, which consists of observations for which measurements are obtained at discrete points in time. time series. In many cases, observations that are obtained at adjacent time points will have positively correlated errors. In order to determine if this is the case for a given data set, we can plot the residuals from our model as a function of time. If the errors are uncorrelated, then there should be no discernible pattern. On the other hand, if the error terms are positively correlated, then we may see tracking in the residuals.Correlation among the error terms can also occur outside of time series data. For instance, consider a study in which individuals' heights are predicted from their weights. The assumption of uncorrelated errors could be violated if some of the individuals in the study are members of the same family, eat the same diet,or have been exposed to the same environmental factors. In general, the assumption of uncorrelated errors is extremely important for linear regression as well as for other statistical methods, and good experimental design is crucial in order to mitigate the risk of such correlations.
+2.  **Correlation of error terms**: An important assumption of the linear regression model is that the error terms are uncorrelated.If in fact there is correlation among the error terms, then the estimated standard errors will tend to underestimate the true standard errors and this will affect the $p$-values, confidence intervals etc. Why might correlations among the error terms occur? Such correlations frequently occur in the context of time series data, which consists of observations for which measurements are obtained at discrete points in time. time series. In many cases, observations that are obtained at adjacent time points will have positively correlated errors. In order to determine if this is the case for a given data set, we can plot the residuals from our model as a function of time. If the errors are uncorrelated, then there should be no discernible pattern. On the other hand, if the error terms are positively correlated, then we may see tracking in the residuals.Correlation among the error terms can also occur outside of time series data. For instance, consider a study in which individuals' heights are predicted from their weights. The assumption of uncorrelated errors could be violated if some of the individuals in the study are members of the same family, eat the same diet,or have been exposed to the same environmental factors. In general, the assumption of uncorrelated errors is extremely important for linear regression as well as for other statistical methods, and good experimental design is crucial in order to mitigate the risk of such correlations.
 
 3.  **Non-constant variance of error terms [(heteroscedasticity)](#heteroscedasticity)** : error terms have a constant variance, Var(ϵi) = σ2. The standard errors, confidence intervals, and hypothesis tests associated with the linear model rely upon this assumption. Unfortunately, it is often the case that the variances of the error terms are non-constant. For instance, the variances of the error terms may increase with the value of the response
 
-4.  **Outliers**: An outlier is a point for which $y$ is far from the value predicted by the model. It is typical for an outlier that does not have an unusual predictor value to have little effect on the least squares fit. However, even if an outlier does not have much effect on the least squares fit, it can cause other problems. For instance it affects the RSE. Since the RSE is used to compute all confidence intervals and p-values, such a dramatic increase caused by a single data point can have implications for the interpretation of the fit. Residual plots can be used to identify outliers.
+4.  **Outliers**: An outlier is a point for which $y$ is far from the value predicted by the model. It is typical for an outlier that does not have an unusual predictor value to have little effect on the least squares fit. However, even if an outlier does not have much effect on the least squares fit, it can cause other problems. For instance it affects the RSE. Since the RSE is used to compute all confidence intervals and $p$-values, such a dramatic increase caused by a single data point can have implications for the interpretation of the fit. Residual plots can be used to identify outliers.
 
 5.  **High-leverage points**: Observations with [high leverage](#highLeverage) have an unusual value for $x_i$. Removing a high leverage point has much more impact than removing an outlier. In a simple linear regression, high leverage observations are fairly easy to identify, since we can simply look for observations for which the predictor value is outside of the normal range of the observations. But in a multiple linear regression with many predictors, it is possible to have an observation that is well within the range of each individual predictor's values, but that is unusual in terms of the full set of predictors.
 
@@ -5437,7 +5435,7 @@ We already talked about most of them, but let's do a summary:
 
 # Introduction to ANOVA (Analysis of Variance)
 
-Analysis of variance, or ANOVA, is used to test **the relationship between a categorical and a quantitative variable**. Specifically, it test the null hypothesis that the population mean of the quantitative variable is the same in each of the groups. A low p-value indicates that the data would be unlikely if in fact those population means where equal.
+Analysis of variance, or ANOVA, is used to test **the relationship between a categorical and a quantitative variable**. Specifically, it test the null hypothesis that the population mean of the quantitative variable is the same in each of the groups. A low $p$-value indicates that the data would be unlikely if in fact those population means where equal.
 
 ANOVA requires that the data be relatively symmetric in each group and not include extreme outliers. Additionally, the spread of the data within the groups should be similar. Always plot your data before running ANOVA to check these assumptions.
 
@@ -5467,7 +5465,7 @@ sumRes<- summary(testResult)
 sumRes
 ```
 
-if we look at our p-value that is testing if in fact all of these groups have the same mean it is `` r sumRes[[1]]$`Pr(>F)` `` which means that in almost 65% of the cases we would see these kind of data even if the population means for these groups were the same.
+if we look at our $p$-value that is testing if in fact all of these groups have the same mean it is `` r sumRes[[1]]$`Pr(>F)` `` which means that in almost 65% of the cases we would see these kind of data even if the population means for these groups were the same.
 
 Our null hypothesis is that all group means are equal. If we had only two groups, we would use a t test
 
@@ -5565,7 +5563,7 @@ $$
 F= \frac{MST}{MSE}
 $$ {#eq-Fstatistic}
 
-Under the null hypothesis of equal group means this ratio should be about 1. It will not be exactly one due to sampling variability. It follows a F-distribution with k-1 and N-k degrees of freedom. Large values of F suggest that the variation between groups is unusually large. We reject the null hypothesis if F is the right 5% of the tail, i.e. when the p-value is smaller than 5%.
+Under the null hypothesis of equal group means this ratio should be about 1. It will not be exactly one due to sampling variability. It follows a F-distribution with k-1 and N-k degrees of freedom. Large values of F suggest that the variation between groups is unusually large. We reject the null hypothesis if F is the right 5% of the tail, i.e. when the $p$-value is smaller than 5%.
 
 The result of the test is summarized in the ANOVA table:
 
@@ -5653,7 +5651,7 @@ model <- aov(hwy ~ drv, data = mpg_2008)
 summary(model)
 ```
 
-As we mentioned, the ANOVA test does not tell us anything about each group in particular, for this we can run another test, one recommended is the **Tukey Honest Significant Difference** test and this will give us a p-value and a confidence interval for each pair of categories in our data.
+As we mentioned, the ANOVA test does not tell us anything about each group in particular, for this we can run another test, one recommended is the **Tukey Honest Significant Difference** test and this will give us a $p$-value and a confidence interval for each pair of categories in our data.
 
 ```{r}
 TukeyHSD(model)
@@ -5668,7 +5666,7 @@ mpg_r4 <- filter(mpg_2008, drv != "f")
 t.test(mpg_r4$hwy ~ mpg_r4$drv)
 ```
 
-we can see that the p-value here is smaller than the one calculated for that same pair in the Tukey Test.
+we can see that the $p$-value here is smaller than the one calculated for that same pair in the Tukey Test.
 
 ::: {.callout-orange appearance="simple" icon="false"}
 ANOVA tests if there are statistically significant differences between the means of three or more groups. It essentially extends the t-test to multiple groups.
@@ -5817,7 +5815,7 @@ summary(glm.balance)
 
 ### Interpreting the results:
 
-For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `p-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. \### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression) $$
+For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `$p$-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. \### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression) $$
 \hat{p}(X) = \frac{e^{\hat{\beta_0} + \hat{\beta_1} X_1}}{1 + e^{\hat{\beta_0} + \hat{\beta_1} X_1 }}
 $$ we just plug in the values from our `glm`, for example for a balance of 1000: $$
 \hat{p}(X) = \frac{e^{-10.65 + 0.0055 \times 1000}}{1 + e^{-10.65 + 0.0055 \times 1000}} =0.00576
@@ -5980,7 +5978,7 @@ The 'contrast()\` function tells us what value of Direction is 0 and which one i
 contrasts(Smarket$Direction)
 ```
 
-The negative predictor in lag1, lag2 suggest that if the market had a positive return yesterday, then it is less likely to go up today, however, the p-value is large, so there is no clear association.
+The negative predictor in lag1, lag2 suggest that if the market had a positive return yesterday, then it is less likely to go up today, however, the $p$-value is large, so there is no clear association.
 
 The null deviance and the residual deviance are very similar, which indicates that the model does not perform much better than just using the average.
 
@@ -6267,11 +6265,11 @@ print(confusion_matrix)
 
 -   *No Information Rate (NIR)*:It represents the accuracy if the model always predicted the majority class (No).
 
--   *P-Value \[Acc \> NIR\]*: This p-value tests if the accuracy is significantly better than the NIR.
+-   *$p$-value \[Acc \> NIR\]*: This $p$-value tests if the accuracy is significantly better than the NIR.
 
 -   *Kappa*: It measures the agreement between the observed and predicted classifications, adjusted for chance. Values close to 1 indicate better agreement.
 
--   *Mcnemar's Test P-Value*: Tests if there is a significant difference between the number of false positives and false negatives.
+-   *Mcnemar's Test $p$-value*: Tests if there is a significant difference between the number of false positives and false negatives.
 
 Class-Specific Metrics:
 
@@ -6603,7 +6601,7 @@ This helps in comparing each category to the overall mean effect, rather than to
 
 By default, categorical variables are typically converted to dummy variables (0/1), which can lead to difficulties in interpreting the results, especially with a large number of categories.
 
-In this second model the coefficient estimate for the last level of `mnth` is not zero: instead, it equals the negative of the sum of the coefficient estimates for all of the other levels. Similarly, the coefficient estimate for the last level of hr is the negative of the sum of the coefficient estimates for all of the other levels. This indicates that the difference between the mean level and the coefficients of `hr` and `mnth` in the second model will always total to zero.
+In this second model the coefficient estimate for the last level of `mnth` is not zero: instead, it equals the negative of the sum of the coefficient estimates for all of the other levels. Similarly, the coefficient estimate for the last level of hr is the negative of the sum of the coefficient estimates for all of the other levels. This indicates that the difference between the mean level and the coefficients of `hr` and `mnth` in the second model will always total to zero.
 
 We use the linear model to predict the values:
 
@@ -6779,7 +6777,7 @@ points(data$time[data$status == 0], data$patient[data$status == 0], pch = 1, col
 for (i in 1:nrow(data)) { lines(c(0, data$time[i]), c(data$patient[i], data$patient[i]), col = "gray", lty = 2) }
 ```
 
-when we are observing the first patient's T, 4 out of 5 patients survived past that point in time, so the probabily of surviving past t(2) is 4/5
+when we are observing the first patient's T, 4 out of 5 patients survived past that point in time, so the probability of surviving past t(2) is 4/5
 
 Then we move to the next T (skip the censored number 2) and we have that 2 out of the 3 patients remaining survived past that point. So the probability of surviving past t(4) is $\frac{4}{5} \times \frac{2}{3}$ so the probability of surviving past t(4) is the probability of surviving t(4) given that you have survived pass the previous T.
 
@@ -6793,7 +6791,12 @@ The kaplan-Meier curve for this simple experiment would look like this:
 fit <- survival::survfit(Surv(time, status) ~ 1, data = data)
 survminer::ggsurvplot(fit, data = data, xlab = "Time", ylab = "Survival Probability", title = "Kaplan-Meier Survival Estimate", censor.shape = 124, censor.size = 4, risk.table = TRUE, risk.table.col = "strata", ggtheme = theme_minimal())
 ```
+
 Now that we have seen this with a simple example, let's run it over the BrainCancer dataset. Each point in the solid step-like curve shows the estimated probability of surviving past the time indicated on the horizontal axis.
+
+Before begining the analysis, it is important to know how the `status` variable has been coded. Most software, including R, uses the convention that `status =1` indicates an uncensored observation, and `status =0` indicates a censored observations. But some scientist might use the opposite coding. 
+
+To begin the analysis we recreate the Kaplan-Meier survival curve using the `survfit()` function from `survival` library. By including `~1` we indicate that the survival analysis is performed without considering any covariates or grouping. The model will estimate a single survival curve for all subjects combined. This allows us to understand the general survival pattern across the entire dataset. 
 
 
 ```{r, fig.align='center', fig.width=6}
@@ -6803,9 +6806,10 @@ BrainCancer= ISLR2::BrainCancer
 fit.surv <- survfit(Surv(time, status) ~ 1, data = BrainCancer)
 plot(fit.surv, xlab="Months", ylab= "Estimated Pr survival")
 ```
+The dotted lines indicates the confidence interval for 2 standard errors. 
 The estimated probability of survival past 20 months is 71%, which is higher than the 55% that we estimated just but counting the amount of survivors.
 
-## Proportional Hazards Model. Log-Rank Test
+## Proportional Hazards Model: Log-Rank Test
 
 Now we are going to see how to compare two samples. For example, for our BrainCancer dataset, let's compare females and males. If we plot them we can appreciate a difference until month 50 but is this difference significant?
 
@@ -6819,7 +6823,7 @@ legend("bottomleft", levels(BrainCancer$sex), col = c(2,4), lty = 1)
 
 ```
 
-The proportional Hazard Model allows us to compare two survival samples.
+The proportional Hazard Model allows us to compare two survival samples. It is the equivalent of a t.test for survival data.
 Being $d_1<d_2<\dots,d_k$ unique death times among non-censored patients, $r_k$ is the number of patients at risk at time $d_k$ and $q_k$ is the number of patients who died at time $d_k$.
 We divide our patients in two groups males and females, and we will call their variables $q_{1k}$ and $q_{2k}$ for the number of male and female patients who died and $r_{1k}$ and $r_{2k}$ are the number of patients at risk in each group.
 So at a specific time $d_k$ we have:
@@ -6833,34 +6837,33 @@ data <- data.frame(
 row.names(data) <- c("Died", "Survived", "Total")
 kable(data, format = "html", escape = FALSE)%>% kable_styling(full_width = FALSE, position = "center")
 ```
-To test $H_0$, that will be our null hypothesis that the survival rates are the same we construct a test statistic of the form:
+To test $H_0$, our null hypothesis that the survival rates are the same for both genders, we construct a test statistic of the form:
 
 $$
 W=\frac{X-E(X)}{\sqrt{Var(X)}}
 $$
-where E(X) is the expectation and Var(X) is the variance of X under the null hypothesis.
-$X=\sum^K_{k=1}q_{1k}$
+where E(X) is the expectation and Var(X) is the variance of X under the null hypothesis. $X=\sum^K_{k=1}q_{1k}$
 
 The resulting formula for the log-rank test statistic is:
 
 $$
 W =\frac{\sum^K_{k=1}(q_{1k}-E(q_{1k}))}{\sqrt{\sum^K_{k=1}Var(q_{1k})}}
-$${#eq-logRankTestStatistic}
+$${#eq-logrankTestStatistic}
 
 We are not going to develop this formula further in this page, but the full definition can be found on the book.
 When the sample size is large, the *log-rank test statistic W* has approximately a standard normal distribution.
 
 This can be used to compute a `p-value` for the null hypothesis that there is no difference between survival curves in the two groups.
 
-Instead of calculating it manually we will use r:
+Instead of calculating it manually we will use R with the function `survdiff()`:
 
 ```{r}
 logrank.test <- survdiff(Surv(time, status) ~ sex, data =BrainCancer)
 logrank.test
 ```
-We use a two sided test because we want to know if the male survival rate is less or more than those of females, we are not interested only in if they are higher. We see that our p-value for a two-sided test is 0.2, which does not allow us to reject the null hypothesis that there is a difference.
+We use a two sided test because we want to know if the male survival rate is less or more than those of females, we are not interested only in if they are higher. We see that our $p$-value for a two-sided test is 0.2, which does not allow us to reject the null hypothesis that there is a difference. This could be just because the dataset is too small. Even though the number of observations are 88, the survival information is extracted from the number of failures, so the censored are not really adding so much information. 
 
-The `survminer` package draws survival curves using ggplot, and can provide logrank p-values:
+The `survminer` package draws survival curves using ggplot, and can provide log-rank $p$-values:
 ```{r, fig.align='center', fig.width= 8, fig.height=6}
 library(survminer)
 fit.sex <- survfit(Surv(time, status) ~ sex, data= BrainCancer)
@@ -6873,7 +6876,7 @@ survminer::ggsurvplot(fit.sex, data = BrainCancer,
 
 ```
 
-## Regression Models with a Survival Response.
+## Regression Models with a Survival Response Cox Model.
 
 We now consider the task of fitting a regression model to survival data. We wish to predict the true survival time T. Because of the censoring, we cannot really just fit a linear or log model. To overcome this difficulty, we instead make use of a sequential construction, similar to the idea used for the Kaplan-Meier survival curve.
 
@@ -6891,31 +6894,61 @@ Where $h_0(t)$ is an unspecified function, known as the *baseline hazard*
 The quantity $exp\left( \sum^p_{j=1}x_{ij}\beta_j \right)$ is called the *relative risk*
 
 There is a deeper explanation of this method on the book that we skip here.
+
 There is no intercept in the proportional hazards model because the intercept is absorbed into the baseline hazard.
 We assume that there are no tied failure times (only one individual Fails at a given time). In the case this is not correct and there are ties, the model is more complicated to calculate and a number of computational approximations must be used.
 Apart from estimating the coefficients, we may also wish to estimate the baseline hazard, so we can estimate the survival curve. These are implemented in the `survival` package in R.
 
-Let's fix Cox proportional hazards models using the `coxph()` function. To begin, we consider a model that uses `sex` as the only predictor.
+If we have a single predictor (sex) with a binary outcome (0,1) or (male,female). To test whether there is a difference between the survival tiems of the observations in the two groups we can consider two different approaches:
+
+1- Fit a Cox proportional hazards model and test the null hypothesis that $\beta =0$
+2- Perform a log-rank test to compare the two groups. 
+When taking approach 1, there are a number of possible ways to test $H_0$. One way is known as *score test* and it turn out that in the case of a single binary covariate, the score test for $H_0:\beta=0$ in Cox's proportional hazards model is exactly equal to the log-rank test. 
+
+Let's fix Cox proportional hazards models using the `coxph()` function. To begin, we consider a model that uses `sex` as the only predictor in the BrainCancer dataset.
 
 ```{r}
 fit.cox<- survival::coxph(Surv(time, status) ~ sex, data=BrainCancer)
 summary(fit.cox)
 ```
-As we saw with the logrank test, there is no evidence to suggest that there is a survival difference by sex.
+As we saw with the log-rank test, there is no evidence to suggest that there is a survival difference by sex.
 
 Now we fit all the predictors:
 
 ```{r}
 fit.cox<- survival::coxph(Surv(time, status) ~ sex + diagnosis + loc + ki + gtv +
    stereo, data = BrainCancer)
-summary(fit.cox)
+fit.cox
 ```
+**Interpreting the results:**
 
-The `diagnosis` variable has been coded so that the baseline corresponds to meningioma. Results indicate that the risk associated with HG glioma is more than eight times (i.e. $e^{2.15} = 8.62$) the risk associated with meningioma. In addition, larger values of the Karnofsky index (ki) are associated with lower risk. (negative coefficient)
+As we mentioned before, there is no intersect because it has been absorbed into the baseline hazard function $h_0(t)$. 
 
-It is possible to plot estimated survival curves for each diagnosis category, adjusting for the other predictors. To make these plots, set the values of the other predictors equal to the mean for quantitative variables, and the modal value for factors
+ - Call: This shows the formula used for the model.
 
-```{r}
+ - n: Number of observations used in the analysis (87).
+
+ - number of events: Number of observed events (35), such as deaths or failures.
+ 
+ - coef: The regression coefficients for each predictor.
+
+ - exp(coef): The hazard ratios (HR), which indicate the effect size of each predictor.
+
+ - se(coef): Standard errors of the coefficients.
+
+ - z: z-statistic for testing the null hypothesis that the coefficient is zero.
+
+ - Pr(>|z|): $p$-values for the z-tests, indicating whether the coefficients are significantly different from zero.
+ 
+ - Likelihood ratio test, Wald test, Score (log-rank) test: These tests assess the overall significance of the model. The low $p$-values (< 0.001) indicate that the predictors collectively have a significant effect on survival.
+ 
+ In our specific result, the `diagnosis` variable has been coded so that the baseline corresponds to meningioma. Results indicate that the risk associated with HG glioma is more than eight times (i.e. $e^{2.15} = 8.62$) the risk associated with meningioma. In addition, larger values of the Karnofsky index (ki) are associated with lower risk. (negative coefficient).
+
+ We need to remember, that like in linear models, if some of the variables are correlated, a variable could show as non-significant even if it is, because the other correlated variables are absorbing part of its influence.
+
+It is possible to plot estimated survival curves for each diagnosis category, adjusting for the other predictors. To make these plots, set the values of the other predictors equal to the mean for quantitative variables, and the modal value for factors.
+
+```{r, fig.align='center', fig.width=7}
 
 with(BrainCancer,{
   modaldata <<- data.frame(
@@ -6934,3 +6967,150 @@ survplots <- survfit(fit.cox, newdata = modaldata)
   legend("bottomleft", levels(BrainCancer$diagnosis), col = 2:5, lty = 1)
 
 ```
+::: {.exercise-box}
+We are using now the Publication dataset from ISLR2. The time is time until publication and we are interested in knowing if having a positive or negative result versus a null result resulted in faster publication time. A censored time here would be that either the paper was never published or was published after this studied finished. 
+We will start by plotting the survival curve. 
+
+```{r, fig.align='center', fig.width=7}
+
+fit.posres <- survfit(Surv(time, status) ~ posres, data = Publication)
+plot(fit.posres, xlab ="Months", ylab= "Pr. of not being published", col =3:4)
+legend("topright", c("Negative Result", "Positive Result"), col=3:4, lty =1)
+```
+
+we can fit a cox model:
+```{r}
+(fit.pub <- coxph(Surv(time,status) ~ posres, data=Publication))
+
+```
+The $p$-value is not significant. We can do a log-rank test:
+
+```{r}
+(logrank.test <- survdiff(Surv(time,status) ~ posres, data=Publication))
+```
+and again we see not significant difference. 
+
+However, the results change dramatically when we include other predictors in the model. Here we have excluded only the funding mechanism variable
+
+```{r}
+(fit.pub <- coxph(Surv(time,status)~ . -mech, data=Publication))
+```
+We have now some significant variables, including `posres` result. This often happens when we include other confounding factors. 
+
+:::
+
+:::{.exercise-box}
+In this section we will simulate survival data using the `sim.survdata()` function, which is part of the `coxed` library. Our simulated data will represent the observed wait times (in seconds) for 2000 customers who have phoned a call center. In this context, censoring occurs if a customers hangs up before his or her call is anwered.
+
+There are three covariates: `operators` (the number of call center operators available) `center` and `time` of day (morning, afternoon, evening). We generate data for these covariates so that all possibilities are equally likely, for instance, morning, afternoon and evening calls are equally likely, and the number of operators (from 5 to 15) is equally likely.
+
+```{r}
+set.seed(4)
+N <-2000
+Operators <- sample(5:15, N, replace=T)
+Center <-sample(c("A","B","C"), N, replace=T )
+Time <- sample(c("Morn.","After.","Even."), N, replace=T)
+X <- model.matrix( ~ Operators + Center + Time)[,-1]
+
+X[1:5,]
+
+```
+Next, we specify the coefficients and the hazard function:
+```{r}
+true.beta <- c(0.04, -0.3,0,0.2,-0.2)
+h.fn <- function(x) return(0.00001 * x) #function to create the HAzard.
+```
+Here, we have set the coefficient associated with `Operators` to equal $0.04$; in other words, each additional operator leads to a $e^{0.04}=1.041$-fold increase in the "risk" that the call will be answered, given the `Center` and `Time` covariates. This makes sense: the greater the number of operators at hand, the shorter the wait time.
+
+The coefficient associated with `Center = B` is $-0.3$, and `Center = A` is treated as the baseline. This means that the risk of a call being
+answered at Center B is $0.74$ times the risk that it will be answered at Center A; in other words, the wait times are a bit longer at Center B.
+
+We are now ready to  generate data under the  Cox proportional hazards model. The `sim.survdata()` function allows us to specify the maximum possible failure time, which in this case corresponds to the longest possible wait time for a customer; we set this to equal $1{,}000$ seconds.
+
+```{r chunk19}
+library(coxed)
+queuing <- sim.survdata(N = N, T = 1000, X = X,
+    beta = true.beta, hazard.fun = h.fn)
+names(queuing)
+```
+The "observed" data is stored in `queuing$data`, with `y` corresponding to the event time and `failed` an indicator of whether the call was answered (`failed = T`) or the customer hung up before the call was answered (`failed = F`). We see that almost $90\%$ of calls were answered.
+
+```{r chunk20}
+head(queuing$data)
+mean(queuing$data$failed)
+```
+We now plot  Kaplan-Meier survival curves. First, we stratify by `Center`.
+
+```{r ,fig.align='center',fig.width=7}
+fit.Center <- survfit(Surv(y, failed) ~ Center,
+    data = queuing$data)
+plot(fit.Center, xlab = "Seconds",
+    ylab = "Probability of Still Being on Hold",
+    col = c(2, 4, 5))
+legend("topright",
+     c("Call Center A", "Call Center B", "Call Center C"),
+     col = c(2, 4, 5), lty = 1)
+```
+
+Next, we stratify by `Time`.
+
+```{r ,fig.align='center',fig.width=7}
+fit.Time <- survfit(Surv(y, failed) ~ Time,
+   data = queuing$data)
+plot(fit.Time, xlab = "Seconds",
+    ylab = "Probability of Still Being on Hold",
+    col = c(2, 4, 5))
+legend("topright", c("Morning", "Afternoon", "Evening"),
+    col = c(5, 2, 4), lty = 1)
+```
+
+It seems that calls at Call Center B take longer to be answered than calls at Centers A and C. Similarly, it appears that wait times are longest in the morning and shortest in the evening hours. We can use a log-rank test to determine whether these differences are statistically significant.
+
+```{r chunk23}
+survdiff(Surv(y, failed) ~ Center, data = queuing$data)
+survdiff(Surv(y, failed) ~ Time, data = queuing$data)
+```
+We find that  differences between centers are highly significant, as are differences between times of day.
+
+
+Finally, we fit Cox's proportional hazards model to the data.
+
+```{r chunk24}
+fit.queuing <- coxph(Surv(y, failed) ~ .,
+    data = queuing$data)
+fit.queuing
+```
+
+The $p$-values for `Center = B`, `Time = Even.` and `Time = Morn.` are very small. It is also clear that the hazard --- that is, the instantaneous risk that a call will be answered --- increases with the number of operators. Since we generated the data ourselves, we know that the true coefficients for `Operators`, `Center = B`, `Center = C`, `Time = Even.` and `Time = Morn.` are  $0.04$, $-0.3$, $0$, $0.2$, and $-0.2$, respectively. The coefficient estimates resulting from the Cox model are fairly accurate.
+
+:::
+
+## Harrel's concordance index (the C-index).
+This is a method for assessing a fitted survival model on a test set. 
+For each observation, we calculate the estimated risk score, so with the coefficients we got from the model we calculate the estimated risk score, called eta hat of i $\hat\eta_i = \hat\beta_1x_{i1}+\dots+\hat\beta_px{ip}$
+Then for each pairs of observations, we compute the proportion that we got right from the model, this is, if they had a lower risk, they lived longer than their counterpart in the pair. 
+
+$$
+C = \frac{\sum_{i<j} \delta_{ij} \cdot \mathbb{I}(\hat{T}_i < \hat{T}_j)}{\sum_{i<j} \delta_{ij}}
+$${#eq-Cindex}
+
+When we are comparing a pair that has one censored observation, we cannot really say if they lived longer or not, so we only count up over those that we can compare. 
+
+If we get a c-index of 0.733, roughly speaking that means that given two random observations, the model can predict with 73.3% accuracy which one will survive longer. 
+
+
+::: {.callout-orange appearance="simple" icon="false"}
+::: centered-text
+**Other considerations of survival analysis**
+:::
+ - There is not a single type of censoring, there is right censoring, left censoring and interval censoring. 
+    - *Right censoring*: This occurs when the event of interest has not happened by the end of the study period or when a subject leaves the study before experiencing the event. Example: If a patient is still alive at the end of the study or drops out, the exact survival time is unknown but is known to be greater than the last observed time.
+    - *Left censoring*: This happens when the event of interest has already occurred before the start of the study or before a subject's entry into the study. Example: If you're studying the time to a certain disease and some individuals already had the disease before the study began, their exact time to event is unknown but is known to be less than the first observed time.
+    - *Interval censoring*: This occurs when the event of interest is known to have occurred within a specific time interval, but the exact time is unknown. Example: If follow-up visits are scheduled annually and a patient was healthy at their last visit but found to have developed a disease at the next visit, the exact time of disease onset is unknown but is known to have occurred within that year.
+
+ - There are condiderations to be made about the time scale, for example, use if calendar time or patient's age
+ 
+ - Time-dependent covariates: we measure certain predictors on the same patient over time 
+:::
+
+
