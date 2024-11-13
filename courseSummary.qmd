@@ -89,6 +89,8 @@ This document is a summary of different stats courses:
 
     -   [video Series in youtube](https://www.youtube.com/watch?v=LvySJGj-88U&list=PLoROMvodv4rOzrYsAxzQyHb8n_RWNuS1e)
 
+    -   [Companion book](https://r4ds.github.io/bookclub-islr/index.html)
+
 # Exploratory Analysis (EDA)
 
 ## Mean
@@ -351,7 +353,7 @@ Note that the $X$ is now capitalized to distinguish it as a random variable and 
 
 ### The $p$-value
 
-Knowing this distribution is incredibly useful in science. If we know the distribution of our data when the null hypothesis is true, referred to as the *null distribution*, we can compute the probability of observing a value as large as we did in our experiment, referred to as a *$p$-value*.
+Knowing this distribution is incredibly useful in science. If we know the distribution of our data when the null hypothesis is true, referred to as the *null distribution*, we can compute the probability of observing a value as large as we did in our experiment, referred to as a $p$-value.
 
 ::: exercise-block
 Example.
@@ -715,7 +717,7 @@ We can now can find manually the probability using z-score tables. In R, we may 
 
 Where - `q = z-Score value`. - lower.tail: If TRUE, the probability in the normal distribution to the left of z-Score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
 
-To find the **$p$-value for the two-tailed test**:
+To find the $p$-value for the two-tailed test:
 
 `2*pnorm(q=0.71, lower.tail=FALSE)`
 
@@ -1636,7 +1638,7 @@ text(-1.27, dnorm(-1.27), labels = "z = -1.27", pos = 4, col = "red")
 
 ```
 
-The **result of a significance test is a $p$-value,** which measures how plausible the value of interest is given the sample data. A $p$-value close to zero indicates the value isn't compatible with the data. As a general rule, if p\<0.05, the value can be considered questionable.
+The **result of a significance test is a** $p$-value, which measures how plausible the value of interest is given the sample data. A $p$-value close to zero indicates the value isn't compatible with the data. As a general rule, if p\<0.05, the value can be considered questionable.
 
 Ideally, you should identify a value of interest (the technical term is null hypothesis) before collecting the data. While this isn't always done in practice, doing so helps prevent wrong conclusions that come from the shotgun effect
 
@@ -1657,7 +1659,7 @@ testResult <- t.test(optical_sample$eye_difference, mu = 0)
 testResult$p.value
 ```
 
-*$p$-value* express the probability of observing the values we have in the sample if the eye difference of the population were in fact 0. The smaller the $p$-value, the smaller the probability. Usually we take the threshold of 5% or $p$-value \<0.05 to reject the null theory, as it means that it is unlikely that the mean observed in our sample can come from a population whose true mean is 0.
+$p$-value express the probability of observing the values we have in the sample if the eye difference of the population were in fact 0. The smaller the $p$-value, the smaller the probability. Usually we take the threshold of 5% or $p$-value \<0.05 to reject the null theory, as it means that it is unlikely that the mean observed in our sample can come from a population whose true mean is 0.
 
 We can change the null theory to whatever value we want to measure against. For example, can we say that the average age of the population is NOT 59?
 
@@ -2145,7 +2147,7 @@ chisq.test(tab)$p.value
 
 so we would expect to find this difference in disease ratio by chance approximately 8.8% of the times, which is not enough to reject our null hypothesis.
 
-**Large Samples, Small $p$-values**
+**Large Samples, Small** $p$-values
 
 Reporting only $p$-values is not an appropriate way to report the results of your experiment. Studies with large sample sizes will have impressively small $p$-values. Yet when one looks closely at the results, we realize odds ratios are quite modest: barely bigger than 1.
 
@@ -3432,7 +3434,7 @@ $$ {#eq-RSSsimpleRegression}
 
 $$
 RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - (\hat{\beta_o} + \hat{\beta_1} x_i) \right)^2
-$$ 
+$$
 
 $$
 RSS = (y_1 - \beta_0 - \beta_1 x_{1})^2 + (y_2 - \beta_0 - \beta_1 x_{2})^2 + \cdots + (y_n - \beta_0 - \beta_1 x_{n})^2
@@ -3753,7 +3755,7 @@ A correlation test checks the **null hypothesis that the population correlation*
 
 To test the null hypothesis, we compute a *t-statistic* $$
 t= \frac{\hat{\beta_1}-0}{SE(\hat{\beta_1})}
-$$ This will have a t-distribution with n-2 degrees of freedom. Using statistical software, it is easy to compute the probability of observing any value equal to *t* or larger. We call this probability the *$p$-value*. The confidence intervals can also tell us if we should reject the null hypothesis. If 0 falls in between the range of the confidence interval, that means that we cannot exclude the possibility that the slope is 0, meaning that there is no relation between the parameters. The confidence interval is also going to tell you how big the effect is, so it is always a good practice to compute confidence intervals as well as doing a hypothesis testing.
+$$ This will have a t-distribution with n-2 degrees of freedom. Using statistical software, it is easy to compute the probability of observing any value equal to *t* or larger. We call this probability the $p$-value. The confidence intervals can also tell us if we should reject the null hypothesis. If 0 falls in between the range of the confidence interval, that means that we cannot exclude the possibility that the slope is 0, meaning that there is no relation between the parameters. The confidence interval is also going to tell you how big the effect is, so it is always a good practice to compute confidence intervals as well as doing a hypothesis testing.
 
 The test **assumes that the data isn't too skewed in any other direction and that there aren't extreme outliers**. As usual, a larger sample provides a certain degree of protection.
 
@@ -3931,19 +3933,19 @@ In this section, we discuss some of the most important concepts that arise in se
 
 ## Measuring the Quality of Fit. Mean Squared Error (MSE) {#MeanSquaredError}
 
-In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)* 
+In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)*
 
 $$
 MSE = \frac{1}{n}\sum^n_{i=1}(y_i-\hat{f}(x_i))^2 =\frac{1}{n}\sum^n_{i=1}(y_i-\hat{y_i})^2
 $$ {#eq-MSEMeanSquaredError}
 
-that is the squared difference between the observed values and the predicted values divided by the number of data points. 
+that is the squared difference between the observed values and the predicted values divided by the number of data points.
 
 If we remember the formula for the RSS(@eq-RSSsimpleRegression) we see that MSE formula can be written as:
 
 $$
 MSE = \frac{1}{n} RSS
-$$ 
+$$
 
 The MSE is computed using the training data that was used to fit the model, and should be referred as training MSE, but we are more interested in the accuracy of the predictions that we obtain when we apply our method to previously unseen test data. We want to choose the method that gives the lowest test MSE, as opposed to the lowest training MSE. There is no guarantee that the method with the lowest training MSE will also have the lowest test MSE. Roughly speaking, the problem is that many statistical methods specifically estimate coefficients so as to minimize the training set MSE. For these methods, the training set MSE can be small, but the test MSE is often much larger.
 
@@ -4035,8 +4037,7 @@ We already saw the [residual sum of squared (RSS)](#Residualsumofsquares) RSS is
 
 $$
 RSS=\sum^n_{i=1}(y_1-\hat{y_1})^2 
-$$ 
-RSS measures the amount of variability that is left unexplained after performing the regression.
+$$ RSS measures the amount of variability that is left unexplained after performing the regression.
 
 The **total Sum of Squares (TSS)**: TSS is a measure of the total variability in the observed data. It represents the sum of the squared differences between the observed values and the mean of the observed values. TSS measures the total variance in the response Y and can be thourhg of as the amount of variability inherent in the response before the regression is performed.
 
@@ -4044,11 +4045,11 @@ $$
 TSS=\sum^n_{i=1}(y_1-\bar{y_1})^2
 $$ {#eq-tss}
 
-TSS - RSS measures the amount of variability in the response that is explained (or removed) by performing the regression, and $R^2$ measures the proportion of variability in Y that can be explained using X. 
+TSS - RSS measures the amount of variability in the response that is explained (or removed) by performing the regression, and $R^2$ measures the proportion of variability in Y that can be explained using X.
 
 $$
 R^2 = \frac{TSS-RSS}{TSS}= 1-\frac{RSS}{TSS}
-$$ {#eq-rsquared} 
+$$ {#eq-rsquared}
 
 The R-squared value measures the proportion of the variance in the dependent variable that is predictable from the independent variables. It's calculated as:
 
@@ -4132,11 +4133,11 @@ When looking at multiple regression models we have to ask ourselves some questio
 
 ## Model fit
 
-Two of the most common numerical measures of model fit are the RSE and $R^2$, the fraction of variance explained. These quantities are computed and interpreted in the same fashion as for simple linear regression. Recall that [in simple regression, $R^2$ is the square of the correlation of the response and the variable](#Rsquare). In multiple linear regression, it turns out that it equals $Cor(Y, \hat{Y} )^2$, the square of the correlation between the response and the fitted linear model. It turns out that $R^2$ will always increase when more variables are introduced, even if those variables are only weekly associated with the response. If we notice that the increase in $R^2$ is minimal after adding another variable, it is probably best to leave that variable out of the model. We can check RSE in combination with $R^2$, as RSE will increase despite RSS increasing as well if the new variable is not adding enough value. Remember the formula for RSE (@eq-RSE): 
+Two of the most common numerical measures of model fit are the RSE and $R^2$, the fraction of variance explained. These quantities are computed and interpreted in the same fashion as for simple linear regression. Recall that [in simple regression, $R^2$ is the square of the correlation of the response and the variable](#Rsquare). In multiple linear regression, it turns out that it equals $Cor(Y, \hat{Y} )^2$, the square of the correlation between the response and the fitted linear model. It turns out that $R^2$ will always increase when more variables are introduced, even if those variables are only weekly associated with the response. If we notice that the increase in $R^2$ is minimal after adding another variable, it is probably best to leave that variable out of the model. We can check RSE in combination with $R^2$, as RSE will increase despite RSS increasing as well if the new variable is not adding enough value. Remember the formula for RSE (@eq-RSE):
 
 $$
 RSE = \sqrt{\frac{1}{n-p-1}RSS}
-$$ 
+$$
 
 Thus, models with more variables can have higher RSE if the decrease in RSS is small relative to the increase in p.
 
@@ -4280,9 +4281,10 @@ The `regsubsets()` function (part of the `leaps` library) performs best subset s
 regfit.full <- leaps::regsubsets(Salary ~ ., Hitters)
 (reg.summary<- summary(regfit.full))
 ```
-For each subset size (number of features 1...n) it returns the best subset models. An asterisk indicates that a given variable is included in the corresponding model. For instance, this output indicates that the best two-variable model contains only Hits and CRBI. 
 
-By default, `regsubsets()` only reports results up to the best eight-variable model. But the `nvmax` option can be used in order to return as many variables as are desired. 
+For each subset size (number of features 1...n) it returns the best subset models. An asterisk indicates that a given variable is included in the corresponding model. For instance, this output indicates that the best two-variable model contains only Hits and CRBI.
+
+By default, `regsubsets()` only reports results up to the best eight-variable model. But the `nvmax` option can be used in order to return as many variables as are desired.
 
 ```{r}
 regfit.full <- regsubsets(Salary ~ ., data = Hitters,
@@ -4296,7 +4298,7 @@ We can see the R squared using `reg.summary$rsq`. Here we can see that the R2 st
 reg.summary$rsq
 ```
 
-So now that we have the best combination of variables for each model size, we can use cross validation or other methods to select the model with the best number of predictors. 
+So now that we have the best combination of variables for each model size, we can use cross validation or other methods to select the model with the best number of predictors.
 
 We will see study Mallow's Cp, AIC or BIC soon, and `regsubset` gives us the statistics for the different models for those methods:
 
@@ -4311,6 +4313,7 @@ plot(reg.summary$rsq, xlab = "Number of Variables",
 plot(reg.summary$rss, xlab = "Number of Variables",
     ylab = "rss", type = "l")
 ```
+
 with this information we will be able to select the model with the correct number of variables.
 :::
 
@@ -4328,7 +4331,7 @@ It runs a similar process but starting with a model with all the variables, then
 
 One limitation of the backward stepwise selection is that we can only do it with n\>p (more samples than predictors). This limitation does not apply to forward stepwise selection.
 
-::: {.exercise-box}
+::: exercise-box
 Example
 
 We can also use the `regsubsets()` function to perform forward stepwise or backward stepwise selection, using the argument `method = "forward"` or `method="backward"`. We are going to format a bit the output of the summary so it is more friendly to the reader:
@@ -4357,7 +4360,8 @@ createSummaryTable(regfit.fwd)
 createSummaryTable(regfit.bwd)
 ```
 
-For instance, we see that using forwards stepwise selection, the best one-variable model contains only CRBI, and the best two-variable model additionally includes Hits. For this data, the best one-variable through six-variable models are each identical for best subset and forward selection. However, the best  model for our number of variabless identified by forward and backward stepwise selection and best subset selection are different. 
+For instance, we see that using forwards stepwise selection, the best one-variable model contains only CRBI, and the best two-variable model additionally includes Hits. For this data, the best one-variable through six-variable models are each identical for best subset and forward selection. However, the best model for our number of variabless identified by forward and backward stepwise selection and best subset selection are different.
+
 ```{r}
 coef(regfit.full, 7)
 
@@ -4365,6 +4369,7 @@ coef(regfit.fwd, 7)
 
 coef(regfit.bwd, 7)
 ```
+
 As we saw before, the summary() function also returns $R^2$, RSS, adjusted $R^2$, Cp, and BIC. We can examine these to try to select the best overall model.
 
 ```{r}
@@ -4382,7 +4387,7 @@ plot(reg.summary$adjr2, xlab = "Number of Variables",
     ylab = "Adjusted RSq", type = "l")
 ```
 
-The `points()` command works like the `plot()` command, except that it puts points on a plot that has already been created, instead of creating a new plot. The `which.max()` function can be used to identify the location of the maximum point of a vector. We will now plot a red dot to indicate the model with the largest adjusted R2 statistic, which would be the preferred one. 
+The `points()` command works like the `plot()` command, except that it puts points on a plot that has already been created, instead of creating a new plot. The `which.max()` function can be used to identify the location of the maximum point of a vector. We will now plot a red dot to indicate the model with the largest adjusted R2 statistic, which would be the preferred one.
 
 ```{r, fig.align='center'}
 max<- which.max(reg.summary$adjr2)
@@ -4411,8 +4416,7 @@ points(min, reg.summary$bic[min], col = "red", cex = 2,
 
 ```
 
-The 'regsubsets()' function has a built-in 'plot()' command which can be used to display the selected variables for the best model with a given number of predictors, ranked according to the BIC, Cp, adjusted R2, or AIC. To find out more about this function, type ?plot.regsubsets.
-We will see the BIC here:
+The 'regsubsets()' function has a built-in 'plot()' command which can be used to display the selected variables for the best model with a given number of predictors, ranked according to the BIC, Cp, adjusted R2, or AIC. To find out more about this function, type ?plot.regsubsets. We will see the BIC here:
 
 ```{r, fig.align='center', fig.width=10, fig.height=8}
 plot(regfit.fwd, scale = "bic")
@@ -4442,15 +4446,13 @@ We are going to see here other methods:
 
 ### Mallow's Cp
 
-This technique adjust the training error for the model size, and can be used to select among a set of models with different numbers of variables. 
-$$
+This technique adjust the training error for the model size, and can be used to select among a set of models with different numbers of variables. $$
 C_p = \frac{1}{n}(RSS+2d\hat{\sigma}^2)
 $$ {#eq-mallowscp}
 
-Where d is the total number of parameters used and - $\hat{\sigma}^2$ is an estimate of the variance of the error term $\epsilon$ associated with each response measurement, calculated as: 
-$$
+Where d is the total number of parameters used and - $\hat{\sigma}^2$ is an estimate of the variance of the error term $\epsilon$ associated with each response measurement, calculated as: $$
 \hat{\sigma}^2 = \frac{SSE}{n-p}
-$$ {#eq-errorvariance} SSE is the *Sum of Squared Errors* or *Residual Sum of Squares* 
+$$ {#eq-errorvariance} SSE is the *Sum of Squared Errors* or *Residual Sum of Squares*
 
 $$
 SSE = \sum^n_{i=1}(y_i-\hat{y_i})^2
@@ -4522,7 +4524,7 @@ For a least squared model with $d$ variables, the adjusted $R^2$ statistic is ca
 
 $$
 \text{Adjusted } R^2= 1- \frac{RSS/(n-d-1)}{TSS/(n-1)}
-$$ {#eq-adjustedRsquared} 
+$$ {#eq-adjustedRsquared}
 
 where TSS is the total sum of squares.
 
@@ -4530,14 +4532,12 @@ Unlike Cp, AIC and BIC, for which a small value indicates a model with low test 
 
 The drawback of Adjusted Rsquared is that it cannot be used for other models, like logistic, for example.
 
-:::{.exercise-box}
+::: exercise-box
 Example: Validation Set Approach:
 
-We saw how to choose our best models for the `Hitters` dataset using Best subset selection, Stepwise Selection and then using methods like BIC, AIC to select the best size for our model. 
+We saw how to choose our best models for the `Hitters` dataset using Best subset selection, Stepwise Selection and then using methods like BIC, AIC to select the best size for our model.
 
-Now we will consider how to do this using the validation set and cross-validation approaches.
-In order for these approaches to yield accurate estimates of the test error, we must use only the training observations to perform all aspects of the model-fitting, including variable selection. If the full data set is used to perform the best subset selection step, the validation set errors and cross-validation errors that we obtain will not be accurate estimates of the test error. 
-In order to use the validation approach, we begin by splitting the observations into a training set and a test set. We choose the size of the train set as 180 (approx 2/3 of the data)
+Now we will consider how to do this using the validation set and cross-validation approaches. In order for these approaches to yield accurate estimates of the test error, we must use only the training observations to perform all aspects of the model-fitting, including variable selection. If the full data set is used to perform the best subset selection step, the validation set errors and cross-validation errors that we obtain will not be accurate estimates of the test error. In order to use the validation approach, we begin by splitting the observations into a training set and a test set. We choose the size of the train set as 180 (approx 2/3 of the data)
 
 ```{r}
 objects_to_remove <- ls(pattern = "^regfit") 
@@ -4547,6 +4547,7 @@ set.seed(1)
 train <- sample(seq(1:n), 180, replace= FALSE)
 
 ```
+
 now we apply `regsubsets()` to the training set in order to perform best subset selection.
 
 ```{r}
@@ -4561,9 +4562,11 @@ We now make a model matrix from the test data:
 test.mat <- model.matrix(Salary ~ ., data = Hitters[-train, ])
 head(test.mat)
 ```
-The `model.matrix()` function is used in many regression packages for building an X matrix from data. Now we run a loop, and for each size i, we extract the coefficients from `regfit.fwd` for the best model that size, multiply them into the appropriate columns of the test model matrix to form the predictions, and compute the test Mean Square for Error (MSE). 
+
+The `model.matrix()` function is used in many regression packages for building an X matrix from data. Now we run a loop, and for each size i, we extract the coefficients from `regfit.fwd` for the best model that size, multiply them into the appropriate columns of the test model matrix to form the predictions, and compute the test Mean Square for Error (MSE).
 
 First we will do a sample iteration showing some of the the values so we can see what the loop is doing we choose the model with three variables + the intercept:
+
 ```{r}
 (coefi <- coef(regfit.fwd, id = 3))
  print(names(coefi))
@@ -4573,7 +4576,9 @@ First we will do a sample iteration showing some of the the values so we can see
  salaryTestData<- Hitters$Salary[-train]
  meanSquareError<- mean((salaryTestData - pred)^2)
 ```
+
 Let's run the loop now:
+
 ```{r}
 val.errors <- rep(NA, 19)
 for (i in 1:19){
@@ -4583,8 +4588,8 @@ for (i in 1:19){
 }
 
 ```
-we can now plot the square root of  MSE to see the results. Taking the square root of MSE gives us the *Root Mean Squared Error (RMSE)*, which is on the same scale as the original data. This makes it easier to interpret and compare.
-The model summary does not give us MSE directly, but we can calculate it: $MSE=RSS/n$. In our code: `regfit.fwd$rss[-1]/length(Hitters$Salary[test])` the minus one is to remove the intercept.
+
+we can now plot the square root of MSE to see the results. Taking the square root of MSE gives us the *Root Mean Squared Error (RMSE)*, which is on the same scale as the original data. This makes it easier to interpret and compare. The model summary does not give us MSE directly, but we can calculate it: $MSE=RSS/n$. In our code: `regfit.fwd$rss[-1]/length(Hitters$Salary[test])` the minus one is to remove the intercept.
 
 ```{r, fig.align='center', fig.width=7}
 plot(sqrt(val.errors), ylab= "Sqrt MSE", pch=1,type="b",ylim= c(250,450))
@@ -4597,6 +4602,7 @@ legend("topright", legend=c("Training","Validation"), col= c("blue","black"), pc
 ```
 
 the best model is the one with the min error:
+
 ```{r}
 val.errors
 min<-which.min(val.errors)
@@ -4604,6 +4610,7 @@ coef(regfit.fwd, min)
 ```
 
 This was a little tedious because there is no predict method for `regsubsets()`. Since we will be using this function again, we can write our own method:
+
 ```{r}
 predict.regsubsets <- function(object, newdata, id, ...) {
   form <- as.formula(object$call[[2]]) #extract call formula
@@ -4614,11 +4621,13 @@ predict.regsubsets <- function(object, newdata, id, ...) {
  }
 
 ```
+
 Our function pretty much mimics what we did above. The only complex part is how we extracted the formula used in the call to `regsubsets()`. We demonstrate how we use this function below, when we do cross-validation.
 
-Finally, we perform best subset selection on the full data set, and select the best  model for our number of variables. It is important that we make use of the full data set in order to obtain more accurate coefficient estimates. Note that we perform best subset selection on the full data set and select the best  model for our number of variables, rather than simply using the variables that were obtained from the training set, because the best  model for our number of variables on the full data set may differ from the corresponding model on the training set.
+Finally, we perform best subset selection on the full data set, and select the best model for our number of variables. It is important that we make use of the full data set in order to obtain more accurate coefficient estimates. Note that we perform best subset selection on the full data set and select the best model for our number of variables, rather than simply using the variables that were obtained from the training set, because the best model for our number of variables on the full data set may differ from the corresponding model on the training set.
 
-In fact, we see that the best  model for our number of variables on the full data set has a different set of variables than the best  model for our number of variables on the training set.
+In fact, we see that the best model for our number of variables on the full data set has a different set of variables than the best model for our number of variables on the training set.
+
 ```{r}
 regfit.best <- regsubsets(Salary ~ ., data = Hitters,
     nvmax = 19)
@@ -4626,8 +4635,7 @@ coef(regfit.best, min)
 ```
 :::
 
-
-## Resampling Methods{#resampling-methods}
+## Resampling Methods {#resampling-methods}
 
 ### Monte Carlo Method
 
@@ -4661,7 +4669,7 @@ controls<- rnorm(5000, mean=24, sd=3.5)
 
 ### Cross-validation {#crossvalidation}
 
-As the models become more complex (the more features we add to our model), the [training error](#testingtrainingerror) becomes lower. On the other hand, the *test error* does not reduces at the same rate as the model gets more complex, it starts going down but then it starts increasing again as the model starts overfitting to the training dataset. 
+As the models become more complex (the more features we add to our model), the [training error](#testingtrainingerror) becomes lower. On the other hand, the *test error* does not reduces at the same rate as the model gets more complex, it starts going down but then it starts increasing again as the model starts overfitting to the training dataset.
 
 The prediction error comes from bias and variance. The *bias* is how var off on the average the model is from the truth. The *variance* is how much the estimate varies around its average. The less parameters we fit into our model, the more bias we have (we will find it more difficult to find the true mean) and as we increase the parameters, the bias reduces, but the variance goes up, because we have more and more parameters to estimate from the same amount of data. The solution for this would be a large designated test set, but this is not often available.
 
@@ -4832,14 +4840,12 @@ To avoid this we will have to create our folds and remove our test fold before t
 
 You can find more information in the [lectureVideo](#https://www.youtube.com/watch?v=jgoa28FR__Y)
 
+::: exercise-box
+Example: Model selection with Cross Validation:
 
-:::{.exercise-box}
-Example: Model selection with  Cross Validation:
+We now try to choose among the models of different sizes using cross-validation. We must perform best subset selection *within each of the* $k$ training sets. Despite this, we see that with its clever subsetting syntax, `R` makes this job quite easy.
 
-We now try to choose among the models of different sizes using cross-validation.
-We must perform best subset selection *within each of the $k$ training sets*. Despite this, we see that with its clever subsetting syntax, `R` makes this job quite easy.
-
-First, we create a  vector that allocates each observation to one of $k=10$ folds, and we create a matrix in which we will store the results.
+First, we create a vector that allocates each observation to one of $k=10$ folds, and we create a matrix in which we will store the results.
 
 ```{r }
 k <- 10
@@ -4850,9 +4856,7 @@ cv.errors <- matrix(NA, k, 19,
     dimnames = list(NULL, paste(1:19)))
 ```
 
-Now we write a for loop that performs cross-validation. In the $j$th fold, the elements of `folds` that equal `j` are in the test set, and the remainder are in the training set. We make our predictions for each model size (using our new
-`predict()` method), compute the test errors on the appropriate subset, and
-store them in the appropriate slot in the matrix `cv.errors`. Note that in the following code `R` will automatically use our `predict.regsubsets()` function when we call `predict()` because the `best.fit` object has class `regsubsets`.
+Now we write a for loop that performs cross-validation. In the $j$th fold, the elements of `folds` that equal `j` are in the test set, and the remainder are in the training set. We make our predictions for each model size (using our new `predict()` method), compute the test errors on the appropriate subset, and store them in the appropriate slot in the matrix `cv.errors`. Note that in the following code `R` will automatically use our `predict.regsubsets()` function when we call `predict()` because the `best.fit` object has class `regsubsets`.
 
 ```{r }
 for (j in 1:k) {
@@ -4867,7 +4871,7 @@ for (j in 1:k) {
 }
 ```
 
-This has given us a $10 \times 19$ matrix, of which the $(j,i)$th element  corresponds to the test MSE for the $j$th cross-validation fold for the best $i$-variable model. We use the `apply()` function to average over the columns of this matrix in order to obtain a vector for which the $i$th element is the cross-validation error for the $i$-variable model.
+This has given us a $10 \times 19$ matrix, of which the $(j,i)$th element corresponds to the test MSE for the $j$th cross-validation fold for the best $i$-variable model. We use the `apply()` function to average over the columns of this matrix in order to obtain a vector for which the $i$th element is the cross-validation error for the $i$-variable model.
 
 ```{r, fig.align='center'}
 (mean.cv.errors <- apply(cv.errors, 2, mean))
@@ -4885,7 +4889,6 @@ reg.best <- regsubsets(Salary ~ ., data = Hitters,
     nvmax = 19)
 coef(reg.best, 10)
 ```
-
 :::
 
 ### The bootstrap principle {#bootstrap}
@@ -5011,7 +5014,7 @@ We will be using the dataset Portfolio from LSLR package for this practice. Supp
 
 $$
 \alpha= \frac{\sigma^2_Y-\sigma_{XY}}{\sigma^2_X+\sigma^2_Y-2\sigma_{XY}}
-$$ 
+$$
 
 where $\sigma^2_X$= VAR(X), $\sigma^2_Y$= VAR(Y) and $\sigma_{XY}$ = COV(X,Y). These quantities are unknown, so we will estimate them using our data. We can write that function in r:
 
@@ -5105,77 +5108,71 @@ qqline(controlPopulation)
 
 *Ridge regression* and *lasso* The subset selection methods use least squares to fit a linear model that contains a subset of the predictors. As an alternative, we can fit a model containing all p predictors using a technique that constrains or regularizes the coefficients estimates, or equivalently, that shrinks the coefficient estimates towards zero.Shrinking the coefficient estimates can significantly reduce their variance.
 
-**Ridge regression** 
-Also called $L2$ Regularization. It addresses the problem of multicollinearity (when predictor variables are highly correlated). It is useful when you have many predictors and suspect multicollinearity. It works well when the number of predictors is larger than the number of observations.
+**Ridge regression** Also called $L2$ Regularization. It addresses the problem of multicollinearity (when predictor variables are highly correlated). It is useful when you have many predictors and suspect multicollinearity. It works well when the number of predictors is larger than the number of observations.
 
 $$
 \sum^n_{i=1}\left( y_i-\beta_0-\sum^p_{j=1}\beta_jx_{ij}\right) + \lambda\sum^p_{j=1}\beta^2_j
-$$ {#eq-ridgeRegression} 
+$$ {#eq-ridgeRegression}
 
-the first part of the function is RSS so we can write it like this: 
-$$
+the first part of the function is RSS so we can write it like this: $$
 RSS + \lambda\sum^p_{j=1}\beta^2_j
-$$ 
-We call $\lambda\sum^p_{j=1}\beta^2_j$ the *Ridge Penaly* where $\lambda$ is called the *tuning parameter*, to be determined separately.It controls the strength of the penalty. When $\lambda$ is 0, it is just ordinary least square regression, as $\lambda$ increases, the flexibility of the model decreases, helping to reduce overfitting. 
+$$ We call $\lambda\sum^p_{j=1}\beta^2_j$ the *Ridge Penaly* where $\lambda$ is called the *tuning parameter*, to be determined separately.It controls the strength of the penalty. When $\lambda$ is 0, it is just ordinary least square regression, as $\lambda$ increases, the flexibility of the model decreases, helping to reduce overfitting.
 
 As with least squares, ridge regression seeks coefficient estimates that fit the data well, by making the RSS small, however, the second term of the function, called shrinkage penalty, is small when the coefficients are close to zero, and so it has the effect of shrinking the estimates towards zero.
 
-One thing to take into account with this methods is that while in our regression formulas the units or scales of our variables do not matter, (if we measure the weight in grams or in kilograms) because the coefficient will adapt to that scale, but in this method that actually matters, and as a result is is important to standardize the predictors before applying ridge regression. To standardize he predictors we do as usual, we divide the feature by the standard deviation of that feature. 
-$$
+One thing to take into account with this methods is that while in our regression formulas the units or scales of our variables do not matter, (if we measure the weight in grams or in kilograms) because the coefficient will adapt to that scale, but in this method that actually matters, and as a result is is important to standardize the predictors before applying ridge regression. To standardize he predictors we do as usual, we divide the feature by the standard deviation of that feature. $$
 \tilde x_{ij} = \frac{x_{ij}}{SD(x_{ij})} =\frac{x_{ij}}{\sqrt{\frac{1}{n}\sum_{i=1}^n}(x_{ij-\bar{x_j}})^2}
-$$
-Ridge regression does have one obvious disadvantage: unlike subset selection, which will generally select models that involve just a subset of the variables, ridge regression will include all p predictors in the final model.
+$$ Ridge regression does have one obvious disadvantage: unlike subset selection, which will generally select models that involve just a subset of the variables, ridge regression will include all p predictors in the final model.
 
-**Lasso**
-Also called $L1$ regularization. 
-The Lasso is a relatively recent alternative to ridge regression that overcomes this disadvantage. The formula is very similar to the ridge regression but instead of taking the squares of the coefficients, now it is the sum of the absolute value:
-$$
+**Lasso** Also called $L1$ regularization. The Lasso is a relatively recent alternative to ridge regression that overcomes this disadvantage. The formula is very similar to the ridge regression but instead of taking the squares of the coefficients, now it is the sum of the absolute value: $$
 RSS + \lambda\sum^p_{j=1}|\beta_j|
-$$ 
-The difference is that it actually sets the coefficients to 0 when lambda is large enough, so it subsets the selection removing the features that are not important.
+$$ The difference is that it actually sets the coefficients to 0 when lambda is large enough, so it subsets the selection removing the features that are not important.
 
 **Selecting the Tuning Parameter for Ridge Regression and Lasso**
 
-As in ridge regression, selecting a good value of lambda for the lasso is critical, we will use again cross validation for this. Lasso is particularly useful when you expect only a few of predictors to be relevant, leading to a simpler, more interpretable model. If most of the predictors are relevant, ridge regression will do better selecting the best model. We don't know this when we create the model, so it is usual to use both methods, and use cross-validation  to determine the best model coming out of each method by comparing the cross-validated error. 
+As in ridge regression, selecting a good value of lambda for the lasso is critical, we will use again cross validation for this. Lasso is particularly useful when you expect only a few of predictors to be relevant, leading to a simpler, more interpretable model. If most of the predictors are relevant, ridge regression will do better selecting the best model. We don't know this when we create the model, so it is usual to use both methods, and use cross-validation to determine the best model coming out of each method by comparing the cross-validated error.
 
-Cross validation provides a simple way to find the value of $\labmda$ both for lasso and ridge regression. We choose a grid of lambda values, and compute the cross-validation error rate for each value of it. We then select the tuning parameter value for which the cross-validation error is smallest.
-Finally the model is re-fit using all of the available observations and the selected value of the tuning parameters. 
+Cross validation provides a simple way to find the value of $\labmda$ both for lasso and ridge regression. We choose a grid of lambda values, and compute the cross-validation error rate for each value of it. We then select the tuning parameter value for which the cross-validation error is smallest. Finally the model is re-fit using all of the available observations and the selected value of the tuning parameters.
 
-:::{.exercise-box}
+::: exercise-box
 Example: Ridge regression
 
-We will use the `glmnet` package in order to perform ridge regression and the lasso. The main function in this package is `glmnet()`, which can be used to fit ridge regression models, lasso models, and more. This function has slightly different syntax from other model-fitting functions that we have encountered thus far. In particular, we must pass in an x matrix as well as a y vector, and we do not use the y ~ x syntax. We will now perform ridge regression and the lasso in order to predict Salary on the Hitters data. Before proceeding ensure that the missing values have been removed from the data.
-The `model.matrix()` function is particularly useful for creating x; not only does it produce a matrix corresponding to the 19
- predictors but it also automatically transforms any qualitative variables into dummy variables. The latter property is important because `glmnet()` can only take numerical, quantitative inputs.
+We will use the `glmnet` package in order to perform ridge regression and the lasso. The main function in this package is `glmnet()`, which can be used to fit ridge regression models, lasso models, and more. This function has slightly different syntax from other model-fitting functions that we have encountered thus far. In particular, we must pass in an x matrix as well as a y vector, and we do not use the y \~ x syntax. We will now perform ridge regression and the lasso in order to predict Salary on the Hitters data. Before proceeding ensure that the missing values have been removed from the data. The `model.matrix()` function is particularly useful for creating x; not only does it produce a matrix corresponding to the 19 predictors but it also automatically transforms any qualitative variables into dummy variables. The latter property is important because `glmnet()` can only take numerical, quantitative inputs.
 
 ```{r}
 Hitters <- na.omit(Hitters)
 x <- model.matrix(Salary ~ . ,data= Hitters)[, -1]
 y <- Hitters$Salary
 ```
+
 The `glmnet()` function has an alpha argument that determines what type of model is fit. If alpha=0 then a ridge regression model is fit, and if alpha=1 then a lasso model is fit. We first fit a ridge regression model.
 
-By default the `glmnet()` function performs ridge regression for an automatically selected range of λ  values. However, here we have chosen to implement the function over a grid of values ranging from $λ=10^{10}$ to $λ=10^{−2}$ , essentially covering the full range of scenarios from the null model containing only the intercept, to the least squares fit. As we will see, we can also compute model fits for a particular value of λ that is not one of the original grid values. Note that by default, the `glmnet()` function standardizes the variables so that they are on the same scale. To turn off this default setting, use the argument `standardize = FALSE`.
+By default the `glmnet()` function performs ridge regression for an automatically selected range of λ values. However, here we have chosen to implement the function over a grid of values ranging from $λ=10^{10}$ to $λ=10^{−2}$ , essentially covering the full range of scenarios from the null model containing only the intercept, to the least squares fit. As we will see, we can also compute model fits for a particular value of λ that is not one of the original grid values. Note that by default, the `glmnet()` function standardizes the variables so that they are on the same scale. To turn off this default setting, use the argument `standardize = FALSE`.
 
 ```{r}
 grid <- 10^seq(10, -2, length = 100)
 ridge.mod <- glmnet(x, y, alpha = 0, lambda = grid)
 ```
+
 Associated with each value of λ is a vector of ridge regression coefficients, stored in a matrix that can be accessed by coef(). In this case, it is a 20×100 matrix, with 20 rows (one for each predictor, plus an intercept) and 100 columns (one for each value of λ).
+
 ```{r}
 dim(coef(ridge.mod))
 ridge.mod$lambda[50] #the value of lambda at possition 50
 coef(ridge.mod)[,50] #coefficients for that value of lambda
 plot(ridge.mod, xvar="lambda", label=TRUE)
 ```
-This plot is showing how the coefficients shrink as we increase the value of lambda. 
+
+This plot is showing how the coefficients shrink as we increase the value of lambda.
 
 We can use predict() function for a number of purposes For instance we can obtain the ridge regression coefficients for a new value of lambda, say 50:
 
 ```{r}
 predict(ridge.mod, s=50, type= 'coefficients')[1:20,]
 ```
+
 We now split the samples into a training set and a test set in order to estimate the test error of ridge regression and fit a ridge regression model on the training set and evaluate its MSE on the test set using lambda=4. Note the use of `predict()` this time we get predictions for a test set by replacing the `type="coefficients"` with the `newx` argument
+
 ```{r}
 set.seed(1)
 train<- sample(1:nrow(x), nrow(x)/2)
@@ -5186,9 +5183,10 @@ ridge.mod <- glmnet(x[train,], y[train], alpha=0, lambda=grid, thresh= 1e-12)
 ridge.pred <- predict(ridge.mod, s=4, newx=x[test,])
 (MSE<- mean((ridge.pred-y.test)^2))
 ```
+
 the test MSE = `{r} MSE`
 
-We now check whether there is any benefit to performing ridge regression with lambda=4 instead of just performing least squares regression (lambda=0). In order for `glmnet()` to yield exact least squares coefficients when lambda is 0, we use the argument `exact=T` 
+We now check whether there is any benefit to performing ridge regression with lambda=4 instead of just performing least squares regression (lambda=0). In order for `glmnet()` to yield exact least squares coefficients when lambda is 0, we use the argument `exact=T`
 
 ```{r}
 ridge.pred <- predict(ridge.mod, s = 0, newx = x[test, ],
@@ -5196,9 +5194,10 @@ ridge.pred <- predict(ridge.mod, s = 0, newx = x[test, ],
 mean((ridge.pred - y.test)^2)
 
 ```
-In general, instead of arbitrarily choosing a value for lambda, it would be better to use cross-validation to choose the tuning parameter. We can do this using the built in cross-validation function. 
 
-The `glmnet` package have a function `cv.glmnet()` that will do the cross validation. By default the function performs ten-fold cross-validation, though this can be changed using the argument `nfold`. 
+In general, instead of arbitrarily choosing a value for lambda, it would be better to use cross-validation to choose the tuning parameter. We can do this using the built in cross-validation function.
+
+The `glmnet` package have a function `cv.glmnet()` that will do the cross validation. By default the function performs ten-fold cross-validation, though this can be changed using the argument `nfold`.
 
 ```{r}
 set.seed(1)
@@ -5206,9 +5205,11 @@ cv.ridge<- cv.glmnet(x[train, ], y[train], alpha = 0)
 plot(cv.ridge)
 
 ```
-WE can see here that with higher values of lambda the mean squares errors are too high (the restricted coefficients are too small to fit the model properly). The vertical lines shows the minimum on the left and the other vertical line is at one standard error from the minimum. The top x axis shows the number of variables in the model. In this case what the graph is showing is that the model without adjustment with the full coefficients for all the variables is doing quite well to fit the model. 
+
+WE can see here that with higher values of lambda the mean squares errors are too high (the restricted coefficients are too small to fit the model properly). The vertical lines shows the minimum on the left and the other vertical line is at one standard error from the minimum. The top x axis shows the number of variables in the model. In this case what the graph is showing is that the model without adjustment with the full coefficients for all the variables is doing quite well to fit the model.
 
 The best value for lambda that results in the smallest cross-validation error is 326. What is the MSE associated with this value of lambda?
+
 ```{r}
 bestlam <- cv.ridge$lambda.min
 bestlam
@@ -5216,8 +5217,8 @@ ridge.pred <- predict(ridge.mod, s = bestlam,
     newx = x[test, ])
 mean((ridge.pred - y.test)^2)
 ```
-This represents an improvement over lambda 0. 
-Finally we refit our ridge regression model on the full data set, using the value of lambda chosen by cross-validation and examine the coefficient estimates.
+
+This represents an improvement over lambda 0. Finally we refit our ridge regression model on the full data set, using the value of lambda chosen by cross-validation and examine the coefficient estimates.
 
 ```{r}
 out <- glmnet(x, y, alpha = 0)
@@ -5225,7 +5226,7 @@ predict(out, type = "coefficients", s = bestlam)[1:20, ]
 ```
 :::
 
-:::{.exercise-box}
+::: exercise-box
 Example: lasso
 
 We saw that ridge regression with a wise choice of λ can outperform least squares on the Hitters data set. We now ask whether the lasso can yield either a more accurate or a more interpretable model than ridge regression. In order to fit a lasso model, we once again use the `glmnet()` function; however, this time we use the argument `alpha=1`. Other than that change, we proceed just as we did in fitting a ridge model.
@@ -5236,8 +5237,7 @@ lasso.mod <- glmnet(x[train, ], y[train], alpha = 1,
 plot(lasso.mod, xvar="lambda", label= TRUE)
 ```
 
-We can see from the coefficient plot that depending on the choice of tuning parameter, some of the coefficients will be exactly equal to zero. The top x axes tells us how many variable coefficients are not 0
-We now perform cross-validation and compute the associated test error.
+We can see from the coefficient plot that depending on the choice of tuning parameter, some of the coefficients will be exactly equal to zero. The top x axes tells us how many variable coefficients are not 0 We now perform cross-validation and compute the associated test error.
 
 ```{r chunk40}
 set.seed(1)
@@ -5263,32 +5263,23 @@ lasso.coef <- predict(out, type = "coefficients",
     s = bestlam)[1:20, ]
 lasso.coef[lasso.coef != 0]
 ```
-
 :::
-
-
 
 ## Dimension Reduction Methods
 
-To recapitulate, we have seen subset selection methods, where we were just taking a subset of the predictors and using least squares models choosing the best model. Then ridge regression and lasso, where we were taking all of the predictors, but it does not use least squares, but a shrinkage approach to fit the model. 
-Now we are going to use least squares but not on the original predictors, instead we are going to come up with new predictors, which are linear combinations of the original ones. 
+To recapitulate, we have seen subset selection methods, where we were just taking a subset of the predictors and using least squares models choosing the best model. Then ridge regression and lasso, where we were taking all of the predictors, but it does not use least squares, but a shrinkage approach to fit the model. Now we are going to use least squares but not on the original predictors, instead we are going to come up with new predictors, which are linear combinations of the original ones.
 
 Let $Z_1,Z_2,\dots,Z_M$ represent linear combination of some of the $p$ original predictors and use them to fit a linear regression model:
 
 $$
 y_i=\theta_0 + \sum_{m=1}^M \theta_mz_{im}+\epsilon_i
-$${#eq-dimensionReductionFunction}
+$$ {#eq-dimensionReductionFunction}
 
 **Principal Components Regression (PCR)**
 
-The first principal component is that (normalized) linear combination of the variables with the largest variance.
-The second principal component has largest variance, subject to being uncorrelated with the first etc. 
+The first principal component is that (normalized) linear combination of the variables with the largest variance. The second principal component has largest variance, subject to being uncorrelated with the first etc.
 
-**Partial Least Squares (PLS)**
-Like PCR, PLS is a dimension reduction method, which first identifies a new set of features that are linear combinations of the original features, and then fits a linear model.
-After standardizing the p predictors, PLS computes the first direction $Z_1$ by setting each $\phi_{ij}$ equal to the coefficient from the simple linear regression of Y onto $X_j$, hence, PLS places the highest weight on the variables that are most strongly related to the response. 
-Subsequent directions (Z) are found by taking residuals and then repeating the above process. 
-
+**Partial Least Squares (PLS)** Like PCR, PLS is a dimension reduction method, which first identifies a new set of features that are linear combinations of the original features, and then fits a linear model. After standardizing the p predictors, PLS computes the first direction $Z_1$ by setting each $\phi_{ij}$ equal to the coefficient from the simple linear regression of Y onto $X_j$, hence, PLS places the highest weight on the variables that are most strongly related to the response. Subsequent directions (Z) are found by taking residuals and then repeating the above process.
 
 # Extending the linear models
 
@@ -5306,8 +5297,7 @@ If we have more than two levels what we do is create more dummy variables. For e
 
 $x_{i1} = 0$ if person is Asian and $x_{i1} = 1$ if the person is not Asian $x_{i2} = 0$ if person is Caucasian and $x_{i2} = 1$ if the person is not. We don't need a level for African American because that will be deducted when $x_{i1} = 0$ and $x_{i2} = 0$. So for categorical variables we create $k-1$ dummy variables. The level with no dummy variable is known as *baseline*. The choice of a baseline will not affect the fit of the model, the residual sum of squares would be the same, but the coefficient and the $p$-values will change because each other category will be compared with the baseline.
 
-The equation will now look like this: 
-$$
+The equation will now look like this: $$
 y_1 = \beta_o+\beta_1x_{i1}+\beta_2x_{i2}+\epsilon_i
 \begin{cases} 
 \beta_0 + \beta_1 + e_1 & \text{if condition 1} \\
@@ -5349,12 +5339,11 @@ to include interactions in our model we create a new variable with the product o
 
 $$
 sales = \beta_0+\beta_1\times TV+\beta_2\times Radio + \beta_3 \times(radio\times TV)+ \epsilon
-$$ 
+$$
 
 $$
 sales = \beta_0+(\beta_1 + \beta_3\times Radio) \times TV+\beta_2\times Radio + \epsilon
-$$ 
-and if we get a summary of the linear model we will see if the interaction between tv and radio is indeed significant or not:
+$$ and if we get a summary of the linear model we will see if the interaction between tv and radio is indeed significant or not:
 
 ```{r}
 lm.fit_interaction <- lm(sales ~ TV * radio , data = Advertising)
@@ -6265,11 +6254,11 @@ print(confusion_matrix)
 
 -   *No Information Rate (NIR)*:It represents the accuracy if the model always predicted the majority class (No).
 
--   *$p$-value \[Acc \> NIR\]*: This $p$-value tests if the accuracy is significantly better than the NIR.
+-   $p$-value \[Acc \> NIR\]: This $p$-value tests if the accuracy is significantly better than the NIR.
 
 -   *Kappa*: It measures the agreement between the observed and predicted classifications, adjusted for chance. Values close to 1 indicate better agreement.
 
--   *Mcnemar's Test $p$-value*: Tests if there is a significant difference between the number of false positives and false negatives.
+-   *Mcnemar's Test* $p$-value: Tests if there is a significant difference between the number of false positives and false negatives.
 
 Class-Specific Metrics:
 
@@ -6504,7 +6493,10 @@ table(predictions$class, test$Species)
 
 Naive Bayes is best used when the number of features is high because it does not require to calculate the covariance matrices. It assumes that the features are independent in each class, this means your predictor variables are independent, which is almost never true for real data. Despite the strong assumptions that it does, naive Bayes often produces good classification results.
 
-It can be used for mixed feature vectors (quantitative and qualitative). ::: {.exercise-box} We are going to be working again with the Iris dataset. This time we are going to introduce also a new function `ggpairs()` from the package GGally, this will help us visualize the correlation between the variables before we start our analysis
+It can be used for mixed feature vectors (quantitative and qualitative). 
+::: {.exercise-box} 
+Example 
+We are going to be working again with the Iris dataset. This time we are going to introduce also a new function `ggpairs()` from the package GGally, this will help us visualize the correlation between the variables before we start our analysis
 
 ```{r ggpairs, fig.align='center', fig.width=8, fig.height=8}
 GGally::ggpairs(iris[-5], title = "The correlation between the predictors")
@@ -6540,9 +6532,13 @@ predictions <- predict(naive.fit, test)
 
 # Generalized Linear Models (GLM)
 
+Generalized Linear Models (GLMs) are a flexible extension of ordinary linear regression that allows for response variables that have error distribution models other than a normal distribution. GLMs are used to model a wide range of data types and relationships.
+
+**Common types of GLMs** - Linear Regression: when the response variable is continuous and normally distributed. - Logistic Regression: When the response is binary (e.g. success/failure) - Poisson Regression: For count data (e.g. number of events)
+
 ## Poison regression model
 
-We will use the dataset bikershare from ISLR2 package. The response is *bikers* that are the number of hourly users in bikeshare program in Washington DC.
+We will use the dataset `bikershare` from ISLR2 package. The response is *bikers* that are the number of hourly users in `bikeshare` program in Washington DC.
 
 First we are just going to plot the data in the dataset, without any fitting for the number of riders per hour of the day:
 
@@ -6725,37 +6721,174 @@ Example: Classifying iris species based on sepal and petal measurements.
 Example: Using Poisson regression (a type of GLM) to model the number of calls received by a call center per hour.
 :::
 
+# Polynomial Regression
+
+Polynomial regression is an extension of linear regression that models the relationship between the independent variable𝑥and the dependent variable𝑦as an𝑛th-degree polynomial. In linear regression, the relationship between $x$ and $y$ is modeled as a straight line: $y=\beta_0+\beta_1X$ In polynomial regression, the relationship is modeled as a polynomial. For example for a single variable $x$: $y=\beta_0+\beta_1x+\beta_2x^2+\dots+\beta_nx^n$. It can capture more complex patterns in the data that linear regression might miss. By adjusting the degree of the polynomial, you can model different types of curves. To choose the degree of polynomial to use, we can use cross-validation for example.
+
+```{r}
+# Sample data
+set.seed(123)
+x <- runif(100, 0, 10)
+y <- 1 + 2 * x + 3 * x^2 + rnorm(100, 0, 10)  # True relationship is quadratic
+
+# Fit a polynomial regression model
+model <- lm(y ~ poly(x, 2, raw = TRUE))
+
+# Summary of the model
+summary(model)
+
+# Plot the data and the polynomial fit
+ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2, raw = TRUE), se = TRUE) +
+  labs(title = "Polynomial Regression Fit", x = "x", y = "y")
+
+```
+
+`poly(x, 2, raw = TRUE)`: Fits a polynomial of degree 2 (quadratic) to the data. High-degree polynomials can overfit the data, capturing noise rather than the underlying relationship. It's important to choose the polynomial degree carefully.
+
+::: {.callout-orange appearance="simple" icon="false"}
+The `stat_smooth()` function in `ggplot2` is used to add a smooth line to your plot, which represents a fitted model (like a regression line or a *loess* curve) to your data. It's a great way to visualize trends and patterns in the data.
+
+-   Method: Specifies the smoothing method to be used.Common methods include "lm" for linear models, "glm" for generalized linear models, "loess" (Locally Estimated Scatterplot Smoothing) for local polynomial regression, and "gam" for generalized additive models.
+
+-   Formula: Defines the model formula. For example, y \~ x for simple linear regression or y \~ poly(x, 2) for polynomial regression.
+
+-   Se: Boolean indicating whether to display confidence intervals around the smooth line. By default, it's TRUE.
+:::
+
+In this case of polynomial regression we are not interested in the coefficients as we were in linear models, we are more interested in the fitted function values for a value $x_0$
+
+$$
+\hat{f}(x_0)= \hat\beta_0+\hat\beta_1x_0+\hat\beta_2x_0^2+\hat\beta_3x_0^3
+$$
+
+## standard error
+
+Since $\hat f(x_0)$ is a linear function, we can get a variance at any value $x_0$ this is the *pointwise-variances*. Pointwise means that we are showing what the standard error is at any given point.
+
+## Logisctic regression
+
+For logistic regression, the details are pretty much the same.
+
+$$
+Pr(y_i=\hat y_i |x_i) = \frac{exp(\beta_0+\beta_1x_i+\beta_2x_i^2+\dots+\beta_nx_i^n)}{1+exp(\beta_0+\beta_1x_i+\beta_2x_i^2+\dots+\beta_nx_i^n)}
+$$ To get confidence intervals, we compute the upper and lower bounds on the logit scale, and then invert to get on the probability scale.
+
+![](polynomialRegression.jpeg)
+
+## Caveats of polynomial regression
+
+-   Polynomials have notorious tail behavior: At the very end of the data range their values become very erratic. As the input𝑥becomes very large (positive or negative), the value of a polynomial can increase or decrease very quickly. Small changes in the coefficients of higher-degree terms can result in significant changes in the polynomial's behavior, particularly at the tails. This makes polynomials sensitive to the precision of the coefficients. If you plot a high-degree polynomial, you'll notice that the tails can show steep inclines, declines, or wild oscillations compared to the central portion of the plot. In practical terms, this means that polynomials may not always be the best choice for modeling data that extends over a wide range, especially if the behavior at extreme values is important to understand or predict. This makes polynomials bad for extrapolation.
+
+## step Functions
+In step functions what you do is you cut your continuous variable into discrete sub-ranges. For example for our salary wage over age if we cut at age 35, we create a dummy variable, if age is less than 35 you make it a 1, if not, you make it a 0, and for each cut you create a dummy variable and then you fit all of this into a linear model. 
+It is also an easy way to create interactions, for example we can create an interaction between year and age. We can cut year at 2005 and create a dummy variable, then we can multiply that with age and this will create an interaction, and that will fit a different linear model as a function of age for people who worked before 2005 and those after 2005. In R is very easy to create, we use the indicator function `I` for example `I(year<2005)` and that will create 0 and 1 for the true and false values of that logical, and if you want to cut in more than one place, there's a function called `cut` so we can cut age like this `cut(age,c(18,25,40,65,90))` and that will create a factor which divides into those ranges. 
+
+## Piecewise Polynomials and splines
+
+Instead of a single polynomial in X over its whole domain, we can rather use different polynomials in regions defined by knots.This will fit two (or more) different functions into different regions of the data. This may create very separate lines, to avoid that we can create constraints to enforce the different functions to merge at the knot, and if we want to add more constraints, we can enforce continuity at the derivatives, and that will make the functions to behave more like a single polynomial function. The maximum number of constraints you can add is one less than the degree of polynomial. These are splines (the maximum level of continuity) allowed for piecewise polynomials. Adding the same number as the degrees would just create a polynomial function and not different functions.
+
+### Linear Splines.
+A linear spline with knots at k=1...k=n is a piecewise linear polynomial continuous at each knot.
+### Cubic Splines
+A cubic spline is a piecewise cubic polynomial with continuous derivatives up to order 2 at each knot. 
+### Natural Splines
+A natural cubic spline is a cubic spline with two extra constraints at each end (boundary) of the data, and the constraints make the function extrapolate linearly beyond the boundary knots, this is reducing the standard errors at the ends. 
+For fitting cubic splines in R we use the function `bs()` you give it the knots as arguments. For natural splines we use the function `ns()` both in package `splines` 
+
+*knot placement*: one strategy is to decide on the total number of knots K, and then place them uniformly across different quantiles of the variable x. That results in a certain number of parameters. So a cubic spline with k knots gets k+4 parameters or degrees of freedom.
+If you use a natural spline with k knots, it only has k degrees of freedom because you get back two degrees of freedom for the two constraints on each of the boundaries. 
+
+### Smoothing spline
+There is a special type of spline called the smoothing spline with a knot at every unique value of x. We are not going to get into mathematical details here, you can check in the book, but in R we can use the function `smooth.spline()` and it will fit a smoothing spline. 
+
+::: exercise-box
+Non-Linear Models
+
+In this set of examples for non-linear models we are going to analyze the Wage dataset from ISLR2
+
+**Polynomial regression and Step functions**
+This syntax fits a linear model, using the `lm()` function, in order to predict `wage` using a fourth-degree polynomial in `age`: `poly(age, 4)`. The `poly()` command allows us to avoid having to write out a long formula with powers of `age`. The function returns a matrix whose columns are a basis of *orthogonal polynomials*, which essentially means that each column is a linear combination of the variables `age`, `age^2`,  `age^3` and `age^4`.
+
+```{r}
+fit<- lm(wage ~ poly(age,4), data = Wage)
+coef(summary(fit))
+```
+
+
+However, we can also use `poly()` to obtain `age`, `age^2`,  `age^3` and `age^4` directly, if we prefer. We can do this by using the `raw = TRUE` argument to the `poly()` function.
+Later we   see that this does not affect the model in a meaningful way, though the choice of basis clearly affects the coefficient estimates and the $p$-values will be different, but it does not affect the fitted values obtained.
+
+```{r chunk3}
+fit2 <- lm(wage ~ poly(age, 4, raw = T), data = Wage)
+coef(summary(fit2))
+```
+let's check it out:
+```{r, fig.align='center'}
+plot(fitted(fit),fitted(fit2))
+```
+and this shows that the fitted values are the same for both ways of constructing our model.
+
+
+
+We are usually not interested in the coefficients of the polynomials, but in the function that it produces, so let's make a plot of the fitted function alongside with the standard errors of the fit:
+
+```{r fig.align='center',fig.width=6}
+agelims = range(Wage$age)
+age.grid = seq(agelims[1], agelims[2])
+preds <- predict(fit, newdata=list(age=age.grid),se=TRUE)
+se.bands = cbind(preds$fit +2*preds$se, preds$fit -2*preds$se)
+plot(Wage$age,Wage$wage,col='darkgrey')
+lines(age.grid,preds$fit,lwd=2,col='blue')
+matlines(age.grid, se.bands, col = "blue", lty = 2)
+
+```
+
+We see in the summaries above that coefficients are all significant up to the 4th degree, this means that a cubic polynomial would be sufficient, but this comparison is only possible when we have a single variable and we are using a linear model. In the rest of the cases we would use `anova()` as we will see now.
+
+In performing a polynomial regression we must decide on the degree of the polynomial to use. One way to do this is by using hypothesis tests. We now fit models ranging from linear to a degree-5 polynomial and seek to determine the simplest model which is sufficient to explain the relationship between `wage` and `age`. We use the `anova()` function, which performs an  *analysis of variance* (ANOVA, using an F-test) in order to test the null hypothesis that a model $M_1$ is sufficient to explain the data against the alternative hypothesis that a more complex model $M_2$ is required. 
+In order to use the `anova()` function, $M_1$ and $M_2$ must be *nested* models: the predictors in $M_1$ must be a subset of the predictors in $M_2$. In this case, we fit five different models and sequentially compare the simpler model to the more complex
+model.
+
+```{r chunk9}
+fit.1 <- lm(wage ~ age, data = Wage)
+fit.2 <- lm(wage ~ poly(age, 2), data = Wage)
+fit.3 <- lm(wage ~ poly(age, 3), data = Wage)
+fit.4 <- lm(wage ~ poly(age, 4), data = Wage)
+fit.5 <- lm(wage ~ poly(age, 5), data = Wage)
+anova(fit.1, fit.2, fit.3, fit.4, fit.5)
+```
+The $p$-value comparing the linear `Model 1` to the quadratic `Model 2` is essentially zero ($<$$10^{-15}$), indicating that a linear fit is not sufficient. Similarly the $p$-value comparing the quadratic  `Model 2` to the cubic `Model 3` is very low ($0.0017$), so the quadratic fit is also insufficient. The $p$-value comparing the cubic and degree-4 polynomials, `Model 3` and `Model 4`, is approximately $5 \%$ while the degree-5 polynomial `Model 5` seems unnecessary because its $p$-value is $0.37$. Hence, either a cubic or a quartic polynomial appear to provide a reasonable fit to the data, but lower-or higher-order models are not justified.
+
+:::
+
 # Survival Analysis
-Survival analysis concerns a special kind of outcome variable: the time until an event occurs.
-For example, suppose that we have conducted a five-year medical study, in which patients have been treated for cancer. We would like to fit a model to predict patient survival time, using features such a baseline measurements or type of treatment. Sounds like a regression problem, but there is an important complication: some of the patients have survived until the end of the study. Such a patient's survival time is said to be *censored*. We do not want to discard this subset of surviving patients, since the fact that they survived at least 5 years amounts to valuable information.
+
+Survival analysis concerns a special kind of outcome variable: the time until an event occurs. For example, suppose that we have conducted a five-year medical study, in which patients have been treated for cancer. We would like to fit a model to predict patient survival time, using features such a baseline measurements or type of treatment. Sounds like a regression problem, but there is an important complication: some of the patients have survived until the end of the study. Such a patient's survival time is said to be *censored*. We do not want to discard this subset of surviving patients, since the fact that they survived at least 5 years amounts to valuable information.
 
 The applications of survival analysis extend far beyond medicine. For example, consider a company that wishes to model churn, the event when customers cancel subscription to a service. The company might collect data on customers over some period of time, in order to predict each customer's time to cancellation.
 
-For each individual, we suppose that there is a true *failure* or *event* time T, as well as a true censoring time C. The survival time represents the time at which the event of interest occurs. The censoring is the time at which censoring occurs, for example the time at which the patient drops out of the study or the study ends.
-For each observation we compute the min of those times, either the event or the censoring time. If the event occurs before censoring, then we observe the true survival time T, if censoring occurs before the event, then we observe C. We observe a status indicator
-$\delta = 1\ if\  T\leq C$ $\delta = 0\ if\  T > C$
-so in our dataset we observe n pairs (Y,$\delta$) where Y is the time to T or C.
+For each individual, we suppose that there is a true *failure* or *event* time T, as well as a true censoring time C. The survival time represents the time at which the event of interest occurs. The censoring is the time at which censoring occurs, for example the time at which the patient drops out of the study or the study ends. For each observation we compute the min of those times, either the event or the censoring time. If the event occurs before censoring, then we observe the true survival time T, if censoring occurs before the event, then we observe C. We observe a status indicator $\delta = 1\ if\  T\leq C$ $\delta = 0\ if\  T > C$ so in our dataset we observe n pairs (Y,$\delta$) where Y is the time to T or C.
 
 Suppose that a number of patients drop out of a cancer study early because they are very sick. An Analysis that does not take into consideration the reason why the patients dropped out will likely overestimate the true average survival time. Similarly, suppose that males are more likely to drop out of the study than females, then a comparison of male and female survival times may wrongly suggest that males survive longer than females.
 
 In general, we need to assume that, conditional on the features, the event time T is independent of the censoring time C, and the above examples violate that assumption. There is no way of statistically checking if this assumption is right, you will have to think about those variables yourself and find out the reasons why observations are censored.
 
-The **survival curve** is the probability that a true survival time $T$ is higher than a specified time $t$.
-$$
+The **survival curve** is the probability that a true survival time $T$ is higher than a specified time $t$. $$
 S(t)=Pr(T>t)
-$${#eq-survivalCurve}
+$$ {#eq-survivalCurve}
 
-This decreasing function quantifies the probability of surviving past time $t$
-For example, suppose that a company is interested in modeling customer churn. Let $T$ represent the time that a customer cancels a subscription to the service, then $S(t)$ represents the probability that a customer cancels later than time $t$. The larger the value of $S(t)$, the less likely that the customer will cancel before time $t$.
+This decreasing function quantifies the probability of surviving past time $t$ For example, suppose that a company is interested in modeling customer churn. Let $T$ represent the time that a customer cancels a subscription to the service, then $S(t)$ represents the probability that a customer cancels later than time $t$. The larger the value of $S(t)$, the less likely that the customer will cancel before time $t$.
 
-Let's consider the `BrainCancer` dataset, which contains the survival times for patients with primary brain tumors undergoing treatments.
-The predictors are `gtv` (gross tumor volume), `sex`, `diagnosis` (type of cancer), `loc` (location of the tumor), `ki` (Karnofsky index), and `stereo` (stereotactic method). 53 of the 88 patients were still alive at the end of the study.
+Let's consider the `BrainCancer` dataset, which contains the survival times for patients with primary brain tumors undergoing treatments. The predictors are `gtv` (gross tumor volume), `sex`, `diagnosis` (type of cancer), `loc` (location of the tumor), `ki` (Karnofsky index), and `stereo` (stereotactic method). 53 of the 88 patients were still alive at the end of the study.
 
 Suppose we'd like to estimate the probability of surviving past 20 months. $S(20)=Pr(T>20)$. The first approach that would come to our minds would be to just count the proportion of patients that survived past 20 months, and that is 48/88 = 55%. However, this is not right, 17 of the 40 patients who did not survive to 20 months were actually censored, and this way of doing the analysis implicitly assumes they died, hence this probability is an underestimate.
 
 ## The Kaplan-Meier Estimate
 
 Suppose we have 5 observations (patients). number 2 and 4 censored and we have the time to event for the rest:
+
 ```{r ,echo=FALSE, fig.align='center'}
 # Sample data
 time <- c(2, 3, 4, 5, 6)
@@ -6794,10 +6927,9 @@ survminer::ggsurvplot(fit, data = data, xlab = "Time", ylab = "Survival Probabil
 
 Now that we have seen this with a simple example, let's run it over the BrainCancer dataset. Each point in the solid step-like curve shows the estimated probability of surviving past the time indicated on the horizontal axis.
 
-Before begining the analysis, it is important to know how the `status` variable has been coded. Most software, including R, uses the convention that `status =1` indicates an uncensored observation, and `status =0` indicates a censored observations. But some scientist might use the opposite coding. 
+Before begining the analysis, it is important to know how the `status` variable has been coded. Most software, including R, uses the convention that `status =1` indicates an uncensored observation, and `status =0` indicates a censored observations. But some scientist might use the opposite coding.
 
-To begin the analysis we recreate the Kaplan-Meier survival curve using the `survfit()` function from `survival` library. By including `~1` we indicate that the survival analysis is performed without considering any covariates or grouping. The model will estimate a single survival curve for all subjects combined. This allows us to understand the general survival pattern across the entire dataset. 
-
+To begin the analysis we recreate the Kaplan-Meier survival curve using the `survfit()` function from `survival` library. By including `~1` we indicate that the survival analysis is performed without considering any covariates or grouping. The model will estimate a single survival curve for all subjects combined. This allows us to understand the general survival pattern across the entire dataset.
 
 ```{r, fig.align='center', fig.width=6}
 library(survival)
@@ -6806,8 +6938,8 @@ BrainCancer= ISLR2::BrainCancer
 fit.surv <- survfit(Surv(time, status) ~ 1, data = BrainCancer)
 plot(fit.surv, xlab="Months", ylab= "Estimated Pr survival")
 ```
-The dotted lines indicates the confidence interval for 2 standard errors. 
-The estimated probability of survival past 20 months is 71%, which is higher than the 55% that we estimated just but counting the amount of survivors.
+
+The dotted lines indicates the confidence interval for 2 standard errors. The estimated probability of survival past 20 months is 71%, which is higher than the 55% that we estimated just but counting the amount of survivors.
 
 ## Proportional Hazards Model: Log-Rank Test
 
@@ -6823,10 +6955,7 @@ legend("bottomleft", levels(BrainCancer$sex), col = c(2,4), lty = 1)
 
 ```
 
-The proportional Hazard Model allows us to compare two survival samples. It is the equivalent of a t.test for survival data.
-Being $d_1<d_2<\dots,d_k$ unique death times among non-censored patients, $r_k$ is the number of patients at risk at time $d_k$ and $q_k$ is the number of patients who died at time $d_k$.
-We divide our patients in two groups males and females, and we will call their variables $q_{1k}$ and $q_{2k}$ for the number of male and female patients who died and $r_{1k}$ and $r_{2k}$ are the number of patients at risk in each group.
-So at a specific time $d_k$ we have:
+The proportional Hazard Model allows us to compare two survival samples. It is the equivalent of a t.test for survival data. Being $d_1<d_2<\dots,d_k$ unique death times among non-censored patients, $r_k$ is the number of patients at risk at time $d_k$ and $q_k$ is the number of patients who died at time $d_k$. We divide our patients in two groups males and females, and we will call their variables $q_{1k}$ and $q_{2k}$ for the number of male and female patients who died and $r_{1k}$ and $r_{2k}$ are the number of patients at risk in each group. So at a specific time $d_k$ we have:
 
 ```{r echo=FALSE}
 library(kableExtra)
@@ -6837,21 +6966,20 @@ data <- data.frame(
 row.names(data) <- c("Died", "Survived", "Total")
 kable(data, format = "html", escape = FALSE)%>% kable_styling(full_width = FALSE, position = "center")
 ```
+
 To test $H_0$, our null hypothesis that the survival rates are the same for both genders, we construct a test statistic of the form:
 
 $$
 W=\frac{X-E(X)}{\sqrt{Var(X)}}
-$$
-where E(X) is the expectation and Var(X) is the variance of X under the null hypothesis. $X=\sum^K_{k=1}q_{1k}$
+$$ where E(X) is the expectation and Var(X) is the variance of X under the null hypothesis. $X=\sum^K_{k=1}q_{1k}$
 
 The resulting formula for the log-rank test statistic is:
 
 $$
 W =\frac{\sum^K_{k=1}(q_{1k}-E(q_{1k}))}{\sqrt{\sum^K_{k=1}Var(q_{1k})}}
-$${#eq-logrankTestStatistic}
+$$ {#eq-logrankTestStatistic}
 
-We are not going to develop this formula further in this page, but the full definition can be found on the book.
-When the sample size is large, the *log-rank test statistic W* has approximately a standard normal distribution.
+We are not going to develop this formula further in this page, but the full definition can be found on the book. When the sample size is large, the *log-rank test statistic W* has approximately a standard normal distribution.
 
 This can be used to compute a `p-value` for the null hypothesis that there is no difference between survival curves in the two groups.
 
@@ -6861,9 +6989,11 @@ Instead of calculating it manually we will use R with the function `survdiff()`:
 logrank.test <- survdiff(Surv(time, status) ~ sex, data =BrainCancer)
 logrank.test
 ```
-We use a two sided test because we want to know if the male survival rate is less or more than those of females, we are not interested only in if they are higher. We see that our $p$-value for a two-sided test is 0.2, which does not allow us to reject the null hypothesis that there is a difference. This could be just because the dataset is too small. Even though the number of observations are 88, the survival information is extracted from the number of failures, so the censored are not really adding so much information. 
+
+We use a two sided test because we want to know if the male survival rate is less or more than those of females, we are not interested only in if they are higher. We see that our $p$-value for a two-sided test is 0.2, which does not allow us to reject the null hypothesis that there is a difference. This could be just because the dataset is too small. Even though the number of observations are 88, the survival information is extracted from the number of failures, so the censored are not really adding so much information.
 
 The `survminer` package draws survival curves using ggplot, and can provide log-rank $p$-values:
+
 ```{r, fig.align='center', fig.width= 8, fig.height=6}
 library(survminer)
 fit.sex <- survfit(Surv(time, status) ~ sex, data= BrainCancer)
@@ -6880,30 +7010,23 @@ survminer::ggsurvplot(fit.sex, data = BrainCancer,
 
 We now consider the task of fitting a regression model to survival data. We wish to predict the true survival time T. Because of the censoring, we cannot really just fit a linear or log model. To overcome this difficulty, we instead make use of a sequential construction, similar to the idea used for the Kaplan-Meier survival curve.
 
-**Proportional Hazards Model (Cox Model)**
-This is a statistical technique used to explore the relationship between the survival time of subjects and one or more predictor variables.
+**Proportional Hazards Model (Cox Model)** This is a statistical technique used to explore the relationship between the survival time of subjects and one or more predictor variables.
 
-We start by defining the *Hazard function* this is the  risk of the event happening at a particular time, given the fact that the subject has survived up to that time. Why do we care about the hazard function? It turns out that a key approach for modeling survival data as a function of covariates relies heavily on the hazard function.
+We start by defining the *Hazard function* this is the risk of the event happening at a particular time, given the fact that the subject has survived up to that time. Why do we care about the hazard function? It turns out that a key approach for modeling survival data as a function of covariates relies heavily on the hazard function.
 
-The model assumes that the hazard rate for an individual is a baseline hazard, shared by all individuals, modified by a set of covariates (predictors). The hazard at time t for an individual is given by
-$$
+The model assumes that the hazard rate for an individual is a baseline hazard, shared by all individuals, modified by a set of covariates (predictors). The hazard at time t for an individual is given by $$
 h(t | X) = h_0(t) \exp\left( \sum^p_{j=1}x_{ij}\beta_j \right)=  h_0(t) \exp(\beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p)
-$${#eq-hazardFunction}
+$$ {#eq-hazardFunction}
 
-Where $h_0(t)$ is an unspecified function, known as the *baseline hazard*
-The quantity $exp\left( \sum^p_{j=1}x_{ij}\beta_j \right)$ is called the *relative risk*
+Where $h_0(t)$ is an unspecified function, known as the *baseline hazard* The quantity $exp\left( \sum^p_{j=1}x_{ij}\beta_j \right)$ is called the *relative risk*
 
 There is a deeper explanation of this method on the book that we skip here.
 
-There is no intercept in the proportional hazards model because the intercept is absorbed into the baseline hazard.
-We assume that there are no tied failure times (only one individual Fails at a given time). In the case this is not correct and there are ties, the model is more complicated to calculate and a number of computational approximations must be used.
-Apart from estimating the coefficients, we may also wish to estimate the baseline hazard, so we can estimate the survival curve. These are implemented in the `survival` package in R.
+There is no intercept in the proportional hazards model because the intercept is absorbed into the baseline hazard. We assume that there are no tied failure times (only one individual Fails at a given time). In the case this is not correct and there are ties, the model is more complicated to calculate and a number of computational approximations must be used. Apart from estimating the coefficients, we may also wish to estimate the baseline hazard, so we can estimate the survival curve. These are implemented in the `survival` package in R.
 
 If we have a single predictor (sex) with a binary outcome (0,1) or (male,female). To test whether there is a difference between the survival tiems of the observations in the two groups we can consider two different approaches:
 
-1- Fit a Cox proportional hazards model and test the null hypothesis that $\beta =0$
-2- Perform a log-rank test to compare the two groups. 
-When taking approach 1, there are a number of possible ways to test $H_0$. One way is known as *score test* and it turn out that in the case of a single binary covariate, the score test for $H_0:\beta=0$ in Cox's proportional hazards model is exactly equal to the log-rank test. 
+1- Fit a Cox proportional hazards model and test the null hypothesis that $\beta =0$ 2- Perform a log-rank test to compare the two groups. When taking approach 1, there are a number of possible ways to test $H_0$. One way is known as *score test* and it turn out that in the case of a single binary covariate, the score test for $H_0:\beta=0$ in Cox's proportional hazards model is exactly equal to the log-rank test.
 
 Let's fix Cox proportional hazards models using the `coxph()` function. To begin, we consider a model that uses `sex` as the only predictor in the BrainCancer dataset.
 
@@ -6911,6 +7034,7 @@ Let's fix Cox proportional hazards models using the `coxph()` function. To begin
 fit.cox<- survival::coxph(Surv(time, status) ~ sex, data=BrainCancer)
 summary(fit.cox)
 ```
+
 As we saw with the log-rank test, there is no evidence to suggest that there is a survival difference by sex.
 
 Now we fit all the predictors:
@@ -6920,31 +7044,32 @@ fit.cox<- survival::coxph(Surv(time, status) ~ sex + diagnosis + loc + ki + gtv 
    stereo, data = BrainCancer)
 fit.cox
 ```
+
 **Interpreting the results:**
 
-As we mentioned before, there is no intersect because it has been absorbed into the baseline hazard function $h_0(t)$. 
+As we mentioned before, there is no intersect because it has been absorbed into the baseline hazard function $h_0(t)$.
 
- - Call: This shows the formula used for the model.
+-   Call: This shows the formula used for the model.
 
- - n: Number of observations used in the analysis (87).
+-   n: Number of observations used in the analysis (87).
 
- - number of events: Number of observed events (35), such as deaths or failures.
- 
- - coef: The regression coefficients for each predictor.
+-   number of events: Number of observed events (35), such as deaths or failures.
 
- - exp(coef): The hazard ratios (HR), which indicate the effect size of each predictor.
+-   coef: The regression coefficients for each predictor.
 
- - se(coef): Standard errors of the coefficients.
+-   exp(coef): The hazard ratios (HR), which indicate the effect size of each predictor.
 
- - z: z-statistic for testing the null hypothesis that the coefficient is zero.
+-   se(coef): Standard errors of the coefficients.
 
- - Pr(>|z|): $p$-values for the z-tests, indicating whether the coefficients are significantly different from zero.
- 
- - Likelihood ratio test, Wald test, Score (log-rank) test: These tests assess the overall significance of the model. The low $p$-values (< 0.001) indicate that the predictors collectively have a significant effect on survival.
- 
- In our specific result, the `diagnosis` variable has been coded so that the baseline corresponds to meningioma. Results indicate that the risk associated with HG glioma is more than eight times (i.e. $e^{2.15} = 8.62$) the risk associated with meningioma. In addition, larger values of the Karnofsky index (ki) are associated with lower risk. (negative coefficient).
+-   z: z-statistic for testing the null hypothesis that the coefficient is zero.
 
- We need to remember, that like in linear models, if some of the variables are correlated, a variable could show as non-significant even if it is, because the other correlated variables are absorbing part of its influence.
+-   Pr(\>\|z\|): $p$-values for the z-tests, indicating whether the coefficients are significantly different from zero.
+
+-   Likelihood ratio test, Wald test, Score (log-rank) test: These tests assess the overall significance of the model. The low $p$-values (\< 0.001) indicate that the predictors collectively have a significant effect on survival.
+
+In our specific result, the `diagnosis` variable has been coded so that the baseline corresponds to meningioma. Results indicate that the risk associated with HG glioma is more than eight times (i.e. $e^{2.15} = 8.62$) the risk associated with meningioma. In addition, larger values of the Karnofsky index (ki) are associated with lower risk. (negative coefficient).
+
+We need to remember, that like in linear models, if some of the variables are correlated, a variable could show as non-significant even if it is, because the other correlated variables are absorbing part of its influence.
 
 It is possible to plot estimated survival curves for each diagnosis category, adjusting for the other predictors. To make these plots, set the values of the other predictors equal to the mean for quantitative variables, and the modal value for factors.
 
@@ -6967,9 +7092,9 @@ survplots <- survfit(fit.cox, newdata = modaldata)
   legend("bottomleft", levels(BrainCancer$diagnosis), col = 2:5, lty = 1)
 
 ```
-::: {.exercise-box}
-We are using now the Publication dataset from ISLR2. The time is time until publication and we are interested in knowing if having a positive or negative result versus a null result resulted in faster publication time. A censored time here would be that either the paper was never published or was published after this studied finished. 
-We will start by plotting the survival curve. 
+
+::: exercise-box
+We are using now the Publication dataset from ISLR2. The time is time until publication and we are interested in knowing if having a positive or negative result versus a null result resulted in faster publication time. A censored time here would be that either the paper was never published or was published after this studied finished. We will start by plotting the survival curve.
 
 ```{r, fig.align='center', fig.width=7}
 
@@ -6979,27 +7104,30 @@ legend("topright", c("Negative Result", "Positive Result"), col=3:4, lty =1)
 ```
 
 we can fit a cox model:
+
 ```{r}
 (fit.pub <- coxph(Surv(time,status) ~ posres, data=Publication))
 
 ```
+
 The $p$-value is not significant. We can do a log-rank test:
 
 ```{r}
 (logrank.test <- survdiff(Surv(time,status) ~ posres, data=Publication))
 ```
-and again we see not significant difference. 
+
+and again we see not significant difference.
 
 However, the results change dramatically when we include other predictors in the model. Here we have excluded only the funding mechanism variable
 
 ```{r}
 (fit.pub <- coxph(Surv(time,status)~ . -mech, data=Publication))
 ```
-We have now some significant variables, including `posres` result. This often happens when we include other confounding factors. 
 
+We have now some significant variables, including `posres` result. This often happens when we include other confounding factors.
 :::
 
-:::{.exercise-box}
+::: exercise-box
 In this section we will simulate survival data using the `sim.survdata()` function, which is part of the `coxed` library. Our simulated data will represent the observed wait times (in seconds) for 2000 customers who have phoned a call center. In this context, censoring occurs if a customers hangs up before his or her call is anwered.
 
 There are three covariates: `operators` (the number of call center operators available) `center` and `time` of day (morning, afternoon, evening). We generate data for these covariates so that all possibilities are equally likely, for instance, morning, afternoon and evening calls are equally likely, and the number of operators (from 5 to 15) is equally likely.
@@ -7015,17 +7143,19 @@ X <- model.matrix( ~ Operators + Center + Time)[,-1]
 X[1:5,]
 
 ```
+
 Next, we specify the coefficients and the hazard function:
+
 ```{r}
 true.beta <- c(0.04, -0.3,0,0.2,-0.2)
 h.fn <- function(x) return(0.00001 * x) #function to create the HAzard.
 ```
+
 Here, we have set the coefficient associated with `Operators` to equal $0.04$; in other words, each additional operator leads to a $e^{0.04}=1.041$-fold increase in the "risk" that the call will be answered, given the `Center` and `Time` covariates. This makes sense: the greater the number of operators at hand, the shorter the wait time.
 
-The coefficient associated with `Center = B` is $-0.3$, and `Center = A` is treated as the baseline. This means that the risk of a call being
-answered at Center B is $0.74$ times the risk that it will be answered at Center A; in other words, the wait times are a bit longer at Center B.
+The coefficient associated with `Center = B` is $-0.3$, and `Center = A` is treated as the baseline. This means that the risk of a call being answered at Center B is $0.74$ times the risk that it will be answered at Center A; in other words, the wait times are a bit longer at Center B.
 
-We are now ready to  generate data under the  Cox proportional hazards model. The `sim.survdata()` function allows us to specify the maximum possible failure time, which in this case corresponds to the longest possible wait time for a customer; we set this to equal $1{,}000$ seconds.
+We are now ready to generate data under the Cox proportional hazards model. The `sim.survdata()` function allows us to specify the maximum possible failure time, which in this case corresponds to the longest possible wait time for a customer; we set this to equal $1{,}000$ seconds.
 
 ```{r chunk19}
 library(coxed)
@@ -7033,13 +7163,15 @@ queuing <- sim.survdata(N = N, T = 1000, X = X,
     beta = true.beta, hazard.fun = h.fn)
 names(queuing)
 ```
+
 The "observed" data is stored in `queuing$data`, with `y` corresponding to the event time and `failed` an indicator of whether the call was answered (`failed = T`) or the customer hung up before the call was answered (`failed = F`). We see that almost $90\%$ of calls were answered.
 
 ```{r chunk20}
 head(queuing$data)
 mean(queuing$data$failed)
 ```
-We now plot  Kaplan-Meier survival curves. First, we stratify by `Center`.
+
+We now plot Kaplan-Meier survival curves. First, we stratify by `Center`.
 
 ```{r ,fig.align='center',fig.width=7}
 fit.Center <- survfit(Surv(y, failed) ~ Center,
@@ -7070,8 +7202,8 @@ It seems that calls at Call Center B take longer to be answered than calls at Ce
 survdiff(Surv(y, failed) ~ Center, data = queuing$data)
 survdiff(Surv(y, failed) ~ Time, data = queuing$data)
 ```
-We find that  differences between centers are highly significant, as are differences between times of day.
 
+We find that differences between centers are highly significant, as are differences between times of day.
 
 Finally, we fit Cox's proportional hazards model to the data.
 
@@ -7081,36 +7213,33 @@ fit.queuing <- coxph(Surv(y, failed) ~ .,
 fit.queuing
 ```
 
-The $p$-values for `Center = B`, `Time = Even.` and `Time = Morn.` are very small. It is also clear that the hazard --- that is, the instantaneous risk that a call will be answered --- increases with the number of operators. Since we generated the data ourselves, we know that the true coefficients for `Operators`, `Center = B`, `Center = C`, `Time = Even.` and `Time = Morn.` are  $0.04$, $-0.3$, $0$, $0.2$, and $-0.2$, respectively. The coefficient estimates resulting from the Cox model are fairly accurate.
-
+The $p$-values for `Center = B`, `Time = Even.` and `Time = Morn.` are very small. It is also clear that the hazard --- that is, the instantaneous risk that a call will be answered --- increases with the number of operators. Since we generated the data ourselves, we know that the true coefficients for `Operators`, `Center = B`, `Center = C`, `Time = Even.` and `Time = Morn.` are $0.04$, $-0.3$, $0$, $0.2$, and $-0.2$, respectively. The coefficient estimates resulting from the Cox model are fairly accurate.
 :::
 
 ## Harrel's concordance index (the C-index).
-This is a method for assessing a fitted survival model on a test set. 
-For each observation, we calculate the estimated risk score, so with the coefficients we got from the model we calculate the estimated risk score, called eta hat of i $\hat\eta_i = \hat\beta_1x_{i1}+\dots+\hat\beta_px{ip}$
-Then for each pairs of observations, we compute the proportion that we got right from the model, this is, if they had a lower risk, they lived longer than their counterpart in the pair. 
+
+This is a method for assessing a fitted survival model on a test set. For each observation, we calculate the estimated risk score, so with the coefficients we got from the model we calculate the estimated risk score, called eta hat of i $\hat\eta_i = \hat\beta_1x_{i1}+\dots+\hat\beta_px{ip}$ Then for each pairs of observations, we compute the proportion that we got right from the model, this is, if they had a lower risk, they lived longer than their counterpart in the pair.
 
 $$
 C = \frac{\sum_{i<j} \delta_{ij} \cdot \mathbb{I}(\hat{T}_i < \hat{T}_j)}{\sum_{i<j} \delta_{ij}}
-$${#eq-Cindex}
+$$ {#eq-Cindex}
 
-When we are comparing a pair that has one censored observation, we cannot really say if they lived longer or not, so we only count up over those that we can compare. 
+When we are comparing a pair that has one censored observation, we cannot really say if they lived longer or not, so we only count up over those that we can compare.
 
-If we get a c-index of 0.733, roughly speaking that means that given two random observations, the model can predict with 73.3% accuracy which one will survive longer. 
-
+If we get a c-index of 0.733, roughly speaking that means that given two random observations, the model can predict with 73.3% accuracy which one will survive longer.
 
 ::: {.callout-orange appearance="simple" icon="false"}
 ::: centered-text
 **Other considerations of survival analysis**
 :::
- - There is not a single type of censoring, there is right censoring, left censoring and interval censoring. 
-    - *Right censoring*: This occurs when the event of interest has not happened by the end of the study period or when a subject leaves the study before experiencing the event. Example: If a patient is still alive at the end of the study or drops out, the exact survival time is unknown but is known to be greater than the last observed time.
-    - *Left censoring*: This happens when the event of interest has already occurred before the start of the study or before a subject's entry into the study. Example: If you're studying the time to a certain disease and some individuals already had the disease before the study began, their exact time to event is unknown but is known to be less than the first observed time.
-    - *Interval censoring*: This occurs when the event of interest is known to have occurred within a specific time interval, but the exact time is unknown. Example: If follow-up visits are scheduled annually and a patient was healthy at their last visit but found to have developed a disease at the next visit, the exact time of disease onset is unknown but is known to have occurred within that year.
 
- - There are condiderations to be made about the time scale, for example, use if calendar time or patient's age
- 
- - Time-dependent covariates: we measure certain predictors on the same patient over time 
+-   There is not a single type of censoring, there is right censoring, left censoring and interval censoring.
+
+    -   *Right censoring*: This occurs when the event of interest has not happened by the end of the study period or when a subject leaves the study before experiencing the event. Example: If a patient is still alive at the end of the study or drops out, the exact survival time is unknown but is known to be greater than the last observed time.
+    -   *Left censoring*: This happens when the event of interest has already occurred before the start of the study or before a subject's entry into the study. Example: If you're studying the time to a certain disease and some individuals already had the disease before the study began, their exact time to event is unknown but is known to be less than the first observed time.
+    -   *Interval censoring*: This occurs when the event of interest is known to have occurred within a specific time interval, but the exact time is unknown. Example: If follow-up visits are scheduled annually and a patient was healthy at their last visit but found to have developed a disease at the next visit, the exact time of disease onset is unknown but is known to have occurred within that year.
+
+-   There are condiderations to be made about the time scale, for example, use if calendar time or patient's age
+
+-   Time-dependent covariates: we measure certain predictors on the same patient over time
 :::
-
-
