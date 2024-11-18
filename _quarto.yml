@@ -1,0 +1,70 @@
+project:
+  type: website
+  output-dir: _site
+  render: 
+    - "*.qmd"
+    - "!courseSummary.qmd"
+    - "!ignored-dir/"
+website:
+  title: "Mastering Statistics: Fundamentals of Data Analysis."
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: exploratoryAnalysis.qmd
+        text: Exploratory Analysis
+      - text: Supervised Learning
+        menu:
+          - href: Inferencial.qmd
+            text: Statistical Tests
+          - href: linearModels.qmd
+            text: Linear Models
+          - href: modelAccuracy.qmd
+            text: Assessing Model Accuracy
+          - href: classification.qmd
+            text: Classification problems
+          - href: polynomialReg.qmd
+            text: Polynomial Regression
+          - href: survival.qmd
+            text: Survival Analysis
+          - href: tree.qmd
+            text: Tree Based Methods
+      - href: matrix.qmd
+        text: Matrix Algebra
+format: 
+  html: 
+    toc: true
+    toc-depth: 3
+    toc-title: Contents
+    number-sections: true
+    number-depth: 3
+    embed-resources: true
+    fig-align: 'center'
+    fig-cap-location: margin
+    fig-width: 4
+    fig-height: 4
+    css: custom-style.css
+    page-layout: full
+    crossrefs-hover: true
+    footnotes-hover: true
+    citations-hover: true
+    code-fold: true
+    grid: 
+      sidebar-width: 10px
+      body-width: 1300px
+      gutter-width: 0.5rem
+    margin-left: 50px
+    margin-right: 10px
+    anchor-sections: true
+    theme: flatly
+editor: visual
+html-math-method: mathjax
+execute: 
+  engine: knitr
+  warning: false
+  echo: true
+knitr:
+  opts_chunk:
+    label: true
+    number: true
+    echo: true
