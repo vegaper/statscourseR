@@ -144,8 +144,7 @@ mean_salaries
 
 **Terminology for Trees** In keeping with the tree analogy, the regions at the end are called *terminal nodes* Decision trees are typically drawn upside down in the sense that the leaves are at the bottom of the tree. The points along the tree where the predictor space is split are referred as *internal nodes* In the hitters tree shown above, the two internal nodes are indicated by the ext `years<4.5` and `Hits < 117.5`
 
-**Interpretation of the results** The first division is done over years of experience, this means that the most important factor in determining Salary is years. Given that a player is less experienced, the number of hits that he made in the previous year seems to play little role in his salary. But among players who have been in the major leagues for five or more years, the number of hits made in the previous year does affect the Salary, with players with more Hits having higher salaries. (Note that we have actually limited the number of nodes with the function `prune.tree()`, otherwise it would have shown further divisions).
-The longer the vertical sections of the diagram the more RSS reduction that split created. 
+**Interpretation of the results** The first division is done over years of experience, this means that the most important factor in determining Salary is years. Given that a player is less experienced, the number of hits that he made in the previous year seems to play little role in his salary. But among players who have been in the major leagues for five or more years, the number of hits made in the previous year does affect the Salary, with players with more Hits having higher salaries. (Note that we have actually limited the number of nodes with the function `prune.tree()`, otherwise it would have shown further divisions). The longer the vertical sections of the diagram the more RSS reduction that split created.
 
 ## Predictions
 
@@ -165,14 +164,11 @@ $$
 \sum^{|T|}_{m=1}\sum_{i:x_i\epsilon R_m}(y_i-\hat y_{Rm})^2+\alpha|T|
 $$
 
-where $|T|$ indicates the number of terminal nodes of the tree. $R_m$ is the rectangle or region (the subset of predictor space) corresponding to the mth terminal node, and $\hat y_{Rm}$ is the mean of the training observations in the region. So we want the sum of squares in the region to be as small as possible, but we put a penalty on the number of terminals by adding the $\alpha |T|$. The concept is similar to the *lasso*.
-The tuning parameter alpha controls a trade-off between the subtree's complexity and its fit to the training data. We select an optimal value for alpha using cross validation. We then return to the full dataset and obtain the subtree corresponding to that value of alpha. 
+where $|T|$ indicates the number of terminal nodes of the tree. $R_m$ is the rectangle or region (the subset of predictor space) corresponding to the mth terminal node, and $\hat y_{Rm}$ is the mean of the training observations in the region. So we want the sum of squares in the region to be as small as possible, but we put a penalty on the number of terminals by adding the $\alpha |T|$. The concept is similar to the *lasso*. The tuning parameter alpha controls a trade-off between the subtree's complexity and its fit to the training data. We select an optimal value for alpha using cross validation. We then return to the full dataset and obtain the subtree corresponding to that value of alpha.
 
 We are going to do this manually here to show how the model overfits as more splits are added: the training MSE decreases, but the test MSE increases. The cross validation will help us choose the correct number of nodes to use:
 
-Randomly divided the data set in half and built large regression tree on training data and varied α to create subtrees with different numbers of terminal nodes
-Finally, performed 6-fold cross-validation to estimate the cross-validated MSE of the trees as a function of α
-
+Randomly divided the data set in half and built large regression tree on training data and varied α to create subtrees with different numbers of terminal nodes Finally, performed 6-fold cross-validation to estimate the cross-validated MSE of the trees as a function of α
 
 ```{r, fig.align='center', fig.width=6}
 set.seed(123) 
@@ -229,7 +225,6 @@ ggplot(results, aes(x = TreeSize, y = MSE, color = Data)) +
 
 Let's see how the tree on the hits dataset looks without manual pruning. We are letting the software choose the right number of nodes:
 
-
 ```{r, fig.align='center', fig.width=7}
   tree.Hitters <- tree(Salary ~ Hits + Years, Hitters)
 
@@ -237,10 +232,10 @@ plot(tree.Hitters, pretty=0)
 # Add text labels to the plot 
 text(tree.Hitters, pretty = 0)
 ```
+
 The tree function grows a large, unpruned tree. This tree is typically overgrown and will have more terminal nodes than necessary to capture the underlying structure of the data. By default, the tree function will grow the tree until the decrease in deviance (a measure of model fit) is not statistically significant at each split.
 
-Cross-Validation and Pruning:
-The process we followed to determine the optimal number of terminal nodes involves:
+Cross-Validation and Pruning: The process we followed to determine the optimal number of terminal nodes involves:
 
 Growing a large tree: This is similar to what the tree function does by default.
 
@@ -255,17 +250,106 @@ pruned_tree <- prune.tree(tree_model, best = optimal_size)
 summary(pruned_tree)
 
 ```
+
 # Classification Trees
 
-Very similar to regression tree, except that it is used to predict a qualitative response rather than a quantitative one, but the mechanism is very similar. 
-For a classification tree, we predict that each observation belongs to the most commonly occurring class of training observations in the region where it belongs.
+Very similar to regression tree, except that it is used to predict a qualitative response rather than a quantitative one, but the mechanism is very similar. For a classification tree, we predict that each observation belongs to the most commonly occurring class of training observations in the region where it belongs.
 
-Just as in the regression setting, we use recursive binary splitting to grow a classification tree. In the classification setting, RSS cannot be used as a criterion for making binary splits. A natural alternative to RSS is the *classification error rate* this is simply the fraction of the training observations in that region that do not belong to the most common class. However, classification error is not sufficiently sensitive for tree-growing, and in practice two other measures are preferable. 
+Just as in the regression setting, we use recursive binary splitting to grow a classification tree. In the classification setting, RSS cannot be used as a criterion for making binary splits. A natural alternative to RSS is the *classification error rate* this is simply the fraction of the training observations in that region that do not belong to the most common class. However, classification error is not sufficiently sensitive for tree-growing, and in practice two other measures are preferable.
 
 ## Gini index and Deviance
+In decision tree algorithms, the *Gini Index* is used as a criterion to measure the purity or impurity of a split in the dataset. The goal is to create nodes that contain observations of mostly one class, leading to better classification accuracy. 
+The Gini index is defined by 
+
+$$
+G = \sum^K_{k=1} \hat p_{mk}(1-\hat p_{mk})
+$${#eq-giniIndex}
+
+K is the number of classes
+ 
+the binomial variance formula is:
+$$
+var(X)=n \times p \times (1-p)
+$${#eq-VarianceBinomialDistribution}
+
+so this is a measure of the variability of that region. 
+
+If the Gini index is really small, that means that one class is favored and all the rest are really small. If the region is pure, the Gini will be 0. 
+
+An alternative is the *deviance* or *cross-entropy* and this is based on the binomial log likelihook. It behaves similarly to the Gini index and both give similar results. 
+$$
+D = -\sum^K_{k=1} \hat p_{mk}log \ \hat p_{mk}
+$${eq-crossEntropy}
+
+Let's look at an example with the Heart data. These data have a binary response called HD. Yes indicates presence of heart disease and No means no heart disease. There are 13 predictors. 
+
+The unpruned tree looks like this:
+
+```{r, fig.align='center', fig.width=12}
+heart<- kmed::heart
+heart$hd <- case_when(heart$class == 0 ~"No", 
+                      TRUE ~ "Yes")
+heart_tree <- heart %>% 
+  mutate_if(is.character, as.factor) 
+
+set.seed(417)
+index <- sample(nrow(heart), size = nrow(heart)*0.80)
+heart_train_tree <- heart_tree[index,] #take 80%
+heart_test_tree <- heart_tree[-index,] #take 20%
+
+tree.heart <- tree(hd ~ . -class, data=heart_train_tree)
+summary(tree.heart)
+plot(tree.heart)
+text(tree.heart, pretty=0)
+```
+Let's do cross-validation now:
+```{r, fig.alt='center', fig.width=12}
+set.seed(7)
+cv.heart <- cv.tree(tree.heart, FUN = prune.misclass)
+
+par(mfrow = c(1, 2))
+plot(cv.heart$size, cv.heart$dev, type = "b")
+plot(cv.heart$k, cv.heart$dev, type = "b")
+```
+cross validation indicates that the best number of nodes is 6
+
+```{r, fig.align='center', fig.width=10}
+prune.heart <- prune.misclass(tree.heart, best = 6)
+plot(prune.heart)
+text(prune.heart, pretty = 0)
+```
+:::{.callout-orange appearance="simple" icon="false"}
+Advantages and disadvantages of Trees
+
+Pros:
+- Trees are very easy to explain to people.
+- Some people believe that decision trees more closely mirror human decision-making than do regression and classification approaches.
+- Trees can be displayed graphically.
+- Trees can easily handle qualitative predictors without the need to create dummy variables. 
+
+Cons:
+- Unfortunately, trees generally do not have the same level of predictive accuracy as some of the other regression and classification approaches seen already. 
+:::
+
+
+# Bagging
+
+*Bootstrap aggregation* or *bagging* is a general-purpose procedure for reducing the variance of a statistical learning method, it is particularly useful and frequently used in the context of decision trees. 
+Recall that given a set of n independent observations $Z_1,Z_2,\dots,Z_n$ , each with variance $\sigma^2$, the variance of the mean $\bar Z$ of the observations is given by $\sigma^2/n$.
+In other words, averaging a set of observations reduces variance. Of course, this is not practical because we generally do not have access to multiple training sets. 
+Instead, we can bootstrap, by taking repeated samples from the single training set. In this approach, we generate B different bootstrapped training datasets. We then train our method on the bth bootstrapped training set in order to get the prediction at point x. We then average all the predictions. 
+For classification it works similarly. We can have 200 trees, we have two classes, we make a prediction of each x, and for example 150 trees says class 1 and 50 says class 2, then our prediction will be class 1, so we adjust by majority vote. 
+
+**Out-of-bag* Error estimation
+It turns out that there is a very straightforward way to estimate the **test error** of a bagged model. Recall that the key to bagging is that trees are repeatedly fit to bootstrapped subsets of observations. One can show that on average, each bagged tree makes use of around two-thirds of the observations. The remaining one-third of the observations not used to fit a given bagged tree are referred as to the out-of-bag (OOB) observations. 
+We can predict the response for the ith observation using each of the trees in which that observation was OOB. This will yield around B/3 predictions for the ith observation, which we average. We do that for each of the observations. 
+This estimate is essentially the Leave One Out (LOO) cross-validation error for bagging, if B is large. 
+
+# Random Forest
 
 
 
-:::exercise-box
+
+::: exercise-box
 Fitting classification Trees
 :::

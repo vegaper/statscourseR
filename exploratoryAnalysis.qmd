@@ -29,8 +29,7 @@ Variance measures the average squared deviations from the mean. To calculate it:
 
 Find the mean of the data set. Subtract the mean from each data point and square the result. Average these squared differences.
 
-Mathematically, for a population, the variance $\sigma^2$ is: 
-$$
+Mathematically, for a population, the variance $\sigma^2$ is: $$
 \sigma^2 = \frac{1}{N}\sum^N_{i=1}(x_i-\mu)^ 2
 $$ {#eq-variance}
 
@@ -526,7 +525,7 @@ $$
 \binom{n}{k} = \frac{n!}{k!(n-k)!}
 $$ {#eq-binomialCoefficient}
 
-and to calculate the probability we use the coefficient with the \*binomial probability formula. It's used to find the probability of getting exactly k successes in n independent Bernoulli trials, where each trial has a success probability p.
+and to calculate the probability we use the coefficient with the *binomial probability* formula. It's used to find the probability of getting exactly k successes in n independent Bernoulli trials, where each trial has a success probability p.
 
 $$
 P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}

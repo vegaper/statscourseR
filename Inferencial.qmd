@@ -159,7 +159,12 @@ The percentage of Democratic voters in the sample is equal to the mean of the sa
 
 ### Expected value and standard error for the sum
 
-If we are interested in the sum of n draws $S_n$, the sum and the average are related by $S_n = n\bar{x_n}$ so the standard error of the sum: $$SE(S_n)=\sqrt{n}\sigma$$ {#eq-standardErrorSum} which tells us that the variability of the sum of n draws increases at the rate of $\sqrt{n}$ so **while increasing the sample size reduces the standard error of the average, it actually increases the standard error for the sum.**
+If we are interested in the sum of n draws $S_n$, the sum and the average are related by $S_n = n\bar{x_n}$ so the standard error of the sum:
+$$
+SE(S_n)=\sqrt{n}\sigma
+$$ {#eq-standardErrorSum} 
+
+which tells us that the variability of the sum of n draws increases at the rate of $\sqrt{n}$ so **while increasing the sample size reduces the standard error of the average, it actually increases the standard error for the sum.**
 
 ::: exercise-box
 Exercise1 (Expected Value):
@@ -410,9 +415,12 @@ That means that we can use normal approximation to compute probabilities. The ke
 
 The mathematical theory behind that:
 
-The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): $$ 
+The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): 
+$$ 
 \text{SE} (\bar{x_n})= \frac{\sigma}{\sqrt{n}} 
-$$ This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
+$$ 
+
+This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
 
 **Standardized sample mean**
 
@@ -469,6 +477,7 @@ t = \frac{\bar{x} - \mu}{SE}
 $$ {#eq-tstatistic} where $SE = \frac{s}{\sqrt{n}}$
 
 In the specific case of our experiment (comparing the means of two samples) this translates into: 
+
 $$ 
 t = \frac{\bar{y} - \bar{x}}{SE}=\frac{\bar{y} - \bar{x}}{\sqrt{\frac{s_y^2}{n} + \frac{s_x^2}{n}}} 
 $$
@@ -583,11 +592,15 @@ where $\mu$ is the population mean, $\bar{x}$ is the observed sample mean and $M
 
 A confidence interval gives a range of plausible values for a population parameter. Usually the confidence interval is centered at an estimate for $\mu$ which is an average. Since the central limit theorem applies for averages, the confidence interval has a simple form:
 
-$$CI = estimate \mp ME$$
+$$
+CI = estimate \mp ME
+$$
 
 where **ME is the margin of error** and can be decomposed like this:
 
-$$CI=estimate \mp z\ * SE = \mu \mp z*SE$$ {#eq-confidenceInterval}
+$$
+CI=estimate \mp z\ * SE = \mu \mp z*SE
+$$ {#eq-confidenceInterval}
 
 where SE is the *standard error* of the sample. If that is an average or a percentage then it is $SE= \frac{\sigma}{\sqrt{n}}$ as we saw in (@eq-standardErrorMean).
 
@@ -663,7 +676,8 @@ Example: We poll 1000 likely voters and find that 58% approve of the way the pre
 
 $SE= \frac{\sigma}{\sqrt{n}} * 100$ where $\sigma = \sqrt{p(1-p)}$ where $p$ is the proportion of **all voters** who approve, but we don't know p, but the bootstrap principle tells us that we can replace $\sigma$ by $s$ so we can plug in the values from our survey here: $=\sqrt{0.58(1-0.58)} = 0.49$
 
-So a 95% confidence interval for p is: $$
+So a 95% confidence interval for p is: 
+$$
 58\% \mp 1.96 \frac{0.49}{\sqrt{1000}}*100
 $$
 
@@ -1032,7 +1046,7 @@ print(t_test_result)
 At the start of a significance test, the hypothesized value might be true or false. At the end, it may be rejected or not. Altogether, there are four possible combinations of these outcomes:
 
 |                       |           $H_0$ is true           |           $H_0$ is false            |
-|-----------------:|:------------------------:|:--------------------------:|
+|------------------:|:------------------------:|:--------------------------:|
 |     $H_0$ is rejected | **Type I error** -false positive- |            True Negative            |
 | $H_0$ is not rejected |           True Positive           | **Type II error** -False negative - |
 
@@ -1154,7 +1168,10 @@ $$
 
 In this case we also need to adjust our **confidence interval** formula from: $CI=estimate\mp z\  SE$
 
-to $$CI= estimate (\mu) \mp t_{n-1}SE$$ {#eq-confidenceIntervalTStudent}
+to 
+$$
+CI= estimate (\mu) \mp t_{n-1}SE
+$$ {#eq-confidenceIntervalTStudent}
 
 ::: {.callout-orange appearance="simple" icon="false"}
 ::: centered-text
@@ -1702,27 +1719,37 @@ Exercise: two-sample z-test (proportions.)
 
 *Last month, the president's approval rating in a sample of 1000 likely voters was 55%. This month, a poll of 1,500 likely voters resulted in a rating of 58%. Is this sufficient evidence to conclude that the rating has changed?*
 
-$\hat{p_1} = 55%$ and $\hat{p_2} = 58%$ $$
+$\hat{p_1} = 55%$ and $\hat{p_2} = 58%$ 
+$$
 z = \frac{(\hat{p_2}-\hat{p_1})-0}{SE_{diff}}=\frac{(\hat{p_2}-\hat{p_1})-0}{\sqrt{ (SE(\bar{x_1}))^2 +(SE(\bar{x_2}))^2}}
-$$ The formula for the standard error for the proportion is
+$$ 
+
+The formula for the standard error for the proportion is
 
 $$ 
 SE= \sqrt{\frac{p(1-p)}{n}}
-$$ Calculate the standard errors:
+$$ 
+Calculate the standard errors:
 
-For $\hat{p_1}$: $$
+For $\hat{p_1}$: 
+$$
 SE(\hat{p_1}) = \sqrt{\frac{\hat{p_1}(1 - \hat{p_1})}{n_1}} = \sqrt{\frac{0.55 \times 0.45}{1000}}= \sqrt{\frac{0.2475}{1000}} = \sqrt{0.0002475} \approx 0.0157
 $$
 
-For $\hat{p_2}$: $$
+For $\hat{p_2}$: 
+
+$$
 SE(\hat{p_2}) = \sqrt{\frac{\hat{p_2}(1 - \hat{p_2})}{n_2}} = \sqrt{\frac{0.58 \times 0.42}{1500}} = \sqrt{\frac{0.2436}{1500}} = \sqrt{0.0001624} \approx 0.0127
-$$ $$
+$$ 
+$$
 SE_{diff} = \sqrt{(0.0157)^2 + (0.0127)^2} = \sqrt{0.00024649 + 0.00016129} = \sqrt{0.00040778} \approx 0.0202
 $$
 
 $$
 z = \frac{(0.58 - 0.55) - 0}{0.0202} = \frac{0.03}{0.0202} \approx 1.49
-$$ The calculated z-value is approximately 1.49. To determine if this is statistically significant, you would compare this z-value to the critical value from the standard normal distribution (typically 1.96 for a 95% confidence level). Since 1.49 is less than 1.96, you would fail to reject the null hypothesis at the 95% confidence level, indicating that there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
+$$ 
+
+The calculated z-value is approximately 1.49. To determine if this is statistically significant, you would compare this z-value to the critical value from the standard normal distribution (typically 1.96 for a 95% confidence level). Since 1.49 is less than 1.96, you would fail to reject the null hypothesis at the 95% confidence level, indicating that there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
 
 The $p$-value can be calculated using standard normal distribution tables or software
 
@@ -2377,7 +2404,7 @@ It is easy to confuse the testing for homogeneity and the testing for independen
 ### Comparing the different uses of the chi-square test:
 
 |                 | sample                                                  | research question                                                                   |
-|------------------|----------------------|--------------------------------|
+|-------------------|----------------------|--------------------------------|
 | goodness of fit | single categorical variable. one sample                 | Are the counts of the different categories matching our expected results            |
 | homogeneity     | single categorical variable measured on several samples | Are the groups homogeneous (have the same distribution of the categorical variable) |
 | independence    | two categorical variables measured on one sample        | Are the two categorical variables independent?                                      |
