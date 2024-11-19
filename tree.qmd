@@ -1,0 +1,271 @@
+---
+title: "Tree Based Methods"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+library(dplyr)
+library(tidyverse)
+#library(here)
+library(readxl)
+#library(easystats)
+#library(infer)
+#library(kableExtra)
+#library(plotly)
+library(ggplot2)
+#library(patchwork)
+#library(BSDA) 
+#library(MASS)
+#library(rafalib)
+#library(UsingR) #datasets
+library(ISLR2) #datasets
+#library(gam)
+#library(scatterplot3d)
+#library(gridExtra)
+#library(caret) #confusionMatrix
+#library(pROC)
+#library(class)
+library(boot) #crossvalidation
+#library(leaps) #best subset selection
+#library(glmnet) #ridge regression and lasso
+#library(survival) #survival 
+#library(survminer) #survival ggplots
+#library(splines) #splines 
+library(tree)
+theme_set(theme_minimal())
+options(scipen= 999)
+```
+
+# Tree-based methods
+
+In this chapter, we describe tree-based methods for regression and classification. These involve stratifying or segmenting the predictor space into a number of simple regions. In order to make a prediction for a given observation, we typically use the mean or the mode response value for the training observations in the region to which it belongs. Since the set of splitting rules used to segment the predictor space can be summarized in a tree, these types of approaches are known as decision tree methods. Tree-based methods are simple and useful for interpretation. However, they typically are not competitive with the best supervised learning approaches, such as those seen already, in terms of prediction accuracy. Hence in this chapter we also introduce bagging, random forests, boosting, and Bayesian additive regression trees. Each of these approaches involves producing multiple trees which are then combined to yield a single consensus prediction. We will see that combining a large number of trees can often result in dramatic improvements in prediction accuracy, at the expense of some loss in interpretation.
+
+Let's look at the Baseball salary data. We are focusing in two variables to predict the Salary: Hits and Years. How could we stratify it?
+
+```{r, fig.align='center', fig.width=6}
+ggplot(Hitters, aes(x = Years, y = Hits, color = Salary)) + geom_point() + scale_color_gradient(low = "blue", high = "red") + labs(title = "Scatter Plot of Hits vs Years", x = "Years", y = "Hits", color = "Salary") + theme_minimal()
+
+```
+
+Visually looking at this we can say that overall, players with less than 5 years are in the lower range of salary and after 5 years it depends based on the Hits. A decision tree is going to try to do that split for us.
+
+The algorithm divides the predictor space (the set of possible values for $X_1,X_2\dots,X_p$) into $J$ distinct and non-overlapping regions $R_1,R_2,\dots,R_j$ For every observation that falls into the region, we make the same prediction, which is simply the mean of the response value for the training observations in $R_j$. To decide on the splits we could think about trying to write the feature space into boxes where the edges of the regions are parallel to the axes.
+
+```{r, fig.align='center', fig.width=6, echo=FALSE}
+
+Hitters<- na.omit(Hitters)
+tree.Hitters <- tree(Salary ~ Hits + Years, Hitters)
+tree.Hitters <- prune.tree(tree.Hitters, best = 3)
+# Extract split points and variables
+splits <- tree.Hitters$frame$var[tree.Hitters$frame$var != "<leaf>"]
+split_points <- tree.Hitters$frame$splits[tree.Hitters$frame$var != "<leaf>"]
+
+# Create a data frame to hold split information
+split_data <- data.frame(variable = splits, split = split_points)
+
+# Extract numerical part from split points
+split_data$numeric_split <- as.numeric(gsub("[^0-9.]", "", split_data$split))
+
+# Function to add split lines correctly
+add_split_lines <- function(p, split_data) {
+  for (i in 1:nrow(split_data)) {
+    if (split_data$variable[i] == "Years") {
+      # Vertical line at Years split
+      p <- p + geom_vline(xintercept = split_data$numeric_split[i], linetype = "dashed", color = "black")
+    } else if (split_data$variable[i] == "Hits") {
+      # Horizontal line at Hits split within the region defined by Years
+      if (i == 1) {
+        p <- p + geom_segment(aes(x = -Inf, xend = split_data$numeric_split[i-1], y = split_data$numeric_split[i], yend = split_data$numeric_split[i]), linetype = "dashed", color = "black")
+      } else {
+        p <- p + geom_segment(aes(x = split_data$numeric_split[i-1], xend = Inf, y = split_data$numeric_split[i], yend = split_data$numeric_split[i]), linetype = "dashed", color = "black")
+      }
+    }
+  }
+  return(p)
+}
+
+# Initial scatter plot
+p <- ggplot(Hitters, aes(x = Years, y = Hits, color = Salary)) +
+  geom_point() +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(title = "Scatter Plot of Hits vs Years",
+       x = "Years",
+       y = "Hits",
+       color = "Salary") +
+  theme_minimal()
+
+# Add split lines to the plot
+p <- add_split_lines(p, split_data)
+
+# Print the plot
+print(p)
+
+
+```
+
+In theory, the regions could have any shape. However, we choose to divide the predictor space into high-dimensional rectangles for simplicity and for ease of interpretation of the resulting predictive model. The goal is to find boxes to minimize the RSS:
+
+$$
+\sum^J_{j=1}\sum_{i\in R_j}(y_i-\hat y_{Rj})^2
+$$ where $\hat y_{Rj}$ is the mean response for the training observations within the $jth$ box.
+
+Unfortunately, it is computationally unfeasible to consider every possible partition of the feature space into J boxes, for this reason, we take a *top-down* approach that is known as recursive binary splitting. The approach is top-down because it begins at the top of the tree and then successively splits the predictor space, each split is indicated via two new branches further down on the three. **At each step of the tree-building process, the best split is made at that particular step, rather than looking ahead and picking a split that will lead to a better tree in some future step**. We repeat the process, in each region, looking a the best predictor and the best cut-points in order to split the data further so as to minimize the RSS within each of the resulting regions. The process continues until a stopping criterion is reached, for instance, we may continue until no region contains more than 5 observations.
+
+```{r, fig.align='center', fig.width=7}
+
+Hitters<- na.omit(Hitters)
+tree.Hitters <- tree(Salary ~ Hits + Years, Hitters)
+tree.Hitters <- prune.tree(tree.Hitters, best = 3)
+summary(tree.Hitters)
+plot(tree.Hitters, pretty=0)
+# Add text labels to the plot 
+text(tree.Hitters, pretty = 0)
+```
+
+The values at the end of each node show the mean salary for each bin. The salary is expressed in the dataset in annual salary in thousands of dollars. We can calculate those means manually to confirm:
+
+```{r}
+# Fit the decision tree
+tree.Hitters <- tree(Salary ~ Hits + Years, data = Hitters)
+tree.Hitters <- prune.tree(tree.Hitters, best = 3)
+# Function to extract node means
+node_means <- function(tree_model, data) {
+  node_indices <- tree_model$where
+  node_list <- split(data$Salary, node_indices)
+  sapply(node_list, mean)
+}
+
+# Calculate the mean salaries for each terminal node
+mean_salaries <- node_means(tree.Hitters, Hitters)
+mean_salaries
+```
+
+**Terminology for Trees** In keeping with the tree analogy, the regions at the end are called *terminal nodes* Decision trees are typically drawn upside down in the sense that the leaves are at the bottom of the tree. The points along the tree where the predictor space is split are referred as *internal nodes* In the hitters tree shown above, the two internal nodes are indicated by the ext `years<4.5` and `Hits < 117.5`
+
+**Interpretation of the results** The first division is done over years of experience, this means that the most important factor in determining Salary is years. Given that a player is less experienced, the number of hits that he made in the previous year seems to play little role in his salary. But among players who have been in the major leagues for five or more years, the number of hits made in the previous year does affect the Salary, with players with more Hits having higher salaries. (Note that we have actually limited the number of nodes with the function `prune.tree()`, otherwise it would have shown further divisions).
+The longer the vertical sections of the diagram the more RSS reduction that split created. 
+
+## Predictions
+
+We predict the response for a given test observation using the mean of the training observations in the region to which that test observation belongs.
+
+## Pruning
+
+If we leave the tree to have as many nodes as possible, it will produce a tree that may produce good predictions on the training set, but it is likely to overfit the data, leading to poor test set performance. A smaller tree with fewer splits might lead to lower variance and better interpretation at the cost of a little bias.
+
+One possible alternative to the process described above is to grow the tree only so long as the decrease in the RSS due to each split exceeds some threshold. This strategy will result in smaller trees, but it is too short sighted: a seemingly worthless split early on in the tree might be followed by a very good split (that is, a split that leads to a large reduction in RSS later on)
+
+A better strategy is to grow a very large tree $T_0$ and then prune it back in order to obtain a subtree. A strategy called *cost complexity pruning* or *weakest link pruning* is used to do this.
+
+We consider a sequence of trees indexed by a non negative tuning parameter $\alpha$. For each value of alpha there corresponds a subtree $T \subset T_0$ such that the expression below is as small as possible:
+
+$$
+\sum^{|T|}_{m=1}\sum_{i:x_i\epsilon R_m}(y_i-\hat y_{Rm})^2+\alpha|T|
+$$
+
+where $|T|$ indicates the number of terminal nodes of the tree. $R_m$ is the rectangle or region (the subset of predictor space) corresponding to the mth terminal node, and $\hat y_{Rm}$ is the mean of the training observations in the region. So we want the sum of squares in the region to be as small as possible, but we put a penalty on the number of terminals by adding the $\alpha |T|$. The concept is similar to the *lasso*.
+The tuning parameter alpha controls a trade-off between the subtree's complexity and its fit to the training data. We select an optimal value for alpha using cross validation. We then return to the full dataset and obtain the subtree corresponding to that value of alpha. 
+
+We are going to do this manually here to show how the model overfits as more splits are added: the training MSE decreases, but the test MSE increases. The cross validation will help us choose the correct number of nodes to use:
+
+Randomly divided the data set in half and built large regression tree on training data and varied α to create subtrees with different numbers of terminal nodes
+Finally, performed 6-fold cross-validation to estimate the cross-validated MSE of the trees as a function of α
+
+
+```{r, fig.align='center', fig.width=6}
+set.seed(123) 
+trainIndex <- sample(c(TRUE,FALSE), nrow(Hitters), TRUE)
+
+train <- Hitters[trainIndex,] 
+test <- Hitters[!trainIndex,]
+
+tree_model <- tree(Salary ~ Hits + Years, data = train)
+
+# Perform cross-validation 
+cv_tree <- cv.tree(tree_model, FUN = prune.tree, K = 6)
+
+# Extract the tree size and corresponding deviance
+(tree_sizes <- cv_tree$size)
+tree_deviances <- cv_tree$dev
+
+# Calculate training and test MSE for each tree size
+train_mse_list <- c()
+test_mse_list <- c()
+for (size in tree_sizes) { 
+  pruned_tree <- prune.tree(tree_model, best = size) 
+  # Skip tree sizes that result in a single node 
+if (nrow(pruned_tree$frame) > 1) { 
+  #calculate MSE
+  train_pred <- predict(pruned_tree, train) 
+  train_mse <- mean((train_pred - train$Salary)^2) 
+  test_pred <- predict(pruned_tree, test) 
+  test_mse <- mean((test_pred - test$Salary)^2) 
+  } 
+else { 
+  train_mse <- NA 
+  test_mse <- NA } 
+train_mse_list <- c(train_mse_list, train_mse) 
+test_mse_list <- c(test_mse_list, test_mse)
+}
+
+# Calculate cross-validated MSE (average deviance from cross-validation)
+cv_mse <- tree_deviances / length(train$Salary)
+
+results <- data.frame(
+  TreeSize = rep(tree_sizes, 3),
+  MSE = c(train_mse_list, test_mse_list, cv_mse),
+  Data = rep(c("Training", "Test", "Cross-Validation"), each = length(tree_sizes))
+)
+
+ggplot(results, aes(x = TreeSize, y = MSE, color = Data)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "MSE vs Tree Size", x = "Tree Size", y = "MSE") +
+  theme_minimal()
+
+```
+
+Let's see how the tree on the hits dataset looks without manual pruning. We are letting the software choose the right number of nodes:
+
+
+```{r, fig.align='center', fig.width=7}
+  tree.Hitters <- tree(Salary ~ Hits + Years, Hitters)
+
+plot(tree.Hitters, pretty=0)
+# Add text labels to the plot 
+text(tree.Hitters, pretty = 0)
+```
+The tree function grows a large, unpruned tree. This tree is typically overgrown and will have more terminal nodes than necessary to capture the underlying structure of the data. By default, the tree function will grow the tree until the decrease in deviance (a measure of model fit) is not statistically significant at each split.
+
+Cross-Validation and Pruning:
+The process we followed to determine the optimal number of terminal nodes involves:
+
+Growing a large tree: This is similar to what the tree function does by default.
+
+Pruning the tree: We use cross-validation to determine the optimal size of the tree that minimizes the mean squared error (MSE). This involves pruning the large tree to a smaller, more optimal size.
+
+```{r}
+cv_tree <- cv.tree(tree_model, FUN = prune.tree, K = 6)
+# Determine the tree size with the minimum deviance 
+optimal_size <- tree_sizes[which.min(tree_deviances)] 
+# Prune the tree to the optimal size pruned_tree <- prune.tree(tree_model, best = optimal_size
+pruned_tree <- prune.tree(tree_model, best = optimal_size)
+summary(pruned_tree)
+
+```
+# Classification Trees
+
+Very similar to regression tree, except that it is used to predict a qualitative response rather than a quantitative one, but the mechanism is very similar. 
+For a classification tree, we predict that each observation belongs to the most commonly occurring class of training observations in the region where it belongs.
+
+Just as in the regression setting, we use recursive binary splitting to grow a classification tree. In the classification setting, RSS cannot be used as a criterion for making binary splits. A natural alternative to RSS is the *classification error rate* this is simply the fraction of the training observations in that region that do not belong to the most common class. However, classification error is not sufficiently sensitive for tree-growing, and in practice two other measures are preferable. 
+
+## Gini index and Deviance
+
+
+
+:::exercise-box
+Fitting classification Trees
+:::
