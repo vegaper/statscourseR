@@ -5,7 +5,10 @@ pre.sourceCode {
 
 /* Change the text color of code output */
 div.cell-output {
-  background-color: #f0ffff;
+ border: 2px solid #cae8dc;
+ border-radius: 8px;
+ background-color: #fff;
+ padding: 10px;
   color: #367588;
 }
 
@@ -54,8 +57,10 @@ ul, ol {
   background-color: #f9f9f9; /* Light grey background */
   border-left: 5px solid #007ACC; /* Blue left border */
   padding: 10px;
-  font-size: 0.8em;
+  font-size: .9em;
+  color: #201b5e;
   margin: 20px 0;
+  font-family: Sans-Serif;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
   
 }
@@ -64,3 +69,20 @@ ul, ol {
   font-weight: bold;
   text-decoration: underline;
 }
+
+.exercise-box summary { 
+  font-weight: bold; 
+  text-decoration: underline; 
+  cursor: pointer; /* Indicate clickable area */ 
+  padding: 5px 0; /* Add some padding to the summary */ } 
+  
+.exercise-box details[open] summary::after { 
+  content: " ▼"; /* Down arrow when open */ 
+  
+} 
+
+.exercise-box summary::after { 
+  content: " ▶"; /* Right arrow when closed */
+  
+}
+  

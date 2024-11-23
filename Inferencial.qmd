@@ -16,6 +16,7 @@ library(kableExtra)
 library(plotly)
 library(ggplot2)
 library(patchwork)
+library(DiagrammeR)
 #library(BSDA) 
 #library(MASS)
 #library(rafalib)
@@ -159,10 +160,9 @@ The percentage of Democratic voters in the sample is equal to the mean of the sa
 
 ### Expected value and standard error for the sum
 
-If we are interested in the sum of n draws $S_n$, the sum and the average are related by $S_n = n\bar{x_n}$ so the standard error of the sum:
-$$
+If we are interested in the sum of n draws $S_n$, the sum and the average are related by $S_n = n\bar{x_n}$ so the standard error of the sum: $$
 SE(S_n)=\sqrt{n}\sigma
-$$ {#eq-standardErrorSum} 
+$$ {#eq-standardErrorSum}
 
 which tells us that the variability of the sum of n draws increases at the rate of $\sqrt{n}$ so **while increasing the sample size reduces the standard error of the average, it actually increases the standard error for the sum.**
 
@@ -415,10 +415,9 @@ That means that we can use normal approximation to compute probabilities. The ke
 
 The mathematical theory behind that:
 
-The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): 
-$$ 
+The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): $$ 
 \text{SE} (\bar{x_n})= \frac{\sigma}{\sqrt{n}} 
-$$ 
+$$
 
 This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
 
@@ -476,7 +475,7 @@ $$
 t = \frac{\bar{x} - \mu}{SE}
 $$ {#eq-tstatistic} where $SE = \frac{s}{\sqrt{n}}$
 
-In the specific case of our experiment (comparing the means of two samples) this translates into: 
+In the specific case of our experiment (comparing the means of two samples) this translates into:
 
 $$ 
 t = \frac{\bar{y} - \bar{x}}{SE}=\frac{\bar{y} - \bar{x}}{\sqrt{\frac{s_y^2}{n} + \frac{s_x^2}{n}}} 
@@ -527,8 +526,7 @@ Exercise:
 
 Suppose we are interested in the proportion of times we see a 6 when rolling n=100 dice. This is a random variable which we can simulate with x=sample(1:6, n, replace=TRUE) and the proportion we are interested in can be expressed as an average: mean(x==6). Because the die rolls are independent, the CLT applies.
 
-We want to roll n dice 10,000 times and keep these proportions. This random variable (proportion of 6s) has mean p=1/6 and variance $\frac{p(1-p)}{n}$. So according to the CLT: 
-$$
+We want to roll n dice 10,000 times and keep these proportions. This random variable (proportion of 6s) has mean p=1/6 and variance $\frac{p(1-p)}{n}$. So according to the CLT: $$
 z = \frac{observed_p - p}{\sqrt{(p\times(1-p))/n)}}
 $$
 
@@ -676,8 +674,7 @@ Example: We poll 1000 likely voters and find that 58% approve of the way the pre
 
 $SE= \frac{\sigma}{\sqrt{n}} * 100$ where $\sigma = \sqrt{p(1-p)}$ where $p$ is the proportion of **all voters** who approve, but we don't know p, but the bootstrap principle tells us that we can replace $\sigma$ by $s$ so we can plug in the values from our survey here: $=\sqrt{0.58(1-0.58)} = 0.49$
 
-So a 95% confidence interval for p is: 
-$$
+So a 95% confidence interval for p is: $$
 58\% \mp 1.96 \frac{0.49}{\sqrt{1000}}*100
 $$
 
@@ -1045,10 +1042,13 @@ print(t_test_result)
 
 At the start of a significance test, the hypothesized value might be true or false. At the end, it may be rejected or not. Altogether, there are four possible combinations of these outcomes:
 
-|                       |           $H_0$ is true           |           $H_0$ is false            |
-|------------------:|:------------------------:|:--------------------------:|
-|     $H_0$ is rejected | **Type I error** -false positive- |            True Negative            |
-| $H_0$ is not rejected |           True Positive           | **Type II error** -False negative - |
++-----------------------+-----------------------------------+-------------------------------------+
+|                       | $H_0$ is true                     | $H_0$ is false                      |
++======================:+:=================================:+:===================================:+
+| $H_0$ is rejected     | **Type I error** -false positive- | True Negative                       |
++-----------------------+-----------------------------------+-------------------------------------+
+| $H_0$ is not rejected | True Positive                     | **Type II error** -False negative - |
++-----------------------+-----------------------------------+-------------------------------------+
 
 Bear in mind, however, that we usually don't know whether the null theory is true or not.
 
@@ -1168,8 +1168,7 @@ $$
 
 In this case we also need to adjust our **confidence interval** formula from: $CI=estimate\mp z\  SE$
 
-to 
-$$
+to $$
 CI= estimate (\mu) \mp t_{n-1}SE
 $$ {#eq-confidenceIntervalTStudent}
 
@@ -1719,35 +1718,31 @@ Exercise: two-sample z-test (proportions.)
 
 *Last month, the president's approval rating in a sample of 1000 likely voters was 55%. This month, a poll of 1,500 likely voters resulted in a rating of 58%. Is this sufficient evidence to conclude that the rating has changed?*
 
-$\hat{p_1} = 55%$ and $\hat{p_2} = 58%$ 
-$$
+$\hat{p_1} = 55%$ and $\hat{p_2} = 58%$ $$
 z = \frac{(\hat{p_2}-\hat{p_1})-0}{SE_{diff}}=\frac{(\hat{p_2}-\hat{p_1})-0}{\sqrt{ (SE(\bar{x_1}))^2 +(SE(\bar{x_2}))^2}}
-$$ 
+$$
 
 The formula for the standard error for the proportion is
 
 $$ 
 SE= \sqrt{\frac{p(1-p)}{n}}
-$$ 
-Calculate the standard errors:
+$$ Calculate the standard errors:
 
-For $\hat{p_1}$: 
-$$
+For $\hat{p_1}$: $$
 SE(\hat{p_1}) = \sqrt{\frac{\hat{p_1}(1 - \hat{p_1})}{n_1}} = \sqrt{\frac{0.55 \times 0.45}{1000}}= \sqrt{\frac{0.2475}{1000}} = \sqrt{0.0002475} \approx 0.0157
 $$
 
-For $\hat{p_2}$: 
+For $\hat{p_2}$:
 
 $$
 SE(\hat{p_2}) = \sqrt{\frac{\hat{p_2}(1 - \hat{p_2})}{n_2}} = \sqrt{\frac{0.58 \times 0.42}{1500}} = \sqrt{\frac{0.2436}{1500}} = \sqrt{0.0001624} \approx 0.0127
-$$ 
-$$
+$$ $$
 SE_{diff} = \sqrt{(0.0157)^2 + (0.0127)^2} = \sqrt{0.00024649 + 0.00016129} = \sqrt{0.00040778} \approx 0.0202
 $$
 
 $$
 z = \frac{(0.58 - 0.55) - 0}{0.0202} = \frac{0.03}{0.0202} \approx 1.49
-$$ 
+$$
 
 The calculated z-value is approximately 1.49. To determine if this is statistically significant, you would compare this z-value to the critical value from the standard normal distribution (typically 1.96 for a 95% confidence level). Since 1.49 is less than 1.96, you would fail to reject the null hypothesis at the 95% confidence level, indicating that there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
 
@@ -2403,11 +2398,15 @@ It is easy to confuse the testing for homogeneity and the testing for independen
 
 ### Comparing the different uses of the chi-square test:
 
++-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 |                 | sample                                                  | research question                                                                   |
-|-------------------|----------------------|--------------------------------|
++=================+=========================================================+=====================================================================================+
 | goodness of fit | single categorical variable. one sample                 | Are the counts of the different categories matching our expected results            |
++-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 | homogeneity     | single categorical variable measured on several samples | Are the groups homogeneous (have the same distribution of the categorical variable) |
++-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 | independence    | two categorical variables measured on one sample        | Are the two categorical variables independent?                                      |
++-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 
 Examples:
 
@@ -2517,3 +2516,215 @@ print(p.adjusted)
 This will give you the adjusted $p$-values, and you can compare them to your desired FDR level to decide which hypotheses to reject.
 
 The **validation set approach**. With this approach you split your data set into two parts, one is a model building set and a validation set before the analysis. You may use data snooping (multiple testing) in the first set of data to find something interesting. And then you test this hypothesis on the validation set..
+
+# Choosing the right test for your data
+
+Source: Bevans, R. (2023, June 22). Choosing the Right Statistical Test \| Types & Examples. Scribbr. Retrieved November 18, 2024, from https://www.scribbr.com/statistics/statistical-tests/
+
+### **Statistical assumptions**
+
+Statistical tests make some common assumptions about the data they are testing:
+
+1.  **Independence of observations** (a.k.a. no autocorrelation): The observations/variables you include in your test are not related (for example, multiple measurements of a single test subject are not independent, while measurements of multiple different test subjects are independent).
+
+2.  **Homogeneity of variance**: the variance within each group being compared is similar among all groups. If one group has much more variation than others, it will limit the test's effectiveness.
+
+3.  **Normality of data**: the data follows a normal distribution (a.k.a. a bell curve). This assumption applies only to quantitative data.
+
+If your data do not meet the assumptions of normality or homogeneity of variance, you may be able to perform a **nonparametric statistical test**, which allows you to make comparisons without any assumptions about the data distribution.
+
+If your data do not meet the assumption of independence of observations, you may be able to use a test that accounts for structure in your data (repeated-measures tests or tests that include blocking variables).
+
+### **Types of variables**
+
+The types of variables you have usually determine what type of statistical test you can use.
+
+**Quantitative variables** represent amounts of things (e.g. the number of trees in a forest). Types of quantitative variables include:
+
+-   **Continuous** (aka ratio variables): represent measures and can usually be divided into units smaller than one (e.g. 0.75 grams).
+
+-   **Discrete** (aka integer variables): represent counts and usually can't be divided into units smaller than one (e.g. 1 tree).
+
+**Categorical variables** represent groupings of things (e.g. the different tree species in a forest). Types of categorical variables include:
+
+-   **Ordinal**: represent data with an order (e.g. rankings).
+
+-   **Nominal**: represent group names (e.g. brands or species names).
+
+-   **Binary**: represent data with a yes/no or 1/0 outcome (e.g. win or lose).
+
+Choose the test that fits the types of predictor and outcome variables you have collected (if you are doing an experiment, these are the independent and dependent variables). Consult the tables below to see which test best matches your variables.
+
+## **Choosing a parametric test: regression, comparison, or correlation**
+
+Parametric tests usually have stricter requirements than nonparametric tests, and are able to make stronger inferences from the data. They can only be conducted with data that adheres to the common assumptions of statistical tests.
+
+The most common types of parametric test include regression tests, comparison tests, and correlation tests.
+
+### **Regression tests**
+
+Regression tests look for **cause-and-effect relationships**. They can be used to estimate the effect of one or more continuous variables on another variable.
+
+### **Comparison tests**
+
+Comparison tests look for **differences among group means**. They can be used to test the effect of a categorical variable on the mean value of some other characteristic.
+
+T-tests are used when comparing the means of precisely two groups (e.g., the average heights of men and women). ANOVA and MANOVA tests are used when comparing the means of more than two groups (e.g., the average heights of children, teenagers, and adults).
+
++--------------------+------------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+|                    | Predictor Variable     | Outcome Variable                       | Example                                                                                                              |
++====================+========================+========================================+======================================================================================================================+
+| Paired t-test      | Categorical            | Quantitative                           | What is the effect of two different test prep programs on the average exam scores for students from the same class?\ |
+|                    |                        |                                        | (Predictor: test program)                                                                                            |
+|                    | 1 predictor            | Groups come from the same population   |                                                                                                                      |
++--------------------+------------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+| Independent t-test | Categorical            | Quantitative                           | What is the difference in average exam scores for students from two different schools?                               |
+|                    |                        |                                        |                                                                                                                      |
+|                    | 1 predictor            | Groups come from different populations | (Predictor: school A/B)                                                                                              |
++--------------------+------------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+| ANOVA              | Categorical            | Quantitative                           | What is the difference in average pain levels among post-surgical patients given three different treatments?         |
+|                    |                        |                                        |                                                                                                                      |
+|                    | 1 or more predictor    | 1 outcome                              |                                                                                                                      |
++--------------------+------------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+| MANOVA             | Categorical            | Quantitative                           | What is the effect of flower species on petal length, petal width and stem length?                                   |
+|                    |                        |                                        |                                                                                                                      |
+|                    | 1 or more predictor    | 2 or more outcomes                     |                                                                                                                      |
++--------------------+------------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+| Pearson's r        | 2 continuous variables | 2 continuous variables                 | How are latitude and temperature related?                                                                            |
++--------------------+------------------------+----------------------------------------+----------------------------------------------------------------------------------------------------------------------+
+
+## Flowchart for parametric tests
+
+```{r, echo=FALSE}
+library(DiagrammeR)
+
+f<- DiagrammeR::grViz("
+digraph flowchart {
+  graph [layout = dot, rankdir = TB]  # TB stands for Top to Bottom
+  
+  node [shape = rectangle, style = filled, color = lightblue]
+  A [label = 'Predictor variable: categorical or quantitative?', color = lightblue, fontcolor = black, fontsize = 12]
+  B [label = 'Categorical', color = lightgrey, fontcolor = black, fontsize = 12]
+  C [label = 'Quantitative', color = lightgray, fontcolor = black, fontsize = 12]
+  D [label = 'Outcome variable: categorical or quantitative?', color = lightblue, fontcolor = black, fontsize = 12]
+  E [label = 'Categorical',color = lightgray, fontcolor = black, fontsize = 12]
+  F [label = 'Quantitative', color = lightgray, fontcolor = black, fontsize = 12]
+  G [label = 'Choose a non-parametric test', color = lightpink, fontcolor = black, fontsize = 12]
+  H [label = 'Do a comparison of means test', color = lightpink, fontcolor = black, fontsize = 12]
+  I [label = 'How many groups are being compared?', color = lightblue, fontcolor = black, fontsize = 12]
+  J [label = 'Two', color = lightgray, fontcolor = black, fontsize = 12]
+  K [label = 'More than two', color = lightgray, fontcolor = black, fontsize = 12]
+  L [label = 'How many outcome variables?', color = lightblue, fontcolor = black, fontsize = 12]
+  M [label = 'One', color = lightgray, fontcolor = black, fontsize = 12]
+  N [label = 'More than one', color = lightgray, fontcolor = black, fontsize = 12]
+  O [label = 'T-test', color = lightpink, fontcolor = black, fontsize = 12]
+  P [label = 'ANOVA', color = lightpink, fontcolor = black, fontsize = 12]
+  Q [label = 'MANOVA', color = lightpink, fontcolor = black, fontsize = 12]
+  R [label = 'Logistic regression', color = lightpink, fontcolor = black, fontsize = 12]
+  S [label = 'How many predictor variables?', color = lightblue, fontcolor = black, fontsize = 12]
+  T [label = 'One', color = lightgray, fontcolor = black, fontsize = 12]
+  U [label = 'More than one', color = lightgray, fontcolor = black, fontsize = 12]
+  V [label = 'Simple regression', color = lightpink, fontcolor = black, fontsize = 12]
+  W [label = 'Multiple regression', color = lightpink, fontcolor = black, fontsize = 12]
+  
+  A -> B
+  A -> C
+  B -> D
+  C -> S
+  D -> E
+  D -> F
+  E -> G
+  F -> H
+  H -> I
+  I -> J
+  I -> K
+  J -> O
+  K -> L
+  L -> M
+  L -> N
+  M -> P
+  N -> Q
+  C -> R
+  S -> T
+  S -> U
+  T -> V
+  U -> W
+}
+")
+f
+```
+
+::: {.callout-orange appearance="simple" icon="false"}
+### Parametric Tests
+
+Parametric tests are statistical tests that make certain assumptions about the parameters of the population distribution from which the sample is drawn. These assumptions typically include:
+
+-   **Normality**: The data follows a normal distribution.
+
+-   **Homogeneity of variance**: The variances within each group being compared are similar.
+
+-   **Independence**: The observations are independent of each other.
+
+Because of these assumptions, parametric tests are generally more powerful and can make stronger inferences about the population. Some common parametric tests include:
+
+-   **T-tests**: Used to compare the means of two groups.
+
+-   **ANOVA (Analysis of Variance)**: Used to compare the means of three or more groups.
+
+-   **Regression Analysis**: Used to examine the relationship between one or more predictor variables and an outcome variable.
+
+### Non-Parametric Tests
+
+Non-parametric tests, on the other hand, do not make strict assumptions about the population parameters. They are more flexible and can be used when the assumptions of parametric tests are not met, such as when the data does not follow a normal distribution or when sample sizes are small. Non-parametric tests are also useful for ordinal data or data with outliers.
+
+Some common non-parametric tests include:
+
+-   **Mann-Whitney U Test**: Used to compare the medians of two independent groups.
+
+-   **Wilcoxon Signed-Rank Test**: Used to compare the medians of two related groups.
+
+-   **Kruskal-Wallis Test**: Used to compare the medians of three or more independent groups.
+
+-   **Spearman's Rank Correlation**: Used to assess the relationship between two ordinal variables.
+
+### Key Differences
+
+-   **Assumptions**: Parametric tests assume specific population parameters, while non-parametric tests do not.
+
+-   **Data Type**: Parametric tests are typically used for interval or ratio data, whereas non-parametric tests can be used for ordinal data or data that does not meet parametric assumptions.
+
+-   **Power**: Parametric tests are generally more powerful when their assumptions are met, meaning they are more likely to detect a true effect. Non-parametric tests are more robust and flexible but may be less powerful.
+
+### Example Scenario
+
+Imagine you want to compare the test scores of students from two different schools. If the test scores are normally distributed and the variances are similar, you would use a parametric test like the independent t-test. However, if the test scores are not normally distributed or have outliers, you might use a non-parametric test like the Mann-Whitney U Test.
+:::
+
+## Choosing a non parametric test
+
++---------------------------------+--------------------+----------------------------------------+---------------------+
+|                                 | \                  | Outcome variable                       | Use in place of...  |
+|                                 | Predictor variable |                                        |                     |
++=================================+:==================:+:======================================:+:===================:+
+| Spearman's *r*                  | Quantitative       | Quantitative                           | Pearson's *r*       |
++---------------------------------+--------------------+----------------------------------------+---------------------+
+| Chi square test of independence | Categorical        | Categorical                            | Pearson's *r*       |
++---------------------------------+--------------------+----------------------------------------+---------------------+
+| Sign test                       | Categorical        | Quantitative                           | One-sample *t*-test |
++---------------------------------+--------------------+----------------------------------------+---------------------+
+| Kruskal--Wallis *H*             | Categorical        | Quantitative                           | ANOVA               |
+|                                 |                    |                                        |                     |
+|                                 | 3 or more groups   |                                        |                     |
++---------------------------------+--------------------+----------------------------------------+---------------------+
+| ANOSIM                          | Categorical        | Quantitative                           | MANOVA              |
+|                                 |                    |                                        |                     |
+|                                 | 3 or more groups   | 2 or more outcome variables            |                     |
++---------------------------------+--------------------+----------------------------------------+---------------------+
+| Wilcoxon Rank-Sum test          | Categorical        | Quantitative                           | Independent t-test  |
+|                                 |                    |                                        |                     |
+|                                 | 2 groups           | groups come from different populations |                     |
++---------------------------------+--------------------+----------------------------------------+---------------------+
+| Wilcoxon Signed-rank test       | Categorical        | Quantitative                           | Paired t-test       |
+|                                 |                    |                                        |                     |
+|                                 | 2 groups           | groups come from the same population   |                     |
++---------------------------------+--------------------+----------------------------------------+---------------------+
