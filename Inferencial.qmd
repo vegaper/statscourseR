@@ -674,7 +674,7 @@ Example: We poll 1000 likely voters and find that 58% approve of the way the pre
 
 $SE= \frac{\sigma}{\sqrt{n}} * 100$ where $\sigma = \sqrt{p(1-p)}$ where $p$ is the proportion of **all voters** who approve, but we don't know p, but the bootstrap principle tells us that we can replace $\sigma$ by $s$ so we can plug in the values from our survey here: $=\sqrt{0.58(1-0.58)} = 0.49$
 
-So a 95% confidence interval for p is: $$
+So a 95% confidence interval for $p$ is: $$
 58\% \mp 1.96 \frac{0.49}{\sqrt{1000}}*100
 $$
 
@@ -909,7 +909,7 @@ In other words, we have a 20.4% probability of observing 7 tails in 10 tosses gi
 
 If the z-value is large, that means that there is a great difference between the observed and the expected, so large values of z are evidence against $H_0$. The strength of the evidence is measured by the $p$-value or observed significance level.
 
-The $p$-value is the probability of getting a value of z as extreme or more extreme than the observed, assuming the null hypothesis is true. As we can see in the graph below, as z becomes larger, there is less probability of finding data outside of its limits, so the $p$-value will be smaller. We multiply the p value times 2 because we have to consider the two tails of the graph for this experiment.
+The $p$-value is the probability of getting a value of z as extreme or more extreme than the observed, assuming the null hypothesis is true. As we can see in the graph below, as z becomes larger, there is less probability of finding data outside of its limits, so the $p$-value will be smaller. We multiply the $p$ value times 2 because we have to consider the two tails of the graph for this experiment.
 
 The Z-score tells you how far an observed value is from the expected value in terms of standard errors. The $p$-value tells you the probability of observing a test statistic as extreme as, or more extreme than, the observed statistic, under the null hypothesis.
 
@@ -1573,7 +1573,7 @@ obs_ages / sum(obs_ages)
 obs_ages / sum(obs_ages) - us_ages
 ```
 
-Now we want to see if in our optical sample the customers are evenly distributed between the opticians. If we don't pass a p attribute to the chi squared test it will assume you are asking for even distribution between all categories:
+Now we want to see if in our optical sample the customers are evenly distributed between the opticians. If we don't pass a $p$ attribute to the chi squared test it will assume you are asking for even distribution between all categories:
 
 ```{r}
 file2 <- here::here("data", "optical_full.xlsx")
@@ -1718,17 +1718,21 @@ Exercise: two-sample z-test (proportions.)
 
 *Last month, the president's approval rating in a sample of 1000 likely voters was 55%. This month, a poll of 1,500 likely voters resulted in a rating of 58%. Is this sufficient evidence to conclude that the rating has changed?*
 
-$\hat{p_1} = 55%$ and $\hat{p_2} = 58%$ $$
+$\hat{p_1} = 55%$ and $\hat{p_2} = 58%$ 
+
+$$
 z = \frac{(\hat{p_2}-\hat{p_1})-0}{SE_{diff}}=\frac{(\hat{p_2}-\hat{p_1})-0}{\sqrt{ (SE(\bar{x_1}))^2 +(SE(\bar{x_2}))^2}}
 $$
-
 The formula for the standard error for the proportion is
 
 $$ 
 SE= \sqrt{\frac{p(1-p)}{n}}
-$$ Calculate the standard errors:
+$$ 
 
-For $\hat{p_1}$: $$
+Calculate the standard errors:
+
+For $\hat{p_1}$: 
+$$
 SE(\hat{p_1}) = \sqrt{\frac{\hat{p_1}(1 - \hat{p_1})}{n_1}} = \sqrt{\frac{0.55 \times 0.45}{1000}}= \sqrt{\frac{0.2475}{1000}} = \sqrt{0.0002475} \approx 0.0157
 $$
 
@@ -1736,7 +1740,9 @@ For $\hat{p_2}$:
 
 $$
 SE(\hat{p_2}) = \sqrt{\frac{\hat{p_2}(1 - \hat{p_2})}{n_2}} = \sqrt{\frac{0.58 \times 0.42}{1500}} = \sqrt{\frac{0.2436}{1500}} = \sqrt{0.0001624} \approx 0.0127
-$$ $$
+$$ 
+
+$$
 SE_{diff} = \sqrt{(0.0157)^2 + (0.0127)^2} = \sqrt{0.00024649 + 0.00016129} = \sqrt{0.00040778} \approx 0.0202
 $$
 
@@ -1758,7 +1764,7 @@ Since this is a two-tailed test (we are checking if the approval rating has chan
 The $p$-value for the z-value of 1.49 is approximately 0.1364. Since this $p$-value is greater than the typical significance level of 0.05, we fail to reject the null hypothesis. This means there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
 :::
 
-The exercise above shows how to calculate the p value for proportions, if we are working with average values instead of proportions the calculation is the same, only thing to consider is that in this case is that Standard deviation of each individual sample will be calculated using the formula for the standard deviation for the mean $SE(\bar{x_1})= \frac{\sigma_1}{\sqrt{n_1}}= \frac{s_1}{\sqrt{n_1}}$ . If the sample sizes are not large, then the $p$-value needs to be computed from the t-distribution instead.
+The exercise above shows how to calculate the $p$ value for proportions, if we are working with average values instead of proportions the calculation is the same, only thing to consider is that in this case is that Standard deviation of each individual sample will be calculated using the formula for the standard deviation for the mean $SE(\bar{x_1})= \frac{\sigma_1}{\sqrt{n_1}}= \frac{s_1}{\sqrt{n_1}}$ . If the sample sizes are not large, then the $p$-value needs to be computed from the t-distribution instead.
 
 ### The Welch Two Sample t-test
 
@@ -2025,7 +2031,7 @@ $$
 z= \frac{5-\frac{5}{2}}{\sqrt{5}\frac{1}{2}}= 2.24
 $$
 
-now we can find the p value using a table or software:
+now we can find the $p$ value using a table or software:
 
 ```{r}
 z_score<- 2.24
@@ -2234,7 +2240,7 @@ $$
 
 in this case our degrees of freedom are calculated like this: (4-1)\*(2-1) = 3 where 4 is for the number of categories, and 2 is for the two rows of results we are dealing with (surviving and died)
 
-In our case our p value will be extremely small, sugesting we should reject the null hypothesis that all ticket classes had the same posibility of survival.
+In our case our $p$ value will be extremely small, sugesting we should reject the null hypothesis that all ticket classes had the same posibility of survival.
 
 ```{r}
 x <- 192.2
@@ -2385,7 +2391,7 @@ testResult <- aov( DLA_improvement ~ SUDx, data = treatment)
 summary(testResult)
 ```
 
-The difference is significant but not by large as the p value shows that in 3% of the cases we could observe these data differences in a sample from the a population where their category means is the same.
+The difference is significant but not by large as the $p$ value shows that in 3% of the cases we could observe these data differences in a sample from the a population where their category means is the same.
 :::
 
 If we run a TukeyHSD test on these we can compare each pair individually and we find out that actually the only pair that shows a statistically significant difference is alcohol with opioids.

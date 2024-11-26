@@ -12,11 +12,23 @@ library(readxl)
 library(ggplot2)
 library(ISLR2) #datasets
 library(boot) #crossvalidation
-library(tree)
-library(randomForest)
+library(tree) #simple trees
+library(randomForest) #random forest and bagging
+library(gbm) #boosted trees
+library(BART) #well, for... BART, obviously
+library(rpart) #simple trees
+library(dlookr) #correlation matrix plot.
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
+
+# Resources
+
+<https://www.rpubs.com/olga_bradford/473175>
+
+<https://irene.vrbik.ok.ubc.ca/quarto/machine-learning/labs/lab5.html>
+
+<https://r4ds.github.io/bookclub-islr/tree-based-methods.html>
 
 # Tree-based methods
 
@@ -285,6 +297,106 @@ mean((yhat - boston.test)^2)
 In other words, the test set MSE associated with the regression tree is $35.29$. The square root of the MSE is therefore around $5.941$, indicating that this model leads to test predictions that are (on average) within approximately $5{,}941$ of the true median home value for the census tract.
 :::
 
+
+:::{.exercise-box}
+Regression trees using rpart
+
+We will build a Regression Tree to predict the median house value (medv) in the Boston dataset based on various features such as crime rate, number of rooms, and distance to employment centers.
+
+We will use the library `rpart`
+
+```{r}
+#split 70% of the data for training
+train_index <- sample(1:nrow(Boston), 0.7*nrow(Boston))
+train_boston <- Boston[train_index,]
+test_boston <- Boston[-train_index,]
+
+# Train a Regression Tree 
+rt_model <- rpart(medv ~ ., data = train_boston, method = "anova")
+rt_model
+```
+we can visualize the trained regression tree:
+
+```{r, fig.align='center', fig.width=10}
+# Plot the regression tree
+plot(rt_model, margin = 0.1)  # decrease margin for readability
+text(rt_model, cex=0.8)       # decrease font size for readability
+```
+Note that the returned tree in rt_model has already been pruned by default. If you want to see what was going on under the hood, we can force `rpart()` to grow the “bushy” tree by setting the cost complexity $\alpha$ =0 (called cp)
+
+```{r, fig.align='center', fig.height=8, fig.width=10}
+bushy_tree <- rpart(
+    formula = medv ~ .,
+    data    = train_boston,
+    method  = "anova", 
+    control = list(cp = 0) # set the cost complexity parameter to 0 
+)
+plot(bushy_tree, margin = 0.1)  # decrease margin for readability
+text(bushy_tree, cex=0.8)       # decrease font size for readability
+
+```
+To see if pruning is needed let’s investigate the cross-validated error as a function of the complexity parameter
+
+```{r, fig.align='center', fig.width=10}
+# Plot the cross-validation results
+plotcp(bushy_tree)
+```
+Here’s how to interpret the plot:
+
+**X-val Relative Error (Y-axis)**: This represents the relative error obtained during cross-validation. Lower values indicate a better fit to the data.
+**Tree Size (Top Axis)**: The top axis indicates the number of splits in the tree. The more splits, the larger the tree. For example, a tree size of 3 corresponds to a tree with three splits (four terminal nodes).
+**Complexity Parameter (cp, X-axis)**: cp controls the complexity of the tree. Smaller values of cp allow more splits, resulting in a larger tree. As cp decreases from left to right, the tree becomes more complex. We call this 
+ in lecture.
+**Error Bars**: The vertical lines through the circles represent one standard error above and below the relative error. The error bars help to identify a “simpler” tree using the “1-SE rule”: the smallest tree with an error within one standard error of the minimum error.
+**Dotted Line**: The dotted line indicates the minimum cross-validated relative error plus one standard error. This is used in the “1-SE rule” to choose a tree size that balances error minimization and simplicity.
+
+**1-SE rule**
+Although there are larger trees that obtain smaller errors (the optimal tree is the size of tree 0.0011025, 23, 0.1304064, 0.2664683, 0.0478719), after around 8 to 9 splits, the relative error levels off, and further reductions in cp lead to only small changes in the error. Breiman (1984) suggested that in actual practice, it’s common to instead use the smallest tree within 1 standard error (SE) of the minimum CV error (this is called the 1-SE rule).
+
+```{r}
+bushy_tree$cptable
+```
+More specifically, we’d choose the smallest tree where the error is within one standard error of the minimum error (above the dotted line). In this case, we could use a tree with 8 terminal nodes and reasonably expect to experience similar results within a small margin of error.
+
+To prune using the 1-SE rule:
+```{r, fig.align='center', fig.width=10}
+# Step 1: Find the minimum cross-validated error and its corresponding standard error
+min_xerror <- min(bushy_tree$cptable[, "xerror"])
+min_xstd <- bushy_tree$cptable[which.min(bushy_tree$cptable[, "xerror"]), "xstd"]
+
+# Step 2: Calculate the threshold for the 1-SE rule
+threshold <- min_xerror + min_xstd
+
+# Step 3: Find the smallest tree where the xerror is within the threshold
+# We use which() to find all indices where xerror is within the threshold
+# Then we choose the smallest cp that satisfies this condition
+optimal_cp_1se <- bushy_tree$cptable[which(bushy_tree$cptable[, "xerror"] <= threshold)[1], "CP"]
+
+# Step 4: Prune the tree using the optimal cp from the 1-SE rule
+pruned_model <- prune(bushy_tree, cp = optimal_cp_1se)
+
+# Step 5: Plot the pruned tree
+plot(pruned_model, margin = 0.1)
+text(pruned_model, cex = 0.8)
+
+```
+Notice that the pruned tree in Figure 3 is essentially the same as the tree obtained in Figure 1 when using the default settings; however, we achieve this result with significantly less effort. It’s worth noting that slight differences may appear due to the randomness introduced by the cross-validation process during the creation of the splits.
+
+**Evaluating the Regression Tree**
+Going back to the rt_model, we evaluate the regression tree’s performance by predicting on the test set and calculating metrics such as Mean Squared Error (MSE) and R-squared.
+
+```{r}
+# Predict the median house value on the test data
+predictions_reg <- predict(rt_model, newdata = test_boston)
+
+# Calculate Mean Squared Error
+mse <- mean((predictions_reg - test_boston$medv)^2)
+mse
+```
+
+
+:::
+
 # Classification Trees
 
 Very similar to regression tree, except that it is used to predict a qualitative response rather than a quantitative one, but the mechanism is very similar. For a classification tree, we predict that each observation belongs to the most commonly occurring class of training observations in the region where it belongs.
@@ -379,15 +491,37 @@ We create a binary response variable 'high' for high sales:`ifelse()` function c
 Carseats$High <- factor(ifelse(Carseats$Sales <= 8, "No", "Yes"))
 ```
 
+**Correlation Analysis**
+Correlation heatmap (Pearson)
+```{r, fig.align='center', fig.height=8, fig.width=8}
+# convert factor features to numeric for correlation analysis
+carseats_num <- Carseats %>% 
+     mutate(High = ifelse(High == "No", 0 , 1), 
+            Urban = ifelse(Urban == "No", 0, 1), 
+            US = ifelse(US == "No", 0, 1), 
+            ShelveLoc = case_when(
+                 ShelveLoc == 'Bad' ~ 1, 
+                 ShelveLoc == "Medium" ~ 2, 
+                 TRUE ~ 3
+            ))
+
+carseats_num
+
+carseats_num %>% 
+  dlookr::correlate() %>% 
+  plot()
+```
+
+
 We now use the `tree()` function to fit a classification tree in order to predict `High` using all variables but `Sales`. The syntax of the `tree()` function is quite similar to that of the `lm()` function.
 
-```{r chunk4}
+```{r }
 tree.carseats <- tree(High ~ . - Sales, Carseats)
 ```
 
 The `summary()` function lists the variables that are used as internal nodes in the tree, the number of terminal nodes, and the (training) error rate.
 
-```{r chunk5}
+```{r }
 summary(tree.carseats)
 ```
 
@@ -401,7 +535,7 @@ where $n_{mk}$ is the number of observations in the $m$th terminal node that bel
 
 One of the most attractive properties of trees is that they can be graphically displayed. We use the `plot()` function to display the tree structure, and the `text()` function to display the node labels. The argument `pretty = 0` instructs `R` to include the category names for any qualitative predictors, rather than simply displaying a letter for each category.
 
-```{r fig.align='center', fig.width = 10, fig.height=8}
+```{r fig.align='center', fig.width = 11, fig.height=8}
 plot(tree.carseats)
 text(tree.carseats, pretty = 0)
 ```
@@ -410,13 +544,13 @@ The most important indicator of `Sales` appears to be shelving location, since t
 
 If we just type the name of the tree object, `R` prints output corresponding to each branch of the tree. `R` displays the split criterion (e.g. `Price < 92.5`), the number of observations in that branch, the deviance, the overall prediction for the branch (`Yes` or `No`), and the fraction of observations in that branch that take on values of `Yes` and `No`. Branches that lead to terminal nodes are indicated using asterisks.
 
-```{r chunk7}
+```{r}
 tree.carseats
 ```
 
 In order to properly evaluate the performance of a classification tree on these data, we must estimate the test error rather than simply computing the training error. We split the observations into a training set and a test set, build the tree using the training set, and evaluate its performance on the test data. The `predict()` function can be used for this purpose. In the case of a classification tree, the argument `type = "class"` instructs `R` to return the actual class prediction. This approach leads to correct predictions for around $77 \%$ of the locations in the test data set.
 
-```{r chunk8}
+```{r }
 set.seed(2)
 train <- sample(1:nrow(Carseats), 200)
 Carseats.test <- Carseats[-train, ]
@@ -487,16 +621,94 @@ table(tree.pred, Carseats.test$High)
 ```
 :::
 
+:::{.exercise-box}
+Classification using rpart
+
+Now we are going to use a different library `rpart` to create classification trees. We will use the `Iris` dataset.
+
+**Data splitting**
+```{r}
+set.seed(800)
+trainIndex <- sample(1:nrow(iris), 0.7 * nrow(iris)) 
+trainData <- iris[trainIndex, ] 
+testData <- iris[-trainIndex,]
+```
+
+We will build a Classification Tree to classify the species of iris flowers based on their sepal and petal measurements.
+
+```{r, fig.align='center', fig.width=6, fig.height=5}
+# Train a Classification Tree 
+ct_model <- rpart(Species ~., data = trainData, method = "class")
+ct_model
+plot(ct_model, margin = 0.1)  # Increase the margin parameter for more space
+text(ct_model,  cex = 0.8)
+```
+Predictions on the test dataset:
+```{r}
+# Predict the species on the test data
+predictions <- predict(ct_model, newdata = testData, type = "class")
+
+# Evaluate the model with a confusion matrix
+conf_matrix <- caret::confusionMatrix(predictions, testData$Species)
+print(conf_matrix)
+```
+
+In addition to providing the confusion matrix, the `confusionMatrix()` function provides some associated statistics; 
+[interpreting the results of a confusion matrix](../classification.html#confusion-matrix)
+. We can see all these per class using:
+```{r}
+stats_by_class <- conf_matrix$byClass
+round(stats_by_class, 3) # round to read easier
+```
+
+In a multi-class classification problem, there is a separate metric for each class because we treat each class as the "positive" class while considering all other classes as "negative". This approach provides a detailed evaluation of the model's performance for each individual class.
+Example, calculating precision for versicolor:
+Precision, also known as the Positive Predictive Value (PPV) is calculated as:
+$$
+Precision = \frac{True \ Positives}{True\ Positives+ False\ Positives}
+$$
+In our case
+```{r}
+conf_matrix$table
+```
+Versicolor: True Positives: 16, False Positives: 1. Precision = 16/17 =0.94
+(note that selecting a different split in the train/test dataset will give you different trees and different results)
+
+**Pruning**
+The `rpart` function performs cross-validation to determine the optimal tree size based on the `cp` (cross-complexity $\alpha$) parameter. The goal is to find the smallest tree with the lowest cross-validated error. You can visualize the cross-validated error as a function of the complexity parameter using plotcp(). This plot helps identify the optimal `cp` value
+
+```{r, fig.align='center'}
+plotcp(ct_model)
+```
+alternative we can access the table of numbers using:
+```{r}
+printcp(ct_model)
+```
+This output helps you understand how the cross-validated error changes as the tree size increases and help discern the optimal tree size. 
+
+We can get the value programatically:
+
+```{r}
+# Prune the tree based on the optimal cp
+optimal_cp <- ct_model$cptable[which.min(ct_model$cptable[,"xerror"]), "CP"]
+optimal_cp
+
+```
+In our case, the optimal `cp` value is 0.01 which corresponds to our largest tree with 3 terminal nodes. In our case, this suggests that we don't need to prune our tree. If we did require pruning, we could easily achieve this:
+```{r, fig.align='center'}
+pruned_model <- prune(ct_model, cp = optimal_cp)
+
+plot(pruned_model, margin = 0.1)  # Increase the margin parameter for more space
+text(pruned_model,  cex = 0.8)
+```
+
+:::
+
 # Bagging
 
-*Bootstrap aggregation* or *bagging* is a general-purpose procedure for reducing the variance of a statistical learning method, it is particularly useful and frequently used in the context of decision trees. 
-Recall that given a set of n independent observations $Z_1,Z_2,\dots,Z_n$ , each with variance $\sigma^2$, the variance of the mean $\bar Z$ of the observations is given by $\sigma^2/n$. In other words, averaging a set of observations reduces variance. Of course, this is not practical because we generally do not have access to multiple training sets. Instead, we can bootstrap, by taking repeated samples from the single training set. 
-In this approach, we generate B different bootstrapped training datasets. We then train our method on the bth bootstrapped training set in order to get the prediction at point x. We then average all the predictions. 
-For classification it works similarly. We can have 200 trees, we have two classes, we make a prediction of each x, and for example 150 trees says class 1 and 50 says class 2, then our prediction will be class 1, so we adjust by majority vote.
+*Bootstrap aggregation* or *bagging* is a general-purpose procedure for reducing the variance of a statistical learning method, it is particularly useful and frequently used in the context of decision trees. Recall that given a set of n independent observations $Z_1,Z_2,\dots,Z_n$ , each with variance $\sigma^2$, the variance of the mean $\bar Z$ of the observations is given by $\sigma^2/n$. In other words, averaging a set of observations reduces variance. Of course, this is not practical because we generally do not have access to multiple training sets. Instead, we can bootstrap, by taking repeated samples from the single training set. In this approach, we generate B different bootstrapped training datasets. We then train our method on the bth bootstrapped training set in order to get the prediction at point x. We then average all the predictions. For classification it works similarly. We can have 200 trees, we have two classes, we make a prediction of each x, and for example 150 trees says class 1 and 50 says class 2, then our prediction will be class 1, so we adjust by majority vote.
 
-**Out-of-bag** Error estimation.
-It turns out that there is a very straightforward way to estimate the **test error** of a bagged model. Recall that the key to bagging is that trees are repeatedly fit to bootstrapped subsets of observations. One can show that on average, each bagged tree makes use of around two-thirds of the observations. The remaining one-third of the observations not used to fit a given bagged tree are referred as to the *out-of-bag (OOB)* observations. We can predict the response for the $i$th observation using each of the trees in which that observation was OOB. This will yield around B/3 predictions for the $i$th observation, which we average. We do that for each of the observations. 
-This estimate is essentially the Leave One Out (LOO) cross-validation error for bagging, if B is large.
+**Out-of-bag** Error estimation. It turns out that there is a very straightforward way to estimate the **test error** of a bagged model. Recall that the key to bagging is that trees are repeatedly fit to bootstrapped subsets of observations. One can show that on average, each bagged tree makes use of around two-thirds of the observations. The remaining one-third of the observations not used to fit a given bagged tree are referred as to the *out-of-bag (OOB)* observations. We can predict the response for the $i$th observation using each of the trees in which that observation was OOB. This will yield around B/3 predictions for the $i$th observation, which we average. We do that for each of the observations. This estimate is essentially the Leave One Out (LOO) cross-validation error for bagging, if B is large.
 
 Bagging results in improved accuracy over prediction using single tree but it can be difficult to interpret the resulting model. We can't represent the statistical learning procedure using a single tree. It's not clear which variables are most important to the procedure (we have many trees each of which may give a differing view on the importance of a given predictor). So which predictors are important? An overall summary of the importance of each predictor can be achieved by recording how much the average RSS or Gini index improves or decreases when each tree is split over a given predictor (averaged over all B trees)
 
@@ -504,15 +716,12 @@ Bagging results in improved accuracy over prediction using single tree but it ca
 
 A problem with bagging is that bagged trees may be highly similar to each other. For example if there is a strong predictor in the data, most of the bagged trees will use this predictor in the top split so that the predictions of the bagged trees will be highly correlated. Averaging highly correlated quantities does not lead to as large a reduction in variance as averaging many uncorrelated quantities.
 
-*Random forests* provide an improvement over bagged trees by way of a small tweak that decorrelates the trees. This reduces the variance when we average the trees. 
-As in bagging, we build a number of decision trees on bootstrapped training samples, but when building these trees, each time a split in a tree is considered, a random selection of $m$ predictors is chosen as a split candidates from the full set of $p$ predictors. The split is allowed to use only one of the $m$ predictors. A fresh selection of $m$ predictors is taken at each split, and typically, we choose $m \sim \sqrt p$ that is, the number of predictors considered at each split is approximately equal to the square root of the total number of predictors. The effect of this is that it forces the tree to choose different predictors at different times, and since we are going to build lots of trees, all predictors will be considered at each split among the different trees.
+*Random forests* provide an improvement over bagged trees by way of a small tweak that decorrelates the trees. This reduces the variance when we average the trees. As in bagging, we build a number of decision trees on bootstrapped training samples, but when building these trees, each time a split in a tree is considered, a random selection of $m$ predictors is chosen as a split candidates from the full set of $p$ predictors. The split is allowed to use only one of the $m$ predictors. A fresh selection of $m$ predictors is taken at each split, and typically, we choose $m \sim \sqrt p$ that is, the number of predictors considered at each split is approximately equal to the square root of the total number of predictors. The effect of this is that it forces the tree to choose different predictors at different times, and since we are going to build lots of trees, all predictors will be considered at each split among the different trees.
 
 ::: exercise-box
 Bagging and Random forest
 
-Here we apply bagging and random forests to the `Boston` data, using the `randomForest` package in `R`. The exact results obtained in this section may depend on the version of `R` and the version of the `randomForest` package installed on your computer.
-Recall that bagging is simply a special case of a random forest with
-$m=p$. Therefore, the `randomForest()` function can be used to perform both random forests and bagging. 
+Here we apply bagging and random forests to the `Boston` data, using the `randomForest` package in `R`. The exact results obtained in this section may depend on the version of `R` and the version of the `randomForest` package installed on your computer. Recall that bagging is simply a special case of a random forest with $m=p$. Therefore, the `randomForest()` function can be used to perform both random forests and bagging.
 
 We perform bagging as follows:
 
@@ -524,8 +733,8 @@ bag.boston <- randomForest(medv ~ ., data = Boston,
     subset = train, mtry = 12, importance = TRUE)
 bag.boston
 ```
-The argument `mtry = 12` indicates that all $12$ predictors should be considered for each split of the tree -in other words, that bagging should be done.
-How well does this bagged model perform on the test set?
+
+The argument `mtry = 12` indicates that all $12$ predictors should be considered for each split of the tree -in other words, that bagging should be done. How well does this bagged model perform on the test set?
 
 ```{r, fig.align='center'}
 yhat.bag <- predict(bag.boston, newdata = Boston[-train, ])
@@ -542,19 +751,46 @@ We could change the number of trees grown by `randomForest()` using the `ntree` 
 bag.boston <- randomForest(medv ~ ., data = Boston,
     subset = train, mtry = 12, ntree = 25)
 yhat.bag <- predict(bag.boston, newdata = Boston[-train, ])
+
+boston.test <- Boston[-train, "medv"]
 mean((yhat.bag - boston.test)^2)
 ```
+
+**Random Forest**
+
 Growing a random forest proceeds in exactly the same way, except that we use a smaller value of the `mtry` argument. By default, `randomForest()` uses $p/3$ variables when building a random forest of regression trees, and $\sqrt{p}$ variables when building a random forest of classification trees. Here we use `mtry = 6`.
 
 ```{r chunk22}
 set.seed(1)
 rf.boston <- randomForest(medv ~ ., data = Boston,
     subset = train, mtry = 6, importance = TRUE)
+
 yhat.rf <- predict(rf.boston, newdata = Boston[-train, ])
+rf.boston
+boston.test <- Boston[-train, "medv"]
 mean((yhat.rf - boston.test)^2)
+
 ```
 
-The test set MSE is $20.07$; this indicates that random forests yielded an improvement over bagging in this case.
+The test set MSE is $20.07$; this indicates that random forests yielded an improvement over bagging in this case. The Mean of Squared residuals reported by the test is calculated over the Out of Bag dataset, so it is an unbiased statistic.
+
+We are going to do a manual check to see those test errors for different number of values for the parameter `mtry` (the number of variables to be taken into consideration for each ramification in the tree building)
+
+```{r, fig.align='center', fig.width=6}
+oob.err = double(12) #out of bag error
+test.err = double(12)
+
+for(mtry in 1:12){
+  fit= randomForest(medv ~., data=Boston, subset=train, mtry=mtry, ntree=400)
+  oob.err[mtry] = fit$mse[400]
+  pred= predict(fit,Boston[-train,])
+  test.err[mtry] = with (Boston[-train,], mean((medv-pred)^2))
+  cat(mtry," ")
+  
+}
+matplot(1:mtry,cbind(test.err,oob.err), pch=19,col=c("red","blue"), type ="b", ylab="mse")
+legend("top", inset = 0.0, legend = c("OOB", "Test"), pch = 19, col = c("red", "blue"), horiz = TRUE, x.intersp = 0.5)
+```
 
 Using the `importance()` function, we can view the importance of each variable.
 
@@ -562,8 +798,7 @@ Using the `importance()` function, we can view the importance of each variable.
 importance(rf.boston)
 ```
 
-Two measures of variable importance are reported. The first is based upon the mean decrease of accuracy in predictions on the out of bag samples when a given variable is permuted. The second is a measure of the total decrease in node impurity that results from splits over that variable, averaged over all trees. 
-In the case of regression trees, the node impurity is measured by the training RSS, and for classification trees by the deviance. Plots of these importance measures can be produced using the `varImpPlot()` function.
+Two measures of variable importance are reported. The first is based upon the mean decrease of accuracy in predictions on the out of bag samples when a given variable is permuted. The second is a measure of the total decrease in node impurity that results from splits over that variable, averaged over all trees. In the case of regression trees, the node impurity is measured by the training RSS, and for classification trees by the deviance. Plots of these importance measures can be produced using the `varImpPlot()` function.
 
 ```{r , fig.align='center', fig.width=10}
 varImpPlot(rf.boston)
@@ -572,9 +807,37 @@ varImpPlot(rf.boston)
 The results indicate that across all of the trees considered in the random forest, the wealth of the community (`lstat`) and the house size (`rm`) are by far the two most important variables.
 :::
 
+:::{.exercise-box}
+Classification with Random Forest
+
+We are going to use again the Iris dataset for the classification problem
+
+```{r}
+rf_model<- randomForest(formula = Species ~., data= trainData, ntree=100,
+  importance=TRUE)
+rf_model
+
+```
+We make predictions over the test data and look at the importance from the bagging model:
+```{r, fig.align='center', fig.width=7}
+# Make predictions on the test set
+rf_pred <- predict(rf_model, newdata = testData)
+varImpPlot(rf_model) 
+```
+Based on this, `Petal.Width` and `Petal.Length` are the most important features for predicting the species of iris flowers. 
+We can evaluate the performance of this model using confusion matrix:
+```{r}
+(rf_conf_mat <- caret::confusionMatrix(rf_pred, testData$Species))
+```
+and the metrics by class:
+```{r}
+rf_conf_mat$byClass
+```
+:::
+
 # Boosting
 
-Like bagging, boosting is a general approach that can be applied to many statistical learning methods for regression or classification, but we will only discuss boosting for decision trees. Recall that bagging involves creating multiple copies of the original training data set using the bootstrap, fitting a separate decision tree to each copy, and then combining all of the trees in order to create a single predictive model. Notably, each tree is built on a bootstrap data set, independent of the other trees. *Boosting* works in a similar way except that the trees are grown sequentially, each tree is grown using information from previously grown trees. (More specific instructions can be found in the book.) Unlike fitting a single large decision tree to the data, which amounts to fitting the data hard and potentially overfitting, the boosting approach learns slowly. Given the current model, we fit a decision tree to the residuals from the model. We then add this new decision tree into the fitted function in order to update the residuals. Each of these trees can be rather small, with just a few terminal nodes, determined by the parameter in the algorithm. By fitting small trees to the residuals, we slowly improve the function in areas where it was not performing well. The shrinkage parameter lambda slows the process down even further, allowing more an different shaped trees to attack the residuals. The package `gbm` (gradient boosted models) handles a variety of regression and classification problems.
+Like bagging, boosting is a general approach that can be applied to many statistical learning methods for regression or classification, but we will only discuss boosting for decision trees. Recall that bagging involves creating multiple copies of the original training data set using the bootstrap, fitting a separate decision tree to each copy, and then combining all of the trees in order to create a single predictive model. Notably, each tree is built on a bootstrap data set, independent of the other trees. *Boosting* works in a similar way except that the trees are grown sequentially, each tree is grown using information from previously grown trees. (More specific instructions can be found in the book). Unlike fitting a single large decision tree to the data, which amounts to fitting the data hard and potentially overfitting, the boosting approach learns slowly. Given the current model, we fit a decision tree to the residuals from the model. We then add this new decision tree into the fitted function in order to update the residuals. Each of these trees can be rather small, with just a few terminal nodes, determined by the parameter in the algorithm. By fitting small trees to the residuals, we slowly improve the function in areas where it was not performing well. The shrinkage parameter *lambda* slows the process down even further, allowing more an different shaped trees to attack the residuals. The package `gbm` (gradient boosted models) handles a variety of regression and classification problems.
 
 ## Tuning parameters for boosting
 
@@ -583,6 +846,142 @@ Like bagging, boosting is a general approach that can be applied to many statist
 **The shrinkage parameter lambda**, a small, positive number. This controls the rate at which boosting learns. Typical values are 0.01 or 0.001, and the right choice can depend on the problem. Very small lambda can require using a very large value of B in order to achieve performance.
 
 **The number of splits** d in each tree, which controls the complexity of the boosted ensemble. Often d=1 works well, in which each tree is a *stump*, consisting of a single split and resulting in an additive model. More generally d is the interaction depth, and controls the interaction order of the boosted model, since d splits can involve at most d variables. So with d=1 no interaction between parameters is allowed, and d=2 is a pairwise interaction.
+
+::: exercise-box
+Regression with Boosting
+
+Here we use the `gbm` package, and within it the `gbm()` function, to fit boosted regression trees to the `Boston` data set. We run `gbm()` with the option `distribution = "gaussian"` since this is a regression problem; if it were a binary classification problem, we would use `distribution = "bernoulli"`. The argument `n.trees = 5000` indicates that we want $5000$ trees, and the option `interaction.depth = 4` limits the depth of each tree.
+
+Example of use: 
+Train a gradient boosting model for regression
+gbm_model <- gbm(
+  formula = medv ~ .,        # The model formula
+  data = train_boston,       # Training data
+  distribution = "gaussian", # Loss function for regression (gaussian for squared error)
+  n.trees = 100,             # Number of trees to build
+  interaction.depth = 3,     # Maximum depth of each tree
+  shrinkage = 0.01,          # Learning rate (step size reduction)
+  n.minobsinnode = 10,       # Minimum number of observations in the terminal nodes
+  cv.folds = 5               # Number of cross-validation folds for evaluation
+)
+
+```{r chunk25}
+set.seed(42)
+boost.boston <- gbm(
+  medv ~ ., 
+  data = Boston[train, ],
+  distribution = "gaussian",
+  n.trees = 5000,
+  interaction.depth = 4)
+```
+
+The `summary()` function produces a relative influence plot and also outputs the relative influence statistics.
+
+```{r , fig.align='center'}
+#| layout-ncol: 2
+summary(boost.boston)
+```
+
+We see that `lstat` and `rm` are by far the most important variables. We can also produce *partial dependence plots* for these two variables. These plots illustrate the marginal effect of the selected variables on the response after *integrating* out the other variables. In this case, as we might expect, median house prices are increasing with `rm` and decreasing with `lstat`.
+
+```{r, fig.align='center'}
+#| layout-ncol: 2
+plot(boost.boston, i = "rm")
+plot(boost.boston, i = "lstat")
+```
+
+We now use the boosted model to predict `medv` on the test set:
+
+```{r chunk28}
+yhat.boost <- predict(boost.boston,
+    newdata = Boston[-train, ], n.trees = 5000)
+mean((yhat.boost - boston.test)^2)
+```
+
+The test MSE obtained is $18.39$: this is superior to the test MSE of *random forests* and *bagging*. If we want to, we can perform boosting with a different value of the *shrinkage parameter* $\lambda$. The default value is $0.001$, but this is easily modified. Here we take $\lambda=0.2$.
+
+```{r chunk29}
+boost.boston <- gbm(medv ~ ., data = Boston[train, ],
+    distribution = "gaussian", n.trees = 5000,
+    interaction.depth = 4, shrinkage = 0.2, verbose = F)
+yhat.boost <- predict(boost.boston,
+    newdata = Boston[-train, ], n.trees = 5000)
+mean((yhat.boost - boston.test)^2)
+```
+
+In this case, using $\lambda=0.2$ leads to a lower test MSE than $\lambda=0.001$.
+
+We will have to use cross validation to select the best parameters for the *number of trees*, the *depth tuning parameter* and *shrinkage parameter* and fit our model according to the results. This, makes boosting a more time consuming method than random forest, that requires very little tuning, but if one is willing to do the job, usually boosting outperform random forest.
+
+We are not going to do this in this exercise.
+
+```{r}
+n_trees <- seq(from=100, to=5000, by =100)
+
+predmat <- predict(boost.boston, newdata=Boston[-train,],n.trees=n_trees)
+err<- with(Boston[-train,], apply((predmat - medv)^2,2,mean))
+n_trees[which.min(err)]
+
+plot(n_trees, err, pch=19, ylab="MSE", xlab="N trees", main= "Boosting Test Error")
+
+```
+
+let's do cross validation:
+
+```{r}
+#cross-validation
+boston.boost.cv <- gbm(medv~., data = Boston[train,], 
+  distribution = "gaussian", n.trees=5000, 
+  interaction.depth=4, shrinkage = 0.2, verbose=F, cv.folds=10)
+
+
+#find the best prediction
+bestTreeForPrediction <- gbm.perf(boston.boost.cv)
+```
+
+we now predict using this tree:
+
+```{r}
+yhat.boost = predict(boston.boost.cv, newdata = Boston[-train,],n.trees = bestTreeForPrediction)
+round(mean((yhat.boost-boston.test)^2),2)
+```
+
+:::
+
+:::{.exercise-box}
+Classification with Boosting 
+
+```{r, fig.align='center'}
+# Train a boosting model
+gbm_model <- gbm(Species ~ .,
+  data = trainData, 
+  distribution = "multinomial",
+  n.trees = 100, 
+  interaction.depth = 3, 
+  shrinkage = 0.1, 
+  cv.folds = 5)
+summary(gbm_model)
+```
+
+To evaluate our model let's test it in our test set:
+```{r}
+# Make predictions on the test set
+gbm_pred <- predict(gbm_model, 
+  newdata = testData, 
+  n.trees = 100, 
+  type = "response")
+gbm_pred_class <- colnames(gbm_pred)[apply(gbm_pred, 1, which.max)]
+
+# Confusion matrix
+boost_reg_conf_mat = caret::confusionMatrix(factor(gbm_pred_class), testData$Species)
+boost_reg_conf_mat
+```
+For each species:
+
+```{r}
+boost_reg_conf_mat$byClass
+```
+:::
 
 # Bayesian Additive Regression Trees (BART)
 
@@ -598,10 +997,50 @@ $$ In the first iteration, all trees are initialized to have a single root node 
 
 $$
 \hat f^b_k(x) = \sum^K_{k=1}\hat f^1_k(x) = \frac{1}{n}\sum^n_{i=1} y_1
-$$ In subsequent iterations, BART updates each of the K trees, one at a time. In the bth iteration, to update the kth tree, we substract from each response value the predictions from all but the kth tree, in order to obtain a *partial residual* $$
-r_i = y_i -\sum_{k'<k}\hat f^{b-1}_k'(x_i) - \sum _{k'<k}\hat f^{b-1}_{k'}(x_i)
+$$
+
+In subsequent iterations, BART updates each of the K trees, one at a time. In the bth iteration, to update the kth tree, we substract from each response value the predictions from all but the kth tree, in order to obtain a *partial residual* $$
+r_i = y_i - \sum_{k'<k}\hat f^{b-1}_k`(x_i) - \sum _{k`<k}\hat f^{b-1}_{k'}(x_i)
 $$ and then we create a tree over the partial residual but using a perturbation from a set of possible perturbations. The output of BART is a collection of prediction models. To obtain a single prediction, we simply take the average after some L *burn-in iterations* (we discard some of the initial iterations and calculate only based on later trees).
 
 When we apply BART we must select the number of trees K, the number of iterations (B) and the number of burn-in iterations. We typically choose large values for B and K and a moderate value for L.
 
 The perturbation-style avoids overfitting so we can choose a big number of iterations without risk of overfitting to the training data.
+
+::: exercise-box
+In this section  we use the `BART` package, and within it the `gbart()` function, to fit a Bayesian additive regression tree model to the `Boston` housing data set. The `gbart()` function  is
+designed for quantitative outcome variables. For binary outcomes,   `lbart()`  and  `pbart()`  are available.
+
+To run the `gbart()` function, we must first create matrices of predictors for the training and test data. We run BART with default settings.
+
+```{r chunk30}
+library(BART)
+x <- Boston[, 1:12]
+y <- Boston[, "medv"]
+xtrain <- x[train, ]
+ytrain <- y[train]
+xtest <- x[-train, ]
+ytest <- y[-train]
+set.seed(1)
+bartfit <- gbart(xtrain, ytrain, x.test = xtest)
+```
+
+Next we compute the test error.
+
+```{r chunk31}
+yhat.bart <- bartfit$yhat.test.mean
+mean((ytest - yhat.bart)^2)
+```
+
+
+On this data set, the test error of BART is lower than the test error of random forests and boosting.
+
+Now we can check how many times each variable appeared in the collection of trees.
+
+```{r chunk32}
+ord <- order(bartfit$varcount.mean, decreasing = T)
+bartfit$varcount.mean[ord]
+```
+
+
+:::

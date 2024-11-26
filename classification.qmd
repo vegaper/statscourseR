@@ -35,6 +35,7 @@ library(pROC)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
+
 # Classification Problems
 
 Variables can be characterized as either quantitative or qualitative (also known as categorical). Quantitative variables take on numerical values. Examples include a person's age, height, or income or the value of a house. In contrast, qualitative variables take on values in one of K different classes, or categories. Examples of qualitative variables include a person's marital status (married or not), the brand of product class purchased (brand A, B, or C) etc. We tend to refer to problems with a quantitative response as regression problems, while those involving a qualitative response are often referred to as classification problems.
@@ -113,12 +114,17 @@ $$ {#eq-misclassificationErrorRate}
 
 ## Logistic regression
 
-The formula for the logistic regression is: $$
+The formula for the logistic regression is: 
+$$
 {p}(X) = \frac{e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}{1 + e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
-$$ {#eq-logisticRegression} This reads as p of X for the probability that y is 1 given X\
+$$ {#eq-logisticRegression} 
+
+This reads as $p$ of X for the probability that y is 1 given X\
 -p(x) is the predicted probability of the dependent variable being 1 (or positive outcome) given the predictors $x_1,x_2,\dots,x_n$ - $\beta_0$ is the intercept of the linear model - $\beta_1,\beta_2\dots,\beta_n$ are the coefficients for the predictors. - $e$ is a mathematical constant (2.71828) (Euler's number) The result will be always between 0 and .
 
-This formula can also be written as: $$
+This formula can also be written as: 
+
+$$
 log\left( \frac{p(X)}{1-p(X)} \right)=\beta_0+\beta_1X_1+\dots+\beta_nX_n
 $$ {#eq-logodds}
 
@@ -162,9 +168,12 @@ summary(glm.balance)
 
 ### Interpreting the results:
 
-For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `$p$-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. \### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression) $$
+For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `$p$-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. \### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression) 
+
+$$
 \hat{p}(X) = \frac{e^{\hat{\beta_0} + \hat{\beta_1} X_1}}{1 + e^{\hat{\beta_0} + \hat{\beta_1} X_1 }}
-$$ we just plug in the values from our `glm`, for example for a balance of 1000: $$
+$$ 
+we just plug in the values from our `glm`, for example for a balance of 1000: $$
 \hat{p}(X) = \frac{e^{-10.65 + 0.0055 \times 1000}}{1 + e^{-10.65 + 0.0055 \times 1000}} =0.00576
 $$ using R we are going to calculate the probability of default for a balance of 1000 and 2000 USD:
 
@@ -606,7 +615,10 @@ confusion_matrix <- caret::confusionMatrix(data=factor(LDA.fit.Classes), referen
 print(confusion_matrix)
 ```
 
-**Interpreting the results of the confusion matrix** - *Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.
+**Interpreting the results of the confusion matrix** <a id="confusion-matrix"></a>
+
+
+- *Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.
 
 -   *95% CI (Confidence Interval)*: It provides a range within which the true accuracy lies with 95% confidence.
 
@@ -884,4 +896,3 @@ predictions <- predict(naive.fit, test)
 ```
 
 :::
-

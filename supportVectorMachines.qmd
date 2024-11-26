@@ -1,0 +1,97 @@
+---
+title: "Support Vector Machines"
+editor: visual
+---
+
+```{r}
+#| echo: false
+library(dplyr)
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(ISLR2) #datasets
+library(boot) #crossvalidation
+library(tree) #simple trees
+library(randomForest) #random forest and bagging
+library(gbm) #boosted trees
+library(BART) #well, for... BART, obviously
+library(rpart) #simple trees
+theme_set(theme_minimal())
+options(scipen= 999)
+```
+
+Support vector machines are another way of doing classification problems. 
+
+# Optimal Separating Hyperplane
+
+We try and find a plane that separates the classes in feature space.It approaches the classification problem as computer scientist would approach it. There's no probability model as such, it really just looks for a hyperplane that separates the classes in a direct way. 
+As this direct separation is not always possible, we use two methods:
+- We soften what we mean by "separates" and 
+- We enrich and enlarge the feature space so that separation is possible. 
+
+## What is a hyperplane?
+
+A hyperplane in $p$ dimensions is a flat affine subspace of dimensions p-1.
+in $p$ = 2 dimensions a hyperplane is a line. If $\beta_0=0$ the hyperplane goes through the origin, otherwise not. 
+The vector $\beta = (\beta_1,\beta_2,\dots, \beta_p)$ is called the normal vector and it points in a direction orthogonal to the surface of a hyperplane. 
+
+Imagine you have two classes plotted in a graph. You may be able to draw a line that separates one class from the other, but if you can do that, it is probable that you can draw other lines in different angles that also separates the two classes. What we want to find is that line that creates the biggest margin between the line and the points, so the line is at the maximum possible distance from points of the two classes. 
+
+```{r, fig.align='center', echo=FALSE}
+
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate synthetic data
+n <- 100  # Number of points per class
+class1 <- data.frame(x = rnorm(n, mean = 2.5, sd = 0.5), y = rnorm(n, mean = 2, sd = 0.5), class = "Class 1")
+class2 <- data.frame(x = rnorm(n, mean = 3.5, sd = 0.5), y = rnorm(n, mean = 5, sd = 0.5), class = "Class 2")
+data <- rbind(class1, class2)
+
+# Plot the data with separating lines
+ggplot(data, aes(x = x, y = y, color = class)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("Class 1" = "blue", "Class 2" = "red")) +
+  geom_abline(intercept = 5, slope = -0.5, linetype = "dashed", color = "black") +  # Horizontal line
+  geom_abline(intercept = 6.5, slope = -1, linetype = "dashed", color = "green") +  # Diagonal line
+  labs(title = "Synthetic Data with Separating Lines",
+       x = "Feature X",
+       y = "Feature Y") +
+  theme_minimal()
+
+
+```
+
+Often, the data is not separable by a line, typically when $n$ is bigger than $p$
+
+```{r, fig.align='center' }
+set.seed(70)
+n <- 70  # Number of points per class
+class1 <- data.frame(x = rnorm(n, mean = 2.5, sd = 1), 
+  y = rnorm(n, mean = 2.5, sd = 1), class = "Class 1")
+class2 <- data.frame(x = rnorm(n, mean = 4, sd = 1), 
+  y = rnorm(n, mean = 4, sd = 1), class = "Class 2")
+data <- rbind(class1, class2)
+# Plot the data with separating lines
+ggplot(data, aes(x = x, y = y, color = class)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("Class 1" = "blue", "Class 2" = "red")) +
+ 
+  labs(title = "Synthetic Data with Separating Lines",
+       x = "Feature X",
+       y = "Feature Y") +
+  theme_minimal()
+
+```
+when this is is the case we allow some points to trespass their margin, so we create what we call a *Soft margin*.
+
+One important point of the support vector machine is that it is measuring euclidean distance and treats all units as the same, so the variables should be standardized. 
+
+## Feature expansion
+Another way of addressing the problem is to enlarge the space of features by including transformations, so instead of fitting a straight line, we can fit a polynomial e.g. $X_1^2$ hence we go from a $p$-dimensional space to a M>$p$ dimensional space. 
+
+
+
+
+

@@ -349,11 +349,11 @@ In r, the f-value will also come with its $p$-value, indicating its significance
 
 With today's big data there is more availability of data than ever, and it is becoming usual to have many many features to fit a model, and model accuracy can be challenging in those situations, specially when we have more features than number of samples (p\>n). By removing irrelevant features we can obtain a model that is more easily interpreted. We will present some approaches for automatically performing *feature selection*.
 
--   *Subset selection*: We identify a subset of the p predictors that we believe to be related to the response. We then fit a model using least squares on the reduced set of variables.
+-   *Subset selection*: We identify a subset of the $p$ predictors that we believe to be related to the response. We then fit a model using least squares on the reduced set of variables.
 
--   *Shrinkage*: We fit a model involving all p predictors, but the estimated coefficients are shrunken towards zero relative to the least squares estimates. This shrinkage (also known as *regularization*) has the effect of reducing variance and can also perform variable selection.
+-   *Shrinkage*: We fit a model involving all $p$ predictors, but the estimated coefficients are shrunken towards zero relative to the least squares estimates. This shrinkage (also known as *regularization*) has the effect of reducing variance and can also perform variable selection.
 
--   *Dimension reduction*: We project the p predictors into a M-dimensional subspace, where M\<p. This is achieved by computing M different *linear combinations* or *projections*, of the variables. Then these M projections are used as predictors to fit a linear regression model by least squares.
+-   *Dimension reduction*: We project the $p$ predictors into a M-dimensional subspace, where M\<p. This is achieved by computing M different *linear combinations* or *projections*, of the variables. Then these M projections are used as predictors to fit a linear regression model by least squares.
 
 ### Best Subset selection
 
@@ -361,11 +361,11 @@ The most direct approach to answer this question is called *all subsets* or *bes
 
 Although we are presenting this here in the context of linear models, the same ideas apply to other types of models, such as logistic regression. One difference will be that other models will work with a similar metric to the residual sum of squares that is called *deviance*.
 
-A limitation of the subset selection method is the number of p. Most statistical packages have a limit of 30 to 40 features. Another problem of this method with high number of p is overfitting, so this method is only valid when p is small (\<10).
+A limitation of the subset selection method is the number of p. Most statistical packages have a limit of 30 to 40 features. Another problem of this method with high number of $p$ is overfitting, so this method is only valid when $p$ is small (\<10).
 
 We start with the *null model* that is a model that contains the intercept but no predictors. The intercept is the mean of $y$ Now you start adding variables one at a time: for each variable you fit $p$ simple linear models each with one of the variables and the intercept, and you look at each of them. After that you choose the variable that results in the lowest RSS (that is the largest $R^2$). Now, having picked that, you fix that variable in the model and now you add one by one all the variables to this model again, and choose the one that best improve the residual sum of squares.
 
-You can continue like this until some stopping rule is satisfied, for example, when all the remaining variables have a p value above some threshold.
+You can continue like this until some stopping rule is satisfied, for example, when all the remaining variables have a $p$ value above some threshold.
 
 Once we have a correct combination of predictors, to select if the best model is the model with 2,3,or n predictors, we cannot use RSS anymore because naturally RSS will decrease as we include more predictors, but that does not necessarily means it's a best model. We need to select the model that will have the smallest *test error*, and not the one with the smallest *training error*. Remember [we talked about these concepts already](#testingtrainingerror). Frequently for this we use [cross-validation](#crossvalidation)
 
@@ -1213,7 +1213,9 @@ qqline(controlPopulation)
 
 ## Shrinkage Methods
 
-*Ridge regression* and *lasso* The subset selection methods use least squares to fit a linear model that contains a subset of the predictors. As an alternative, we can fit a model containing all p predictors using a technique that constrains or regularizes the coefficients estimates, or equivalently, that shrinks the coefficient estimates towards zero.Shrinking the coefficient estimates can significantly reduce their variance.
+**Ridge regression and lasso.**
+
+The subset selection methods use least squares to fit a linear model that contains a subset of the predictors. As an alternative, we can fit a model containing all $p$ predictors using a technique that constrains or regularizes the coefficients estimates, or equivalently, that shrinks the coefficient estimates towards zero.Shrinking the coefficient estimates can significantly reduce their variance.
 
 **Ridge regression** Also called $L2$ Regularization. It addresses the problem of multicollinearity (when predictor variables are highly correlated). It is useful when you have many predictors and suspect multicollinearity. It works well when the number of predictors is larger than the number of observations.
 
@@ -1229,7 +1231,7 @@ As with least squares, ridge regression seeks coefficient estimates that fit the
 
 One thing to take into account with this methods is that while in our regression formulas the units or scales of our variables do not matter, (if we measure the weight in grams or in kilograms) because the coefficient will adapt to that scale, but in this method that actually matters, and as a result is is important to standardize the predictors before applying ridge regression. To standardize he predictors we do as usual, we divide the feature by the standard deviation of that feature. $$
 \tilde x_{ij} = \frac{x_{ij}}{SD(x_{ij})} =\frac{x_{ij}}{\sqrt{\frac{1}{n}\sum_{i=1}^n}(x_{ij-\bar{x_j}})^2}
-$$ Ridge regression does have one obvious disadvantage: unlike subset selection, which will generally select models that involve just a subset of the variables, ridge regression will include all p predictors in the final model.
+$$ Ridge regression does have one obvious disadvantage: unlike subset selection, which will generally select models that involve just a subset of the variables, ridge regression will include all $p$ predictors in the final model.
 
 **Lasso** Also called $L1$ regularization. The Lasso is a relatively recent alternative to ridge regression that overcomes this disadvantage. The formula is very similar to the ridge regression but instead of taking the squares of the coefficients, now it is the sum of the absolute value: $$
 RSS + \lambda\sum^p_{j=1}|\beta_j|
@@ -1239,7 +1241,7 @@ $$ The difference is that it actually sets the coefficients to 0 when lambda is 
 
 As in ridge regression, selecting a good value of lambda for the lasso is critical, we will use again cross validation for this. Lasso is particularly useful when you expect only a few of predictors to be relevant, leading to a simpler, more interpretable model. If most of the predictors are relevant, ridge regression will do better selecting the best model. We don't know this when we create the model, so it is usual to use both methods, and use cross-validation to determine the best model coming out of each method by comparing the cross-validated error.
 
-Cross validation provides a simple way to find the value of $\labmda$ both for lasso and ridge regression. We choose a grid of lambda values, and compute the cross-validation error rate for each value of it. We then select the tuning parameter value for which the cross-validation error is smallest. Finally the model is re-fit using all of the available observations and the selected value of the tuning parameters.
+Cross validation provides a simple way to find the value of $\lambda$ both for lasso and ridge regression. We choose a grid of lambda values, and compute the cross-validation error rate for each value of it. We then select the tuning parameter value for which the cross-validation error is smallest. Finally the model is re-fit using all of the available observations and the selected value of the tuning parameters.
 
 ::: exercise-box
 Example: Ridge regression
@@ -1386,4 +1388,4 @@ $$ {#eq-dimensionReductionFunction}
 
 The first principal component is that (normalized) linear combination of the variables with the largest variance. The second principal component has largest variance, subject to being uncorrelated with the first etc.
 
-**Partial Least Squares (PLS)** Like PCR, PLS is a dimension reduction method, which first identifies a new set of features that are linear combinations of the original features, and then fits a linear model. After standardizing the p predictors, PLS computes the first direction $Z_1$ by setting each $\phi_{ij}$ equal to the coefficient from the simple linear regression of Y onto $X_j$, hence, PLS places the highest weight on the variables that are most strongly related to the response. Subsequent directions (Z) are found by taking residuals and then repeating the above process.
+**Partial Least Squares (PLS)** Like PCR, PLS is a dimension reduction method, which first identifies a new set of features that are linear combinations of the original features, and then fits a linear model. After standardizing the $p$ predictors, PLS computes the first direction $Z_1$ by setting each $\phi_{ij}$ equal to the coefficient from the simple linear regression of Y onto $X_j$, hence, PLS places the highest weight on the variables that are most strongly related to the response. Subsequent directions (Z) are found by taking residuals and then repeating the above process.

@@ -29,6 +29,8 @@ website:
             text: Survival Analysis
           - href: tree.qmd
             text: Tree Based Methods
+          - href: supportVectorMachines.qmd
+            text: Support Vector Machines
       - href: matrix.qmd
         text: Matrix Algebra
 format: 
