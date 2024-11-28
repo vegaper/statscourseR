@@ -368,7 +368,7 @@ While the formula may look intimidating, don't worry, you will never actually ha
 
 ## Standardizing data
 
-A normal curve is determined by the mean $\bar{x}$ and the standard deviation $s$ . If the data follow the normal curve, then knowing those two values mean we know the whole histogram. To compute areas under the normal curve, we first standardize the data by subtracting $\bar{x}$ and dividing by $s$. The resulting value is called the standardized value or z-score $z$
+A normal curve is determined by the mean $\bar{x}$ and the standard deviation $s$ . If the data follow the normal curve, then knowing those two values mean we know the whole histogram. To compute areas under the normal curve, we first standardize the data by subtracting $\bar{x}$ and dividing by $s$. The resulting value is called the standardized value or $z$-score $z$
 
 $$
 z = \frac{x_1 - \bar{x}}{s}
@@ -586,7 +586,7 @@ print(probability)
 
 *but now, what is the probability of winning **at most**, 12 small prizes in 50 repetitions?* we would have to calculate the probability of winning 12 small prizes, 11 small prizes etc. but we can use standardization instead to achieve the same goal:
 
-To standardize data for a binomial experiment, you typically use the **z-score** formula. This formula converts the binomial distribution to a standard normal distribution. The z-score (@eq-zscore) formula is: $$
+To standardize data for a binomial experiment, you typically use the **$z$-score** formula. This formula converts the binomial distribution to a standard normal distribution. The $z$-score (@eq-zscore) formula is: $$
 z=\frac{X-\mu}{\sigma}
 $$ {#eq-zscore2}
 
@@ -596,13 +596,13 @@ $$ {#eq-zscore2}
 
 -   ( $\sigma$ ) is the **standard deviation of the binomial distribution**, calculated as $$\sigma = \sqrt{np(1-p)}$$ {#eq-standardDeviationBinomialDistribution}
 
-So, the complete formula for the z-score in a binomial experiment is:
+So, the complete formula for the $z$-score in a binomial experiment is:
 
 $$
 z = \frac{X - np}{\sqrt{np(1-p)}}
 $$ {#eq-zscoreBinomial}
 
-This formula allows you to standardize the number of successes ( X ) by subtracting the mean and dividing by the standard deviation, converting it to a z-score.
+This formula allows you to standardize the number of successes ( X ) by subtracting the mean and dividing by the standard deviation, converting it to a $z$-score.
 
 ```{r}
 # Parameters
@@ -619,7 +619,7 @@ print(zScore)
 
 ## Calculating the $p$-values {#pvalues}
 
-once we have calculated the z-Score we can calculate the area on the left of that number under the normal distribution curve, and that will be the probability we are looking for.
+once we have calculated the $z$-score we can calculate the area on the left of that number under the normal distribution curve, and that will be the probability we are looking for.
 
 ```{r, fig.align='center', echo=FALSE}
 
@@ -635,11 +635,13 @@ plot(x, y, type="l", lwd=2, col="blue", xlab="Z", ylab="Density", main="Standard
 abline(v = 0.71, col = "red", lwd = 2, lty = 2)
 ```
 
-We can now can find manually the probability using z-score tables. In R, we may use the `pnorm()` function to find the $p$-value associated with a z-score, which has the following syntax.
+We can now can find manually the probability using $z$-score tables. In R, we may use the `pnorm()` function to find the $p$-value associated with a $z$-score, which has the following syntax.
 
 `pnorm(q, mean = 0, sd = 1, lower.tail = TRUE)`
 
-Where - `q = z-Score value`. - lower.tail: If TRUE, the probability in the normal distribution to the left of z-Score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
+Where  
+- `q = z-Score value`. 
+- lower.tail: If TRUE, the probability in the normal distribution to the left of $z$-score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
 
 To find the $p$-value for the two-tailed test:
 
@@ -659,7 +661,7 @@ probability <- pnorm(zScore)
 print(probability)
 ```
 
-Instead of plugging in the values and calculate the z-score first, we can simplify our operations in r like this:
+Instead of plugging in the values and calculate the $z$-score first, we can simplify our operations in r like this:
 
 ```{r}
 # Parameters

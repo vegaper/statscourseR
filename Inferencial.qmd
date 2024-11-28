@@ -1042,13 +1042,10 @@ print(t_test_result)
 
 At the start of a significance test, the hypothesized value might be true or false. At the end, it may be rejected or not. Altogether, there are four possible combinations of these outcomes:
 
-+-----------------------+-----------------------------------+-------------------------------------+
-|                       | $H_0$ is true                     | $H_0$ is false                      |
-+======================:+:=================================:+:===================================:+
-| $H_0$ is rejected     | **Type I error** -false positive- | True Negative                       |
-+-----------------------+-----------------------------------+-------------------------------------+
-| $H_0$ is not rejected | True Positive                     | **Type II error** -False negative - |
-+-----------------------+-----------------------------------+-------------------------------------+
+|                       |           $H_0$ is true           |           $H_0$ is false            |
+|----------------------:|:---------------------------------:|:-----------------------------------:|
+|     $H_0$ is rejected | **Type I error** -false positive- |            True Negative            |
+| $H_0$ is not rejected |           True Positive           | **Type II error** -False negative - |
 
 Bear in mind, however, that we usually don't know whether the null theory is true or not.
 
@@ -1718,21 +1715,19 @@ Exercise: two-sample z-test (proportions.)
 
 *Last month, the president's approval rating in a sample of 1000 likely voters was 55%. This month, a poll of 1,500 likely voters resulted in a rating of 58%. Is this sufficient evidence to conclude that the rating has changed?*
 
-$\hat{p_1} = 55%$ and $\hat{p_2} = 58%$ 
+$\hat{p_1} = 55%$ and $\hat{p_2} = 58%$
 
 $$
 z = \frac{(\hat{p_2}-\hat{p_1})-0}{SE_{diff}}=\frac{(\hat{p_2}-\hat{p_1})-0}{\sqrt{ (SE(\bar{x_1}))^2 +(SE(\bar{x_2}))^2}}
-$$
-The formula for the standard error for the proportion is
+$$ The formula for the standard error for the proportion is
 
 $$ 
 SE= \sqrt{\frac{p(1-p)}{n}}
-$$ 
+$$
 
 Calculate the standard errors:
 
-For $\hat{p_1}$: 
-$$
+For $\hat{p_1}$: $$
 SE(\hat{p_1}) = \sqrt{\frac{\hat{p_1}(1 - \hat{p_1})}{n_1}} = \sqrt{\frac{0.55 \times 0.45}{1000}}= \sqrt{\frac{0.2475}{1000}} = \sqrt{0.0002475} \approx 0.0157
 $$
 
@@ -1740,7 +1735,7 @@ For $\hat{p_2}$:
 
 $$
 SE(\hat{p_2}) = \sqrt{\frac{\hat{p_2}(1 - \hat{p_2})}{n_2}} = \sqrt{\frac{0.58 \times 0.42}{1500}} = \sqrt{\frac{0.2436}{1500}} = \sqrt{0.0001624} \approx 0.0127
-$$ 
+$$
 
 $$
 SE_{diff} = \sqrt{(0.0157)^2 + (0.0127)^2} = \sqrt{0.00024649 + 0.00016129} = \sqrt{0.00040778} \approx 0.0202
@@ -2404,15 +2399,11 @@ It is easy to confuse the testing for homogeneity and the testing for independen
 
 ### Comparing the different uses of the chi-square test:
 
-+-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 |                 | sample                                                  | research question                                                                   |
-+=================+=========================================================+=====================================================================================+
+|-----------------|---------------------------------------------------------|-------------------------------------------------------------------------------------|
 | goodness of fit | single categorical variable. one sample                 | Are the counts of the different categories matching our expected results            |
-+-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 | homogeneity     | single categorical variable measured on several samples | Are the groups homogeneous (have the same distribution of the categorical variable) |
-+-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 | independence    | two categorical variables measured on one sample        | Are the two categorical variables independent?                                      |
-+-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 
 Examples:
 

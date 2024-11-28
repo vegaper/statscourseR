@@ -112,17 +112,16 @@ Typically we measure the performance of the classifier $\hat{C(x)}$ using the mi
 Err_{Te}=Ave_{i\epsilon Te}I[y_i\ne\hat{C(x_i)]}
 $$ {#eq-misclassificationErrorRate}
 
-## Logistic regression
+## Logistic regression {#logisticRegression}
 
-The formula for the logistic regression is: 
-$$
+The formula for the logistic regression is: $$
 {p}(X) = \frac{e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}{1 + e^{(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
-$$ {#eq-logisticRegression} 
+$$ {#eq-logisticRegression}
 
 This reads as $p$ of X for the probability that y is 1 given X\
 -p(x) is the predicted probability of the dependent variable being 1 (or positive outcome) given the predictors $x_1,x_2,\dots,x_n$ - $\beta_0$ is the intercept of the linear model - $\beta_1,\beta_2\dots,\beta_n$ are the coefficients for the predictors. - $e$ is a mathematical constant (2.71828) (Euler's number) The result will be always between 0 and .
 
-This formula can also be written as: 
+This formula can also be written as:
 
 $$
 log\left( \frac{p(X)}{1-p(X)} \right)=\beta_0+\beta_1X_1+\dots+\beta_nX_n
@@ -168,12 +167,11 @@ summary(glm.balance)
 
 ### Interpreting the results:
 
-For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `$p$-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. \### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression) 
+For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `$p$-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. \### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression)
 
 $$
 \hat{p}(X) = \frac{e^{\hat{\beta_0} + \hat{\beta_1} X_1}}{1 + e^{\hat{\beta_0} + \hat{\beta_1} X_1 }}
-$$ 
-we just plug in the values from our `glm`, for example for a balance of 1000: $$
+$$ we just plug in the values from our `glm`, for example for a balance of 1000: $$
 \hat{p}(X) = \frac{e^{-10.65 + 0.0055 \times 1000}}{1 + e^{-10.65 + 0.0055 \times 1000}} =0.00576
 $$ using R we are going to calculate the probability of default for a balance of 1000 and 2000 USD:
 
@@ -428,7 +426,7 @@ To do this, we first select a single class to serve as a baseline. The decision 
 
 Although we can use multinomial regression for k values, it has its limitations: - When the classes are well separated, the parameter estimates for the logistic regression model are surprisingly unstable. - If n is small and the distribution of the predictors X is approximately normal in each of the classes, the linear discriminant model that we will see next is more stable than the logistic regression model.
 
-## Discriminant Analysis.
+## Discriminant Analysis. {#DiscriminantAnalysis}
 
 ### Linear Discriminant Analysis(LDA)
 
@@ -617,8 +615,7 @@ print(confusion_matrix)
 
 **Interpreting the results of the confusion matrix** <a id="confusion-matrix"></a>
 
-
-- *Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.
+-   *Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.
 
 -   *95% CI (Confidence Interval)*: It provides a range within which the true accuracy lies with 95% confidence.
 

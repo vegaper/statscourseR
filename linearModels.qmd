@@ -40,8 +40,7 @@ options(scipen= 999)
 
 The methods described above relate to **univariate** variables. In sciences it is common to be interested in the relationship between two or more variables.
 
-Suppose that we observe a quantitative response Y and p different predictors or inputs (X1,X2, . . . ,Xp). We assume that there is some relationship between Y and X = (X1,X2, . . . ,Xp), which can be written in the very general form: 
-$$
+Suppose that we observe a quantitative response Y and p different predictors or inputs (X1,X2, . . . ,Xp). We assume that there is some relationship between Y and X = (X1,X2, . . . ,Xp), which can be written in the very general form: $$
 Y = f(X)+\epsilon
 $$
 
@@ -768,11 +767,9 @@ the equation will be $cty = 0.6687 * hwy + 1.017$ or $hwy = 1.39 *cty + .2388$
 Linear regression models the relationship between a dependent variable and one or more independent variables. Remember a well-fitting model doesn't always imply causality.
 :::
 
-
-
 # Extending the linear models
 
-## Categorical predictors in regression models.
+## Categorical predictors in regression models. {#linearmodelscategorical}
 
 Sometimes we may want to include in the model a variable that is not numeric, for example gender. To do that we create what we call a dummy variable, for example $x_i = 1$ if the person is female and $x_i = 0$ if it is a male. The resulting model will be: $$
 y_i=\beta_o+\beta_1x_i+\epsilon_i
@@ -1010,7 +1007,7 @@ We have k groups with n observations:
 
 in total there are $N=n_1+n_2+\cdots+n_k$ observations. The sample mean of one group is $\bar{y_j}=\frac{1}{n_j}\sum_{i=1}^{n_j}y_{ij}$ and the overal sample mean or grand mean is $\bar{\bar{y}}= \frac{1}{N}\sum_{j=1}^{k}\sum_{i=1}^{n_j}y_{ij}$
 
-The analysis of variance compute two important variables, one is the **treatment sum of squares (SST)**{#SSTTreatmentSumSquares} that look at the difference between the group means to the overall mean
+The analysis of variance compute two important variables, one is the **treatment sum of squares (SST)** that look at the difference between the group means to the overall mean
 
 $$
 SST=\sum_j\sum_i(\bar{y_j}-\bar{\bar{y}})^2 
@@ -1018,7 +1015,7 @@ $$ {#eq-SSTTreatmentSumSquares}
 
 and has k-1 degrees of freedom.
 
-If we divide this by its degrees of freedom we get what is called the **treatment mean square (MST)**{#MSTTreatmentMeanSquare} and measures the variability of the treatment means $\bar{y_j}$
+If we divide this by its degrees of freedom we get what is called the **treatment mean square (MST)** and measures the variability of the treatment means $\bar{y_j}$
 
 $$
 MST= \frac{SST}{k-1}
@@ -1359,4 +1356,3 @@ Example: Classifying iris species based on sepal and petal measurements.
 
 Example: Using Poisson regression (a type of GLM) to model the number of calls received by a call center per hour.
 :::
-
