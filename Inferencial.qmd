@@ -530,9 +530,9 @@ We want to roll n dice 10,000 times and keep these proportions. This random vari
 z = \frac{observed_p - p}{\sqrt{(p\times(1-p))/n)}}
 $$
 
-z should be normal with mean 0 and SD 1.
+$z$ should be normal with mean 0 and SD 1.
 
-Perform the simulation, and report what proportion of times z was larger than 2 in absolute value (CLT says it should be about 0.05).
+Perform the simulation, and report what proportion of times $z$ was larger than 2 in absolute value (CLT says it should be about 0.05).
 
 ```{r, fig.align='center', fig.width=10}
 n=100
@@ -574,7 +574,7 @@ The first of these questions leads to the idea of a **confidence interval**, whe
 
 Significance tests and confidence intervals are two sides of the same coin.
 
-Significance tests consider specific individual values, while confidence intervals give more general information about the parameter of interest. The latter are more flexible and are generally easier to interpret. Consider a significance test only when there is a single parameter value of interest which you could identify before looking at the data.
+*Significance tests* consider specific individual values, while *confidence intervals* give more general information about the parameter of interest. The latter are more flexible and are generally easier to interpret. Consider a significance test only when there is a single parameter value of interest which you could identify before looking at the data.
 
 # Confidence intervals
 
@@ -602,9 +602,9 @@ $$ {#eq-confidenceInterval}
 
 where SE is the *standard error* of the sample. If that is an average or a percentage then it is $SE= \frac{\sigma}{\sqrt{n}}$ as we saw in (@eq-standardErrorMean).
 
-And $z$ is the z-score corresponding to the desired confidence level. For example, if we would like to have a 95% confidence level, our $z=1.96$
+And $z$ is the $z$-score corresponding to the desired confidence level. For example, if we would like to have a 95% confidence level, our $z=1.96$
 
-This comes from calculating the value of z where 95 of our data is in the middle:
+This comes from calculating the value of $z$ where 95 of our data is in the middle:
 
 ```{r, fig.align='center', echo=FALSE}
 
@@ -632,7 +632,7 @@ text(1.96, dnorm(1.96), labels = "z = 1.96", pos = 4, col = "red")
 text(0, 0.1, labels = "95%", pos = 3, col = "blue")
 ```
 
-To get to that z value we use tables or we can use the quantile function qnorm:
+To get to that $z$ value we use tables or we can use the quantile function qnorm:
 
 ```{r}
 # Calculate the z-score for a 95% confidence interval
@@ -640,9 +640,9 @@ z_score <- qnorm(0.975)
 z_score
 ```
 
-The `0.975`value is used because for a 95% confidence interval, you need to capture the central 95% of the distribution, leaving 2.5% in each tail. Therefore, you look up the 97.5th percentile (0.975) to get the z-score.
+The `0.975`value is used because for a 95% confidence interval, you need to capture the central 95% of the distribution, leaving 2.5% in each tail. Therefore, you look up the 97.5th percentile (0.975) to get the $z$-score.
 
-For 90% confidence interval we are looking for the z value in the normalized distribution where 90% of the data falls in our center range and 10% outside, so 5% in each tail.
+For 90% confidence interval we are looking for the $z$ value in the normalized distribution where 90% of the data falls in our center range and 10% outside, so 5% in each tail.
 
 ```{r}
 # Calculate the z-score for a 95% confidence interval
@@ -681,7 +681,7 @@ $$
 which is approximately \[54.9%,61.1%\]
 :::
 
-The width of the confidence interval is determined by z and the standard error SE. To reduce that margin of error we have two options, we can increase the sample size or decrease the confidence level. The sample size is square rooted so this means that to cut the width of the confidence level in half we need four times the sample size, and to reduce it 10 times we would need 100 times the sample size.
+The width of the confidence interval is determined by $z$ and the standard error SE. To reduce that *margin of error* we have two options, we can increase the sample size or decrease the confidence level. The sample size is square rooted so this means that to cut the width of the confidence level in half we need four times the sample size, and to reduce it 10 times we would need 100 times the sample size.
 
 ## Getting the confidence intervals from a test result
 
@@ -863,9 +863,9 @@ A t-significance test is used to consider whether an individual parameter value 
 
 The situation in which the parameter has that value is referred to as the **null hypothesis**, and the situation in which it does not is referred as to the **alternative hypothesis**. For example: could be the difference between left eye value and right eye value actually be zero? Does a certain large company pay better than the national average, or could salaries there just be different through random chance?
 
-A test statistic measures how far away the data in our sample are from what we would expect if the null hypothesis $H_0$ were true.
+A *test statistic* measures how far away the data in our sample are from what we would expect if the null hypothesis $H_0$ were true.
 
-The most common test statistic is the z-statistic. It determines how far an observed value is from the expected value, measured in standard errors.We already saw this formula before (@eq-zscore)
+The most common test statistic is the *z*-statistic. It determines how far an observed value is from the expected value, measured in standard errors.We already saw this formula before (@eq-zscore)
 
 $$
 z= \frac{observed - expected}{SE}
@@ -907,11 +907,11 @@ z <- 1.27
 In other words, we have a 20.4% probability of observing 7 tails in 10 tosses given that the coin is fair.
 :::
 
-If the z-value is large, that means that there is a great difference between the observed and the expected, so large values of z are evidence against $H_0$. The strength of the evidence is measured by the $p$-value or observed significance level.
+If the $z$-value is large, that means that there is a great difference between the observed and the expected, so large values of $z$ are evidence against $H_0$. The strength of the evidence is measured by the $p$-value or observed significance level.
 
-The $p$-value is the probability of getting a value of z as extreme or more extreme than the observed, assuming the null hypothesis is true. As we can see in the graph below, as z becomes larger, there is less probability of finding data outside of its limits, so the $p$-value will be smaller. We multiply the $p$ value times 2 because we have to consider the two tails of the graph for this experiment.
+The $p$-value is the probability of getting a value of $z$ as extreme or more extreme than the observed, assuming the null hypothesis is true. As we can see in the graph below, as $z$ becomes larger, there is less probability of finding data outside of its limits, so the $p$-value will be smaller. We multiply the $p$ value times 2 because we have to consider the two tails of the graph for this experiment.
 
-The Z-score tells you how far an observed value is from the expected value in terms of standard errors. The $p$-value tells you the probability of observing a test statistic as extreme as, or more extreme than, the observed statistic, under the null hypothesis.
+The $z$-score tells you how far an observed value is from the expected value in terms of standard errors. The $p$-value tells you the probability of observing a test statistic as extreme as, or more extreme than, the observed statistic, under the null hypothesis.
 
 ```{r, fig.align='center', echo=FALSE}
 #| echo = FALSE
@@ -944,15 +944,15 @@ text(-1.27, dnorm(-1.27), labels = "z = -1.27", pos = 4, col = "red")
 
 ```
 
-The **result of a significance test is a** $p$-value, which measures how plausible the value of interest is given the sample data. A $p$-value close to zero indicates the value isn't compatible with the data. As a general rule, if p\<0.05, the value can be considered questionable.
+The **result of a significance test is a** $p$-value, which measures how plausible the value of interest is given the sample data. A $p$-value close to zero indicates the value isn't compatible with the data. As a general rule, if `p<0.05`, the value can be considered questionable.
 
-Ideally, you should identify a value of interest (the technical term is null hypothesis) before collecting the data. While this isn't always done in practice, doing so helps prevent wrong conclusions that come from the shotgun effect
+Ideally, you should identify a value of interest (the technical term is *null hypothesis*) before collecting the data. While this isn't always done in practice, doing so helps prevent wrong conclusions that come from the shotgun effect
 
 > If you run a test because you observed an interesting pattern in your sample data, the overall chance of encountering a significant result increases. Data is like firing a shotgun with many pellets---some are bound to hit the target purely due to randomness, if you create your null theory based on a characteristic observed in your sample you are likely going to find significance, even if that is not characteristics of the overall population and it was there just by chance.
 
 While a $p$-value might tell you that a parameter is different from a hypothesized value, it won't ever say how different it might be or if that difference is important.
 
-A t-significance test is appropriate for quantitative data under the exact same circumstances as a t-confidence interval: unless the sample is very small and the data is highly non-symmetric. If the data is relatively symmetric and there are no extreme outliers, n=10 is usually enough. Regardless of the shape of the data, n=30 is a safe threshold.
+A *t-significance test* is appropriate for quantitative data under the exact same circumstances as a t-confidence interval: unless the sample is very small and the data is highly non-symmetric. If the data is relatively symmetric and there are no extreme outliers, `n=10` is usually enough. Regardless of the shape of the data, `n=30` is a safe threshold.
 
 The value of $\mu$ (mu) is the value we want to test against (our null hypothesis)
 
@@ -1038,26 +1038,54 @@ print(t_test_result)
 
 ```
 
-### Common errors in significance testing
+### Common errors in significance testing {#testErrors}
 
-At the start of a significance test, the hypothesized value might be true or false. At the end, it may be rejected or not. Altogether, there are four possible combinations of these outcomes:
+At the start of a significance test, the hypothesized value might be true or false. At the end, it may be rejected or not, but we still don't know for sure if $H_0$ is true or not. If the null hypothesis holds, then we say that it is a *true null hypothesis* otherwise is a *false null hypothesis* Altogether, there are four possible combinations of these outcomes:
 
 |                       |           $H_0$ is true           |           $H_0$ is false            |
 |----------------------:|:---------------------------------:|:-----------------------------------:|
 |     $H_0$ is rejected | **Type I error** -false positive- |            True Negative            |
 | $H_0$ is not rejected |           True Positive           | **Type II error** -False negative - |
 
-Bear in mind, however, that we usually don't know whether the null theory is true or not.
-
 We call the *event* of rejecting the null hypothesis, when it is in fact true, a *Type I error*, we call the *probability* of making a Type I error, the *Type I error rate*, and we say that rejecting the null hypothesis when the $p$-value is less than $\alpha$, *controls* the Type I error rate so that it is equal to $\alpha$
 
-We may observe a $p$-value higher than alpha even when the null hypothesis is false. This is a type II error. We ask ourselfs this question: How big does N have to be in order to detect that the absolute value of the difference is greater than zero? Type II error control plays a major role in designing data collection procedures before you actually see the data, so that you know the test you will run has enough sensitivity or power. Power is 1 minus Type II error rate, or the probability that you will reject the null hypothesis when the alternative hypothesis is true.
+We may observe a $p$-value higher than alpha even when the null hypothesis is false. This is a Type II error. We ask ourselves this question: How big does $N$ have to be in order to detect that the absolute value of the difference is greater than zero? Type II error control plays a major role in designing data collection procedures before you actually see the data, so that you know the test you will run has enough sensitivity or power. Power is 1 minus Type II error rate, or the probability that you will reject the null hypothesis when the alternative hypothesis is true.
 
 There are several aspects of a hypothesis test that affect its power for a particular effect size. Intuitively, setting a lower $\alpha$ decreases the power of the test for a given effect size because the null hypothesis will be more difficult to reject (for example from 0.05 to 0.01). This means that for an experiment with fixed parameters (i.e., with a predetermined sample size, recording mechanism, etc), the power of the hypothesis test trades off with its Type I error rate, no matter what effect size you target.
 
-### Power calculations
+::: {.callout-orange, appearance="simple", icon="false"} Testing a Hypothesis
 
-we are going to use our mice dataset to see how we can calculate the power of our t test for type II errors. We consider that the data in the file is our entire population. If we look at the difference average weight for control vs treatment we appreciate that there is in fact a difference or around 9%:
+Conducting a hypothesis test typically proceeds in four steps. First, we define the null and alternative hypotheses. Next, we construct a test statistic that summarizes the strength of evidence against the null hypothesis. We then compute a $p$-value that quantifies the probability of having obtained a comparable or more extreme value of the test statistic under the null hypothesis. Finally, based on the $p$-value, we decide whether to reject the null hypothesis.
+
+Step 1: Define the Null and Alternative Hypotheses.
+
+The null hypothesis $H_0$ is the default state of belief about the world. The alternative hypothesis $H_a$ represent something different. We can think about rejecting the null hypothesis as making a discovery about our data, but if we fail to reject it, we do not know whether we failed to reject it because or sample was too small or whether we failed to reject it because the null hypothesis holds.
+
+Step 2. Construct the Test Statistic
+
+The way in which we construct our test statistic T depends on the nature of the null hypothesis that we are testing.
+
+Step 3. Compute the $p$-value
+
+The $p$-value is the area under the density function of the null distribution that falls to the right of the T statistic that we calculated in the previous step, and so, gives us the probability of observing a value such us or bigger than the T-Statistic under the assumption that the null hypothesis holds. In general, most commonly-used test statistic follow a well-known statistical distribution under the null hypothesis, such as normal distribution, t-distribution, a $X^2$ distribution or an $F$ distribution, provided that the sample size is sufficiently large and that some other assumptions hold.
+
+The $p$-value allow us to transform our test statistic, which is measured on some arbitrary and uninterpretable scale, into a number between 0 and 1 that can be easily interpreted.
+
+Step 4. Decide whether to reject the null hypothesis.
+
+Once we have computed the $p$-value, it remains for us to decide whether or not to reject the null hypothesis. If the $p$-value is sufficiently small, we want to reject it, but deciding what value is sufficiently small is up to us. :::
+
+### Statistical power
+
+Statistical power is the ability of a test to detect a specified effect. A test with low power is unlikely to rule out a hypothesized value, even if the value is false. That is, it has a high probability of type II error. Increasing the power of an inference technique requires a trade-off of one sort or another. In practice, this usually means using a larger sample. A preliminary power analysis can give decision-makers information about the study size needed to detect an effect of interest.
+
+A very simple example of how to do that: study planners can estimate the sample size needed to reduce the margin of error in the estimate of a population proportion using this formula: $$
+n = \left( \frac{1.96}{2E} \right)^2
+$$
+
+where $E$ is the required margin of error. According to this formula, a simple political poll requiring a 3% margin of error would need a sample size of approximately n=1067 respondents.
+
+We are going to use our mice dataset to see how we can calculate the power of our t test for type II errors. We consider that the data in the file is our entire population. If we look at the difference average weight for control vs treatment we appreciate that there is in fact a difference or around 9%:
 
 ```{r}
 dat <- read.csv("data/mice_pheno.csv") 
@@ -1115,9 +1143,81 @@ plot(Ns,power, type="b")
 
 There are on the internet several tools that allow you to calculate the the power you need for a particular standard deviation, sizes of n or the effect size you want to detect.
 
+When performing a hypothesis test over a large number of data points, the sample size can significantly impact the $p$-value.
+
+**Influence of Sample Size on the p-value**:
+
+*Increased Sensitivity*: A larger sample size increases the power of the test, meaning it's more likely to detect a true effect if one exists. This is because with more data, we get a clearer picture of the population, reducing the standard error.
+
+*Reduced Standard Error*: The standard error of the mean decreases as the sample size increases. This makes the test statistic (such as the $t$-score or $z$-score) larger if there is an effect, which can lead to a smaller $p$-value.
+
+*Smaller p-values*: With a large sample size, even small differences from the null hypothesis can result in statistically significant $p$-values. This is because the test becomes more sensitive to detecting small effects.
+
+Risk of Overinterpretation: While small $p$-values indicate statistical significance, they do not necessarily imply practical significance. In large datasets, it's crucial to consider the effect size and practical relevance of the results.
+
+Example: Consider a hypothesis test to determine whether a new drug has a different effect than a placebo. If you have a very large sample size, even a tiny difference in outcomes between the drug and placebo groups may produce a statistically significant $p$-value, even if the difference is not clinically meaningful.
+
+Visual Explanation: Imagine plotting the p-value as a function of sample size. Initially, as the sample size increases, the p-value decreases sharply, indicating stronger evidence against the null hypothesis. However, beyond a certain point, the $p$-value becomes very small for even minute differences, highlighting the need to interpret results in context.
+
+Large Sample Size: Leads to smaller $p$-values, higher test sensitivity, and potential for detecting trivial differences as significant.
+
+Interpret Results Carefully: Always consider effect size and practical significance, not just statistical significance.
+
+```{r, fig.align='center'}
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate synthetic data
+small_sample <- rnorm(30, mean = 0.03, sd = 1)
+large_sample <- rnorm(2000, mean = 0.03, sd = 1)
+
+# Function to calculate p-values for increasing sample sizes
+calculate_p_values <- function(data, max_size) {
+  p_values <- vector("numeric", max_size)
+  for (i in 2:max_size) {  # Start from 2 to avoid t-test error
+    sample_data <- data[1:i]
+    test_result <- t.test(sample_data, mu = 0)
+    p_values[i] <- test_result$p.value
+  }
+  return(p_values)
+}
+
+# Calculate p-values for both small and large samples
+small_sample_p_values <- calculate_p_values(small_sample, length(small_sample))
+large_sample_p_values <- calculate_p_values(large_sample, length(large_sample))
+
+# Combine results into a data frame
+p_values_df <- data.frame(
+  Sample_Size = c(1:length(small_sample), 1:length(large_sample)),
+  P_Value = c(small_sample_p_values, large_sample_p_values),
+  Sample_Type = rep(c("Small_Sample", "Large_Sample"), c(length(small_sample), length(large_sample)))
+)
+
+# Filter out NA values
+p_values_df <- p_values_df %>% filter(!is.na(P_Value))
+
+# Plot the p-values with facets
+ggplot(p_values_df, aes(x = Sample_Size, y = P_Value, color = Sample_Type)) +
+  geom_line() +
+  labs(title = "Influence of Sample Size on P-Value",
+       x = "Sample Size",
+       y = "P-Value",
+       color = "Sample Type") +
+  theme_minimal() +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "red") +
+  scale_color_manual(values = c("Small_Sample" = "blue", "Large_Sample" = "green")) +
+facet_wrap(~ Sample_Type, scales = "free_x", ncol = 1)+
+  ylim(0, 1)
+
+
+```
+
+In the graphs above we show how even a very tiny deviation (our data's $\mu =0.03$) from our null hypothesis ($\mu =0$) is showing as significant when the sample is above 1500 data points, the graph below shows the test over only a maximum of 30 data points and never detects the same difference as significant.
+
 ### Student's t test
 
-So far we have been using the t-test without explaining the student's t-distribution that is used under the hood. Let's explain it now.
+So far we have been using the t-test without explaining the *student's t-distribution* that is used under the hood. Let's explain it now.
 
 We will explain the student's t test with an example: The health guideline for lead in drinking water is a concentration of not more than 15 parts per billion (ppb). Five independent samples from a reservoir average 15.6 ppb. Is this sufficient evicence to conclude that the concentration $\mu$ in the reservoir is above the standard of 15 ppb?
 
@@ -1127,7 +1227,7 @@ $$
 z= \frac{observed - expected}{SE} = \frac{15.6-15}{SE}
 $$
 
-SE of average = $\frac{\sigma}{\sqrt{n}}$ but sigma is unknown. By the boostrap principle we know that we should be able to substitute the standard deviation of the population $\sigma$ with the standard deviation of our sample $s$ however for sample size less or equal to 20, then the normal curve is not a good enough approximation to the distribution of the z-statistic. Rather, an appropriate approximation is the Student's t-distribution with n-1 degrees of freedom.
+SE of average = $\frac{\sigma}{\sqrt{n}}$ but sigma is unknown. By the boostrap principle we know that we should be able to substitute the standard deviation of the population $\sigma$ with the standard deviation of our sample $s$ however for sample size less or equal to 20, then the normal curve is not a good enough approximation to the distribution of the $z$-statistic. Rather, an appropriate approximation is the Student's t-distribution with n-1 degrees of freedom.
 
 ```{r, fig.align='center', fig.height=4, fig.width=5}
 #| echo = FALSE
@@ -1174,7 +1274,7 @@ $$ {#eq-confidenceIntervalTStudent}
 **z-test vs t-test**
 :::
 
-The main differences between a t-test and a z-test lie in their assumptions and applications:
+The main differences between a t-test and a $z$-test lie in their assumptions and applications:
 
 **T-Test**
 
@@ -1206,25 +1306,25 @@ The main differences between a t-test and a z-test lie in their assumptions and 
 
     -   T-test: Student's t-distribution.
 
-    -   Z-test: Standard normal distribution.
+    -   $z$-test: Standard normal distribution.
 
 2.  **Population Variance**:
 
     -   T-test: Unknown and estimated from the sample.
 
-    -   Z-test: Known.
+    -   $z$-test: Known.
 
 3.  **Sample Size**:
 
     -   T-test: Small sample sizes (n \< 30).
 
-    -   Z-test: Large sample sizes (n \> 30).
+    -   $z$-test: Large sample sizes (n \> 30).
 
 4.  **Degrees of Freedom**:
 
     -   T-test: Required.
 
-    -   Z-test: Not required.
+    -   $z$-test: Not required.
 
 [**Example Scenarios**]{.underline}
 
@@ -1233,7 +1333,7 @@ The main differences between a t-test and a z-test lie in their assumptions and 
 -   **Z-Test**: Testing the average height of a large population where the population variance is known.
 :::
 
-T-test are the most commonly used test in real life, but if we meet all the criteria to perform a z-test we can do it like this in r:
+T-test are the most commonly used test in real life, but if we meet all the criteria to perform a $z$-test we can do it like this in r:
 
 ```{r}
 library(BSDA)
@@ -1306,7 +1406,7 @@ ci_lower
 ci_upper
 ```
 
-Another way of manually calculating the confidence interval is using a z-score
+Another way of manually calculating the confidence interval is using a $z$-score
 
 In the example below we use 95%: (qnorm(0.975) is the $z-score$ corresponding for 95% conf. level)
 
@@ -1318,7 +1418,7 @@ proportion - margin_of_error
 proportion + margin_of_error
 ```
 
-For different confidence levels you will need to find the correct z-score
+For different confidence levels you will need to find the correct $z$-score
 
 ### Non-binary categorical variables
 
@@ -1631,17 +1731,6 @@ ggplot(benford_df, aes(x = first_digit,
 our $p$-value indicates that we cannot reject the null hypothesis, meaning in this case that the distribution of the first digit in towns across US is compatible with Benford's law.
 :::
 
-### Statistical power
-
-Statistical power is the ability of a test to detect a specified effect. A test with low power is unlikely to rule out a hypothesized value, even if the value is false. That is, it has a high probability of type II error. Increasing the power of an inference technique requires a trade-off of one sort or another. In practice, this usually means using a larger sample. A preliminary power analysis can give decision-makers information about the study size needed to detect an effect of interest.
-
-A very simple example of how to do that: study planners can estimate the sample size needed to reduce the margin of error in the estimate of a population proportion using this formula:\
-$$
-n = \left( \frac{1.96}{2E} \right)^2
-$$
-
-where $E$ is the required margin of error. According to this formula, a simple political poll requiring a 3% margin of error would need a sample size of approximately n=1067 respondents.
-
 # Two-Sample testing
 
 Two-sample testing allows for the comparison of two independent groups or populations to assess if there are statistically significant differences between their means, proportions, or other relevant measures.
@@ -1698,7 +1787,7 @@ In reality we will only have access to one of the samples, and we have to be abl
 
 The significance test for two samples uses the null hypothesis that there is no difference in the means of the two population means. The $p$-value will be used to reject or not that null hypothesys.
 
-we can use a z-test for the difference between the two means:
+we can use a $z$-test for the difference between the two means:
 
 $$
 z = \frac{observed\ difference- expected\ difference}{SE\ of\ difference} = \frac{(\bar{x_2} - \bar{x_1})-0}{SE\ of\ difference}
@@ -1711,7 +1800,7 @@ SE(\bar{x_2} - \bar{x_1}) = \sqrt{ (SE(\bar{x_1}))^2 +(SE(\bar{x_2}))^2}
 $$
 
 ::: exercise-box
-Exercise: two-sample z-test (proportions.)
+Exercise: two-sample $z$-test (proportions.)
 
 *Last month, the president's approval rating in a sample of 1000 likely voters was 55%. This month, a poll of 1,500 likely voters resulted in a rating of 58%. Is this sufficient evidence to conclude that the rating has changed?*
 
@@ -1745,7 +1834,7 @@ $$
 z = \frac{(0.58 - 0.55) - 0}{0.0202} = \frac{0.03}{0.0202} \approx 1.49
 $$
 
-The calculated z-value is approximately 1.49. To determine if this is statistically significant, you would compare this z-value to the critical value from the standard normal distribution (typically 1.96 for a 95% confidence level). Since 1.49 is less than 1.96, you would fail to reject the null hypothesis at the 95% confidence level, indicating that there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
+The calculated $z$-value is approximately 1.49. To determine if this is statistically significant, you would compare this $z$-value to the critical value from the standard normal distribution (typically 1.96 for a 95% confidence level). Since 1.49 is less than 1.96, you would fail to reject the null hypothesis at the 95% confidence level, indicating that there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
 
 The $p$-value can be calculated using standard normal distribution tables or software
 
@@ -1756,12 +1845,26 @@ pValue
 
 Since this is a two-tailed test (we are checking if the approval rating has changed, not just increased or decreased), we need to consider both tails of the distribution, so we double our values: The $p$-value is calculated as $2 \times (1 - \text{cumulative probability})$. $p = 2 \times (1 - 0.9318) = 2 \times 0.0682 = 0.1364$
 
-The $p$-value for the z-value of 1.49 is approximately 0.1364. Since this $p$-value is greater than the typical significance level of 0.05, we fail to reject the null hypothesis. This means there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
+The $p$-value for the $z$-value of 1.49 is approximately 0.1364. Since this $p$-value is greater than the typical significance level of 0.05, we fail to reject the null hypothesis. This means there is not sufficient evidence to conclude that the president's approval rating has changed significantly.
 :::
 
 The exercise above shows how to calculate the $p$ value for proportions, if we are working with average values instead of proportions the calculation is the same, only thing to consider is that in this case is that Standard deviation of each individual sample will be calculated using the formula for the standard deviation for the mean $SE(\bar{x_1})= \frac{\sigma_1}{\sqrt{n_1}}= \frac{s_1}{\sqrt{n_1}}$ . If the sample sizes are not large, then the $p$-value needs to be computed from the t-distribution instead.
 
 ### The Welch Two Sample t-test
+
+If we have two sets, one control and one test, their means being $\mu_t$ and $\mu_c$ the two-sample t-statistic is defined as:
+
+$$
+T = \frac{\hat\mu_t-\hat\mu_c}{s\sqrt{\frac{1}{n_t}+\frac{1}{n_c}}}
+$$ {#eq-two-sampletstatistic}
+
+where
+
+$$
+s=\sqrt{\frac{(n_t-1)s^2_t+(n_c-1)s^2_c}{n_t+n_c-2}}
+$$
+
+is an estimator of the pooled standard deviation of the two samples. Here, $s^2_t$ and $s^2_c$ are unbiased estimators of the variance of our metric in the treatment and control group, respectively. A large (absolute) value of T provides evidence against $H_0$
 
 In the example below we are going to use the attrition dataset to see if the average age of employees in two different departments is different?
 
@@ -1790,12 +1893,12 @@ report(testResult)
 
 We can use the formula for the standard error of the difference to also do a confidence interval calculation. The confidence interval for $p_2-p_1$ is $(\hat{p_2}-\hat{p_1}) \mp z \times SE(\hat{p_2}-\hat{p_1})$
 
-were z is the z-score for the confidence level we are interested in.
+were $z$ is the $z$-score for the confidence level we are interested in.
 
 ::: exercise-box
 in our example about the voters approval of the president:
 
-the z-score value for a confidence level of 95% is 1.959964
+the $z$-score value for a confidence level of 95% is 1.959964
 
 $$
 58-55 \mp 1.96 \times 0.0202  \approx [-0.0705,0.0105]
@@ -1895,7 +1998,7 @@ In light of the results we cannot reject the null hypothesis that they have the 
 
 ### Pooled estimate:
 
-going back to our recent exercise of the voters's approval rate, we concluded that the two different surveys did not significantly differed.
+Going back to our recent exercise of the voters's approval rate, we concluded that the two different surveys did not significantly differed.
 
 Since we could not reject the null hypothesis that the two samples are representing the same approval for the candidate, we can combine the two of them to find a better estimate of our Standard Error
 
@@ -1914,9 +2017,9 @@ s^2_{pooled}=\frac{(n_1-1)s^2_1+(n_2-1)s^2_2}{n_1+n_2-2}
 $$
 
 ::: {.callout-orange appearance="simple" icon="false"}
-**Two-Sample Z-Test vs Two sample T-test vs Welch's Two-Sample T-Test**
+**Two-Sample** $z$-Test vs Two sample T-test vs Welch's Two-Sample T-Test
 
-**Two sample Z-test**
+**Two sample** $z$-test
 
 When to Use:
 
@@ -1961,7 +2064,7 @@ When to Use:
 
 ## Paired-t test
 
-What do we do when we have two samples, but they are not independent from each other? In this case we cannot use the classical two-sample z-test or two-sample t-test
+What do we do when we have two samples, but they are not independent from each other? In this case we cannot use the classical two-sample $z$-test or two-sample t-test
 
 We want to answer the question: Do husbands tend to be older than their wives?
 
@@ -2146,7 +2249,7 @@ text( rep(1.05,length(ws)), xrank, ws, cex=0.8)
 W <-sum(ws) 
 ```
 
-`W` is the sum of the ranks for the first group relative to the second group. We can compute an exact $p$-value for $W$ based on combinatorics. We can also use the CLT since statistical theory tells us that this `W` is approximated by the normal distribution. We can construct a z-score as follows:
+`W` is the sum of the ranks for the first group relative to the second group. We can compute an exact $p$-value for $W$ based on combinatorics. We can also use the CLT since statistical theory tells us that this `W` is approximated by the normal distribution. We can construct a $z$-score as follows:
 
 ```{r}
 n1<-length(x);n2<-length(y)
@@ -2156,13 +2259,13 @@ print(Z)
 
 Here the `Z` is not large enough to give us a $p$-value less than 0.05. These are part of the calculations performed by the R function `wilcox.test`.
 
-we are not going to get into mathematical detail about these calculations, but the formula for the z score here is $$
+we are not going to get into mathematical detail about these calculations, but the formula for the $z$ score here is $$
  z=\frac{U - \frac{n_2}{2}}{\sqrt{\frac{n_2(n_1+n_2+1)}{12n_1}}}
 $$ and to perform this test in r we use: `wilcox.test(x,y)`
 
 ## Two-samples of binary data
 
-Two observed proportions for a single binary variable can be compared directly using the **two-proportion z-confidence interval** and **two-proportion z-test**. These apply when there are at least 5 observations of each type in each of the two groups. The formulas are relatively simple. For example a 95% confidence interval for the difference between proportions is
+Two observed proportions for a single binary variable can be compared directly using the **two-proportion** $z$-confidence interval and **two-proportion** $z$-test. These apply when there are at least 5 observations of each type in each of the two groups. The formulas are relatively simple. For example a 95% confidence interval for the difference between proportions is
 
 $$
 (p_2-p_1) = (\hat p_2-\hat p_1) \pm 1.96 \sqrt{\frac{\hat p_2(1-\hat p_2)}{n_2}+\frac{\hat p_1(1-\hat p_1)}{n_1}} 
@@ -2516,7 +2619,7 @@ The **validation set approach**. With this approach you split your data set into
 
 # Choosing the right test for your data
 
-Source: Bevans, R. (2023, June 22). Choosing the Right Statistical Test \| Types & Examples. Scribbr. Retrieved November 18, 2024, from https://www.scribbr.com/statistics/statistical-tests/
+Source: [Bevans, R. (2023, June 22). Choosing the Right Statistical Test Types & Examples. Scribbr. Retrieved November 18, 2024](https://www.scribbr.com/statistics/statistical-tests/)
 
 ### **Statistical assumptions**
 

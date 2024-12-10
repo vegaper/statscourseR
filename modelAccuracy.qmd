@@ -48,7 +48,7 @@ $$ {#eq-MSEMeanSquaredError}
 
 that is the squared difference between the observed values and the predicted values divided by the number of data points.
 
-If we remember the formula for the RSS(@eq-RSSsimpleRegression) we see that MSE formula can be written as:
+If we remember the formula for the [RSS](/linearModels.html#eq-RSSsimpleRegression) we see that MSE formula can be written as:
 
 $$
 MSE = \frac{1}{n} RSS
@@ -140,7 +140,7 @@ We already talked about [how to assess the slope of an individual predictor](#Me
 
 The [Residual Standard Error (RSE)](#ResidualStandardError) provides an absolute measure of lack of fit of the model to the data. But since it is measured in the units of Y , it is not always clear what constitutes a good RSE. The $R^2$ statistic provides an alternative measure of fit. It takes the form of a proportion ---the proportion of variance explained--- and so it always takes on a value between 0 and 1, and is independent of the scale of Y .
 
-We already saw the [residual sum of squared (RSS)](#Residualsumofsquares) RSS is a measure of the discrepancy between the actual data and the model's predictions. It represents the sum of the squared differences between the observed values and the predicted values.
+We already saw the [residual sum of squared (RSS)](/linearModels.html#Residualsumofsquares) RSS is a measure of the discrepancy between the actual data and the model's predictions. It represents the sum of the squared differences between the observed values and the predicted values.
 
 $$
 RSS=\sum^n_{i=1}(y_1-\hat{y_1})^2 
@@ -164,7 +164,7 @@ A larger R-squared value indicates a better fit of the model to the data. An R-s
 
 However, it can still be challenging to determine what is a good R2 value, and in general, this will depend on the application. For instance, in certain problems in physics, we may know that the data truly comes from a linear model with a small residual error. In this case, we would expect to see an R2 value that is extremely close to 1, and a substantially smaller R2 value might indicate a serious problem with the experiment in which the data were generated. On the other hand, in typical applications in biology, psychology, marketing, and other domains, the linear model is at best an extremely rough approximation to the data, and residual errors due to other unmeasured factors are often very large. In this setting, we would expect only a very small proportion of the variance in the response to be explained by the predictor, and an R2 value well below 0.1 might be more realistic.
 
-The $R^2$ statistic is a measure of the linear relationship between X and Y, and if we recall [correlation](#correlation-coefficient), it also measures the linear relationship between X and Y, this suggest that we might be able to use correlation $r-Cor(X,Y)$ instead of $R^2$ in order to assess the fit of the model, and in fact, it can be shown that in the simple linear regression setting, $R^2 = r^2$.
+The $R^2$ statistic is a measure of the linear relationship between X and Y, and if we recall [correlation](@/linearModels.html#correlation-coefficient), it also measures the linear relationship between X and Y, this suggest that we might be able to use correlation $r-Cor(X,Y)$ instead of $R^2$ in order to assess the fit of the model, and in fact, it can be shown that in the simple linear regression setting, $R^2 = r^2$.
 
 ## Residual Standard Error (RSE) {#ResidualStandardError}
 
@@ -748,7 +748,7 @@ coef(regfit.best, min)
 
 The Monte Carlo method is a powerful statistical technique used to understand the impact of risk and uncertainty in prediction and forecasting models.
 
-If for example we want to know the average height of all people living in USA, we estimate the parameter we are interested in (average height of the population) using a statistic estimator that is the average height of a sample of the population drawn at random. $\theta$ is the parameter we want to calculate and we use $\hat{\theta}$ that is the average o four sample. By the law of large numbers, the approximation error can be made arbitrarily small by using a large enough sample size.
+If for example we want to know the average height of all people living in USA, we estimate the parameter we are interested in (average height of the population) using a statistic estimator that is the average height of a sample of the population drawn at random. $\theta$ is the parameter we want to calculate and we use $\hat{\theta}$ that is the average of our sample. By the law of large numbers, the approximation error can be made arbitrarily small by using a large enough sample size.
 
 What if we are interested in an estimator $\hat{\theta}$ for some parameter $\theta$ of the population and the normal approximation is not valid for that estimator? In such situations, simulations can often be used to estimate the parameters.
 
@@ -846,11 +846,11 @@ Now we will see some techniques that try to solve some of those drawbacks.
 
 #### K-fold Cross-validation
 
-*K-fold cross validation* is a widely used approach for estimating test error. The idea is to randomly divide the data into K equal-sized parts. We leave out part $k$, fit the model to the other $K-1$ parts (combined) and then obtain predictions for the left-out $kth$ part.This is done in turn for each part k, and then the results are combined. K is usually between 5 and 10. Let's the K parts be $C_1,C_2,\dots,C_k$. where $C_k$ denotes the indices of the observations in part k. There are $n_k$ observations in part k. $$
+*K-fold cross validation* is a widely used approach for estimating test error. The idea is to randomly divide the data into $K$ equal-sized parts. We leave out part $k$, fit the model to the other $K-1$ parts (combined) and then obtain predictions for the left-out $kth$ part.This is done in turn for each part k, and then the results are combined. $K$ is usually between 5 and 10. Let's the $K$ parts be $C_1,C_2,\dots,C_k$. where $C_k$ denotes the indices of the observations in part k. There are $n_k$ observations in part k. $$
 CV_{(K)}= \sum^K_{k=1}\frac{n_k}{n} MSE_k
 $$ {#eq-kfoldCrossValidationErrorRate}
 
-Where: $CV_{(K)}$: This represents the cross-validation error estimate for K-fold cross-validation. $\sum^K_{k=1}$: This indicates that the sum is taken over all K folds. $\frac{n_k}{n}$: This is the proportion of the total data used in the k-th fold, where $n_k$ is the number of observations in the k-th fold and $n$ is the total number of observations. $MSE_k$: This is the Mean Squared Error for the k-th fold. $MSE_k=\sum_{i\epsilon C_k}(y_i-\hat{y_i})^2/n_k$ and $\hat{y_i}$ is the fit for the observation i, obtained from the data with the part k removed.
+Where: $CV_{(K)}$: This represents the cross-validation error estimate for K-fold cross-validation. $\sum^K_{k=1}$: This indicates that the sum is taken over all $K$ folds. $\frac{n_k}{n}$: This is the proportion of the total data used in the k-th fold, where $n_k$ is the number of observations in the k-th fold and $n$ is the total number of observations. $MSE_k$: This is the Mean Squared Error for the k-th fold. $MSE_k=\sum_{i\epsilon C_k}(y_i-\hat{y_i})^2/n_k$ and $\hat{y_i}$ is the fit for the observation i, obtained from the data with the part $K$ removed.
 
 One special use of the k-fold cross validation is setting K=n, this is called *leave-one-out cross validation (LOOCV)*: each observation is left out and used as a validation set, while the whole set of other data points are used for training the model. Leave one out cross validation for linear or polynomial model uses this formula: $$
 CV_{(n)}=\frac{1}{n} \sum_{i=1}^n \left(\frac{y_i-\hat{y_i}}{1-h_i} \right)^2
@@ -1002,7 +1002,7 @@ coef(reg.best, 10)
 
 The *bootstrap* is a flexible and powerful statistical tool that can be used to quantify the uncertainty associated with a given estimator or statistical method. For example, it can provide an estimate of the standard error of a coefficient, or a confidence interval for that coefficient.
 
-We have an estimate $\hat{\theta}$ for a parameter $\theta$ and want to know how accurate our estimate is. For that we need to know the SE of the estimate or give a confidence interval for the parameter $\theta$. The bootstrap can do this in quite general settings:
+We have an estimate $\hat{\theta}$ for a parameter $\theta$ and want to know how accurate our estimate is. For that we need to know the $SE$ of the estimate or give a confidence interval for the parameter $\theta$. The bootstrap can do this in quite general settings:
 
 Example $\theta$= average height of all people in the US. It is unknown but estimated with the average height of 100 randomly selected people. We can't compute the population mean because we can't access the whole population. So we ' plug in' the sample in place of the population and compute the mean of the sample instead. The rationale for the plug-in principle is that the sample mean will be close to the population mean because the sample histogram is close to the population histogram.
 
@@ -1103,7 +1103,8 @@ summary(lm(mpg ~ horsepower, data= Auto))$coef
 
 these standard errors are calculated using the formulas we saw in [Assessing the Accuracy of the Coefficient Estimates and Confidence Intervals](#assessing-the-accuracy-of-the-coefficient-estimates-and-confidence-intervals)
 
-The formula for the slope: (@eq-standardErrorSlope) and for the intercept1:(@eq-standardErrorIntercept)
+The [formula for the slope](/linearModels.html#eq-standardErrorSlope) and for the [intercept](/linearModels.html#eq-standardErrorIntercept)
+
 
 These formulas rely on certain assumptions (out of the scope for this document, check the ISLR book for more info). The bootstrap approach does not rely on any of these assumptions, and so, it is likely giving more accurate estimate of the standard errors than the summary function
 :::
@@ -1112,7 +1113,7 @@ If the data is a time series, we can't simply sample the observations with repla
 
 What people uses for time series is the *block boostrap*, it divides the data up into blocks and we assume that in between blocks, the data is independent.
 
-Another instance where bootstrap is not a good approach is for estimating the prediction error in cross-validation problems. In cross-validation, each of the K validation folds is distinct from the other K-1 folds used for training, there is no overlap, this is crucial for its success. But each bootstrap sample has significant overlap with the original data. About two-thirds of the original data points appear in each bootstrap sample. This will cause the bootstrap to seriously underestimate the true prediction error.
+Another instance where bootstrap is not a good approach is for estimating the prediction error in cross-validation problems. In cross-validation, each of the $K$ validation folds is distinct from the other K-1 folds used for training, there is no overlap, this is crucial for its success. But each bootstrap sample has significant overlap with the original data. About two-thirds of the original data points appear in each bootstrap sample. This will cause the bootstrap to seriously underestimate the true prediction error.
 
 ::: exercise-box
 Estimating the Accuracy of a Statistic of Interest
@@ -1389,3 +1390,261 @@ $$ {#eq-dimensionReductionFunction}
 The first principal component is that (normalized) linear combination of the variables with the largest variance. The second principal component has largest variance, subject to being uncorrelated with the first etc.
 
 **Partial Least Squares (PLS)** Like PCR, PLS is a dimension reduction method, which first identifies a new set of features that are linear combinations of the original features, and then fits a linear model. After standardizing the $p$ predictors, PLS computes the first direction $Z_1$ by setting each $\phi_{ij}$ equal to the coefficient from the simple linear regression of Y onto $X_j$, hence, PLS places the highest weight on the variables that are most strongly related to the response. Subsequent directions (Z) are found by taking residuals and then repeating the above process.
+
+# Multiple hypotesis testing
+[In the Common Errors in significance testing](#testErrors) we saw that rejecting $H_0$ if the $p$-value is below a certain $\alpha$ threshold is a simple way to control Type I error. But now suppose that we wish to test $m$ null hypothesis. If we reject all null hypothesis for which the $p$-value falls bellow our $\alpha$, then how many Type I errors should we expect to make?
+
+Suppose that we flip 1,024 fair coins ten times each. Then we would expect (on average) one coin to come up *all tails*. (There’s a $\frac{1}{2}^{10} = \frac{1}{1,024}$ chance that any single coin will come up all tails. So if we flip 1,024 coins, then we expect one coin to come up all tails, on average). If one of our coins comes up all tails, then
+we might therefore conclude that this particular coin is not fair. In fact, a standard hypothesis test for the null hypothesis that this particular coin is fair would lead to a p-value below $0.002^{12}$ But it would be incorrect to
+conclude that the coin is not fair: in fact, the null hypothesis holds, and we just happen to have gotten ten tails in a row by chance.
+
+```{r, fig.align='center'}
+# Load necessary libraries
+library(tidyverse)
+
+# Set seed for reproducibility
+set.seed(1)
+
+# Function to simulate coin flips
+flip_coins <- function(num_coins, num_flips) {
+  results <- matrix(sample(c("H", "T"), num_coins * num_flips, replace = TRUE), ncol = num_flips)
+  apply(results, 1, function(coin) all(coin == "T"))
+}
+
+# Parameters
+num_coins <- 1024
+num_flips <- 10
+
+# Simulate the coin flips
+all_tails <- flip_coins(num_coins, num_flips)
+
+# Count how many coins came up all tails
+num_all_tails <- sum(all_tails)
+
+# Probability of getting all tails in 10 flips of a fair coin
+prob_all_tails <- 0.5^10
+
+# Output results
+cat("Number of coins that came up all tails:", num_all_tails, "\n")
+
+# Visualize the distribution of results
+results_df <- data.frame(
+  Coin = 1:num_coins,
+  All_Tails = all_tails
+)
+
+ggplot(results_df, aes(x = Coin, y = as.numeric(All_Tails))) +
+  geom_point() +
+  labs(title = "Distribution of Coins Coming Up All Tails",
+       x = "Coin Number",
+       y = "All Tails (1 = Yes, 0 = No)") +
+  theme_minimal()
+```
+
+
+When testing a huge number of null hypotheses, we are bound to get some very small p-values by chance. If we make a decision about whether to reject each null hypothesis without accounting for the fact that we have performed a very large number of tests, then we may end up rejecting a great number of true null hypotheses. 
+
+If we choose to reject the null hypothesis when the $p$-value is less than 0.01, then there is a 1% chance of making a false rejection. So if we have $m$ number of hypotheses we want to test, our probability of falsely rejecting the null hypothesis will be $m\times 0.01$ and that will be our number of Type I errors. 
+How can we control fot this situation?
+
+## Family-Wise Error Rate (FWER)
+
+The family-wise rate is the probability of making *at least* one Type I error when conducting hypothesis tests.
+
+When performing the test, we know how many hypotheses we have tested $m$, we also know how many $H_0$ we have rejected, but we don't know if we rejected them correctly or not, but we can approximate that. 
+$$
+FWER = 1 - (1 - \alpha)^m
+$$
+
+```{r, fig.align='center', echo=FALSE}
+# Load necessary libraries
+library(tidyverse)
+
+# Define the number of hypotheses
+num_hypotheses <- seq(1, 500, by = 1)
+
+# Define the alpha values
+alpha_values <- c(0.05, 0.01, 0.001)
+
+# Calculate the FWER for each alpha value and number of hypotheses
+fwer <- function(alpha, m) {
+  1 - (1 - alpha)^m
+}
+
+# Create a data frame for plotting
+fwer_df <- expand.grid(Hypotheses = num_hypotheses, Alpha = alpha_values) %>%
+  mutate(FWER = fwer(Alpha, Hypotheses))
+
+# Plot the FWER for different alpha values and numbers of hypotheses
+ggplot(fwer_df, aes(x = Hypotheses, y = FWER, color = factor(Alpha))) +
+  geom_line(size = 1) +
+  labs(title = "Family-Wise Error Rate vs. Number of Hypotheses (Log Scale)",
+       x = "Number of Hypotheses (log scale)",
+       y = "Family-Wise Error Rate",
+       color = "Alpha") +
+  theme_minimal() +
+  scale_color_manual(values = c("0.05" = "yellow", "0.01" = "blue", "0.001" = "black")) +
+  scale_x_log10() +  # Apply logarithmic scale to x-axis
+  ylim(0, 1)+
+  geom_hline(yintercept = 0.1, linetype = "dotted", color = "red")
+
+
+```
+
+## Bonferroni Method for Controlling FWER
+The *Bonferroni* method adjusts the significance level (𝛼) for each individual hypothesis test to ensure that the overall probability of making at least one Type I error (false positive) remains controlled.
+Given a number of hypotheses being tested $m$, we adjust the significance level for each test $\alpha_{adj}$ by dividing the desired significance level $\alpha$ byt the number of hypotheses $m$ 
+$$
+\alpha_{adj} = \frac{\alpha}{m}
+$$
+Now we compare the p-values of each test against the adjusted significance level and reject those null hypothesis for any test with a $p$-value less than or equal to $\alpha_{adj}$
+
+We now consider the Fund dataset. It contains data for 50 months for a list of managers and their excess return, this is, the percentage points difference between the funds managed by these people compared with the stock market in general for the same period.
+In the table below we show the stats for the first 5 manangers in our list. 
+
+If we control the Type I error at level α = 0.05 for each fund manager separately, then we will conclude that the first and third managers have significantly non-zero excess returns; in other words, we will reject H01 : μ1 = 0 and H03 : μ3 = 0. However, as discussed in previous sections, this procedure does not account for the fact that we have tested multiple hypotheses, and therefore it will lead to a FWER greater than 0.05. If we instead wish to control the FWER at level 0.05, then, using a Bonferroni correction, we must control the Type I error for each individual manager at level α/m = 0.05/5 = 0.01. Consequently, we will reject the null hypothesis only for the first manager, since the p-values for all other managers exceed 0.01.
+
+```{r}
+fund <- ISLR2::Fund
+managers <- numeric(0)
+pvals <- numeric(0)
+tstat <- numeric(0)
+means <- numeric(0)
+sds <- numeric(0)
+for (i in 1:5){
+  testResult <- t.test(fund[,i], mu = 0) 
+managers <- c(managers, i)
+pvals<- c(pvals, round(testResult$p.value,3))
+tstat<- c(tstat, round(testResult$statistic,2))  
+means<- c(means, round(mean(fund[,i]),1))
+sds <- c(sds, round(sd(fund[,i]),1))
+}
+df<- data.frame(manager = managers, mean = means, StandDev = sds,  tStatistic = tstat,pValues = pvals)
+df
+
+```
+The Bonferroni correction is by far the best-known and most commonly used
+multiplicity correction in all of statistics. Its ubiquity is due in large
+part to the fact that it is very easy to understand and simple to implement,
+and also from the fact that it successfully controls Type I error regardless
+of whether the m hypothesis tests are independent. However, as we will see,
+it is typically neither the most powerful nor the best approach for multiple
+testing correction. In particular, the Bonferroni correction can be quite
+conservative, in the sense that the true FWER is often quite a bit lower
+than the nominal (or target) FWER.
+
+## Holm's Method for controlling FWER
+
+For this method we start like with the Bonferroni, we just do our test and calculate our $p$-values as per normal, and then we sort those $p$-values from smallest to greatest, and one by one we calculate L that validates this formula  
+$$
+L = \min \left\{ j : p_{j} > \frac{\alpha}{m+1-j} \right\}
+$$
+where $j$ is the index of the hypotheses tested, so $j= 1,2,\dots,m$ 
+
+Once we have L, we reject all null hypothesis that are below L.
+
+```{r}
+df <- df %>% arrange(df$pValues)
+alpha <- 0.05
+m = 5
+j=1
+
+for (i in df$pValues){
+  df$reject = df$pValues < (alpha/(m+1-j))
+  j=j+1
+  
+}
+df
+```
+
+We see that in this setting, we reject the null hypothesis for managers 1 and 3 using Holm's method. 
+
+Holm's method will reject at least as many hypothesis than the Bonferroni method, but usually rejects more. 
+
+## Benjamini-Hochberg Procedure to control FDR
+
+This method is useful when we have a large number of hypothesis to test and we are ok with rejecting a percentage of true null Hypotheses. 
+- First we specify $q$ that is the level at which we wish to control FDR
+- Compute the $p$-values for each of our hypotheses
+- Order the $p$-values from smallest to greatest
+- Define L where
+$$
+L= max \{ j:p_{(j)} < qj/m\}
+$$
+- Reject all null hypotheses $H_{0j}$ for which $p_j \leq p_{(L)}$ 
+
+We are going to use now the full dataset of Fund with 2000 managers and apply the Bonferroni method and the Benjamini-Hochberg method.
+
+```{r}
+fund <- ISLR2::Fund
+managers <- numeric(0)
+pvals <- numeric(0)
+bonfRej <- numeric(0)
+alpha = 0.05
+m= length(fund)
+
+#bonferroni rejections
+for (i in 1:m){
+  testResult <- t.test(fund[,i], mu = 0) 
+managers <- c(managers, i)
+pvals<- c(pvals, round(testResult$p.value,3))
+bonf <- testResult$p.value <= (alpha/m)
+bonfRej <- c(bonfRej, bonf)
+}
+df<- data.frame(manager = managers, pValues = pvals, bonfRej = bonfRej)
+
+
+#Benjamini-Hochberg rejections
+df <- df %>% arrange(df$pValues)
+alpha <- 0.05
+j=1
+
+for (i in df$pValues){
+  df$BHreject = df$pValues < (alpha*j)/m
+  j=j+1
+}
+
+ggplot(df, aes(x = manager, y = pValues, color = BHreject)) +
+  geom_point() +
+  scale_x_log10()+
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(title = "Plot of log(manager) vs pvalues",
+       x = "log(manager)",
+       y = "pvalues",
+       color = "BHreject") +
+  theme_minimal()
+
+sum(df$bonfRej)
+sum(df$BHreject)
+```
+Due to the large number of $m$, the Bonferroni method does not reject any hypothesys, while Benjamin-Hochberg rejects 289, but we have to remember that we expect 5% of them will be false rejections at our level of alpha. 
+
+## Resampling approaches 
+
+So far, we have assumed that we want to test some null hypothesis with some statistic T and that we know, or can assume, the distribution of T under $H_0$, this allows us to compute the $p$-value, but what if this theoretical null distribution is unknown?
+
+We are only going to see this approach for a two-sample t-Test, and this method cannot be automatically used for other types of tests.
+
+We have two samples $X$ and $Y$ and the $H_0$ is that the means of those two samples is the same. As we have seen in the central limit theorem if N is big enough, we know that T approximately follows a normal distribution under $H_0$, but if n is small, then we don't know the theoretical null distribution of T, so we can can use re sampling and let the computer find out the right distribution. 
+
+ - Compute the two-sample $t$-statistic $T$ on the original data X and Y.
+ - choose a large number (like 1000 or higher) $B$
+ - Randomly shuffle the X and Y observations and select two samples $x^*$ and $y^*$
+ - Compute a two sample $t$-statistic on the shuffled data $T^*$ 
+ - repeat the two last steps B times. 
+ - the $p$-value is given by the fraction of the times that the $t$-statistic on the shuffled data exceeded an absolute value, the $t$-statistic on the real data.
+
+$$
+ p=\frac{ \sum^B_{b=1}1_{(|T^{*b}| \geq |T|)}}{B}
+$$
+- now we can compare this calculated $p$-value with that one calculated at the beginning on the original two sample test. 
+
+The reason why we work with absolute values for the $T$ is because in this particular case it is a two-sided t-test so we are interested in whether X is larger than Y or vice-versa but if it's a one side $t$-test then we can get rid of the absolute values. 
+
+
+
+
+
+
+
+

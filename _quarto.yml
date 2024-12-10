@@ -31,6 +31,10 @@ website:
             text: Tree Based Methods
           - href: supportVectorMachines.qmd
             text: Support Vector Machines
+          - href: DeepLearning.qmd
+            text: Deep Learning
+          - href: deepLearningTorch.qmd
+            text: Deep Learning Lab with Torch
       - href: matrix.qmd
         text: Matrix Algebra
 format: 
@@ -50,7 +54,9 @@ format:
     crossrefs-hover: true
     footnotes-hover: true
     citations-hover: true
-    code-fold: true
+    code-fold: show
+    code-tools: true
+    code-line-numbers: true
     grid: 
       sidebar-width: 10px
       body-width: 1300px

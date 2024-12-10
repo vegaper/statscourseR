@@ -1,0 +1,955 @@
+---
+title: "Deep Learning"
+editor: visual
+execute: 
+  eval: false
+---
+
+```{r eval=TRUE}
+library(ggplot2)
+library(ggforce)
+library(ISLR2)
+library(keras)
+library(tensorflow)
+library(glmnet)
+library(tidyverse)
+```
+
+# Resources
+
+[How to install keras](https://hastie.su.domains/ISLR2/keras-instructions.html)
+
+[ISLR RBook club](https://r4ds.github.io/bookclub-islr/deep-learning.html)
+
+::: callout-warning
+Unfortunately I can run the code locally but it crashes if I try to render the markdown, so I have resorted to put eval=false to all the code so I can at least render the text and code scripts. Hopefully in the future I will be able to render the doc properly.
+:::
+
+# Neural Networks.
+
+Single Layer Neural Network (Feed Forward Neural Network)
+
+Neural networks are usually represented by a neural diagram.
+
+```{r echo=FALSE, eval=TRUE, fig.align='center'}
+
+# Define the coordinates for the nodes
+input_layer <- data.frame(x = rep(1, 4), y = seq(4, 1))
+hidden_layer <- data.frame(x = rep(2, 5), y = seq(5, 1))
+output_layer <- data.frame(x = 3, y = 3)
+
+# Define the connections between nodes
+connections <- data.frame(
+  x = rep(input_layer$x, each = nrow(hidden_layer)),
+  y = rep(input_layer$y, each = nrow(hidden_layer)),
+  xend = rep(hidden_layer$x, times = nrow(input_layer)),
+  yend = rep(hidden_layer$y, times = nrow(input_layer))
+)
+
+# Add connections from hidden layer to output layer
+connections <- rbind(connections, data.frame(
+  x = rep(hidden_layer$x, each = nrow(output_layer)),
+  y = rep(hidden_layer$y, each = nrow(output_layer)),
+  xend = rep(output_layer$x, times = nrow(hidden_layer)),
+  yend = rep(output_layer$y, times = nrow(hidden_layer))
+))
+
+# Plot the neural network
+ggplot() +
+  geom_segment(data = connections, aes(x = x, y = y, xend = xend, yend = yend), color = "grey") +
+  geom_point(data = input_layer, aes(x = x, y = y), color = "orange", size = 5) +
+  geom_point(data = hidden_layer, aes(x = x, y = y), color = "purple", size = 5) +
+  geom_point(data = output_layer, aes(x = x, y = y), color = "red", size = 5) +
+  geom_text(data = input_layer, aes(x = x, y = y, label = paste0("X", 1:4)), vjust = -1) +
+  geom_text(data = hidden_layer, aes(x = x, y = y, label = paste0("A", 1:5)), vjust = -1) +
+  geom_text(data = output_layer, aes(x = x, y = y, label = "f(X) -> Y"), vjust = -1) +
+  theme_void() +
+  ggtitle("Neural Network Diagram")
+
+```
+
+In orange we have the input layer, in this example with four variables, and then we have what it is called a hidden layer, with 5 units in there, and finally the output layer.
+
+The hidden layer are transformations of the inputs, the A stands for *activations*
+
+$$
+\begin{align*}f(X) &= \beta_0 + \sum_{k=1}^{K} \beta_k h_k(X) \\     &= \beta_0 + \sum_{k=1}^{K} \beta_k g \left( w_{k0} + \sum_{j=1}^{p} w_{kj} X_j \right)\end{align*}
+$$
+
+Each of the lines are nonlinear function of a linear combination of the inputs. \$\$A_k =h_k(X) = g(w\_{kj}X_j)\$\$ are called the activations in the hidden layer. And $g(z)$ is called the *activation function*. These non linear functions can be of different types. A popular ones is ReLU or Rectified Linear Unit. So the activations are like derived features.
+
+The model is fit by minimizing $\sum^n_{i=1}(y_i-f(x_i))^2$ for regression.
+
+Imagine we want to identify handwritten digits from 0 to 9. We have images in black and white for the sample digits, each of them in an image of 28x28 pixels, and each pixel get a greyscale from 0 to 255.
+
+Our data has 60k digits for training and 10k for test.
+
+We will have 60k inputs x pixels , and then two hidden layers, one with 256 units and one second hidden layer with 128, then we have 10 outputs (0-9)
+
+Most of the Neural Networks theory is not presented in this document. It can be found in the ISLR book. The subject is too complex for the objective of this document.
+
+# When to use Deep Learning
+
+Deep learning or neural networks has very good results when the data has a lot of signal and very little noise, this means that it is difficult to overfit the model, because overfitting is fitting the model on the noise and losing view of the real data trends, the signal. This is true for many things like image recognition, an image usually can be identified by a human into its classes with ease, that means that the image has all the information required to get a classification. Neural networks work very well also when there is some kind of structure in the data, like speech recognition, where there is some order of words to form sentences, or timeline forecasting.
+
+An example where Neural Networks does not work so well is trying to predict if a drug is going to work based on the human genes, because there is a lot of noise in that case because human population gene data has a lot of noise. For those cases, simple models may work better than neural networks.
+
+# How to perform Deep Learning in RStudio
+
+There are two ways to fit the Neural Network:
+
+-   using `keras`
+
+-   using `torch`
+
+Keras requires some installation on RStudio
+
+```{r}
+# 
+# tryCatch(
+#   remove.packages(c("keras", "tensorflow", "reticulate")),
+#   error = function(e) "Some or all packages not previously installed, that's ok!"
+# )
+# 
+# install.packages("keras", repos = 'https://cloud.r-project.org')
+# 
+# write('RETICULATE_AUTOCONFIGURE=FALSE', file = "~/.Renviron", append = TRUE)
+# write(sprintf('RETICULATE_MINICONDA_PATH=%s',
+#            normalizePath("~/islr-miniconda", winslash = "/", mustWork = FALSE)),
+#    file = "~/.Renviron", append = TRUE)
+# 
+# # # restart R
+
+```
+
+Restart R
+
+```{r}
+
+# source(system.file("helpers", "install.R", package = "ISLR2"))
+# reticulate::install_miniconda(force = TRUE)
+# devtools::install_github("rstudio/tensorflow")
+```
+
+```{r }
+# library(keras)
+# library(tensorflow)
+
+reticulate::conda_create("r-tensorflow")
+tensorflow::install_tensorflow()
+```
+
+load the libraries and check python environment. This can be a bit of a trial error if you have problems.
+
+```{r eval=FALSE}
+# Check Python configuration to ensure correct environment
+# reticulate::py_config()
+# 
+# #check tensorflow config
+# tensorflow::tf_version()
+# config <- tensorflow::tf_config()
+# 
+# # see the conda environmets:
+# reticulate::conda_list()
+# 
+# # if r-tensorflow is not listed, create it.
+# reticulate::conda_create("r-tensorflow")
+
+#if there is a problem and you need to kill the environment use this:
+#reticulate::conda_remove("r-tensorflow")
+
+# Install packages within the new environment
+#reticulate::conda_install("r-tensorflow", c("tensorflow", "keras", "numpy", "pandas"))
+
+#define it as the environment to use:
+#reticulate::use_condaenv(condaenv = "r-tensorflow", required = TRUE)
+
+#test it with a random data set:
+x <- matrix(rnorm(1000), ncol = 10)  # Sample data for illustration
+
+# Define and compile the neural network model
+modnn <- keras_model_sequential() %>% 
+  layer_dense(units = 50, 
+    activation = "relu", 
+    input_shape = list(ncol(x))) %>% 
+  layer_dropout(rate = 0.4) %>% 
+  layer_dense(units = 1)
+
+# Summary of the model
+summary(modnn)
+```
+
+
+We are going to use the `Hitters` dataset as we have done in previous chapters. First we fit a linear model:
+
+```{r eval=TRUE}
+hitters <- na.omit(Hitters)
+n<- nrow(hitters)
+
+set.seed(13)
+ntest <-trunc(n/3)
+testid<- sample(1:n, ntest)
+training <- hitters[-testid,]
+testing <- hitters[testid,]
+
+#we fit a linear model to the training data and predict the values
+lfit <- lm(Salary ~., data= training)
+lpred<- predict(lfit, testing)
+pred_test <- cbind(testing, lpred)
+
+#calculate the difference between the result and the predictions. 
+mean(abs(pred_test$lpred - pred_test$Salary ))
+
+
+```
+
+Next we fit the lasso using `glmnet`. Since this package does not use formulas, we create `x` and `y` first.
+
+```{r eval=TRUE}
+x<- scale(model.matrix(Salary ~. -1, data = hitters))
+y<- hitters$Salary
+```
+
+The first line makes a call to `model.matrix()`, which produces the same matrix that was used by `lm()` (the `-1` omits the intercept). This function automatically converts factors to dummy variables. The `scale()` function standardizes the matrix so each column has mean zero and variance one. We make the predictions using `lambda.min` which is the min error in the cross validation.
+
+```{r,eval=TRUE, fig.align='center'}
+cvfit <- cv.glmnet(x[-testid,], y[-testid], type.measure= "mae")
+cpred <- predict(cvfit, x[testid,], s="lambda.min")
+mean(abs(y[testid] - cpred))
+plot(cvfit)
+```
+
+To fit the neural network, we first set up a model structure that describes the network.
+
+```{r chunk5}
+modnn <- keras_model_sequential() %>%
+   layer_dense(units = 50, activation = "relu",
+        input_shape = ncol(x)) %>%
+   layer_dropout(rate = 0.4) %>%
+   layer_dense(units = 1)
+```
+
+We have created a vanilla model object called `modnn`, and have added details about the successive layers in a sequential manner, using the function `keras_model_sequential()`. It allows us to specify the layers of a neural network in a readable form.
+
+The object `modnn` has a single hidden layer with 50 hidden units, and a ReLU activation function. It then has a dropout layer, in which a random 40% of the 50 activations from the previous layer are set to zero during each iteration of the stochastic gradient descent algorithm. Finally, the output layer has just one unit with no activation function, indicating that the model provides a single quantitative output.
+
+Next we add details to `modnn` that control the fitting algorithm. Here we have simply followed the examples given in the Keras book. We minimize squared-error loss `mse`. The algorithm tracks the mean absolute error on the training data, and on validation data if it is supplied.
+
+```{r chunk8}
+modnn %>% compile(loss = "mse",
+    optimizer = optimizer_rmsprop(),
+    metrics = list("mean_absolute_error")
+   )
+```
+
+In the previous line, the pipe operator passes `modnn` as the first argument to `compile()`. The `compile()` function does not actually change the `R` object `modnn`, but it does communicate these specifications to the corresponding `python` instance of this model that has been created along the way.
+
+Now we fit the model. We supply the training data and two fitting parameters, `epochs` and `batch_size`. Using 32 for the latter means that at each step of SGD, the algorithm randomly selects 32 training observations for the computation of the gradient. An epoch amounts to the number of SGD steps required to process $n$ observations. Since the training set has $n=176$, an epoch is $176/32=5.5$ SGD steps. The `fit()` function has an argument `validation_data`; these data are not used in the fitting, but can be used to track the progress of the model (in this case reporting the mean absolute error). Here we actually supply the test data so we can see the mean absolute error of both the training data and test data as the epochs proceed. To see more options for fitting, use `?fit.keras.engine.training.Model`.
+
+```{r chunk9}
+history <- modnn %>% fit(
+    x[-testid, ], y[-testid], epochs = 600, batch_size = 32,
+    validation_data = list(x[testid, ], y[testid])
+  )
+```
+
+It is worth noting that if you run the `fit()` command a second time in the same \text{R} session, then the fitting process will pick up where it left off. Try re-running the `fit()` command, and then the `plot()` command, to see!
+
+Finally, we predict from the final model, and evaluate its performance on the test data. Due to the use of SGD, the results vary slightly with each fit. Unfortunately the `set.seed()` function does not ensure identical results (since the fitting is done in `python`), so your results will differ slightly.
+
+```{r chunk11}
+npred <- predict(modnn, x[testid, ])
+mean(abs(y[testid] - npred))
+```
+
+In this case our results are a bit worse than with the `gmln`
+
+:::{.exercise-box}
+A Multilayer Network on the MNIST Digit Data
+
+The `keras` package comes with a number of example datasets, including the `MNIST` digit data. Our first step is to load the `MNIST` data. The `dataset_mnist()` function is provided for this purpose.
+
+```{r chunk12}
+mnist <- dataset_mnist() #load the dataset from Keras package
+x_train <- mnist$train$x
+g_train <- mnist$train$y
+x_test <- mnist$test$x
+g_test <- mnist$test$y
+dim(x_train)
+dim(x_test)
+```
+
+There are 60,000 images in the training data and 10,000 in the test data. The images are $28\times 28$, and stored as a three-dimensional array, so we need to reshape them into a matrix. Also, we need to "one-hot" encode the class label. Luckily `keras` has a lot of built-in functions that do this for us.
+
+```{r chunk13}
+#create matrix form
+x_train <- array_reshape(x_train, c(nrow(x_train), 784))
+x_test <- array_reshape(x_test, c(nrow(x_test), 784))
+#change the response to categorical
+y_train <- to_categorical(g_train, 10) 
+y_test <- to_categorical(g_test, 10)
+```
+
+Neural networks are somewhat sensitive to the scale of the inputs. For example, ridge and lasso regularization are affected by scaling. Here the inputs are eight-bit grayscale values between 0 and 255, so we rescale to the unit interval. (Eight bits means $2^8$, which equals 256. Since the convention is to start at $0$, the possible values range from $0$ to $255$.)
+
+```{r chunk14}
+#rescale the x values between 0 and 1
+x_train <- x_train / 255
+x_test <- x_test / 255
+```
+
+Now we are ready to fit our neural network.
+
+```{r chunk15}
+modelnn <- keras_model_sequential()
+modelnn %>%
+  layer_dense(units = 256, activation = "relu",
+       input_shape = c(784)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 128, activation = "relu") %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 10, activation = "softmax")
+```
+
+The first layer goes from $28\times28=784$ input units to a hidden layer of $256$ units, which uses the ReLU activation function. This is specified by a call to `layer_dense()`, which takes as input a `modelnn` object, and returns a modified `modelnn` object. This is then piped through `layer_dropout()` to perform dropout regularization. The second hidden layer comes next, with $128$ hidden units, followed by a dropout layer. The final layer is the output layer, with activation `"softmax"` (10.13) for the 10-class classification problem, which defines the map from the second hidden layer to class probabilities. Finally, we use `summary()` to summarize the model, and to make sure we got it all right.
+
+```{r chunk16}
+summary(modelnn)
+```
+
+The parameters for each layer include a bias term, which results in a parameter count of 235,146. For example, the first hidden layer involves $(784+1)\times256=200{,}960$ parameters.
+
+Notice that the layer names such as `dropout_1` and `dense_2` have subscripts. These may appear somewhat random; in fact, if you fit the same model again, these will change. They are of no consequence: they vary because the model specification code is run in `python`, and these subscripts are incremented every time `keras_model_sequential()` is called.
+
+Next, we add details to the model to specify the fitting algorithm. We fit the model by minimizing the cross-entropy function.
+
+```{r chunk17}
+modelnn %>% 
+  compile(
+    loss = "categorical_crossentropy",
+    optimizer = optimizer_rmsprop(), 
+    metrics = c("accuracy")
+  )
+```
+
+Now we are ready to go. The final step is to supply training data, and fit the model.
+
+```{r chunk18}
+system.time(
+  history <- modelnn %>%
+#     fit(x_train, y_train, epochs = 30, batch_size = 128,
+      fit(x_train, y_train, epochs = 15, batch_size = 128,
+        validation_split = 0.2)
+)
+plot(history, smooth = FALSE)
+```
+
+We have suppressed the output here, which is a progress report on the fitting of the model, grouped by epoch. This is very useful, since on large datasets fitting can take time. Here we specified a validation split of 20%, so the training is actually performed on 80% of the 60,000 observations in the training set. This is an alternative to actually supplying validation data. See `?fit.keras.engine.training.Model` for all the optional fitting arguments. SGD uses batches of 128 observations in computing the gradient, and doing the arithmetic, we see that an epoch corresponds to 375 gradient steps.
+
+To obtain the test error, we first write a simple function `accuracy()` that compares predicted and true class labels, and then use it to evaluate our predictions.
+
+```{r eval=TRUE}
+accuracy <- function(pred, truth)
+  mean(drop(as.numeric(pred)) == drop(truth))
+```
+```{r eval=FALSE}
+modelnn %>% 
+  predict(x_test) %>% 
+  k_argmax() %>% 
+  accuracy(g_test)
+```
+
+The table also reports LDA and multiclass logistic regression. Although packages such as `glmnet` can handle multiclass logistic regression, they are quite slow on this large dataset. It is much faster and quite easy to fit such a model using the `keras` software.
+
+We can do the model with just an input layer and output layer, and omit the hidden layers, and that will be like fitting a logistic regression:
+
+```{r chunk20}
+modellr <- keras_model_sequential() %>%
+  layer_dense(input_shape = 784, units = 10,
+       activation = "softmax")
+summary(modellr)
+```
+
+We fit the model just as before.
+
+```{r chunk21}
+modellr %>% 
+  compile(
+    loss = "categorical_crossentropy",
+    ptimizer = optimizer_rmsprop(), 
+    metrics = c("accuracy"))
+
+modellr %>% 
+  fit(x_train, y_train, epochs = 30,
+      batch_size = 128, validation_split = 0.2)
+
+modellr %>% 
+  predict(x_test) %>% 
+  k_argmax() %>% 
+  accuracy(g_test)
+```
+
+And we see that the model accuracy is smaller now. This will be a similar result as running `glmn` instead of `keras`.
+:::
+
+:::{.exercise-box}
+Convolutional Neural Networks (CNN)
+
+In this section we fit a CNN to the `CIFAR` data, which is available in the `keras` package. It is arranged in a similar fashion as the `MNIST` data.
+
+```{r chunk22}
+cifar100 <- dataset_cifar100()
+names(cifar100)
+x_train <- cifar100$train$x
+g_train <- cifar100$train$y
+x_test <- cifar100$test$x
+g_test <- cifar100$test$y
+dim(x_train)
+range(x_train[1,,, 1])
+```
+
+The array of 50,000 training images has four dimensions: each three-color image is represented as a set of three channels, each of which consists of $32\times 32$ eight-bit pixels. We standardize as we did for the digits, but keep the array structure. We one-hot encode the response factors to produce a 100-column binary matrix.
+
+```{r chunk23}
+x_train <- x_train / 255
+x_test <- x_test / 255
+y_train <- to_categorical(g_train, 100)
+dim(y_train)
+```
+
+Before we start, we look at some of the training images using the `jpeg` package; similar code produced Figure 10.5 on page 411.
+
+```{r chunk24}
+library(jpeg)
+par(mar = c(0, 0, 0, 0), mfrow = c(5, 5))
+index <- sample(seq(50000), 25)
+for (i in index) plot(as.raster(x_train[i,,, ]))
+```
+
+The `as.raster()` function converts the feature map so that it can be plotted as a color image.
+
+Here we specify a moderately-sized CNN for demonstration purposes.
+
+```{r chunk25}
+model <- keras_model_sequential() %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3),
+      padding = "same", activation = "relu",
+      input_shape = c(32, 32, 3)) %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  layer_conv_2d(filters = 64, kernel_size = c(3, 3),
+      padding = "same", activation = "relu") %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  layer_conv_2d(filters = 128, kernel_size = c(3, 3),
+      padding = "same", activation = "relu") %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  layer_conv_2d(filters = 256, kernel_size = c(3, 3),
+      padding = "same", activation = "relu") %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  layer_flatten() %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_dense(units = 512, activation = "relu") %>%
+  layer_dense(units = 100, activation = "softmax")
+summary(model)
+```
+
+Notice that we used the `padding = "same"` argument to `layer_conv_2D()`, which ensures that the output channels have the same dimension as the input channels. There are 32 channels in the first hidden layer, in contrast to the three channels in the input layer. We use a $3\times 3$ convolution filter for each channel in all the layers. Each convolution is followed by a max-pooling layer over $2\times2$ blocks. By studying the summary, we can see that the channels halve in both dimensions after each of these max-pooling operations. After the last of these we have a layer with 256 channels of dimension $2\times 2$. These are then flattened to a dense layer of size 1,024: in other words, each of the $2\times 2$ matrices is turned into a $4$-vector, and put side-by-side in one layer. This is followed by a dropout regularization layer, then another dense layer of size 512, which finally reaches the softmax output layer.
+
+Finally, we specify the fitting algorithm, and fit the model.
+
+```{r chunk26}
+model %>% 
+  compile(
+    loss = "categorical_crossentropy",
+    optimizer = optimizer_rmsprop(), 
+    metrics = c("accuracy"))
+#history <- model %>% fit(x_train, y_train, epochs = 30,
+history <- model %>% 
+  fit(x_train, y_train, epochs = 10,
+    batch_size = 128, validation_split = 0.2)
+
+model %>% 
+  predict(x_test) %>% 
+  k_argmax() %>% 
+  accuracy(g_test)
+```
+
+This model takes 10 minutes to run and achieves 46% accuracy on the test data. Although this is not terrible for 100-class data (a random classifier gets 1% accuracy), searching the web we see results around 75%. Typically it takes a lot of architecture carpentry, fiddling with regularization, and time to achieve such results.
+
+**Using Pretrained CNN Models**
+
+We now show how to use a CNN pretrained on the `imagenet` database to classify natural images. We copied six jpeg images from a digital photo album into the directory `book_images`. (These images are available from the data section of \<[www.statlearning.com](www.statlearning.com)\>, the ISL book website. Download **book_images.zip**; when clicked it creates the **book_images** directory.) We first read in the images, and convert them into the array format expected by the `keras` software to match the specifications in `imagenet`. Make sure that your working directory in `R` is set to the folder in which the images are stored.
+
+```{r chunk27}
+img_dir <- "book_images"
+image_names <- list.files(img_dir)
+num_images <- length(image_names)
+x <- array(dim = c(num_images, 224, 224, 3))
+for (i in 1:num_images) {
+  img_path <- paste(img_dir, image_names[i], sep = "/")
+  img <- image_load(img_path, target_size = c(224, 224))
+  x[i,,, ] <- image_to_array(img)
+}
+x <- imagenet_preprocess_input(x)
+```
+
+We then load the trained network. The model has 50 layers, with a fair bit of complexity.
+
+```{r chunk28}
+model <- application_resnet50(weights = "imagenet")
+summary(model)
+```
+
+Finally, we classify our six images, and return the top three class choices in terms of predicted probability for each.
+
+```{r chunk29}
+pred6 <- model %>% predict(x) %>%
+  imagenet_decode_predictions(top = 3)
+names(pred6) <- image_names
+print(pred6)
+```
+:::
+
+:::{.exercise-box}
+Document Classification
+
+IMDb Document Classification:
+Now we perform document classification on the `IMDB` dataset, which is available as part of the `keras` package. We  limit the dictionary size to the 10,000  most frequently-used words and tokens.
+
+```{r chunk30,eval=TRUE}
+max_features <- 10000
+imdb <- keras::dataset_imdb(num_words = max_features)
+c(c(x_train, y_train), c(x_test, y_test)) %<-% imdb
+```
+
+The third line is a shortcut for unpacking the list of lists.
+Each element of `x_train` is a vector of numbers between 0 and
+9999 (the document), referring to the words found in the dictionary.
+For example, the first training document is the positive review on
+page 419. The indices of the first 12 words are given below.
+
+```{r chunk31,eval=TRUE}
+x_train[[3]][1:12]
+```
+
+To see the words, we create a function, `decode_review()`, that provides a simple interface to the dictionary.
+
+```{r chunk32 ,eval=TRUE}
+word_index <- dataset_imdb_word_index()
+
+decode_review <- function(text, word_index) {
+  word <- names(word_index)
+  idx <- unlist(word_index, use.names = FALSE)
+  word <- c("<PAD>", "<START>", "<UNK>", "<UNUSED>", word)
+  idx <- c(0:3, idx + 3)
+  words <- word[match(text, idx, 2)]
+  paste(words, collapse = " ")
+}
+decode_review(x_train[[3]][1:12], word_index)
+```
+Next we write a function to "one-hot" encode each document in a list
+of documents, and return a binary matrix in sparse-matrix format.
+
+```{r chunk33,eval=TRUE}
+library(Matrix)
+one_hot <- function(sequences, dimension) {
+  seqlen <- sapply(sequences, length)
+  n <- length(seqlen)
+  rowind <- rep(1:n, seqlen)
+  colind <- unlist(sequences)
+  sparseMatrix(i = rowind, j = colind,
+      dims = c(n, dimension))
+}
+```
+
+To construct the sparse matrix, one supplies just the entries that are
+nonzero. In the last line we call the function `sparseMatrix()` and supply the
+row indices corresponding to each document and the column indices
+corresponding to the words in each document, since we omit the
+values they are taken to be all ones.
+Words that appear more than once in any given document still get
+recorded as a one.
+
+```{r chunk34 ,eval=TRUE}
+x_train_1h <- one_hot(x_train, 10000)
+x_test_1h <- one_hot(x_test, 10000)
+dim(x_train_1h)
+nnzero(x_train_1h) / (25000 * 10000)
+```
+
+Only 1.3\% of the entries are nonzero, so this amounts to considerable
+savings in memory.
+We create a validation set of size 2,000, leaving 23,000 for training.
+
+```{r chunk35, eval=TRUE}
+set.seed(3)
+ival <- sample(seq(along = y_train), 2000)
+```
+
+First we fit a lasso logistic regression model using `glmnet()`
+on the training data, and evaluate its performance on the validation
+data. Finally, we plot the accuracy, `acclmv`, as a function of
+the shrinkage parameter, $\lambda$. Similar expressions compute the
+performance on the test data, and were used to produce the left plot
+in Figure 10.11.
+The code  takes advantage of the sparse-matrix format of
+`x_train_1h`, and runs in about 5 seconds; in the usual
+dense format it would take about 5 minutes.
+
+```{r eval=TRUE}
+library(glmnet)
+fitlm <- glmnet(x_train_1h[-ival, ], y_train[-ival],
+    family = "binomial", standardize = FALSE)
+classlmv <- predict(fitlm, x_train_1h[ival, ]) > 0
+acclmv <- apply(classlmv, 2, accuracy,  y_train[ival] > 0)
+```
+
+We applied the `accuracy()` function that we wrote in Lab 10.9.2 to every column of the prediction matrix
+`classlmv`, and since this is a logical matrix of  `TRUE/FALSE` values, we
+supply the second argument `truth` as a logical vector as well.
+
+Before making a plot, we adjust the plotting window.
+
+```{r chunk37}
+par(mar = c(4, 4, 4, 4), mfrow = c(1, 1))
+plot(-log(fitlm$lambda), acclmv)
+```
+
+
+Next we fit a fully-connected neural network with two hidden layers,
+each with 16 units and ReLU activation.
+
+
+```{r chunk38}
+model <- keras_model_sequential() %>%
+  layer_dense(units = 16, activation = "relu",
+      input_shape = c(10000)) %>%
+  layer_dense(units = 16, activation = "relu") %>%
+  layer_dense(units = 1, activation = "sigmoid")
+model %>% compile(optimizer = "rmsprop",
+    loss = "binary_crossentropy", metrics = c("accuracy"))
+history <- model %>% fit(x_train_1h[-ival, ], y_train[-ival],
+    epochs = 20, batch_size = 512,
+    validation_data = list(x_train_1h[ival, ], y_train[ival]))
+```
+
+The `history` object has a `metrics` component that
+records both the training and validation accuracy at each epoch.
+Figure 10.11 includes test accuracy at each epoch as well. To
+compute the test accuracy, we
+rerun the entire sequence above, replacing the last line with
+
+```{r chunk39}
+history <- model %>% fit(
+    x_train_1h[-ival, ], y_train[-ival], epochs = 20,
+    batch_size = 512, validation_data = list(x_test_1h, y_test)
+  )
+```
+
+
+**Recurrent Neural Networks**
+
+Sequential Models for Document Classification. Before we just use the model to give us a response based on the presence or abcense of words, in recurrent neural networks we are actually taking into consideration the sequence of words
+
+Here we  fit a simple  LSTM RNN for sentiment analysis with
+the `IMDb` movie-review data. 
+We first calculate the lengths of the documents.
+
+```{r chunk40}
+wc <- sapply(x_train, length) #count of words
+median(wc)
+sum(wc <= 500) / length(wc) #percentage with less or equal 500 words
+```
+We see that over 91\% of the documents have fewer than 500 words. Our
+RNN requires all the document sequences to have the same length. We hence
+restrict the document lengths to the last $L=500$ words, and pad the
+beginning of the shorter ones with blanks.
+
+```{r chunk41}
+maxlen <- 500
+x_train <- pad_sequences(x_train, maxlen = maxlen)
+x_test <- pad_sequences(x_test, maxlen = maxlen)
+dim(x_train)
+dim(x_test)
+x_train[1, 490:500]
+```
+The last expression shows the last few words in the first document. At this stage, each of the 500 words in the document  is represented using an integer
+corresponding to the location of that word in the 10,000-word dictionary.
+
+The first layer of the RNN is an embedding layer of size 32, which will be
+learned during  training. This layer one-hot encodes  each document
+as a matrix of dimension $500 \times 10,000$, and then maps these
+$10,000$ dimensions down to $32$.
+
+```{r chunk42}
+model <- keras_model_sequential() %>%
+  layer_embedding(input_dim = 10000, output_dim = 32) %>%
+  layer_lstm(units = 32) %>%
+  layer_dense(units = 1, activation = "sigmoid")
+```
+
+The second  layer is an LSTM with 32 units, and the output
+layer is a single sigmoid for the binary classification task.
+
+The rest is now similar to other networks we have fit. We
+track the test performance as the network is fit, and see that it attains 87\% accuracy.
+
+```{r chunk43}
+model %>% compile(optimizer = "rmsprop",
+    loss = "binary_crossentropy", metrics = c("acc"))
+#history <- model %>% fit(x_train, y_train, epochs = 10,
+history <- model %>% fit(x_train, y_train, epochs = 3,
+    batch_size = 128, validation_data = list(x_test, y_test))
+plot(history)
+predy <- predict(model, x_test) > 0.5
+mean(abs(y_test == as.numeric(predy)))
+```
+:::
+
+:::{.exercise-box}
+Time series prediction
+
+We now show how to fit the models for  time series prediction.
+We first set up the data, and standardize each of the variables.
+The data has three different time-series:
+*Log trading volume*. This is the fraction of all outstanding shares that
+are traded on that day, relative to a 100-day moving average of past
+turnover, on the log scale.
+• *Dow Jones return*. This is the difference between the log of the Dow
+Jones Industrial Index on consecutive trading days.
+• *Log volatility*. This is based on the absolute values of daily price
+movements.
+
+We are interested in predicting trading volume. 
+
+```{r echo=FALSE,eval = TRUE}
+# Transform the dataset into a long format for easier plotting
+xdata <- NYSE %>%
+  select(DJ_return, log_volume, log_volatility) %>%
+  mutate(Date = row_number()) %>%  # Assuming each row is a daily observation
+  gather(key = "variable", value = "value", -Date)
+NYSE%>%head
+# Create individual plots for each variable
+p1 <- ggplot(xdata %>% filter(variable == "DJ_return"), aes(x = Date, y = value)) +
+  geom_line(color = "blue") +
+  labs(title = "DJ Return", x = "Date", y = "Value") +
+  theme_minimal()
+
+p2 <- ggplot(xdata %>% filter(variable == "log_volume"), aes(x = Date, y = value)) +
+  geom_line(color = "green") +
+  labs(title = "Log Volume", x = "Date", y = "Value") +
+  theme_minimal()
+
+p3 <- ggplot(xdata %>% filter(variable == "log_volatility"), aes(x = Date, y = value)) +
+  geom_line(color = "red") +
+  labs(title = "Log Volatility", x = "Date", y = "Value") +
+  theme_minimal()
+
+# Arrange the plots vertically
+library(gridExtra)
+grid.arrange(p1, p2, p3, ncol = 1)
+
+```
+An observation here consists of the measurements (vt, rt, zt) on day t, in this case the values for log_volume, DJ_return and log_volatility.
+One feature that strikes us immediately is that the dayto-day observations are not independent of each other. The series exhibit auto-correlation — in this case values nearby in time tend to be similar to each other. This distinguishes time series from other data sets we have correlation
+encountered, in which observations can be assumed to be independent of each other. To be clear, consider pairs of observations (vt, vt−ℓ), a lag of ℓ days apart. If we take all such pairs in the vt series and compute their correlation coefficient, this gives the autocorrelation at lag ℓ.
+```{r eval = TRUE, fig.align='center'}
+
+rt <- NYSE$log_volume  # Replace with your actual time series column
+
+# Calculate and plot the autocorrelation
+acf_result <- acf(rt, plot = TRUE, main = "Autocorrelation of log_volume")
+
+# Alternatively, if you want to customize the plot using ggplot2
+acf_values <- acf(rt, plot = FALSE)
+acf_data <- with(acf_values, data.frame(lag, acf))
+```
+We see that nerby values are strongly correlated. 
+
+We are going to use the last 5 days to predict the next day's trading volume, this is $L=5$ 
+First, we are going to create a matrix with the data and standardize the values for our model:
+
+```{r eval = TRUE}
+xdata <- data.matrix(
+    NYSE[, c("DJ_return", 
+      "log_volume",
+      "log_volatility")]
+  )
+istrain <- NYSE[, "train"]
+xdata <- scale(xdata) #this standardize the variables in a dataset
+head(xdata)
+```
+The  variable `istrain` contains a `TRUE` for each year that  is in the training set, and a `FALSE` for each year in the test set.
+
+The `scale` function in R is used to standardize variables in a dataset. This is particularly useful in machine learning and statistical modeling where different variables may have different scales (units or magnitudes). Here’s a breakdown of what scale does:
+*Centers the Data*: Subtracts the mean of each column (variable) from the values in that column. This shifts the data so that it has a mean of zero.
+*Scales the Data*: Divides each column by its standard deviation. This rescales the data so that each column has a standard deviation of one.
+
+This normalization ensures that each variable contributes equally to the analysis, avoiding bias towards variables with larger magnitudes. It also helps with the convergence of gradient descent in machine learning algorithms and makes coefficients in regression models more interpretable.
+
+Now we write functions to create lagged versions of the three time series.  We start with a function that takes as input a data matrix and a lag $L$, and returns a lagged version of the matrix. It simply inserts $L$ rows of `NA` at the top, and truncates the
+bottom.
+
+```{r eval = TRUE}
+lagm <- function(x, k = 1) {
+  n <- nrow(x)
+  pad <- matrix(NA, k, ncol(x))
+  rbind(pad, x[1:(n - k), ])
+}
+```
+
+We now use this function to create a data frame with all the required
+lags, as well as the response variable.
+
+```{r eval = TRUE}
+arframe <- data.frame(log_volume = 
+    xdata[, "log_volume"],
+    L1 = lagm(xdata, 1), 
+    L2 = lagm(xdata, 2),
+    L3 = lagm(xdata, 3), 
+    L4 = lagm(xdata, 4),
+    L5 = lagm(xdata, 5)
+ )
+head(arframe)
+```
+
+If we look at the first five rows of this frame, we will see some
+missing values in the lagged variables (due to the construction above). We remove these rows, and adjust `istrain`
+accordingly.
+
+```{r eval = TRUE}
+arframe <- arframe[-(1:5), ]
+istrain <- istrain[-(1:5)]
+head(arframe)
+```
+
+We now fit the linear AR model to the training data using `lm()`, and predict on the
+test data.
+
+```{r eval = TRUE}
+arfit <- lm(log_volume ~ ., data = arframe[istrain, ])
+arpred <- predict(arfit, arframe[!istrain, ])
+V0 <- var(arframe[!istrain, "log_volume"])
+1 - mean((arpred - arframe[!istrain, "log_volume"])^2) / V0
+```
+The last two lines compute the $R^2$ on the test data.
+
+We refit this model, including the factor variable `day_of_week`.
+
+```{r eval = TRUE}
+arframed <-
+    data.frame(day = NYSE[-(1:5), "day_of_week"], arframe)
+arfitd <- lm(log_volume ~ ., data = arframed[istrain, ])
+arpredd <- predict(arfitd, arframed[!istrain, ])
+1 - mean((arpredd - arframe[!istrain, "log_volume"])^2) / V0
+```
+
+
+To fit the RNN, we need to reshape these data, since it expects a sequence of $L=5$ feature vectors $X={X_\ell}_1^L$ for each observation. These are  lagged versions of the time series going back $L$ time points. 
+
+```{r eval = TRUE}
+n <- nrow(arframe)
+xrnn <- data.matrix(arframe[, -1])
+xrnn <- array(xrnn, c(n, 3, 5))
+xrnn <- xrnn[,, 5:1]
+xrnn <- aperm(xrnn, c(1, 3, 2))
+dim(xrnn)
+head(xrnn)
+```
+
+We have done this in four steps. The first simply extracts the
+$n\times 15$ matrix of lagged versions of the three predictor
+variables from `arframe`. The second converts this matrix to an
+$n\times 3\times 5$ array. We can do this by simply changing the
+dimension attribute, since the new array is filled column wise. The
+third step reverses the order of lagged variables, so that index $1$
+is furthest back in time, and index $5$ closest. The
+final step rearranges the coordinates of the array (like a partial
+transpose) into the format that the RNN module in `keras`
+expects.
+
+Now we are ready to proceed with the RNN, which uses 12 hidden units.
+
+```{r chunk51}
+model <- keras_model_sequential() %>%
+  layer_simple_rnn(units = 12,
+      input_shape = list(5, 3),
+      dropout = 0.1, recurrent_dropout = 0.1) %>%
+  layer_dense(units = 1)
+model %>% compile(optimizer = optimizer_rmsprop(),
+    loss = "mse")
+```
+
+We specify two forms of dropout for the units feeding into the  hidden
+ layer. The first is for
+the input sequence feeding into this layer, and the second is for the
+previous hidden units feeding into the layer.
+The output layer has a single unit for the response.
+
+We  fit the model in a similar fashion to previous networks. We
+supply the `fit` function with test data as validation data, so that when
+we monitor its progress and plot the history function we can see the
+progress on the test data. Of course we should not use this as a basis for
+early stopping, since then the test performance would be biased.
+
+```{r chunk52}
+history <- model %>% fit(
+    xrnn[istrain,, ], arframe[istrain, "log_volume"],
+#    batch_size = 64, epochs = 200,
+    batch_size = 64, epochs = 75,
+    validation_data =
+      list(xrnn[!istrain,, ], arframe[!istrain, "log_volume"])
+  )
+kpred <- predict(model, xrnn[!istrain,, ])
+1 - mean((kpred - arframe[!istrain, "log_volume"])^2) / V0
+```
+
+ This model takes about one minute to train.
+
+We could replace the  `keras_model_sequential()`  command above with the following command:
+
+```{r chunk53}
+model <- keras_model_sequential() %>%
+  layer_flatten(input_shape = c(5, 3)) %>%
+  layer_dense(units = 1)
+```
+
+Here, `layer_flatten()` simply takes the input sequence and turns it into a long vector of predictors. This results in a linear AR model.
+
+To fit a nonlinear AR model, we could add in a hidden layer.
+
+However, since we already have the matrix of lagged variables from the AR model that we fit earlier using the `lm()` command, we can actually fit a nonlinear AR model without needing to perform flattening.
+
+We extract the model matrix `x` from `arframed`, which
+includes the `day_of_week` variable.
+
+```{r chunk54}
+x <- model.matrix(log_volume ~ . - 1, data = arframed)
+head(x)
+```
+
+The `-1` in the formula avoids the creation of a column of ones for the intercept. 
+The variable `day_of_week` is a five-level
+factor (there are five trading days), and the
+ `-1` results in  five rather than four dummy variables. 
+
+The rest of the steps to fit a nonlinear Auto Regressive model should by now be familiar.
+
+```{r chunk55}
+arnnd <- keras_model_sequential() %>%
+  layer_dense(units = 32, activation = 'relu',
+      input_shape = ncol(x)) %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_dense(units = 1)
+arnnd %>% compile(loss = "mse",
+    optimizer = optimizer_rmsprop())
+history <- arnnd %>% fit(
+#    x[istrain, ], arframe[istrain, "log_volume"], epochs = 100, 
+    x[istrain, ], arframe[istrain, "log_volume"], epochs = 30, 
+    batch_size = 32, validation_data =
+      list(x[!istrain, ], arframe[!istrain, "log_volume"])
+  )
+plot(history)
+npred <- predict(arnnd, x[!istrain, ])
+1 - mean((arframe[!istrain, "log_volume"] - npred)^2) / V0
+```
+:::

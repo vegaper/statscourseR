@@ -6,16 +6,8 @@ editor: visual
 ```{r}
 #| echo: false
 library(dplyr)
-#library(tidyverse)
-#library(readxl)
 library(ggplot2)
 library(ISLR2) #datasets
-#library(boot) #crossvalidation
-#library(tree) #simple trees
-#library(randomForest) #random forest and bagging
-#library(gbm) #boosted trees
-#library(BART) #well, for... BART, obviously
-#library(rpart) #simple trees
 library(e1071) #support vector machines
 library(ROCR) #ROC curves
 theme_set(theme_minimal())
