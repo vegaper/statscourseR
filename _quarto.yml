@@ -6,7 +6,9 @@ project:
     - "!courseSummary.qmd"
     - "!ignored-dir/"
 website:
+  search: true
   title: "Mastering Statistics: Fundamentals of Data Analysis."
+  page-navigation: true
   navbar:
     left:
       - href: index.qmd
@@ -35,6 +37,8 @@ website:
             text: Deep Learning
           - href: deepLearningTorch.qmd
             text: Deep Learning Lab with Torch
+      - href: unsupervisedLearning.qmd
+        text: Unsupervised Learning
       - href: matrix.qmd
         text: Matrix Algebra
 format: 

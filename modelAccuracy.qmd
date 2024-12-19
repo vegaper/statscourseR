@@ -38,7 +38,7 @@ options(scipen= 999)
 
 In this section, we discuss some of the most important concepts that arise in selecting a statistical learning procedure for a specific data set.
 
-## Measuring the Quality of Fit. Mean Squared Error (MSE) {#MeanSquaredError}
+# Measuring the Quality of Fit. Mean Squared Error (MSE) {#MeanSquaredError}
 
 In order to evaluate the performance of a statistical method on a given dataset, we need some way to measure how well its predictions actually match the observed data. In regression, the most commonly-used measure is the *mean squared error (MSE)*
 
@@ -118,7 +118,7 @@ ggplot(mse_data, aes(x = Model, y = MSE, fill = Model)) +
 
 ```
 
-## Bias-Variance Trade-off {#bias-variance-trade-off}
+# Bias-Variance Trade-off {#bias-variance-trade-off}
 
 Imagine you're trying to build a model to predict house prices. You could use a simple model or a complex one. The bias-variance trade-off is all about balancing simplicity and complexity.
 
@@ -134,7 +134,7 @@ High Bias, Low Variance: A very simple model that doesn't capture the data well,
 
 Optimal Bias-Variance Trade-Off: A balanced model that captures the underlying trend without overfitting.
 
-## R-squared {#Rsquare}
+# R-squared {#Rsquare}
 
 We already talked about [how to assess the slope of an individual predictor](#MeanSquaredError)
 
@@ -166,7 +166,7 @@ However, it can still be challenging to determine what is a good R2 value, and i
 
 The $R^2$ statistic is a measure of the linear relationship between X and Y, and if we recall [correlation](@/linearModels.html#correlation-coefficient), it also measures the linear relationship between X and Y, this suggest that we might be able to use correlation $r-Cor(X,Y)$ instead of $R^2$ in order to assess the fit of the model, and in fact, it can be shown that in the simple linear regression setting, $R^2 = r^2$.
 
-## Residual Standard Error (RSE) {#ResidualStandardError}
+# Residual Standard Error (RSE) {#ResidualStandardError}
 
 Another measure of the model fit is the **Residual Standard Error (RSE)** The RSE is an estimate of the standard deviation of the error term, representing the average amount that the observed values deviate from the model's predictions. Essentially, it gives you an idea of the typical size of the residuals (errors) made by the model. It's like a measure of how well the model fits the data.
 
@@ -180,15 +180,7 @@ Both RSE and $R^2$ provide insight into the model's performance, but from slight
 
 By using these metrics together, you can get a comprehensive view of how well your regression model is performing
 
-## Testing error and training error {#testingtrainingerror}
-
-The *training error rate* is the proportion of mistakes that are made if we apply our model to the training data-set.
-
-The *test error* is the average error that results from using a statistical learning method to predict the response on a new observation, that is, a measurement that was not used in training the method.
-
-The test error can be easily calculated if a designated test set is available. Unfortunately, this is usually not the case.In contrast, the training error can be easily calculated by applying the statistical learning method to the observations used in its training. But the training error rate often is quite different from the test error rate, and in particular the former can dramatically underestimate the latter.
-
-## Multiple Linear regression.
+# Multiple Linear regression.
 
 When we have more than one predictor, the model will create a plane instead of a curve that tries to minimize the sum of squared errors:
 
@@ -224,7 +216,7 @@ p <- plot_ly(data, x = ~X1, y = ~X2, z = ~Y, type = 'scatter3d', mode = 'markers
 p
 ```
 
-Remember the formula for RSS for a simple linear model was explained already (@eq-RSSsimpleRegression) now we have a similar version including all the predictors:
+Remember the formula for [RSS](linearModels.html#eq-RSSsimpleRegression) for a simple linear model was explained already now we have a similar version including all the predictors:
 
 $$
 RSS=\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} \left( y_i - \hat{\beta_0} - \hat{\beta_1} x_{i1} - \hat{\beta_2} x_{i2}\dots... - - \hat{\beta_p} x_{ip}\right)^2
@@ -238,7 +230,15 @@ Correlations amongst predictors cause problems: the variance of all coefficients
 
 When looking at multiple regression models we have to ask ourselves some questions: - Is at least one of the predictors useful in predicting the response - Do all the predictors help to explain Y or only some of them are useful? - How well does the model fit the data?
 
-## Model fit
+# Testing error and training error {#testingtrainingerror}
+
+The *training error rate* is the proportion of mistakes that are made if we apply our model to the training data-set.
+
+The *test error* is the average error that results from using a statistical learning method to predict the response on a new observation, that is, a measurement that was not used in training the method.
+
+The test error can be easily calculated if a designated test set is available. Unfortunately, this is usually not the case.In contrast, the training error can be easily calculated by applying the statistical learning method to the observations used in its training. But the training error rate often is quite different from the test error rate, and in particular the former can dramatically underestimate the latter.
+
+# Model fit
 
 Two of the most common numerical measures of model fit are the RSE and $R^2$, the fraction of variance explained. These quantities are computed and interpreted in the same fashion as for simple linear regression. Recall that [in simple regression, $R^2$ is the square of the correlation of the response and the variable](#Rsquare). In multiple linear regression, it turns out that it equals $Cor(Y, \hat{Y} )^2$, the square of the correlation between the response and the fitted linear model. It turns out that $R^2$ will always increase when more variables are introduced, even if those variables are only weekly associated with the response. If we notice that the increase in $R^2$ is minimal after adding another variable, it is probably best to leave that variable out of the model. We can check RSE in combination with $R^2$, as RSE will increase despite RSS increasing as well if the new variable is not adding enough value. Remember the formula for RSE (@eq-RSE):
 
@@ -313,11 +313,11 @@ for (i in 1:nrow(Advertising)) {
 
 ```
 
-## Collinearity {#collinearity}
+# Collinearity {#collinearity}
 
 Collinearity refers to the situation in which two or more predictor variables are closely related to one another. The presence of collinearity can pose problems in the regression context, since it can be difficult to separate out the individual effects of collinear variables on the response. Since collinearity reduces the accuracy of estimates of the regression coefficients, it causes the standard error to grow. Recall that the t-statistic for each predictor is calculated by dividing $\hat{\beta_j}$ by its standard error. Consequently, collinearity results in a decline in the t-statistic. As a result, in the presence of collinearity, we may fail to reject the null hypothesis, this means that the probability of correctly detecting a non-zero coefficient is reduced. A simple way to detect collinearity between two variables is to look at the correlation matrix of the predictors, but it is also possible that there is collinearity between three variables, even if no pair of variables have a high correlation, and this will not be detected in the correlation matrix. For this we can calculate the *variance inflaction factor (VIF)* but this is out of the scope here.
 
-## F-statistic.
+# F-statistic.
 
 $$
 F= \frac{TSS-RSS/p}{RSS/(n-p-1)}
@@ -345,7 +345,7 @@ If it were 1.8, since 1.8 \< 2.70, your model isn't significant (low F-value).
 
 In r, the f-value will also come with its $p$-value, indicating its significance.
 
-## Deciding on the important variables.
+# Deciding on the important variables.
 
 With today's big data there is more availability of data than ever, and it is becoming usual to have many many features to fit a model, and model accuracy can be challenging in those situations, specially when we have more features than number of samples (p\>n). By removing irrelevant features we can obtain a model that is more easily interpreted. We will present some approaches for automatically performing *feature selection*.
 
@@ -355,7 +355,7 @@ With today's big data there is more availability of data than ever, and it is be
 
 -   *Dimension reduction*: We project the $p$ predictors into a M-dimensional subspace, where M\<p. This is achieved by computing M different *linear combinations* or *projections*, of the variables. Then these M projections are used as predictors to fit a linear regression model by least squares.
 
-### Best Subset selection
+## Best Subset selection
 
 The most direct approach to answer this question is called *all subsets* or *best subsets* regression. We compute the least squares fit for all possible subsets and then choose between them based on some criterion that balances training error with model size. This gets really hard when the number of variables is high, the number of possible models is $2^p$ so for example for p=40 there are over a billion models. Instead, we need an automated approach that searches through a subset of them. We discuss two commonly use approaches next.
 
@@ -424,15 +424,15 @@ plot(reg.summary$rss, xlab = "Number of Variables",
 with this information we will be able to select the model with the correct number of variables.
 :::
 
-### Stepwise Selection
+## Stepwise Selection
 
-#### Forward Stepwise selection
+### Forward Stepwise selection
 
 The stepwise selection is very similar to the best subset as we start with a model with only the intercept and start aggregating predictors and selecting those with less RSS. The difference with best subset selection is that these models are nested and brings the number of models that we are considering from $2^p$ to $p^2$ which is more manageable. Because we are not considering every possible combination of all the predictors, this method is not guaranteed to find the model with less RSS.
 
 Again, once we have the best version of the model with each number of predictors, we will choose among them using cross-validation or a similar technique.
 
-#### Backward stepwise selection
+### Backward stepwise selection
 
 It runs a similar process but starting with a model with all the variables, then you run the model removing each variable and see which one is the least statistically significant one. The new (p-1) variable model is fit, and the variable with the largest $p$-value is removed. Continue until a stopping rule is reached, for instance, we may stop when all remaining variables have a significant $p$-value defined by some significance threshold.
 
@@ -543,7 +543,7 @@ plot(regfit.bwd, scale="Cp")
 ```
 :::
 
-## Estimating the test error
+# Estimating the test error
 
 -   We can indirectly estimate the test error by making an adjustment to the training error to account for the bias due to overfitting.
 
@@ -551,7 +551,7 @@ plot(regfit.bwd, scale="Cp")
 
 We are going to see here other methods:
 
-### Mallow's Cp
+## Mallow's Cp
 
 This technique adjust the training error for the model size, and can be used to select among a set of models with different numbers of variables. $$
 C_p = \frac{1}{n}(RSS+2d\hat{\sigma}^2)
@@ -611,11 +611,11 @@ print(Cp)
 
 When comparing two values for different models we want to choose the smallest Cp.
 
-### AIC
+## AIC
 
 The criterion is defined for a large class of models fit by maximum likelihood. We are not going to look at the formula right now, but it is similar to the previous and it is actually proportional to Cp, so again, we will choose the model with the smallest value.
 
-### Bayesian Information Criterion (BIC)
+## Bayesian Information Criterion (BIC)
 
 $$
 BIC = \frac{1}{n}(RSS+log(n)d\hat{\sigma}^2)
@@ -625,7 +625,7 @@ We also look for the smallest value of the BIC for our models. The BIC statistic
 
 Because all these three methods rely on calculating hat sigma squared, all of them require that n\>p due to the formula to calculate it (@eq-errorvariance)
 
-### Adjusted RSquared {#adjusted-rsquared}
+## Adjusted RSquared {#adjusted-rsquared}
 
 For a least squared model with $d$ variables, the adjusted $R^2$ statistic is calculated as:
 
@@ -742,9 +742,9 @@ coef(regfit.best, min)
 ```
 :::
 
-## Resampling Methods {#resampling-methods}
+# Resampling Methods {#resampling-methods}
 
-### Monte Carlo Method
+## Monte Carlo Method
 
 The Monte Carlo method is a powerful statistical technique used to understand the impact of risk and uncertainty in prediction and forecasting models.
 
@@ -774,7 +774,7 @@ For example for the case of mice weights, we know that mice typically weight 24 
 controls<- rnorm(5000, mean=24, sd=3.5) 
 ```
 
-### Cross-validation {#crossvalidation}
+## Cross-validation {#crossvalidation}
 
 As the models become more complex (the more features we add to our model), the [training error](#testingtrainingerror) becomes lower. On the other hand, the *test error* does not reduces at the same rate as the model gets more complex, it starts going down but then it starts increasing again as the model starts overfitting to the training dataset.
 
@@ -844,7 +844,7 @@ In the first graph we can see that a polynomial of level 2 reduces drastically t
 
 Now we will see some techniques that try to solve some of those drawbacks.
 
-#### K-fold Cross-validation
+### K-fold Cross-validation
 
 *K-fold cross validation* is a widely used approach for estimating test error. The idea is to randomly divide the data into $K$ equal-sized parts. We leave out part $k$, fit the model to the other $K-1$ parts (combined) and then obtain predictions for the left-out $kth$ part.This is done in turn for each part k, and then the results are combined. $K$ is usually between 5 and 10. Let's the $K$ parts be $C_1,C_2,\dots,C_k$. where $C_k$ denotes the indices of the observations in part k. There are $n_k$ observations in part k. $$
 CV_{(K)}= \sum^K_{k=1}\frac{n_k}{n} MSE_k
@@ -939,7 +939,7 @@ We can see how the variability in 10-k fold is much less than what we obtained b
 
 For classification problems the k-fold cross-validation works exactly the same, the only difference is that instead of MSE to measure the cross validation error we use the \[misclassification error rate\] (#misclassificationErrorRate).
 
-#### Potential problems with cross-validations.
+### Potential problems with cross-validations.
 
 Consider a simple classifier applied to some two-class data. We have 5000 predictors and 50 samples. With this, we find the 100 predictors having the largest correlation with the class labels. We then apply a classifier such as logistic regression using only those 100 predictors. If we now try to estimate the test set performance of this classifier using cross-validation, we will get a much lower error estimate than real. This is because when we choose the 100 best predictors, this is a form of training for the model, and must be included in the validation process. If for example we simulate data with the class labels independent of the outcome (so our test error is 50%) and then we choose the best predictors and create a model with them, when we calculate the cross-validation, our error estimate will be smaller than it should be.
 
@@ -998,7 +998,7 @@ coef(reg.best, 10)
 ```
 :::
 
-### The bootstrap principle {#bootstrap}
+## The bootstrap principle {#bootstrap}
 
 The *bootstrap* is a flexible and powerful statistical tool that can be used to quantify the uncertainty associated with a given estimator or statistical method. For example, it can provide an estimate of the standard error of a coefficient, or a confidence interval for that coefficient.
 
@@ -1105,7 +1105,6 @@ these standard errors are calculated using the formulas we saw in [Assessing the
 
 The [formula for the slope](/linearModels.html#eq-standardErrorSlope) and for the [intercept](/linearModels.html#eq-standardErrorIntercept)
 
-
 These formulas rely on certain assumptions (out of the scope for this document, check the ISLR book for more info). The bootstrap approach does not rely on any of these assumptions, and so, it is likely giving more accurate estimate of the standard errors than the summary function
 :::
 
@@ -1153,7 +1152,7 @@ the statistic came as 0.5758 as before and we now know our standard error that c
 The plots show you the distribution of the samples and the QQ plot.
 :::
 
-### Use of Monte Carlo Simulation and Bootstrap
+## Use of Monte Carlo Simulation and Bootstrap
 
 Simulations can also be used to check theoretical or analytical results. Also, many of the theoretical results we use in statistics are based on asymptotics: they hold when the sample size goes to infinity. In practice, we never have an infinite number of samples so we may want to know how well the theory works with our actual sample size. Sometimes we can answer this question analytically, but not always. Simulations are extremely useful in these cases.
 
@@ -1212,7 +1211,7 @@ qqnorm(controlPopulation)
 qqline(controlPopulation)
 ```
 
-## Shrinkage Methods
+# Shrinkage Methods
 
 **Ridge regression and lasso.**
 
@@ -1375,7 +1374,7 @@ lasso.coef[lasso.coef != 0]
 ```
 :::
 
-## Dimension Reduction Methods
+# Dimension Reduction Methods
 
 To recapitulate, we have seen subset selection methods, where we were just taking a subset of the predictors and using least squares models choosing the best model. Then ridge regression and lasso, where we were taking all of the predictors, but it does not use least squares, but a shrinkage approach to fit the model. Now we are going to use least squares but not on the original predictors, instead we are going to come up with new predictors, which are linear combinations of the original ones.
 
@@ -1391,12 +1390,11 @@ The first principal component is that (normalized) linear combination of the var
 
 **Partial Least Squares (PLS)** Like PCR, PLS is a dimension reduction method, which first identifies a new set of features that are linear combinations of the original features, and then fits a linear model. After standardizing the $p$ predictors, PLS computes the first direction $Z_1$ by setting each $\phi_{ij}$ equal to the coefficient from the simple linear regression of Y onto $X_j$, hence, PLS places the highest weight on the variables that are most strongly related to the response. Subsequent directions (Z) are found by taking residuals and then repeating the above process.
 
-# Multiple hypotesis testing
+# Multiple hypothesis testing
+
 [In the Common Errors in significance testing](#testErrors) we saw that rejecting $H_0$ if the $p$-value is below a certain $\alpha$ threshold is a simple way to control Type I error. But now suppose that we wish to test $m$ null hypothesis. If we reject all null hypothesis for which the $p$-value falls bellow our $\alpha$, then how many Type I errors should we expect to make?
 
-Suppose that we flip 1,024 fair coins ten times each. Then we would expect (on average) one coin to come up *all tails*. (There’s a $\frac{1}{2}^{10} = \frac{1}{1,024}$ chance that any single coin will come up all tails. So if we flip 1,024 coins, then we expect one coin to come up all tails, on average). If one of our coins comes up all tails, then
-we might therefore conclude that this particular coin is not fair. In fact, a standard hypothesis test for the null hypothesis that this particular coin is fair would lead to a p-value below $0.002^{12}$ But it would be incorrect to
-conclude that the coin is not fair: in fact, the null hypothesis holds, and we just happen to have gotten ten tails in a row by chance.
+Suppose that we flip 1,024 fair coins ten times each. Then we would expect (on average) one coin to come up *all tails*. (There's a $\frac{1}{2}^{10} = \frac{1}{1,024}$ chance that any single coin will come up all tails. So if we flip 1,024 coins, then we expect one coin to come up all tails, on average). If one of our coins comes up all tails, then we might therefore conclude that this particular coin is not fair. In fact, a standard hypothesis test for the null hypothesis that this particular coin is fair would lead to a p-value below $0.002^{12}$ But it would be incorrect to conclude that the coin is not fair: in fact, the null hypothesis holds, and we just happen to have gotten ten tails in a row by chance.
 
 ```{r, fig.align='center'}
 # Load necessary libraries
@@ -1441,68 +1439,54 @@ ggplot(results_df, aes(x = Coin, y = as.numeric(All_Tails))) +
   theme_minimal()
 ```
 
+When testing a huge number of null hypotheses, we are bound to get some very small p-values by chance. If we make a decision about whether to reject each null hypothesis without accounting for the fact that we have performed a very large number of tests, then we may end up rejecting a great number of true null hypotheses.
 
-When testing a huge number of null hypotheses, we are bound to get some very small p-values by chance. If we make a decision about whether to reject each null hypothesis without accounting for the fact that we have performed a very large number of tests, then we may end up rejecting a great number of true null hypotheses. 
-
-If we choose to reject the null hypothesis when the $p$-value is less than 0.01, then there is a 1% chance of making a false rejection. So if we have $m$ number of hypotheses we want to test, our probability of falsely rejecting the null hypothesis will be $m\times 0.01$ and that will be our number of Type I errors. 
-How can we control fot this situation?
+If we choose to reject the null hypothesis when the $p$-value is less than 0.01, then there is a 1% chance of making a false rejection. So if we have $m$ number of hypotheses we want to test, our probability of falsely rejecting the null hypothesis will be $m\times 0.01$ and that will be our number of Type I errors. How can we control fot this situation?
 
 ## Family-Wise Error Rate (FWER)
 
 The family-wise rate is the probability of making *at least* one Type I error when conducting hypothesis tests.
 
-When performing the test, we know how many hypotheses we have tested $m$, we also know how many $H_0$ we have rejected, but we don't know if we rejected them correctly or not, but we can approximate that. 
-$$
+When performing the test, we know how many hypotheses we have tested $m$, we also know how many $H_0$ we have rejected, but we don't know if we rejected them correctly or not, but we can approximate that. $$
 FWER = 1 - (1 - \alpha)^m
 $$
 
-```{r, fig.align='center', echo=FALSE}
-# Load necessary libraries
-library(tidyverse)
+If the null hypothesis is true for each of $m$ independent hypothesis tests, then the FWER is equal to $1-(1-\alpha)^m$. We can use this expression to compute the FWER for $m=1,\ldots, 500$ and $\alpha=0.05$, $0.01$, and $0.001$.
 
-# Define the number of hypotheses
-num_hypotheses <- seq(1, 500, by = 1)
-
-# Define the alpha values
-alpha_values <- c(0.05, 0.01, 0.001)
-
-# Calculate the FWER for each alpha value and number of hypotheses
-fwer <- function(alpha, m) {
-  1 - (1 - alpha)^m
-}
-
-# Create a data frame for plotting
-fwer_df <- expand.grid(Hypotheses = num_hypotheses, Alpha = alpha_values) %>%
-  mutate(FWER = fwer(Alpha, Hypotheses))
-
-# Plot the FWER for different alpha values and numbers of hypotheses
-ggplot(fwer_df, aes(x = Hypotheses, y = FWER, color = factor(Alpha))) +
-  geom_line(size = 1) +
-  labs(title = "Family-Wise Error Rate vs. Number of Hypotheses (Log Scale)",
-       x = "Number of Hypotheses (log scale)",
-       y = "Family-Wise Error Rate",
-       color = "Alpha") +
-  theme_minimal() +
-  scale_color_manual(values = c("0.05" = "yellow", "0.01" = "blue", "0.001" = "black")) +
-  scale_x_log10() +  # Apply logarithmic scale to x-axis
-  ylim(0, 1)+
-  geom_hline(yintercept = 0.1, linetype = "dotted", color = "red")
-
-
+```{r }
+m <- 1:500
+fwe1 <- 1 - (1 - 0.05)^m
+fwe2 <- 1 - (1 - 0.01)^m
+fwe3 <- 1 - (1 - 0.001)^m
 ```
 
+We plot these three vectors. The red, blue, and green lines correspond to $\alpha=0.05$, $0.01$, and $0.001$, respectively.
+
+```{r , fig.align='center'}
+par(mfrow = c(1, 1))
+plot(m, fwe1, type = "l", log = "x", ylim = c(0, 1), col = 2,
+    ylab = "Family - Wise Error Rate",
+    xlab = "Number of Hypotheses")
+lines(m, fwe2, col = 4)
+lines(m, fwe3, col = 3)
+abline(h = 0.05, lty = 2)
+```
+
+Even for moderate values of $m$ such as $50$, the FWER exceeds $0.05$ unless $\alpha$ is set to a very low value, such as $0.001$. Of course, the problem with setting $\alpha$ to such a low value is that we are likely to make a number of Type II errors: in other words, our power is very low.
+
 ## Bonferroni Method for Controlling FWER
-The *Bonferroni* method adjusts the significance level (𝛼) for each individual hypothesis test to ensure that the overall probability of making at least one Type I error (false positive) remains controlled.
-Given a number of hypotheses being tested $m$, we adjust the significance level for each test $\alpha_{adj}$ by dividing the desired significance level $\alpha$ byt the number of hypotheses $m$ 
+
+The *Bonferroni* method adjusts the significance level (𝛼) for each individual hypothesis test to ensure that the overall probability of making at least one Type I error (false positive) remains controlled. Given a number of hypotheses being tested $m$, we adjust the significance level for each test $\alpha_{adj}$ by dividing the desired significance level $\alpha$ byt the number of hypotheses $m$
+
 $$
 \alpha_{adj} = \frac{\alpha}{m}
-$$
-Now we compare the p-values of each test against the adjusted significance level and reject those null hypothesis for any test with a $p$-value less than or equal to $\alpha_{adj}$
+$$ Now we compare the p-values of each test against the adjusted significance level and reject those null hypothesis for any test with a $p$-value less than or equal to $\alpha_{adj}$
 
-We now consider the Fund dataset. It contains data for 50 months for a list of managers and their excess return, this is, the percentage points difference between the funds managed by these people compared with the stock market in general for the same period.
-In the table below we show the stats for the first 5 manangers in our list. 
+We now consider the Fund dataset. It contains data for 50 months for a list of managers and their excess return, this is, the percentage points difference between the funds managed by these people compared with the stock market in general for the same period. In the table below we show the stats for the first 5 managers in our list.
 
 If we control the Type I error at level α = 0.05 for each fund manager separately, then we will conclude that the first and third managers have significantly non-zero excess returns; in other words, we will reject H01 : μ1 = 0 and H03 : μ3 = 0. However, as discussed in previous sections, this procedure does not account for the fact that we have tested multiple hypotheses, and therefore it will lead to a FWER greater than 0.05. If we instead wish to control the FWER at level 0.05, then, using a Bonferroni correction, we must control the Type I error for each individual manager at level α/m = 0.05/5 = 0.01. Consequently, we will reject the null hypothesis only for the first manager, since the p-values for all other managers exceed 0.01.
+
+We are going to do the calculation manually here, and later in the exercises we will use an `R` function that calculate this for us.
 
 ```{r}
 fund <- ISLR2::Fund
@@ -1523,23 +1507,16 @@ df<- data.frame(manager = managers, mean = means, StandDev = sds,  tStatistic = 
 df
 
 ```
-The Bonferroni correction is by far the best-known and most commonly used
-multiplicity correction in all of statistics. Its ubiquity is due in large
-part to the fact that it is very easy to understand and simple to implement,
-and also from the fact that it successfully controls Type I error regardless
-of whether the m hypothesis tests are independent. However, as we will see,
-it is typically neither the most powerful nor the best approach for multiple
-testing correction. In particular, the Bonferroni correction can be quite
-conservative, in the sense that the true FWER is often quite a bit lower
-than the nominal (or target) FWER.
+
+The Bonferroni correction is by far the best-known and most commonly used multiplicity correction in all of statistics. Its ubiquity is due in large part to the fact that it is very easy to understand and simple to implement, and also from the fact that it successfully controls Type I error regardless of whether the m hypothesis tests are independent. However, as we will see, it is typically neither the most powerful nor the best approach for multiple testing correction. In particular, the Bonferroni correction can be quite conservative, in the sense that the true FWER is often quite a bit lower than the nominal (or target) FWER.
 
 ## Holm's Method for controlling FWER
 
-For this method we start like with the Bonferroni, we just do our test and calculate our $p$-values as per normal, and then we sort those $p$-values from smallest to greatest, and one by one we calculate L that validates this formula  
+For this method we start like with the Bonferroni, we just do our test and calculate our $p$-values as per normal, and then we sort those $p$-values from smallest to greatest, and one by one we calculate L that validates this formula
+
 $$
 L = \min \left\{ j : p_{j} > \frac{\alpha}{m+1-j} \right\}
-$$
-where $j$ is the index of the hypotheses tested, so $j= 1,2,\dots,m$ 
+$$ where $j$ is the index of the hypotheses tested, so $j= 1,2,\dots,m$
 
 Once we have L, we reject all null hypothesis that are below L.
 
@@ -1557,25 +1534,142 @@ for (i in df$pValues){
 df
 ```
 
-We see that in this setting, we reject the null hypothesis for managers 1 and 3 using Holm's method. 
+We see that in this setting, we reject the null hypothesis for managers 1 and 3 using Holm's method.
 
-Holm's method will reject at least as many hypothesis than the Bonferroni method, but usually rejects more. 
+Holm's method will reject at least as many hypothesis than the Bonferroni method, but usually rejects more.
 
-## Benjamini-Hochberg Procedure to control FDR
+::: exercise-box
+Practice: Type I errors, FWER, Bonferrony, Holm's
 
-This method is useful when we have a large number of hypothesis to test and we are ok with rejecting a percentage of true null Hypotheses. 
-- First we specify $q$ that is the level at which we wish to control FDR
-- Compute the $p$-values for each of our hypotheses
-- Order the $p$-values from smallest to greatest
-- Define L where
-$$
-L= max \{ j:p_{(j)} < qj/m\}
-$$
-- Reject all null hypotheses $H_{0j}$ for which $p_j \leq p_{(L)}$ 
+We are going to simulate some random data to test 100 hypotheses to check if their mean is equal to 0. Each dataset contains 10 observations.
 
-We are going to use now the full dataset of Fund with 2000 managers and apply the Bonferroni method and the Benjamini-Hochberg method.
+We create the data and then modify the first 50 columns so its mean is not 0 but 0.5, so we would expect to reject the first 50 $H_0$ hypotheses and do not reject the last 50 $H_0$ hypotheses.
 
 ```{r}
+set.seed(6)
+X<- matrix(rnorm(10*100), 10,100)
+X[,1:50]<- X[,1:50] +0.5
+
+p.values = rep(0,100)
+for (i in 1:100)
+  p.values[i] <- t.test(X[,i],mu=0)$p.value
+decision <- rep("Do not reject H0", 100)
+decision[p.values <= .05]<- 'reject H0'
+table(decision,
+  c(rep("H0 is False", 50), rep("H0 is true",50)))
+```
+
+The situation in which we rejected the null hypothesis when it is in fact true are our Type I errors, in our case 3.
+
+With only 10 observations, we could only reject 10 out of the 50 false null hypotheses, specially because our mean was only 0.5 difference. We can see how if we change the mean of the first 50 hypotheses to 1 instead of 0.5, we have a better success on the number of Type II errors:
+
+```{r}
+
+X<- matrix(rnorm(10*100), 10,100)
+X[,1:50]<- X[,1:50] +1
+
+p.values = rep(0,100)
+for (i in 1:100)
+  p.values[i] <- t.test(X[,i],mu=0)$p.value
+decision <- rep("Do not reject H0", 100)
+decision[p.values <= .05]<- 'reject H0'
+table(decision,
+  c(rep("H0 is False", 50), rep("H0 is true",50)))
+
+```
+
+As we have done in the lecture above, we now conduct a one-sample $t$-test for each of the first five managers in the `Fund` dataset, in order to test the null hypothesis that the $j$th fund manager's mean return equals zero, $H_{0j}: \mu_j=0$.
+
+```{r}
+
+fund.mini <- Fund[, 1:5]
+t.test(fund.mini[, 1], mu = 0)
+fund.pvalue <- rep(0, 5)
+for (i in 1:5)
+  fund.pvalue[i] <- t.test(fund.mini[, i], mu = 0)$p.value
+fund.pvalue
+```
+
+The $p$-values are low for Managers One and Three, and high for the other three managers. However, we cannot simply reject $H_{01}$ and $H_{03}$, since this would fail to account for the multiple testing that we have performed. Instead, we will conduct Bonferroni's method and Holm's method to control the FWER.
+
+**Bonferroni**
+
+To do this, we use the `p.adjust()` function. Given the $p$-values, the function outputs *adjusted* $p$-values, which can be thought of as a new set of $p$-values that have been corrected for multiple testing. If the adjusted $p$-value for a given hypothesis is less than or equal to $\alpha$, then that hypothesis can be rejected while maintaining a FWER of no more than $\alpha$. In other words, the adjusted $p$-values resulting from the `p.adjust()` function can simply be compared to the desired FWER in order to determine whether or not to reject each hypothesis.
+
+For example, in the case of Bonferroni's method, the raw $p$-values are multiplied by the total number of hypotheses, $m$, in order to obtain the adjusted $p$-values. (However, adjusted $p$-values are not allowed to exceed $1$.)
+
+```{r}
+p.adjust(fund.pvalue, method = "bonferroni")
+pmin(fund.pvalue * 5, 1)
+```
+
+Therefore, using Bonferroni's method, we are able to reject the null hypothesis only for Manager One while controlling the FWER at $0.05$.
+
+**Holm's method**
+
+By contrast, using Holm's method, the adjusted $p$-values indicate that we can reject the null hypotheses for Managers One and Three at a FWER of $0.05$.
+
+```{r}
+p.adjust(fund.pvalue, method = "holm")
+```
+
+As discussed previously, Manager One seems to perform particularly well, whereas Manager Two has poor performance.
+
+```{r }
+apply(fund.mini, 2, mean)
+```
+
+**Tukey's Honest Significant Difference (HSD) test**
+
+Is there evidence of a meaningful difference in performance between these two managers? Performing a paired $t$-test using the `t.test()` function results in a $p$-value of $0.038$, suggesting a statistically significant difference.
+
+```{r }
+t.test(fund.mini[, 1], fund.mini[, 2], paired = T)
+```
+
+However, we decided to perform this test only after examining the data and noting that Managers One and Two had the highest and lowest mean performances.
+
+In a sense, this means that we have implicitly performed ${5 \choose 2} = 5(5-1)/2=10$ hypothesis tests, rather than just one. Hence, we use the `TukeyHSD()` function to apply Tukey's method in order to adjust for multiple testing. This function takes as input the output of an *ANOVA* regression model, which is essentially just a linear regression in which all of the predictors are qualitative. In this case, the response consists of the monthly excess returns achieved by each manager, and the predictor indicates the manager to which each return corresponds.
+
+```{r chunk13}
+returns <- as.vector(as.matrix(fund.mini))
+manager <- rep(c("1", "2", "3", "4", "5"), rep(50, 5))
+a1 <- aov(returns ~ manager)
+TukeyHSD(x = a1)
+```
+
+The `TukeyHSD()` function provides confidence intervals for the difference between each pair of managers (`lwr` and `upr`), as well as a $p$-value. All of these quantities have been adjusted for multiple testing. Notice that the $p$-value for the difference between Managers One and Two has increased from $0.038$ to $0.186$, so there is no longer clear evidence of a difference between the managers' performances. We can plot the confidence intervals for the pairwise comparisons using the `plot()` function.
+
+```{r, fig.align='center'}
+plot(TukeyHSD(x = a1))
+```
+:::
+
+## Benjamini-Hochberg Procedure to control
+
+**The False Discovery Rate** When $m$ is large, then trying to prevent any false positives (as in FWER control) is simply too stringent. Instead, we might try to make sure that the ratio of false positives to total positives (is sufficiently low, so that most of the rejected null hypotheses are not false positives. The ratio is known as the false discovery proportion (FDP).
+
+It might be tempting to ask the data analyst to control the FDP: to make sure that no more than, say, 20% of the rejected null hypotheses are false positives. However, in practice, controlling the FDP is an impossible task for the data analyst, since she has no way to be certain, on any particular dataset, which hypotheses are true and which are false, Therefore, we instead control the false discovery rate (FDR) defined as 
+FDR = E(FDP) = E(False Rejections/Total Rejections) 
+When we control the FDR at (say) level q = 20%, we are rejecting as many null hypotheses as possible while guaranteeing that no more than 20% of those rejected null hypotheses are false positives, on average. The expectation is taken over the population from which the data are generated. For instance, suppose we control the FDR for $m$ null hypotheses at $q = 0.2$. This means that if we repeat this experiment a huge number of times, and each time control the FDR at $q = 0.2$, then we should expect that, on average, 20% of the rejected null hypotheses will be false positives. On a given dataset, the fraction of false positives among the rejected hypotheses may be greater than or less than 20%.
+
+It is worth noting that unlike $p$-values, for which a threshold of 0.05 is typically viewed as the minimum standard of evidence for a "positive" result, and a threshold of 0.01 or even 0.001 is viewed as much more compelling, there is no standard accepted threshold for FDR control. Instead, the choice of FDR threshold is typically context-dependent, or even dataset dependent.
+
+This method is useful when we have a large number of hypothesis to test and we are ok with rejecting a percentage of true null Hypotheses.
+
+We need some way to connect the $p$-values, $p1,\dots,pm$, from the $m$ null hypotheses to the desired FDR value, $q$. It turns out that a very simple procedure can be used to control the FDR
+
+-   First we specify $q$ that is the level at which we wish to control FDR
+
+-   Compute the $p$-values for each of our hypotheses - Order the $p$-values from smallest to greatest - Define L where $$
+    L= max \{ j:p_{(j)} < qj/m\}
+    $$
+
+-   Reject all null hypotheses $H_{0j}$ for which $p_j \leq p_{(L)}$
+
+We are going to use now the full dataset of Fund with 2000 managers and apply the *Bonferroni* method and the *Benjamini-Hochberg* method. First, we are going to do the calculation manually and later we will use a function.
+
+```{r, fig.align='center', fig.height=6}
 fund <- ISLR2::Fund
 managers <- numeric(0)
 pvals <- numeric(0)
@@ -1595,56 +1689,206 @@ df<- data.frame(manager = managers, pValues = pvals, bonfRej = bonfRej)
 
 
 #Benjamini-Hochberg rejections
-df <- df %>% arrange(df$pValues)
-alpha <- 0.05
-j=1
 
-for (i in df$pValues){
-  df$BHreject = df$pValues < (alpha*j)/m
-  j=j+1
-}
+ps <- sort(df$pValues)
+q <- 0.1
+wh.ps <- which(ps < q * (1:m) / m)
+if (length(wh.ps) >0) {
+  wh <- 1:max(wh.ps)
+ } else {
+  wh <- numeric(0)
+ }
 
-ggplot(df, aes(x = manager, y = pValues, color = BHreject)) +
-  geom_point() +
-  scale_x_log10()+
-  scale_y_continuous(limits = c(0, 1)) +
-  labs(title = "Plot of log(manager) vs pvalues",
-       x = "log(manager)",
-       y = "pvalues",
-       color = "BHreject") +
-  theme_minimal()
+
+plot(ps, log = "xy", ylim = c(4e-6, 1), ylab = "P-Value",
+    xlab = "Index", main = "")
+points(wh, ps[wh], col = 4)
+abline(a = 0, b = (q / m), col = 2, untf = TRUE)
+abline(h = 0.1 / 2000, col = 3)
 
 sum(df$bonfRej)
-sum(df$BHreject)
+max(wh)
 ```
-Due to the large number of $m$, the Bonferroni method does not reject any hypothesys, while Benjamin-Hochberg rejects 289, but we have to remember that we expect 5% of them will be false rejections at our level of alpha. 
 
-## Resampling approaches 
+The graph shows in blue the rejected hypotheses using BH
 
-So far, we have assumed that we want to test some null hypothesis with some statistic T and that we know, or can assume, the distribution of T under $H_0$, this allows us to compute the $p$-value, but what if this theoretical null distribution is unknown?
+Due to the large number of $m$, the Bonferroni method does not reject any hypothesis, while Benjamin-Hochberg rejects 147, but we have to remember that we expect a percentage of them will be false rejections at our level of $q$.
 
-We are only going to see this approach for a two-sample t-Test, and this method cannot be automatically used for other types of tests.
+Now we will calculate the Benjamini-Hochberg using `p.adjust()` function in R. We will show the first 10
 
-We have two samples $X$ and $Y$ and the $H_0$ is that the means of those two samples is the same. As we have seen in the central limit theorem if N is big enough, we know that T approximately follows a normal distribution under $H_0$, but if n is small, then we don't know the theoretical null distribution of T, so we can can use re sampling and let the computer find out the right distribution. 
+```{r chunk16}
+q.values.BH <- p.adjust(df$pValues, method = "BH")
+q.values.BH[1:10]
+```
 
- - Compute the two-sample $t$-statistic $T$ on the original data X and Y.
- - choose a large number (like 1000 or higher) $B$
- - Randomly shuffle the X and Y observations and select two samples $x^*$ and $y^*$
- - Compute a two sample $t$-statistic on the shuffled data $T^*$ 
- - repeat the two last steps B times. 
- - the $p$-value is given by the fraction of the times that the $t$-statistic on the shuffled data exceeded an absolute value, the $t$-statistic on the real data.
+The q-values output by the Benjamini-Hochberg procedure can be interpreted as the smallest FDR threshold at which we would reject a particular null hypothesis. For instance, a $q$-value of $0.1$ indicates that we can reject the corresponding null hypothesis at an FDR of $10\%$ or greater, but that we cannot reject the null hypothesis at an FDR below $10\%$.
+
+If we control the FDR at $10\%$, then for how many of the fund managers can we reject $H_{0j}: \mu_j=0$?
+
+```{r chunk17}
+sum(q.values.BH <= .1)
+```
+
+We find that 147 of the 2,000 fund managers have a $q$-value below 0.1; therefore, we are able to conclude that 147 of the fund managers beat the market at an FDR of $10\%$. Only about 15 ($10\%$ of 147) of these fund managers are likely to be false discoveries.
+
+## Resampling approaches
+
+So far, we have assumed that we want to test some null hypothesis with some statistic $T$ and that we know, or can assume, the distribution of $T$ under $H_0$, this allows us to compute the $p$-value, but what if this theoretical null distribution is unknown?
+
+We are only going to see this approach for a two-sample $t$-Test, and this method cannot be automatically used for other types of tests.
+
+We have two samples $X$ and $Y$ and the $H_0$ is that the means of thos two samples is the same. As we have seen in the central limit theorem if $N$ is big enough, we know that $T$ approximately follows a normal distribution under $H_0$, but if $N$ is small, then we don't know the theoretical null distribution of $T$, so we can can use re sampling and let the computer find out the right distribution.
+
+-   Compute the two-sample $t$-statistic $T$ on the original data $X$ and $Y$.
+-   choose a large number (like 1000 or higher) $B$
+-   Randomly shuffle the $X$ and $Y$ observations and select two samples $x^*$ and $y^*$
+-   Compute a two sample $t$-statistic on the shuffled data $T^*$
+-   repeat the two last steps $B$ times.
+-   the $p$-value is given by the fraction of the times that the $t$-statistic on the shuffled data exceeded the absolute value, the $t$-statistic on the real data.
 
 $$
  p=\frac{ \sum^B_{b=1}1_{(|T^{*b}| \geq |T|)}}{B}
-$$
-- now we can compare this calculated $p$-value with that one calculated at the beginning on the original two sample test. 
+$$ 
+- now we can compare this calculated $p$-value with that one calculated at the beginning on the original two sample test.
 
-The reason why we work with absolute values for the $T$ is because in this particular case it is a two-sided t-test so we are interested in whether X is larger than Y or vice-versa but if it's a one side $t$-test then we can get rid of the absolute values. 
+The reason why we work with absolute values for the $T$ is because in this particular case it is a two-sided $t$-test so we are interested in whether $X$ is larger than $Y$ or vice-versa but if it's a one side $t$-test then we can get rid of the absolute values.
+
+:::exercise-box
+Practice
+
+Here, we implement the re-sampling approach to hypothesis testing using the `Khan` dataset. 
+We merge together train and test datasets because we are not using that here and we do the same for the response $y$ that gives us the type of cancer. 
+
+First, we merge the training and testing data, which results in observations (rows) on $83$ patients for $2{,}308$ columns. Each column represent a gene. So we are going to perform $2{,}308$ hypothesis test here. 
+ 
+
+```{r }
+attach(Khan)
+x <- rbind(xtrain, xtest)
+y <- c(as.numeric(ytrain), as.numeric(ytest))
+dim(x)
+table(y)
+```
+
+There are four classes of cancer.To simplify this example we are only going to compare two of the 4 classes only. For each gene, we compare the mean expression in the second class (*rhabdomyosarcoma*) to the mean expression in the fourth class (*Burkitt's lymphoma*). We see in the table above that we have 29 observations for class 2 and 25 for class 4.
+
+Performing a standard two-sample $t$-test on the $11$th gene produces a test-statistic of $-2.09$ and an associated $p$-value of $0.0412$, suggesting modest evidence of a difference in mean expression levels between the two cancer types.
+
+```{r }
+x <- as.matrix(x)
+x1 <- x[which(y == 2), ]
+x2 <- x[which(y == 4), ]
+n1 <- nrow(x1)
+n2 <- nrow(x2)
+t.out <- t.test(x1[, 11], x2[, 11], var.equal = TRUE)
+TT <- t.out$statistic
+TT
+t.out$p.value
+```
+
+However, this $p$-value relies on the assumption that under the null hypothesis of no difference between the two groups, the test statistic follows a $t$-distribution with $29+25-2=52$ degrees of freedom.
+Instead of using this theoretical null distribution, we can randomly split the 54 patients into two groups of 29 and 25, and compute a new test statistic.
+Under the null hypothesis of no difference between the groups, this new test statistic should have the same distribution as our original one.
+Repeating this process 10,000 times allows us to approximate the null distribution of the test statistic.
+We compute the fraction of the time that our observed test statistic exceeds the test statistics obtained via re-sampling.
+
+```{r}
+set.seed(1)
+B <- 10000
+Tbs <- rep(NA, B) #initializing an empty vector for the T statistic
+for (b in 1:B) {
+   dat <- sample(c(x1[, 11], x2[, 11])) #reshufle the 11th gene for the two types of cancer
+   Tbs[b] <- t.test(dat[1:n1], 
+                    dat[(n1 + 1):(n1 + n2)],
+        var.equal = TRUE
+      )$statistic
+}
+mean((abs(Tbs) >= abs(TT))) #calculate how many T's are higher than the original
+```
+
+This fraction, $0.0416$, is our re-sampling-based $p$-value. It is almost identical to the $p$-value of $0.0412$ obtained using the theoretical null distribution. This means that the assumptions we made in the original test hold for this data
+
+We can plot  a histogram of the re-sampling-based test statistics.
+
+```{r fig.align='center'}
+hist(Tbs, breaks = 100, xlim = c(-4.2, 4.2), main = "",
+    xlab = "Null Distribution of Test Statistic", col = 7)
+
+lines(seq(-4.2, 4.2, len = 1000),
+      dt(seq(-4.2, 4.2, len = 1000),
+      df = (n1 + n2 - 2)
+      ) * 1000, col = 2, lwd = 3)
+abline(v = TT, col = 4, lwd = 2)
+text(TT + 0.5, 350, paste("T = ", round(TT, 4), sep = ""),
+    col = 4)
+```
+In yellow we have the resampling null distribution and in red the theoretical $t$ distribution for mean 0, sd 1 and 52 degrees of freedom. 
+
+The re-sampling-based null distribution is almost identical to the theoretical null distribution, which is displayed in red, so it is to no surprise that the theoretical $p$-value from the test is almost the same as the resampling $p$-value. This just confirms that it is reasonable to use the $t$-distribution here. 
 
 
+Finally, we implement the plug-in re-sampling FDR approach outlined.
+Depending on the speed of your computer, calculating the FDR for all 2,308 genes in the `Khan` dataset may take a while.
+Hence, we will illustrate the approach on a random subset of 100 genes.
+For each  gene, we first compute the observed test statistic,
+and then produce $10{,}000$ re-sampled test statistics. This may take a few minutes to run.  If you are in a rush, then you could set `B` equal to a smaller
+value (e.g. `B = 500`).
+
+```{r}
+m <- 100
+B <- 1000
+set.seed(1)
+index <- sample(ncol(x1), m)
+Ts <- rep(NA, m)
+Ts.star <- matrix(NA, ncol = m, nrow = B)
+for (j in 1:m) {
+  k <- index[j]
+  Ts[j] <- t.test(x1[, k], x2[, k],
+        var.equal = TRUE
+      )$statistic
+  for (b in 1:B) {
+    dat <- sample(c(x1[, k], x2[, k]))
+    Ts.star[b, j] <- t.test(dat[1:n1],
+                           dat[(n1 + 1):(n1 + n2)], 
+                           var.equal = TRUE
+       )$statistic
+  }
+}
+```
+
+Next, we compute the number of rejected null hypotheses $R$, the estimated number of false positives $\widehat{V}$, and the estimated FDR, for a range of threshold values $c$. The threshold values are chosen using the absolute values of the test statistics from the $100$ genes.
+
+```{r}
+cs <- sort(abs(Ts))
+FDRs <- Rs <- Vs <- rep(NA, m)
+for (j in 1:m) {
+  R <- sum(abs(Ts) >= cs[j])
+  V <- sum(abs(Ts.star) >= cs[j]) / B
+  Rs[j] <- R
+  Vs[j] <- V
+  FDRs[j] <- V / R
+}
+```
+
+Now, for any given FDR, we can find the genes that will be rejected. For example, with the FDR controlled at 0.1, we reject 15 of the 100 null hypotheses. On average, we would expect about one or two of these genes (i.e. $10\%$ of 15) to be false discoveries.
+
+At an FDR of $0.2$, we can reject the null hypothesis for $28$ genes, of which we expect around six to be false discoveries. 
+The variable `index` is needed here since we restricted our analysis to just $100$ randomly-selected genes.
+
+```{r chunk27}
+max(Rs[FDRs <= .1])
+sort(index[abs(Ts) >= min(cs[FDRs < .1])])
+max(Rs[FDRs <= .2])
+sort(index[abs(Ts) >= min(cs[FDRs < .2])])
+```
 
 
+```{r fig.align='center'}
+plot(Rs, FDRs, xlab = "Number of Rejections", type = "l",
+    ylab = "False Discovery Rate", col = 4, lwd = 3)
+```
 
+As noted in the chapter, much more efficient implementations of the re-sampling approach to FDR calculation are available, using
+e.g. the `samr` package in `R`.
 
-
-
+:::
