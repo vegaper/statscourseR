@@ -308,7 +308,7 @@ When predicting x from y it is a mistake to use the regression line that we calc
 
 ## Normal approximation in regression
 
-Linear regression requires that the data in the scatter plot is more or less following an elypse shape. Once we have the scatter plot with the regression line, we know that given a value of X, the value of Y will be close to the y point of the regression line for the x value. In the image below, given x, we trace a vertical line to the regression line and then we trace a perpendicular line to the y axis (green line) and that is approximately the expected value of y.
+Linear regression requires that the data in the scatter plot is more or less following an elypse shape. Once we have the scatter plot with the regression line, we know that given a value of $x$, the value of $y$ will be close to the $y$ point of the regression line for the $x$ value. In the image below, given $x$, we trace a vertical line to the regression line and then we trace a perpendicular line to the $y$ axis (green line) and that is approximately the expected value of $y$.
 
 ```{r, fig.align='center', echo=FALSE}
 
@@ -428,7 +428,7 @@ $$
 
 As mentioned before, the observed values of $Y$ will not fall directly over the regression line. At each value of $X=x$ there is typically a distribution of possible $Y$ values.
 
-For each observation we will have the predicted value $\hat{y}$ and the observed value $y$ . That difference is called the residual. The **residual plot** is a scatter plot of the residuals against the x-values. It should show an unstructured horizontal band and it is used to check if the regression you are using is appropriate.
+For each observation we will have the predicted value $\hat{y}$ and the observed value $y$ . That difference is called the residual. The **residual plot** is a scatter plot of the residuals against the $x$ values. It should show an unstructured horizontal band and it is used to check if the regression you are using is appropriate.
 
 For example if we have data following a linear correlation:
 
@@ -505,7 +505,7 @@ that is an indication that the relation is not linear, and we should not use reg
 
 ### Heteroscedascidity {#heteroscedasticity}
 
-Another variation is when the scatter shows in a fan way, this means that the variability increases with the value of X, this is called heteroscedastic.
+Another variation is when the scatter shows in a fan way, this means that the variability increases with the value of $X$, this is called heteroscedastic.
 
 ```{r, fig.align='center'}
 #|echo = FALSE
@@ -586,7 +586,6 @@ These standard errors can be used to compute *confidence intervals* For example 
 $$
 \hat{\beta_1} \mp 2 * SE(\hat{\beta_1}) = \left[\hat{\beta_1}-2 * SE(\hat{\beta_1}),\hat{\beta_1}+2 * SE(\hat{\beta_1})\right]
 $$
-
 ## Hypothesis testing and significance of correlation
 
 The most important thing to remember about correlation testing is that **it only applies to quantitative variables that have a generally linear relationship**.
@@ -762,6 +761,39 @@ the equation will be $cty = 0.6687 * hwy + 1.017$ or $hwy = 1.39 *cty + .2388$
 1.29*24+.2388
 ```
 :::
+
+## Simulating Random Numbers from a linear model in r
+
+Suppose we want to simulate data from the linear model:
+
+$$
+y = \beta_0+\beta_1 x+ \epsilon
+$$
+
+where epsilon has a normal distribution with sd =2, the intercept $\beta_0$ = 0.5 and the slope $\beta_1$ = 2
+
+```{r}
+set.seed(20)
+x<- rnorm(100)
+e<- rnorm(100,0,2)
+y= 0.5 +2*x+e
+summary(y)
+plot(x,y)
+```
+if $x$ is binomial:
+
+```{r}
+set.seed(10)
+set.seed(20)
+x<- rbinom(100,1,0.5)
+e<- rnorm(100,0,2)
+y= 0.5 +2*x+e
+summary(y)
+plot(x,y)
+```
+
+
+
 
 ::: {.callout-orange appearance="simple" icon="false"}
 Linear regression models the relationship between a dependent variable and one or more independent variables. Remember a well-fitting model doesn't always imply causality.
@@ -1170,7 +1202,52 @@ Recap:
 
 Generalized Linear Models (GLMs) are a flexible extension of ordinary linear regression that allows for response variables that have error distribution models other than a normal distribution. GLMs are used to model a wide range of data types and relationships.
 
-**Common types of GLMs** - Linear Regression: when the response variable is continuous and normally distributed. - Logistic Regression: When the response is binary (e.g. success/failure) - Poisson Regression: For count data (e.g. number of events)
+**Common types of GLMs**
+
+- Linear Regression: when the response variable is continuous and normally distributed.
+
+- Logistic Regression: When the response is binary (e.g. success/failure)
+
+- Poisson Regression: For count data (e.g. number of events)
+
+## Poisson Distribution
+
+The Poisson distribution is a probability distribution that expresses the probability of a given number of events occurring within a fixed interval of time or space, provided that these events occur with a known constant mean rate and independently of the time since the last event.
+
+### Characteristics
+- **Discrete distribution**: The Poisson distribution applies to events that can be counted in whole numbers.
+
+- **Parameter**: The Poisson distribution is characterized by a single parameter, \(\lambda\) (lambda), which represents the average rate (mean) of occurrences within a given interval.
+
+- **Probability Mass Function (PMF)**: The probability of observing \(k\) events (where \(k\) is a non-negative integer) is given by the formula:
+
+$$
+  P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}
+$$
+where \(e\) is the base of the natural logarithm (approximately equal to 2.71828), and \(k!\) is the factorial of \(k\).
+
+### Usage
+
+- **Modeling Rare Events**: The Poisson distribution is often used to model rare events, such as the number of phone calls received by a call center per hour or the number of accidents occurring at a busy intersection per day.
+
+- **Independent Events**: It assumes that the number of events occurring in disjoint intervals are independent.
+
+### Example
+Suppose a bookstore observes that, on average, 3 customers enter the store per hour. To calculate the probability that exactly 5 customers will enter the store in the next hour, we can use the Poisson distribution with \(\lambda = 3\) and \(k = 5\):
+
+```{r}
+# Calculate the probability of exactly 5 customers entering the bookstore
+lambda <- 3
+k <- 5
+probability <- (lambda^k * exp(-lambda)) / factorial(k)
+probability
+```
+
+```{r}
+# Compute the probability using dpois
+dpois(5, lambda = 3)
+```
+
 
 ## Poison regression model
 
@@ -1341,6 +1418,23 @@ col = " blue ", pch = 19, type = "o")
 
 The predictions from the Poisson regression model are correlated with those from the linear model; however, our Poisson model produces non-negative outputs. For Poisson regression the responses at each level of X become more variable with increasing means, where variance=mean.In addition, the mean values of Y at each level of X fall on a curve, not a line. AS a result, at either very low or very high levels of Y, the Poisson regression predictions tend to be larger than those from the linear model.
 
+## Simulating data from a Generalized Linear Model
+Suppose we want to simulate from a Poisson model where Y~poisson($\mu$)
+$ log \mu = \beta_0\beta_1x$ 
+and $\beta_0 = 0.5$ and $\beta_1 = 0.3$
+
+```{r}
+set.seed(1)
+x<- rnorm(100)
+log.mu<- 0.5+0.3 *x
+y <- rpois(100, exp(log.mu))
+summary(y)
+plot(x,y)
+
+```
+
+
+# Summary
 ::: orange-box
 **Linear Regression:** Use When: You want to predict a continuous outcome based on one or more predictor numerical variables. Example: Predicting house prices based on size, location, and age.
 

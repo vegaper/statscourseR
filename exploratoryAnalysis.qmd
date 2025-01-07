@@ -275,7 +275,7 @@ Summarizing lists of numbers is one powerful use of distribution. An even more i
 
 Note that the $X$ is now capitalized to distinguish it as a random variable and that the equation above defines the probability distribution of the random variable.
 
-### The $p$-value
+### The p-value
 
 Knowing this distribution is incredibly useful in science. If we know the distribution of our data when the null hypothesis is true, referred to as the *null distribution*, we can compute the probability of observing a value as large as we did in our experiment, referred to as a $p$-value.
 
