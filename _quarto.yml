@@ -13,6 +13,8 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - href: probability.qmd
+        text: Probability
       - href: exploratoryAnalysis.qmd
         text: Exploratory Analysis
       - text: Supervised Learning

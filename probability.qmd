@@ -1,0 +1,197 @@
+---
+title: "Probability"
+format: html
+editor: visual
+---
+
+# Rules of Probability
+
+Probabilities are defined for events. An event is some outcome that we could potentially or hypothetically observe or experience, such as the result of rolling a fair six-sided die. In mathematical notation, we often write an event as a capital letter, for example A. If A is the event of rolling a die and getting a "4", this event has probability 1/6 and we write that as $P(A) = \frac{1}{6}$ We might want to represent the numerical result of the die roll as the random variable X and then we write $P(X=4)=\frac{1}{6}$
+
+Probabilities must be between zero and one for any event A because if we add up the probabilities of all possible events, those probabilities must add to one. For the die rolling example: $$
+\sum^6_{i=1}P(X=i)=1
+$$ The complement of an event $A^C$ means that the event does not happen. Since probabilities must add to one, $P(A^C)=1-P(A)$
+
+If A and B are two events, the probability that A or B happens (this is an inclusive or, meaning that either A or B or both happen) is the probability of the union of the events: $$
+P(A\cup B) = P(A)+P(B)-P(A \cap B)
+$$ Where $\cup$ represents union "or" and $\cap$ represents intersection "and" . If a set of events $A_i$ for $i=1,\dots,m$ are mutually exclusive (only one can happen), then $$
+P(\bigcup^m_{i=m}A_i)=\sum^m_{i=1}P(A_i)
+$$ \## Odds Probabilities can be re-expressed in terms of odds. Suppose again that we denote rolling a "4" on a fair six-sided die as the event A. Then P(A) = 1/6 The odds for event A, denoted $\mathcal{O}(A)$ is defined as $$\mathcal{O}(A) = \frac{P(A)} {P (A ^ c)} = \frac{P(A)}{(1 - P(A))}$$ Hence, in this example: $$
+\mathcal{O}(A) = \frac{1/6} {5/6} = \frac{1}{5}
+$$ This can also be expressed as 1:5 or as 5:1 "odds against". Thus, an event with probability 3/10 has 3/7 odds (7:3 "odds against") and an event with probability 4/5 has 4:1 odds.
+
+We can also calculate probabilities from odds. If an event B has a:b odds, (with a\>0 and b\>0) then $$\frac{P(B)}{(1-P(B))} = \frac{a}{b} \rightarrow P(B)\times b = a-P(B)\times a \rightarrow P(B)= \frac{a}{a+b}$$ Thus, an event with 2:5 odds has probability 2/7
+
+## Expectation
+
+The expected value of a random variable ( X ) is described as a weighted average of the values that ( X ) can take, with weights given by the probabilities of those values.
+
+The formula for the expected value is given as:
+
+$$
+E(X) = \sum_{i=1}^{n} x_i \cdot P(X = x_i)
+$$
+
+An example is provided for the expected value of a fair six-sided die:
+
+$$
+E(X) = \sum_{i=1}^{6} i \cdot P(X = i) = \sum_{i=1}^{6} i \cdot \frac{1}{6} = \frac{1}{6} (1 + 2 + 3 + 4 + 5 + 6) = 3.5
+$$ Note that the die cannot achieve this value, but if you were to roll the die many times and average the values, the result would likely be close to 3.5
+
+While the die cannot achieve this value in a single roll, rolling the die many times and averaging the values would likely result in a value close to 3.5.
+
+# Bayesian vs frequentist probability
+
+In statistics, *frequentist probability* interprets probability as the long-run frequency of an event in repeated trials, while "Bayesian probability" interprets probability as a degree of belief about an event, incorporating prior knowledge and updating that belief as new data is collected; essentially, frequentist probability focuses on the data itself, while Bayesian probability focuses on the probability of a hypothesis given the data, allowing for the inclusion of prior information.
+
+*Frequentist*: Probability is the limit of the relative frequency of an event in an infinite number of repetitions of an experiment. *Bayesian*: Actively incorporates prior beliefs about parameters through a "prior distribution" which is updated with new data to form a "posterior distribution".
+
+**Hypothesis testing**
+
+*Frequentist*: Uses p-values to test hypotheses based on the likelihood of observing data as extreme or more extreme than what was observed, assuming the null hypothesis is true.
+
+*Bayesian*: Calculates the probability of a hypothesis given the observed data, directly assigning probabilities to hypotheses.
+
+# Bayesian probability
+
+We can quantify probabilities by thinking about what is a fair bet. So for example, we want to ask what's the probability it rains tomorrow? Then we can ask about a bet that you might be willing to take if you think it's fair. Suppose you'd be willing to take the bet that if it rains tomorrow, you win 4\$ and if it doesn't, you lose 1\$, you can think of this as odds 4:1. This is equivalent to the other direction of the bet: if it rains you lose 4\$ and if it doesn't, you win 1\$. We can see this is fair by looking at the expected return. You are defining a probability of rain $P(rain)=\frac 1 5$
+
+We can see that these two bets are equivalent looking at your expected return:
+
+$P(rain)=\frac 1 5$ $P(no\ rain)=\frac 4 5$
+
+We can check if the numbers in this bet are fair by checking that the expected return in case of the two events occurring is 0:
+
+Bet 1: return if it rains: $4 \frac 1 5 = 0.8$ Return if it doesn't rain $1 \frac 4 5 = 0.8$
+
+Bet 2: return if it rains: $1 \frac 4 5 = 0.8$ Return if it doesn't rain $4 \frac 1 5 = 0.8$
+
+::: exercise-box
+Consider this game:
+
+you flip a fair coin. If the result is 'heads' you win 3\$, if the result is 'tails' you lose 4\$. What is your expected return?
+
+3(1/2)-4(1/2) = -0.5
+:::
+
+::: exercise-box
+Chess bet
+
+Your friend offers a bet that she can beat you in a game of chess. If you win, she owes you \$5, but if she wins, you owe her \$3
+
+Odds: 5:3 P(win)= 5/8
+
+She is 100% confident that she will beat you. What is her expected return for this game? P(win) = 3\*(1/1) - 5 (0) = 3
+
+Suppose she is only 50% confident that she will beat you (her personal probability of winning is p=0.5. What is her expected return now? P(win) = 3\*(1/2) - 5 (1/2) = -1
+
+Now assuming your friend will only agree to fair bets (expected return of \$0), find her personal probability that she will win. Report your answer as a simplified fraction.
+
+To find your friend's personal probability of winning the game of chess under the condition of a fair bet (expected return of \$0), we set up the equation using the concept of expected value.
+
+Let's denote: -$p$ as the probability that your friend will win the game. - $1 - p$ as the probability that you will win the game.
+
+The expected return for a fair bet should be 0. Therefore, we set up the expected value equation as follows: $5 \times (1 - p) - 3 \times p = 0$ Now, let's solve for ( p ):
+
+$5 - 5p - 3p = 0$ $5 - 8p = 0$ $-8p = -5$ $p = \frac{5}{8}$
+
+Therefore, the probability that your friend will win is $\frac{5}{8}$.
+
+This means your friend believes she has a ( \frac{5}{8} ) chance of winning the game to agree to this fair bet.
+
+Her expected return: 3(5/8)-5(3/8)
+:::
+
+::: exercise-box
+Weather bet
+
+Suppose your friend offers a pair of bets:
+
+\- if it rains or is overcast tomorrow, you pay him 4\$, otherwise he pays you 6\$ - if it sunny you pay him 5\$, otherwise he pays you 5\$
+
+Suppose rain, overcast and sunny are the only events in consideration. If you make both bets simultaneously, this is called a *Dutch book* as you are guaranteed to win money. How much do you win regardless of the outcome?
+
+-   if it rains or overcast: -4+5 =1
+-   if it is sunny: 6-5 =1
+
+Apparently your friend doesn't understand the laws of probability. Let's examine the bets he offered.
+
+For bet (i) to be fair, his probability that it rains or is overcast must be .6 (you can verify this by calculating his expected return and setting it equal to \$0):
+
+4p-6(1-p) = 0\
+4p-6+6p =0
+
+10p -6 =0
+
+10p= 6
+
+p = 6/10 =0.6
+
+For bet (ii) to be fair, his probability that it will be sunny must be .5:
+
+5p-5(1-p) = 0
+
+5p-5+5p =0
+
+10p =5
+
+p = 5/10 =0.5
+
+This results in a "Dutch book" because your friend's probabilities are not coherent. They do not add up to 1. What do they add up to? 0.6+0.5=1.1
+:::
+
+Bayesian probability adjust the probabilities based on updated information, let's see this with an example:
+
+::: exercise-box
+Estimating the Size of Atacama
+
+The country of Chile is divided administratively into 15 regions. The size of the country is 756,096 square kilometers. How big do you think the region of Atacama is? Let's define the following events:
+
+-   (A_1): The event that Atacama is less than 10,000 square kilometers.
+
+-    (A_2): The event that Atacama is between 10,000 and 50,000 square kilometers.
+
+-    (A_3): The event that Atacama is between 50,000 and 100,000 quare kilometers.
+
+-   (A_4): The event that Atacama is more than 100,000 square kilometers.
+
+We initially assign probabilities to these events based on the average size of Chile's regions (756096/15 = 50406):
+
+-   (A_1): P((A_1)) = 5%
+
+-   (A_2): P((A_2)) = 45%
+
+-   (A_3): P((A_3)) = 45%
+
+-   (A_4): P((A_4)) = 5%
+
+Given that Atacama is the fourth largest region:
+
+-   (A_1): P((A_1)) = 1%
+
+-   (A_2): P((A_2)) = 14%
+
+-   (A_3): P((A_3)) = 60%
+
+-   (A_4): P((A_4)) = 25%
+
+Given that the smallest region (Santiago Metropolitan) has an area of 15,403 square kilometers:
+
+-   (A_1): P((A_1)) = 0%
+
+-    (A_2): P((A_2)) = 15%
+
+-   (A_3): P((A_3)) = 60%
+
+-   (A_4): P((A_4)) = 25%
+
+Given that the third largest region, Aysén del General Carlos Ibáñez del Campo, has an area of 108,494 square kilometers:
+
+-   (A_1): P((A_1)) = 0%
+
+-   (A_2): P((A_2)) = 10%
+
+-   (A_3): P((A_3)) = 65%
+
+-   (A_4): P((A_4)) = 25%
+:::
