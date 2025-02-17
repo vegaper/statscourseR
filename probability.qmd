@@ -4,27 +4,43 @@ format: html
 editor: visual
 ---
 
+```{r}
+library(ggplot2)
+```
+
 # Rules of Probability
 
 Probabilities are defined for events. An event is some outcome that we could potentially or hypothetically observe or experience, such as the result of rolling a fair six-sided die. In mathematical notation, we often write an event as a capital letter, for example A. If A is the event of rolling a die and getting a "4", this event has probability 1/6 and we write that as $P(A) = \frac{1}{6}$ We might want to represent the numerical result of the die roll as the random variable X and then we write $P(X=4)=\frac{1}{6}$
 
-Probabilities must be between zero and one for any event A because if we add up the probabilities of all possible events, those probabilities must add to one. For the die rolling example: $$
+Probabilities must be between zero and one for any event A because if we add up the probabilities of all possible events, those probabilities must add to one. For the die rolling example: 
+$$
 \sum^6_{i=1}P(X=i)=1
 $$ The complement of an event $A^C$ means that the event does not happen. Since probabilities must add to one, $P(A^C)=1-P(A)$
 
-If A and B are two events, the probability that A or B happens (this is an inclusive or, meaning that either A or B or both happen) is the probability of the union of the events: $$
+If A and B are two events, the probability that A or B happens (this is an inclusive or, meaning that either A or B or both happen) is the probability of the union of the events: 
+$$
 P(A\cup B) = P(A)+P(B)-P(A \cap B)
-$$ Where $\cup$ represents union "or" and $\cap$ represents intersection "and" . If a set of events $A_i$ for $i=1,\dots,m$ are mutually exclusive (only one can happen), then $$
+$$ Where $\cup$ represents union "or" and $\cap$ represents intersection "and" . If a set of events $A_i$ for $i=1,\dots,m$ are mutually exclusive (only one can happen), then 
+$$
 P(\bigcup^m_{i=m}A_i)=\sum^m_{i=1}P(A_i)
-$$ \## Odds Probabilities can be re-expressed in terms of odds. Suppose again that we denote rolling a "4" on a fair six-sided die as the event A. Then P(A) = 1/6 The odds for event A, denoted $\mathcal{O}(A)$ is defined as $$\mathcal{O}(A) = \frac{P(A)} {P (A ^ c)} = \frac{P(A)}{(1 - P(A))}$$ Hence, in this example: $$
+$$ Odds Probabilities can be re-expressed in terms of odds. Suppose again that we denote rolling a "4" on a fair six-sided die as the event A. Then P(A) = 1/6 The odds for event A, denoted $\mathcal{O}(A)$ is defined as 
+$$
+\mathcal{O}(A) = \frac{P(A)} {P (A ^ c)} = \frac{P(A)}{(1 - P(A))}
+$$ Hence, in this example: 
+$$
 \mathcal{O}(A) = \frac{1/6} {5/6} = \frac{1}{5}
-$$ This can also be expressed as 1:5 or as 5:1 "odds against". Thus, an event with probability 3/10 has 3/7 odds (7:3 "odds against") and an event with probability 4/5 has 4:1 odds.
+$$ 
+This can also be expressed as 1:5 or as 5:1 "odds against". Thus, an event with probability 3/10 has 3/7 odds (7:3 "odds against") and an event with probability 4/5 has 4:1 odds.
 
-We can also calculate probabilities from odds. If an event B has a:b odds, (with a\>0 and b\>0) then $$\frac{P(B)}{(1-P(B))} = \frac{a}{b} \rightarrow P(B)\times b = a-P(B)\times a \rightarrow P(B)= \frac{a}{a+b}$$ Thus, an event with 2:5 odds has probability 2/7
+We can also calculate probabilities from odds. If an event B has a:b odds, (with a\>0 and b\>0) then 
+$$
+\frac{P(B)}{(1-P(B))} = \frac{a}{b} \rightarrow P(B)\times b = a-P(B)\times a \rightarrow P(B)= \frac{a}{a+b}
+$$ 
+Thus, an event with 2:5 odds has probability 2/7
 
 ## Expectation
 
-The expected value of a random variable ( X ) is described as a weighted average of the values that ( X ) can take, with weights given by the probabilities of those values.
+The expected value of a random variable (X) is described as a weighted average of the values that (X) can take, with weights given by the probabilities of those values.
 
 The formula for the expected value is given as:
 
@@ -36,7 +52,8 @@ An example is provided for the expected value of a fair six-sided die:
 
 $$
 E(X) = \sum_{i=1}^{6} i \cdot P(X = i) = \sum_{i=1}^{6} i \cdot \frac{1}{6} = \frac{1}{6} (1 + 2 + 3 + 4 + 5 + 6) = 3.5
-$$ Note that the die cannot achieve this value, but if you were to roll the die many times and average the values, the result would likely be close to 3.5
+$$ 
+Note that the die cannot achieve this value, but if you were to roll the die many times and average the values, the result would likely be close to 3.5
 
 While the die cannot achieve this value in a single roll, rolling the die many times and averaging the values would likely result in a value close to 3.5.
 
@@ -54,17 +71,19 @@ In statistics, *frequentist probability* interprets probability as the long-run 
 
 # Framework of Bayesian probability
 
-We can quantify probabilities by thinking about what is a fair bet. So for example, we want to ask what's the probability it rains tomorrow? Then we can ask about a bet that you might be willing to take if you think it's fair. Suppose you'd be willing to take the bet that if it rains tomorrow, you win 4\$ and if it doesn't, you lose 1\$, you can think of this as odds 4:1. This is equivalent to the other direction of the bet: if it rains you lose 4\$ and if it doesn't, you win 1\$. We can see this is fair by looking at the expected return. You are defining a probability of rain $P(rain)=\frac 1 5$
+We can quantify probabilities by thinking about what is a fair bet. So for example, we want to ask what's the probability it rains tomorrow? Then we can ask about a bet that you might be willing to take if you think it's fair. Suppose you'd be willing to take the bet that if it rains tomorrow, you win 4\$and if it doesn't, you lose 1\$, you can think of this as odds 4:1. This is equivalent to the other direction of the bet: if it rains you lose 4\$and if it doesn't, you win 1\$. We can see this is fair by looking at the expected return. You are defining a probability of rain$P(rain)=\frac 1 5$
 
 We can see that these two bets are equivalent looking at your expected return:
 
-$P(rain)=\frac 1 5$ $P(no\ rain)=\frac 4 5$
+$P(rain)=\frac 1 5$
+
+$P(no\ rain)=\frac 4 5$
 
 We can check if the numbers in this bet are fair by checking that the expected return in case of the two events occurring is 0:
 
-Bet 1: return if it rains: $4 \frac 1 5 = 0.8$ Return if it doesn't rain $1 \frac 4 5 = 0.8$
+Bet 1: return if it rains: $4 \frac 1 5 = 0.8$ Return if it doesn't rain$1 \frac 4 5 = 0.8$
 
-Bet 2: return if it rains: $1 \frac 4 5 = 0.8$ Return if it doesn't rain $4 \frac 1 5 = 0.8$
+Bet 2: return if it rains: $1 \frac 4 5 = 0.8$ Return if it doesn't rain$4 \frac 1 5 = 0.8$
 
 ::: exercise-box
 Consider this game:
@@ -89,11 +108,18 @@ Now assuming your friend will only agree to fair bets (expected return of \$0), 
 
 To find your friend's personal probability of winning the game of chess under the condition of a fair bet (expected return of \$0), we set up the equation using the concept of expected value.
 
-Let's denote: -$p$ as the probability that your friend will win the game. - $1 - p$ as the probability that you will win the game.
+Let's denote: 
+ -$p$ as the probability that your friend will win the game.  -$1 - p$ as the probability that you will win the game. 
 
-The expected return for a fair bet should be 0. Therefore, we set up the expected value equation as follows: $5 \times (1 - p) - 3 \times p = 0$ Now, let's solve for ( p ):
+The expected return for a fair bet should be 0. Therefore, we set up the expected value equation as follows: $5 \times (1 - p) - 3 \times p = 0$ Now, let's solve for (p):
 
-$5 - 5p - 3p = 0$ $5 - 8p = 0$ $-8p = -5$ $p = \frac{5}{8}$
+$5 - 5p - 3p = 0$
+
+$5 - 8p = 0$
+
+$-8p = -5$
+
+$p = \frac{5}{8}$
 
 Therefore, the probability that your friend will win is $\frac{5}{8}$.
 
@@ -107,7 +133,7 @@ Weather bet
 
 Suppose your friend offers a pair of bets:
 
-- if it rains or is overcast tomorrow, you pay him 4\$, otherwise he pays you 6\$ - if it sunny you pay him 5\$, otherwise he pays you 5\$
+-   if it rains or is overcast tomorrow, you pay him 4\$, otherwise he pays you 6\$- if it sunny you pay him 5\$, otherwise he pays you 5\$
 
 Suppose rain, overcast and sunny are the only events in consideration. If you make both bets simultaneously, this is called a *Dutch book* as you are guaranteed to win money. How much do you win regardless of the outcome?
 
@@ -118,26 +144,23 @@ Apparently your friend doesn't understand the laws of probability. Let's examine
 
 For bet (i) to be fair, his probability that it rains or is overcast must be .6 (you can verify this by calculating his expected return and setting it equal to \$0):
 
-4p-6(1-p) = 0\
-4p-6+6p =0
-
-10p -6 =0
-
-10p= 6
-
-p = 6/10 =0.6
+$4p-6(1-p) = 0$
+$4p-6+6p =0$
+$10p -6 =0$
+$10p= 6$
+$p = 6/10 =0.6$
 
 For bet (ii) to be fair, his probability that it will be sunny must be .5:
 
-5p-5(1-p) = 0
+$5p-5(1-p) = 0$
 
-5p-5+5p =0
+$5p-5+5p =0$
 
-10p =5
+$10p =5$
 
-p = 5/10 =0.5
+$p = 5/10 =0.5$
 
-This results in a "Dutch book" because your friend's probabilities are not coherent. They do not add up to 1. What do they add up to? 0.6+0.5=1.1
+This results in a "Dutch book" because your friend's probabilities are not coherent. They do not add up to 1. What do they add up to? $.6+0.5=1.1$
 :::
 
 Bayesian probability adjust the probabilities based on updated information, let's see this with an example:
@@ -200,149 +223,154 @@ Given that the third largest region, Aysén del General Carlos Ibáñez del Camp
 
 In conditional probability we ask what is the probability of event `A` happening, given that event `B` happened. $P(A|B)$ (read *Probability of A given B*)
 
-$P(A|B)$ is the probability of event `A` occurring, given that event `B` has already occurred. This means you are only considering the subset of cases where B happens and then looking how often A also happens in those cases. 
+$P(A|B)$ is the probability of event c occurring, given that event $B$ has already occurred. This means you are only considering the subset of cases where $B$ happens and then looking how often $A$ also happens in those cases.
 
 $$
 P(A|B) = \frac{P(A \cap B)}{P(B)}
-$$
-**Join Probability** $P(A \cap B)$ is the probability that both events `A` and `B` occur simultaneously. This is considering the likelihood of both events happening at the same time without any additional conditions 
+$$ 
+**Join Probability** $P(A \cap B)$ is the probability that both events $A$ and $B$ occur simultaneously. This is considering the likelihood of both events happening at the same time without any additional conditions 
 $$
 P(A \cap B) = P(B) \times P(A \mid B)
-$$
+$$ 
 Let's get a better understanding of the concepts with an example
 
-::: exercise-box 
+::: exercise-box
 Understanding Conditional and Joint Probability
 
 Let's consider a deck of 52 cards to understand the difference between conditional probability and joint probability.
 
 *Definitions*
 
-- $P(A \mid B)$: The probability of event $A$ occurring given that event $B$ has already occurred.
-- $P(A \cap B)$: The probability that both events $A$ and $B$ occur simultaneously.
+-$P(A \mid B)$: The probability of event$A$occurring given that event$B$has already occurred. 
+-$P(A \cap B)$: The probability that both events $A$ and $B$ occur simultaneously.
 
 We want to find the probability of drawing a red card (event $A$) given that the card is a heart (event $B$).
 
-*Event A*:  **Probability of Drawing a Red Card ($P(A)$):**
-   $$
+*Event A*: **Probability of Drawing a Red Card** ($P(A)$): 
+$$
    P(A) = \frac{\text{Number of red cards}}{\text{Total number of cards}} = \frac{26}{52} = \frac{1}{2}
-   $$
+$$
 
-*Event B*:  **Probability of Drawing a Heart ($P(B)$):**
-   $$
+*Event B*: **Probability of Drawing a Heart** ($P(B)$): 
+$$
    P(B) = \frac{\text{Number of hearts}}{\text{Total number of cards}} = \frac{13}{52} = \frac{1}{4}
-   $$
+$$
 
-*Join Probability*: **Probability of Drawing a Red Card and a Heart ($P(A \cap B)$):**
-   Since all hearts are red, the probability of drawing a red card and a heart is the same as the probability of drawing a heart:
-   $$
+*Join Probability*: **Probability of Drawing a Red Card and a Heart** ($P(A \cap B)$): Since all hearts are red, the probability of drawing a red card and a heart is the same as the probability of drawing a heart: 
+$$
    P(A \cap B) = P(B) = \frac{13}{52} = \frac{1}{4}
-   $$
+  $$
 
-*Conditional Probability* **Probability of Drawing a Red Card Given that the Card is a Heart ($P(A \mid B)$):**
-Using Bayes' Theorem:
-   $$
+*Conditional Probability* **Probability of Drawing a Red Card Given that the Card is a Heart**($P(A \mid B)$): Using Bayes' Theorem: 
+$$
    P(A \mid B) = \frac{P(A \cap B)}{P(B)} = \frac{\frac{13}{52}}{\frac{13}{52}} = 1
-   $$
-*Conclusion*:
+  $$ *Conclusion*:
 
-- $P(A \mid B)$: The probability of drawing a red card given that the card is a heart is 1.
-- $P(A \cap B)$: The probability of drawing a red card and a heart is $\frac{1}{4}$.
+ - $P(A \mid B)$: The probability of drawing a red card given that the card is a heart is 1.  
+ - $P(A \cap B)$: The probability of drawing a red card and a heart is$\frac{1}{4}$.
 
-This example demonstrates how conditional probability considers the subset of cases where event $B$ has occurred, while joint probability considers the likelihood of both events happening together within the entire sample space. 
-
+This example demonstrates how conditional probability considers the subset of cases where event$B$has occurred, while joint probability considers the likelihood of both events happening together within the entire sample space.
 :::
+
+## Indepence of the events
+
+If the two events A and B are independent from each other, then the probability of A given B is just the probability of A. In that case the probability of the two together is $P(A\cap B) = P(A)P(B)$
+
+Taking this to the example we just see, we can see that the probability of being a female given that they are a computer science student is not equal to the probability of being a female, which means that these two events are not independent.
+
 # Bayes Theorem:
 
-The general formula for conditional probability is:
+The general formula for conditional probability is: 
 $$
 P(A \mid B) = \frac{P(A \cap B)}{P(B)} \\
 \text{ and  } \\
 P(B \mid A) = \frac{P(B \cap A)}{P(A)}
-$${#eq-ConditionalProbability}
+$$ {#eq-ConditionalProbability}
 
-This formula tells us how to find the probability of event $A$ occurring given that event $B$ has already occurred by dividing the joint probability $P(A \cap B)$ by the probability of $B$.
+This formula tells us how to find the probability of event$A$occurring given that event $B$ has already occurred by dividing the joint probability $P(A \cap B)$ by the probability of $B$.
 
 Bayes' Theorem is a specific application of conditional probability and is stated as:
 
 $$
 P(A \mid B) = \frac{P(B \mid A) \cdot P(A)}{P(B \mid A) P(A) + P(B \mid A^C) P(A^C)}=  \frac{P(B \mid A) \cdot P(A)}{P(B)} = \frac{P(A\cap B)}{P(B)}
-$${#eq-BayesTheorem}
+$$ {#eq-BayesTheorem}
 
-In this case, $A$ and $B$ are specific events, and we are using the conditional probability of $B$ given $A$ to find the conditional probability of $A$ given $B$.
+we can expand it to:
+
+$$
+P(A \mid B) = \frac{P(B|A)\cdot P(A)}{P(B|A)\cdot P(A) + P(B|A^c)\cdot P(A^C)}
+$$ {#eq-BayesTheorem2}
+
+In this case,$A$ and $B$are specific events, and we are using the conditional probability of $B$ given $A$ to find the conditional probability of $A$ given $B$.
 
 WE are now just going to see how each term relates to each other to get to the equation above:
 
 We can use the conditional probability formula to find $P(B \mid A)$ and apply it in the Bayes probability theorem.
 
-
 $$
 P(A \mid B) = \frac{\frac{P(B \cap A)}{P(A)} \cdot P(A)}{P(B)} \rightarrow \frac{{P(B \cap A)} }{P(B)}
 $$
 
-and
-$$
+and $$
 P(A \cap B) =  P(A \mid B) \cdot P(B) \\ \text{ and  } \\ 
 P(B \cap A) =  P(B \mid A) \cdot P(A)
 $$
 
-Using Bayes' Theorem again, we have:
+Using Bayes' Theorem again, we have: 
 $$
 P(A \mid B) = \frac{P(B \mid A) \cdot P(A)}{P(B)}
 $$
 
+let's practice this:
 
-let's practice this: 
-
-:::exercise-box
+::: exercise-box
 Bayesian Probability Exercise
 
-We have a total of 30 students: 
+We have a total of 30 students:
 
- - 9 are females. 
- - 12 are computer science majors.
- - 4 of the computer science students are females.
+-   9 are females.
+-   12 are computer science majors.
+-   4 of the computer science students are females.
 
 We want to determine the probability that a student is female given that they are a computer science major.
 
-Let: 
+Let:
 
- - $F$ be the event that a student is female. 
- - $CS$ be the event that a student is a computer science major.
+ -$F$ be the event that a student is female. 
+ -$CS$ be the event that a student is a computer science major.
 
 We are looking for $P(F \mid CS)$, the probability that a student is female given that they are a computer science major.
 
 *Applying Bayes' Theorem:*
 
-Bayes' Theorem states:
+Bayes' Theorem states: 
 $$
 P(F \mid CS) = \frac{P(CS \mid F) \cdot P(F)}{P(CS)}
 $$
 
-1. **Calculate $P(F)$:**
+1.  **Calculate** $P(F)$:
 
 $$
 P(F) = \frac{\text{Number of females}}{\text{Total number of students}} = \frac{9}{30}
 $$
 
-2. **Calculate $P(CS)$:**
+2.  **Calculate** $P(CS)$:
 
 $$
 P(CS) = \frac{\text{Number of computer science majors}}{\text{Total number of students}} = \frac{12}{30}
 $$
 
-3. **Calculate $P(CS \mid F)$:**
+3.  **Calculate** $P(CS \mid F)$:
 
 $$
 P(CS \mid F) = \frac{\text{Number of female computer science students}}{\text{Total number of females}} = \frac{4}{9}
 $$
 
-4. **Apply Bayes' Theorem:**
+4.  **Apply Bayes' Theorem:**
 
 $$
 P(F \mid CS) = \frac{P(CS \mid F) \cdot P(F)}{P(CS)} = \frac{\left(\frac{4}{9}\right) \cdot \left(\frac{9}{30}\right)}{\left(\frac{12}{30}\right)}
 $$
-
 
 $$
 P(F \mid CS) = \frac{\frac{4}{30}}{\frac{12}{30}} = \frac{4}{12} = \frac{1}{3}
@@ -350,21 +378,21 @@ $$
 
 So, the probability that a student is female given that they are a computer science major is $\frac{1}{3}$.
 
-*Calculate the probability that a Student is a Female Given that She is Not a Computer Science Major ($CS^C$):*
+*Calculate the probability that a Student is a Female Given that She is Not a Computer Science Major (*$CS^C$):
 
-1. **Calculate $P(CS^C)$:**
+1.  **Calculate** $P(CS^C)$:
 
 $$
 P(CS^C) = \frac{\text{Number of non-Computer Science majors}}{\text{Total number of students}} = \frac{18}{30}
 $$
 
-2. **Calculate $P(CS^C \cap F)$:**
+2.  **Calculate** $P(CS^C \cap F)$:
 
 $$
 P(CS^C \cap F) = \frac{\text{Number of females who are not Computer Science majors}}{\text{Total number of students}} = \frac{5}{30}
 $$
 
-3. **Calculate $P(F \mid CS^C)$:**
+3.  **Calculate** $P(F \mid CS^C)$:
 
 $$
 P(F \mid CS^C) = \frac{P(CS^C \cap F)}{P(CS^C)} = \frac{\frac{5}{30}}{\frac{18}{30}} = \frac{5}{18}
@@ -376,86 +404,916 @@ So, the probability that a student is female given that they are not a computer 
 
 The probability that a student is female given that they are a computer science major is $\frac{1}{3}$. The probability that a student is female given that they are not a computer science major is $\frac{5}{18}$.
 
-
 Notice that the probability of being a female student and studying computer science is not the same as the probability of studying computer science and being a female:
 
 $P(CS \mid F) = 4/9 \neq P(F \mid CS)= 1/3$
-
 :::
 
 Let's see this in another example
 
-:::exercise-box
-Lab Test 
+::: exercise-box
+Lab Test
 
-The probability of a test being positive given that the person has HIV is .977
-The probability of a test being negative given that they don't have the virus is .926
+The probability of a test being positive given that the person has HIV is .977 The probability of a test being negative given that they don't have the virus is .926
 
 We calculated that the probability of a USA citizen having HIV is .0026
 
 So if we randomly select someone from this population and tested them with this test, what is the probability that they actually have HIV given that they tested positive?
 
-- $P(T^+ \mid H) = 0.977$
-- $P(T^- \mid H^C) = 0.926$
-- $P(H) = 0.0026$
+ - $P(T^+ \mid H) = 0.977$ 
+ - $P(T^- \mid H^C) = 0.926$ 
+ - $P(H) = 0.0026$
 
-Bayes' Theorem:**
+Bayes' Theorem: 
 $$
 P(H \mid T^+) = \frac{P(T^+ \mid H) \cdot P(H)}{P(T^+)}
 $$
 
-**Probability of testing positive**
-The probability of testing positive is the probability of testing positive given that they have HIV plus the probability of testing positive given that they don't have HIV
+**Probability of testing positive** The probability of testing positive is the probability of testing positive given that they have HIV plus the probability of testing positive given that they don't have HIV
 
 $$
 P(T^+) = P(T^+ \mid H) \cdot P(H) + P(T^+ \mid H^C) \cdot P(H^C)
-$$
-a. **Calculate the probability of not having HIV:**
+$$ 
+
+a. **Calculate the probability of not having HIV:** 
 $$
 P(H^C) = 1 - P(H) = 1 - 0.0026 = 0.9974
-$$
-b. **Calculate the probability of testing positive given not having HIV:**
+$$ 
+b. **Calculate the probability of testing positive given not having HIV:** 
 $$
 P(T^+ \mid H^C) = 1 - P(T^- \mid H^C) = 1 - 0.926 = 0.074
 $$
 
 $$
 P(T^+) = (0.977 \cdot 0.0026) + (0.074 \cdot 0.9974) \rightarrow 0.0025402 + 0.0738076 = 0.0763478
-$$
-**Substitute the values in Bayes Theorem:**
+$$ 
+**Substitute the values in Bayes Theorem:** 
 $$
 P(H \mid T^+) = \frac{0.977 \cdot 0.0026}{0.0763478} \rightarrow \frac{0.0025402}{0.0763478} \approx 0.0333
-$$
+$$ 
 Therefore, the probability that a person has HIV given that they tested positive is approximately 0.0333.
 :::
 
-
-## Indepence of the events
-If the two events A and B are independent from each other, then the probability of A given B is just the probability of A. In that case the probability of the two together is $P(A\cap B) = P(A)P(B)$
-
-Taking this to the example we just see, we can see that the probability of being a female given that they are a computer science student is not equal to the probability of being a female, which means that these two events are not independent. 
-
-
 # Bayes' Theorem with Multiple Outcomes
+
+For two outcomes we have seen: 
+$$
+P(A \mid B) = \frac{P(B|A)\cdot P(A)}{P(B|A)\cdot P(A) + P(B|A^c)\cdot P(A^C)}
+$$
 
 When there are more than two possible outcomes, Bayes' Theorem expands to handle the multiple outcomes. For example, when there are three possible outcomes $A_1$, $A_2$, and $A_3$, such that exactly one of these must happen, Bayes' Theorem is as follows:
 
+$$
+P(A_1 \mid B) = \frac{P(B \mid A_1) \cdot P(A_1)}{P(B \mid A_1) \cdot P(A_1) + P(B \mid A_2) \cdot P(A_2^C) + P(B \mid A_3) \cdot P(A_3^C)}
+$$
+
 ## Partition of the Space
 
-If the events $A_1, A_2, \ldots, A_m$ form a partition of the space (exactly one of the $A_i$'s must occur, i.e., the $A_i$'s are mutually exclusive and:
+If the events $A_1, A_2, \ldots, A_m$ form a partition of the space (exactly one of the $A_i$'s must occur, i.e., the $A_i$'s are mutually exclusive and: 
 $$
 \sum_{i=1}^{m} P(A_i) = 1
 $$
 
-Then, Bayes' Theorem can be written as:
+Then, Bayes' Theorem can be written as: 
 $$
-P(A_j \mid B) = \frac{P(B \mid A_j) \cdot P(A_j)}{\sum_{i=1}^{m} P(B \mid A_i) \cdot P(A_i)}
+P(A_1 \mid B) = \frac{P(B \mid A_1) \cdot P(A_1)}{\sum_{i=1}^{m} P(B \mid A_i) \cdot P(A_i)}
 $$
-
-## Continuous Distributions
 
 For continuous distributions, the sum in Bayes' Theorem is replaced with an integral. We will explore this in the next lesson.
 
+::: exercise-box
+Practice exercise: Titanic Refer to the following table regarding passengers of the famous Titanic, which tragically sank on its maiden voyage in 1912. The table organizes passenger/crew counts according to the class of their ticket and whether they survived.
+
+```{r}
+titanic_data <- data.frame(
+  Class = c("First", "Second", "Third", "Crew"),
+  Survived = c(203, 118, 178, 212),
+  Not_Survived = c(122, 167, 528, 673)
+)
+
+print(titanic_data)
+
+```
+
+If we randomly select a person's name from the complete list of passengers and crew, what is the probability that this person travelled in 1st class?
+
+```{r}
+passengers <- sum(titanic_data$Survived)+sum(titanic_data$Not_Survived)
+firstClass <- sum(titanic_data$Survived[titanic_data$Class=='First' ])+sum(titanic_data$Not_Survived[titanic_data$Class=='First' ])
+
+round(firstClass/passengers,2)
+
+```
+
+What is the probability that a (randomly selected) person survived?
+
+```{r}
+survived<- sum(titanic_data$Survived)
+round(survived/passengers,2)
+```
+
+What is the probability that a (randomly selected) person survived, given that they were in 1st class? Round your answer to two decimal places.
+
+```{r}
+round(titanic_data$Survived[titanic_data$Class =='First']/firstClass,2)
+```
+:::
+
+::: exercise-box
+Practice exercise: Marbels You have three bags, labeled A, B, and C. 
+ - Bag A contains two red marbles and three blue marbles. 
+ - Bag B contains five red marbles and one blue marble. 
+ - Bag C contains three red marbles only.
+
+```{r}
+# Creating a dataframe for the marbles in the three bags
+marbles_data <- data.frame(
+  Bag = c("A", "B", "C"),
+  Red_Marbles = c(2, 5, 3),
+  Blue_Marbles = c(3, 1, 0)
+)
+
+# Display the dataframe
+print(marbles_data)
+
+```
+
+If you select from bag B, what is the probability that you will draw a red marble? Express the exact answer as a simplified fraction.
+
+```{r}
+round(5/6,2)
+```
+
+If you randomly select one of the three bags with equal probability (so that P(A)=P(B)=P(C)=1/3) and then randomly draw a marble from that bag, what is the probability that the marble will be blue? Round your answer to two decimal places.
+
+This is the marginal probability P(blue). You can obtain this using the law of total probability (which appears in the denominator in Bayes' theorem) 
+$$
+P(\text{blue}) = P(\text{blue} \cap A) + P(\text{blue} \cap B) + P(\text{blue} \cap C)
+$$ 
+Using conditional probabilities, we can write this as:
+
+$$
+= P(\text{blue} \mid A) \cdot P(A) + P(\text{blue} \mid B) \cdot P(B) + P(\text{blue} \mid C) \cdot P(C)
+$$
+
+```{r}
+pbag = 1/3
+PblueA <- 3/5
+PblueB <- 1/6
+pblueC <- 0
+
+pblue <- PblueA * pbag + PblueB *pbag +pblueC *pbag
+round(pblue,2)
+
+
+```
+
+Suppose a bag is randomly selected (again, with equal probability), but you do not know which it is. You randomly draw a marble and observe that it is blue. What is the probability that the bag you selected this marble from is A? That is, find P(A∣blue)
+$$
+P(A|blue) = \frac{P(Blue|A)\cdot P(A)}{P(blue)}
+$$
+
+```{r}
+pABlue <- (PblueA *1/3)/pblue
+round(pABlue,2)
+```
+
+Suppose a bag is randomly selected (again, with equal probability), but you do not know which it is. You randomly draw a marble and observe that it is blue. What is the probability that the bag you selected from is C? That is, find P(C∣blue).
+
+0
+
+Suppose a bag is randomly selected (again, with equal probability), but you do not know which it is. You randomly draw a marble and observe that it is red. What is the probability that the bag you selected from is C? That is, find P(C∣red).
+
+$$
+P(c|red) = \frac{P(red|c)\cdot P(c)}{P(red)}
+$$
+
+```{r}
+PredC = 1
+Pred = 1-pblue
+
+PcRed = (1*(1/3))/Pred
+
+round(PcRed,2)
+```
+:::
+
+# Bernoulli distribution
+
+Bernoulli distribution is used when we have two possible outcomes, such as flipping a coin. We denote this like $X \sim B(p)$ as X follows a Bernoulli distribution with probability: $P(X=1)=p$  $P(x=0) = 1-p$
+
+We can write this as a function $f(X=x\mid p) \rightarrow f(x \mid p)$ where the capital letters refer to the variable, while the lowercase letters refer to the outcome.
+
+For Bernoulli this is: 
+$$
+f(x \mid p)= p^x(1-p)^{1-x}
+$$ {#eq-BernoulliProbability}
+
+::: callout-orange
+Indicator function
+
+The concept of an indicator function is a really useful one. This is a function that takes the value one if its argument is true, and the value zero if its argument is false. Sometimes these functions are called Heaviside functions or unit step functions. I write an indicator function as $I\{A\}(x)$, although sometimes they are written $1_{\{A\}}(x)$. If the context is obvious, we can also simply write $I\{A\}$.
+
+The indicator function $I_A(x)$ of a subset $A$ of a set $X$i s defined as:
+
+$$
+I_A(x) = \begin{cases} 
+1 & \text{if } x \in A \\
+0 & \text{if } x \notin A 
+\end{cases}
+$$
+
+For example, given$X = \{1, 2, 3, 4, 5\}$ and $A = \{2, 4\}$, the indicator function$I_A$is:
+
+$$
+I_A(1) = 0, \quad I_A(2) = 1, \quad I_A(3) = 0, \quad I_A(4) = 1, \quad I_A(5) = 0
+$$
+Indicator functions are useful for making sure that you don't take the log of a negative number, and things like that. Indicator functions are always first in the order of operations if the indicator function is zero, you don't try to evaluate the rest of the expression. When taking derivatives they just go along for the ride. When taking integrals, they may affect the range over which the integral is evaluated.
+
+:::
+
+The indicator function for our Bernoulli distribution can be expressed as: $I_{\{x \in (0,1) \}^x}$
+
+## Expected Value
+
+The Expected Value is the theoretical average of the outcomes. For our binary outcome with possible outcomes 0 and 1 it will be:
+
+$$
+E[X] = \sum_x x \times P(X=x) \rightarrow (1)p+(0)p = p
+$$ {#eq-BernoulliExpectedValue}
+
+## Variance
+
+Variance is the square of the standard deviation. For Bernoulli: $$
+\sigma^2 = p \times (1-p)
+$$ {#eq-BernoulliVariance}
+
+## Repeated experiments in binomial distribution
+
+The generalization of the Bernoulli when we have$N$repeated trials follows a binomial distribution with parameters$n$and$p$. In this case, the probability function is
+
+$$
+f(x\mid p) = \binom{n}{x}p^x(1-p)^{n-x}
+$$
+
+$$
+\binom{n}{x}= \frac{n!}{x!(n-x)!}
+$$ $\binom{4}{3}$for example reads "four choose three" and this counts all possible Bernoulli sequences that result in three successes out of four trials
+
+```{r}
+n <- 4
+x <- 3
+
+sol <- factorial(n)/(factorial(x) * factorial(n-x))
+sol
+```
+
+in `R` we can simplify this calculus using a handy formula:
+
+```{r}
+n <- 4
+x <- 3
+
+sol <- choose(n, x)
+print(sol)
+
+```
+
+The expected value is: $$
+E[X] = n\times p
+$$
+
+And the Variance: $$
+\sigma^2 = n\times p(1-p)
+$$
+
+::: exercise-box
+Calculate the expected value of the following random variable: X takes on values {0,1,2,3} with corresponding probabilities {0.5,0.2,0.2,0.1}.
+
+```{r}
+# Values and corresponding probabilities
+values <- c(0, 1, 2, 3)
+probabilities <- c(0.5, 0.2, 0.2, 0.1)
+
+# Calculate the expected value
+E <- sum(values * probabilities)
+print(round(E, 1))  
+
+```
+:::
+
+::: exercise-box
+Exercise 2
+
+Imagine you have a coin that lands on heads (success) with a probability of 0.2. You flip the coin 3 times, and you want to find the probability of getting 0 heads (0 successes) in those 3 coin flips.
+
+Given a random variable $X \sim \binom {3}{ 0.2}$, we want to calculate$P(X = 0)$.
+
+The probability mass function for a binomial random variable $X$ with parameters $n$ and $p$ is given by: $P(X = k) = \binom{n}{k} p^k (1 - p)^{n - k}$
+
+$P(X = 0) = \binom{3}{0} (0.2)^0 (1 - 0.2)^{3 - 0}$
+
+$P(X = 0) = \binom{3}{0} \cdot 1 \cdot (0.8)^3$
+
+$P(X = 0) = 1 \cdot (0.8)^3$
+
+$P(X = 0) = (0.8)^3$
+
+$P(X = 0) = 0.512$
+
+```{r}
+# Parameters
+n <- 3
+p <- 0.2
+x <- 0
+
+# Calculate the binomial probability
+prob <- dbinom(x, n, p)
+round(prob, 2)
+```
+
+Now calculate the probability that the number of successes is less or equal than 2.
+
+$$
+P(X \le 2)
+$$ This is 1 minus the probability of getting 3 successes.
+
+```{r}
+# Parameters
+n <- 3
+p <- 0.2
+x <- 3
+
+# Calculate the binomial probability
+prob <- 1-dbinom(x, n, p)
+round(prob, 2)
+```
+
+or you can also calculate it as P(X=0)+P(X=1)+P(X=2)
+:::
+
+
+# Continuous Distributions
+
+## Uniform distribution.
+The uniform distribution is used for random variables whose possible values are equally likely over an interval.
+
+We can define a random continue variable $X$ with its *Probability Density Function* (PDF). If you integrate the PDF over an interval, it will give you the probability that the random variable will be in that interval.
+
+If the interval is $(a,b)$, then the uniform probability density function (PDF) f(x) is flat for all values in the interval and 0 everywhere else. 
+$$
+f(X\mid a,b)= \frac{1}{b-a} I_{\{a\leq x \leq b\}}(x)
+$$
+
+
+We have a uniform distribution that can take any value between 0 and 1 $X \sim U[0,1]$
+or using the indicator function>
+$$
+f(x) = \begin{cases} 
+1 & \text{if } x \in [0,1] \\
+0 & \text{alternative } 
+\end{cases}
+$$
+
+```{r, fig.align='center'}
+# Define the uniform distribution
+x <- seq(0, 1, by = 0.01)
+y <- dunif(x, min = 0, max = 1)
+
+# Create the PDF plot
+pdf_plot <- data.frame(x, y)
+
+# Plot using ggplot2
+ggplot(pdf_plot, aes(x = x, y = y)) +
+  geom_line(color = "blue") +
+  ggtitle("PDF of Uniform Distribution (0, 1)") +
+  xlab("x") +
+  ylab("Density") +
+  theme_minimal()
+```
+
+What's the probability that x will be between 0 and 0.5?
+
+The probability that $x$ will be between 0 and 0.5 for a uniform distribution $U(0,1)$ is given by:
+
+
+$$
+P(0 \leq x \leq 0.5) = \int_{0}^{0.5} f(x) \, dx =\int_{0}^{0.5} 1 \, dx = [x]_{0}^{0.5} = 0.5 - 0 = 0.5
+$$
+
+Therefore, the probability is 0.5.
+Let's calculate it using R:
+
+```{r}
+# Define the probability density function for the uniform distribution
+pdf_uniform <- function(x) {
+  ifelse(x >= 0 & x <= 1, 1, 0)
+}
+
+# Integrate the PDF from 0 to 0.5
+prob <- integrate(pdf_uniform, lower = 0, upper = 0.5)$value
+print(prob)
+
+```
+
+```{r}
+# Define the probability density function for the uniform distribution
+pdf_uniform <- function(x) {
+  ifelse(x >= 2 & x <= 6, 1, 0)
+}
+
+# Integrate the PDF from 0 to 0.5
+prob <- integrate(pdf_uniform, lower = 2, upper = 3)$value
+print(prob)
+
+```
+
+or in `r` we can simply:
+```{r}
+# Calculate the probability that x is between 0 and 0.5
+prob <- punif(0.5, min = 0, max = 1) - punif(0, min = 0, max = 1)
+print(prob)
+```
+
+What is the probability that x is exactly 0.5, and mathematically, by integrating from 0.5 to 0.5 we will get 0
+
+### Expected value
+
+The formula for the expected value (mean) of a continuous random variable is given by:
+
+$$
+E(X) = \int_{-\infty}^{\infty} x \cdot f(x) \, dx
+$${#eq-ExpectedVAlueContinousRandomVariable}
+
+In this formula:
+- $E(X)$ represents the expected value of the continuous random variable $X$.
+- $f(x)$ is the probability density function (PDF) of $X$.
+- The integral is taken over the entire range of $X$, from $-\infty$ to $\infty$.
+
+
+For a continuous random variable $X$ uniformly distributed over the interval $[a, b]$, the probability density function (PDF) is given by:
+
+$$
+f(x) =
+\begin{cases} 
+\frac{1}{b-a} & \text{for } a \le x \le b \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+The general formula for the expected value of a continuous random variable is:
+
+$$
+E(X) = \int_{-\infty}^{\infty} x \cdot f(x) \, dx
+$$
+
+Given $f(x)$ for the uniform distribution, we apply it to the general expected value formula:
+
+$$
+E(X) = \int_{-\infty}^{\infty} x \cdot f(x) \, dx = \int_{a}^{b} x \cdot \frac{1}{b-a} \, dx
+$$
+
+Since $f(x) = \frac{1}{b-a}$ only over the interval $[a, b]$, the integration limits change accordingly. Evaluating this integral:
+
+$$
+E(X) = \frac{1}{b-a} \int_{a}^{b} x \, dx
+$$
+
+The integral of $x$ from $a$ to $b$ is:
+
+$$
+\int_{a}^{b} x \, dx = \left. \frac{x^2}{2} \right|_{a}^{b} = \frac{b^2}{2} - \frac{a^2}{2} = \frac{b^2 - a^2}{2}
+$$
+
+Substituting back, we get:
+
+$$
+E(X) = \frac{1}{b-a} \cdot \frac{b^2 - a^2}{2}
+$$
+
+This simplifies to
+
+:::{.important-formula}
+
+$$
+E(X) = \frac{b + a}{2}
+$${#eq-ExpectedValueUniformDistribution}
+:::
+Hence, the formula $E(X) = \frac{a+b}{2}$ is derived from the integral expression for the expected value of a uniform distribution. Both expressions are equivalent; the integral formulation is the general definition, while the latter is the specific result for the uniform distribution.
+
+### General Uniform Distribution.
+
+The above formulas work for a uniform distribution on the interval [0,1]
+When we generalize the uniform distribution to any interval 
+
+Uniform : $X \sim [\theta_1, \theta_2]$
+the PDF for this distribution changes accordingly to ensure that the total probability across this interval is 1:
+$$
+f(x\mid \theta_1,\theta_2) = \frac{1}{\theta_2-\theta_1}I_{\{ \theta_1 \leq x \leq \theta_2\}}
+$$
+
+$$
+f(x) = \begin{cases} 
+\frac{1}{\theta_2-\theta_1} & \text{if } x \in [\theta_1,\theta_2] \\
+0 & \text{otherwise } 
+\end{cases}
+$$
+this formula generalize the concept of the uniform distribution to any interval. 
+
+Example:
+Consider a uniform distribution on the interval [2,5]
+
+$$
+f(x\mid 2,5 ) = \begin{cases} 
+\frac{1}{5-2} = \frac{1}{3}& \text{if } x \in [2,5] \\
+0 & \text{otherwise } 
+\end{cases}
+$$
+
+```{r}
+
+# Function to plot uniform distribution
+plot_uniform_distribution <- function(theta1, theta2) {
+  # Create a sequence of x values
+  x <- seq(theta1 - 1, theta2 + 1, by = 0.01)
+  
+  # Calculate the PDF values
+  y <- ifelse(x >= theta1 & x <= theta2, 1 / (theta2 - theta1), 0)
+  
+  # Create a data frame for plotting
+  data <- data.frame(x, y)
+  
+  # Plot the uniform distribution
+  ggplot(data, aes(x = x, y = y)) +
+    geom_line() +
+    geom_area(fill = "lightblue", alpha = 0.5) +
+    labs(title = paste("Uniform Distribution U[", theta1, ",", theta2, "]", sep = ""),
+         x = "x", y = "Density") +
+    theme_minimal()
+}
+
+# Plot the uniform distribution U[2, 5]
+plot_uniform_distribution(2, 5)
+```
+
+then to calculate in `R` the probability of $X$ being between two values:
+
+```{r}
+# Define the limits of the uniform distribution
+theta1 <- 2
+theta2 <- 5
+
+# Define the PDF for the uniform distribution U[2,6]
+pdf_uniform <- function(x) {
+  ifelse(x >= theta1 & x <= theta2, 1 / (theta2 - theta1), 0)
+}
+
+# Integrate the PDF from 2 to 3
+prob <- integrate(pdf_uniform, lower = 2, upper = 3)$value
+print(prob)
+
+```
+
+### Variance of uniform Distribution
+
+
+Variance $\text{Var}(X)$
+The variance is calculated as:
+
+$$
+\text{Var}(X) = E(X^2) - [E(X)]^2 = \frac{b^2 + ab + a^2}{3} - \left(\frac{a + b}{2}\right)^2
+$$
+
+Simplifying this further, we arrive at:
+
+:::{.important-formula}
+$$
+\sigma^2= \frac{(b-a)^2}{12}
+$${#eq-VarianceUniformDistribution}
+:::
+
+## Exponential Distribution
+
+The exponential distribution is often used to model the waiting time between random events.
+Indeed, if the waiting times between successive events are independent from an $Exp(\lambda)$ distribution, then for any fixed time window of length $t$, the number of events occurring in that window will follow a *Poisson distribution* with mean $t\lambda$.
+Similar to the Poisson distribution, the parameter $\lambda$ is interpreted as the rate at which the events occur.
+
+If $X$ follows an exponential distribution with a rate parameter: $X \sim Exp(\lambda)$ 
+
+The **probability density function** (PDF) for the exponential distribution  can be written as 
+
+$$
+f(x\mid \lambda) = \lambda e^{-\lambda x} I_{\{x \geq 0\}}(x)
+$${#eq-CDFExponential}
+
+$$
+f(x \mid \lambda )= \lambda e^{-\lambda x}
+$$
+or:
+
+$$ f(x \mid \lambda) = 
+\begin{cases} 
+\lambda e^{-\lambda x} & \text{for } x \ge 0 \\
+0 & \text{for } x < 0 
+\end{cases}
+$$
+
+
+::: {callout-grey}
+
+We can integrate the density and show that it is indeed a proper density and integrates to one:
+
+
+$$\int_{0}^{\infty} \lambda e^{-\lambda x} I\{x \ge 0\}(x) dx = \int_{0}^{\infty} \lambda e^{-\lambda x} dx = -e^{-\lambda x} \bigg|_0^{\infty} = 0 - (-1) = 1$$
+
+
+
+The derivative of the density function would be:
+
+
+$$\frac{d}{dx} \left( \lambda e^{-\lambda x} I\{x \geq 0\}(x) \right) = -\lambda^2 e^{-\lambda x} I\{x \geq 0\}(x)$$
+:::
+
+
+
+And the **Expected value** is:
+$$
+E[X]= \frac{1}{\lambda}
+$$
+
+**The variance**:
+$$
+\sigma^2 = \frac{1}{\lambda^2}
+$$
+
+and the **standard deviation**:
+Standard Deviation**: $\sigma = \frac{1}{\lambda}$
+
+## Normal distribution
+If variable X follows a normal distribution defined by its mean $\mu$ and its variance $\sigma^2$: $X \sim N(\mu, \sigma^2)$
+
+then the probability density function (PDF) comes defined as:
+
+$$
+f(x \mid \mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$ 
+The expected value will be $\mu$
+
+### Examples
+
+1. **Lifespan of a Light Bulb**: If the lifespan of a light bulb follows an exponential distribution with a rate parameter $\lambda = 0.1$ (i.e., the average lifespan is 10 hours), then the density function is $f(x) = 0.1 e^{-0.1x}$.
+
+2. **Customer Arrival Times**: If customers arrive at a bank at an average rate of 3 customers per hour (i.e., $\lambda = 3$), then the time between arrivals follows an exponential distribution with a density function $f(x) = 3 e^{-3x}$.
+
+Here's an example of how you can generate and visualize an exponential distribution in R:
+
+```{r, fig.align='center'}
+# Set the rate parameter
+lambda <- 2
+
+# Generate a sample of 1000 random values from the exponential distribution
+set.seed(123) 
+sample <- rexp(1000, rate = lambda)
+
+# Plot the histogram of the sample
+hist(sample, breaks = 30, probability = TRUE,
+     main = "Histogram of Exponential Distribution",
+     xlab = "Value", ylab = "Density")
+
+# Add the theoretical density curve
+curve(lambda * exp(-lambda * x), col = "red", add = TRUE)
+
+# Mean and variance of the sample
+sample_mean <- mean(sample)
+sample_variance <- var(sample)
+
+cat("Sample Mean:", sample_mean, "\n")
+cat("Sample Variance:", sample_variance, "\n")
+```
+
+:::.callout-orange
+
+# Fundamental Rules of Probability
+
+## Probability of a Specific Value
+For a continuous random variable, the probability of a specific value is always 0. This is because the probability is spread over an interval, and the exact point has no width.
+
+$$
+P(X = x) = 0
+$$
+
+## Probability of an Interval
+The probability that a continuous random variable falls within an interval is given by the integral of the probability density function over that interval.
+
+$$
+P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx
+$$
+
+## Probability over the Entire Range
+The probability that a continuous random variable falls within its entire range is always 1. This means that the total area under the probability density function is 1.
+
+$$
+P(-\infty < X < \infty) = 1
+$$
+
+## Complement Rule
+The probability of an event not occurring is 1 minus the probability of the event occurring.
+
+$$
+P(A^c) = 1 - P(A)
+$$
+
+## Addition Rule
+For any two events A and B, the probability of A or B occurring is given by:
+
+$$
+P(A \cup B) = P(A) + P(B) - P(A \cap B)
+$$
+
+## Multiplication Rule
+For any two independent events A and B, the probability of both A and B occurring is given by:
+
+$$
+P(A \cap B) = P(A) \times P(B)
+$$
+
+These fundamental rules provide a basis for understanding and calculating probabilities in various contexts.
+:::
+
+# Likelihood function
+
+The likelihood function is a fundamental concept in statistics, particularly in the context of parameter estimation. It represents the probability of observing the given data as a function of the parameters of a statistical model. More formally, if we have a set of observed data points $x_1, x_2, \ldots, x_n$ and a statistical model parameterized by the $\theta$.
+The likelihood function $L(\theta)$ is defined as:
+
+$$
+L(\theta) = P(X=x_1, X= x_2, \cdots, X=x_n \mid \theta)
+$$
+where $X$ represents the random variable, and $P$ denotes the probability. 
+The likelihood function is used to estimate the parameters $\theta$ that are most likely to have generated the observed data. This is done through the method of Maximum Likelihood Estimation (MLE), which finds the parameter values that maximize the likelihood function.
+
+Theta ($\theta$) is the value of the probability that has the highest likelihood for the data we have observed. 
+
+::: exercise-box
+
+Let's consider an example where we are trying to infer the death rate of patients admitted to a specific hospital for heart attacks. Suppose we have the following data:
+
+Number of patients admitted for heart attacks: 400
+
+Number of patients who died: 72
+
+We want to infer the death rate $p$ for the whole region based on this data.
+
+In this case, the likelihood function can be expressed as:
+
+$$
+L(p) = P(X=72 \mid n=400, p) = \binom {400}{72} p^{72}(1-p)^{328}
+$$
+The binomial coefficient $\binom{400}{72}$ represents the number of ways to choose 72 out of 100 patients.
+
+To find the Maximum Likelihood Estimate (MLE) of $p$, we need to maximize the likelihood function $L(p)$. This is typically done by taking the derivative of the log-likelihood function with respect to $p$, setting it to zero, and solving for $p$.
+
+```{r, fig.align='center'}
+#| layout-ncol: 2
+# Data
+n <- 400
+x <- 72
+
+# Define the likelihood function
+likelihood <- function(p) {
+  choose(n, x) * p^x * (1 - p)^(n - x)
+}
+
+# Generate a sequence of p values for plotting
+p <- seq(0, 1, by = 0.01)
+likelihood_values <- sapply(p, likelihood)
+
+# Find the MLE by maximizing the likelihood function
+mle <- p[which.max(likelihood_values)]
+
+# Plot the likelihood function
+data <- data.frame(
+  p = p,
+  Likelihood = likelihood_values
+)
+
+ggplot(data, aes(x = p, y = Likelihood)) +
+  geom_line() +
+  geom_vline(xintercept = mle, linetype = "dashed", color = "red") +
+  labs(title = "Likelihood Function",
+       x = "Survival Rate (p)",
+       y = "Likelihood") +
+  annotate("text", x = mle, y = max(likelihood_values), label = paste("MLE: p =", round(mle, 2)), vjust = 2) +
+  theme_minimal()
+
+
+#define the logLikelihood function
+loglike = function(p){
+  x*log(p)+(n-x)*log(1-p)
+}
+
+plot(p,loglike(p), main = "log-likelihood plot")
+abline(v= mle)
+```
+Here's what the MLE tells us in this case:
+
+Observed Data: We have data from a specific hospital where 400 patients were admitted for heart attacks, and 72 of them survived.
+
+Parameter of Interest: The survival rate 𝑝 for the whole region.
+
+Likelihood Function: The likelihood function represents how likely it is to observe 72 survivors out of 400 patients given different values of 𝑝.
+
+MLE: The value of 𝑝 that maximizes the likelihood function is the MLE. In this case, the MLE of 𝑝 is 0.18, which means that the estimated survival rate for the whole region based on this data is 18%.
+
+So, the MLE provides the most likely value of the survival rate given the observed data. 
+
+:::
+
+
+## MLE for Uniform Distribution
+
+Let's consider a uniform distribution defined over the interval $[a, b]$. The probability density function (pdf) of the uniform distribution is given by:
+
+
+$$
+f(x \mid a, b) = \frac{1}{b - a} \quad \text{for} \quad a \leq x \leq b
+$$
+
+
+
+Suppose we have a sample of observed data points $ x_1, x_2, \ldots, x_n $ from the uniform distribution. The likelihood function $ L(a, b) $ is given by:
+
+$$
+L(a, b) = \prod_{i=1}^{n} f(x_i \mid a, b) = \prod_{i=1}^{n} \frac{1}{b - a} = \left( \frac{1}{b - a} \right)^n
+$$
+Every value between a and b are equally likely 
+To find the MLE, we need to maximize the likelihood function. In the case of the uniform distribution, we need to find the values of $a$ and $b$ that maximize the likelihood function. The MLE for $a$ and $b$ are:
+
+$$
+\hat{a} = \min(x_1, x_2, \ldots, x_n)
+$$
+$$
+\hat{b} = \max(x_1, x_2, \ldots, x_n)
+$$
+```{r}
+# Sample data
+x <- c(2, 3, 5, 6, 7)
+
+# MLE for the uniform distribution
+a_hat <- min(x)
+b_hat <- max(x)
+
+# Print the estimates
+cat("MLE for a:", a_hat, "\n")
+cat("MLE for b:", b_hat, "\n")
+
+```
+
+
+## MLE for Exponential Distribution
+
+The exponential distribution is defined by its rate parameter $ \lambda $. The probability density function (pdf) of the exponential distribution is given by:
+
+$$
+f(x \mid \lambda) = \lambda e^{-\lambda x} \quad \text{for} \quad x \geq 0
+$$
+
+Suppose we have a sample of observed data points $ x_1, x_2, \ldots, x_n $ from the exponential distribution. The likelihood function $ L(\lambda) $ is given by:
+
+$$
+L(\lambda) = \prod_{i=1}^{n} f(x_i \mid \lambda) = \prod_{i=1}^{n} \lambda e^{-\lambda x_i} = \lambda^n e^{-\lambda \sum_{i=1}^{n} x_i}
+$$
+
+To find the MLE, we take the natural logarithm of the likelihood function to obtain the log-likelihood function:
+
+$$
+\log L(\lambda) = n \log \lambda - \lambda \sum_{i=1}^{n} x_i
+$$
+
+Next, we take the derivative of the log-likelihood function with respect to $ \lambda $ and set it to zero to find the maximum:
+
+$$
+\frac{d}{d\lambda} (\log L(\lambda)) = \frac{n}{\lambda} - \sum_{i=1}^{n} x_i = 0
+$$
+
+Solving for $ \lambda $, we get:
+
+
+$$
+\hat{\lambda} = \frac{n}{\sum_{i=1}^{n} x_i}
+$$
+
+```{r}
+# Sample data
+x <- c(1.2, 0.5, 2.8, 3.3, 1.1)
+
+# MLE for the exponential distribution
+n <- length(x)
+lambda_hat <- n / sum(x)
+
+# Print the estimate
+cat("MLE for lambda:", lambda_hat, "\n")
+
+```
 
 
 

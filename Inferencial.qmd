@@ -349,9 +349,13 @@ print(gg)
 
 # Central limit theorem (CLT)
 
-When sampling with replacement and n is large, then the sampling distribution of the sample average approximately follows the normal curve.
+The Central Limit Theorem is one of the most important results in statistics, basically saying that with sufficiently large sample sizes, the sample average approximately follows a normal distribution. This underscores the importance of the normal distribution, as well as most of the methods commonly used which make assumptions about the data being normally distributed.
 
-For example, going back to the example of of the online gambling where we had a probability of winning a small prize with p=0.2, we can see how the probability histogram for the binomial distribution approximates more and more to the normal distribution as we increase the number of trials n.
+Let's stop and think about what it means for the sample average to have a distribution. Imagine going to the store and buying a bag of your favorite brand of chocolate chip cookies. Suppose the bag has 24 cookies in it. Will each cookie have the exact same number of chocolate chips in it? It turns out that if you make a batch of cookies by adding chips to dough and mixing it really well, then putting the same amount of dough onto a baking sheet, the number of chips per cookie closely follows a Poisson distribution. (In the limiting case of chips having zero volume, this is exactly a Poisson process.) Thus we expect there to be a lot of variability in the number of chips per cookie. We can model the number of chips per cookie with a Poisson distribution. We can also compute the average number of chips per cookie in the bag. For the bag we have, that will be a particular number. But there may be more bags of cookies in the store. Will each of those bags have the same average number of chips? If all of the cookies in the store are from the same industrial-sized batch, each cookie will individually have a Poisson number of chips. So the average number of chips in one bag may be different from the average number of chips in another bag. Thus we could hypothetically find out the average number of chips for each bag in the store. And we could think about what the distribution of these averages is, across the bags in the store, or all the bags of cookies in the world. It is this distribution of averages that the central limit theorem says is approximately a normal distribution, with the same mean as the distribution for the individual cookies, but with a standard deviation that is divided by the square root of the number of samples in each average (i.e., the number of cookies per bag).
+
+When sampling with replacement and $n$ is large, then the sampling distribution of the sample average approximately follows the normal curve.
+
+For example, going back to the example of of the online gambling where we had a probability of winning a small prize with $p=0.2$, we can see how the probability histogram for the binomial distribution approximates more and more to the normal distribution as we increase the number of trials $n$.
 
 ```{r, fig.align='center', echo=FALSE, fig.width=12}
 # Set the parameters
@@ -415,11 +419,13 @@ That means that we can use normal approximation to compute probabilities. The ke
 
 The mathematical theory behind that:
 
-The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): $$ 
+The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): 
+$$ 
 \text{SE} (\bar{x_n})= \frac{\sigma}{\sqrt{n}} 
 $$
 
 This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
+
 
 **Standardized sample mean**
 
@@ -664,6 +670,84 @@ percentileOfinterest <- desiredConfidence+tails
 z_score <- qnorm(percentileOfinterest/100)
 z_score
 ```
+
+::: exercise-box
+
+Confidence Intervals for Coin Flips
+
+**Example 1: Flipping a Coin 100 Times**
+
+In this example of flipping a coin 100 times, we observed 44 heads, resulting in the following 95% confidence interval for $p$:
+
+$$
+CI= \hat{p} \pm z \sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}
+$$
+
+where:
+ - $\hat{p}$ is the observed proportion of heads
+ - $z$ is the critical value from the standard normal distribution for a 95% confidence level (approximately 1.96)
+ - $n$ is the number of trials (100 in this case)
+$
+p = \frac{44}{100}
+$
+
+```{r}
+n1 <- 100
+x1 <- 44
+p_hat1 <- x1 / n1
+z <- 1.96
+
+# Confidence interval calculation
+(ci_lower1 <- p_hat1 - z * sqrt(p_hat1 * (1 - p_hat1) / n1))
+(ci_upper1 <- p_hat1 + z * sqrt(p_hat1 * (1 - p_hat1) / n1))
+
+```
+p: (0.343, 0.537)
+
+From this, we concluded that it is plausible that the coin may be fair because $p = 0.5$ is in the interval.
+
+**Example 2: Flipping a Coin 100,000 Times**
+
+Suppose instead that we flipped the coin 100,000 times, observing 44,000 heads (the same percentage of heads as before). Then using the method just presented, the 95% confidence interval for $p$ is:
+
+```{r}
+# Example 2: Flipping a Coin 100,000 Times
+n2 <- 100000
+x2 <- 44000
+p_hat2 <- x2 / n2
+
+# Confidence interval calculation
+(ci_lower2 <- p_hat2 - z * sqrt(p_hat2 * (1 - p_hat2) / n2))
+(ci_upper2 <- p_hat2 + z * sqrt(p_hat2 * (1 - p_hat2) / n2))
+
+```
+
+p: (0.437, 0.443)
+
+*Is it reasonable to conclude that this is a fair coin with 95% confidence? *
+Based on this narrower confidence interval, it appears less likely that the coin is fair since $p = 0.5$ is not within the interval.
+
+
+```{r, echo=FALSE}
+# Data for plotting
+data <- data.frame(
+  Example = c("100 Flips", "100,000 Flips"),
+  p_hat = c(p_hat1, p_hat2),
+  CI_Lower = c(ci_lower1, ci_lower2),
+  CI_Upper = c(ci_upper1, ci_upper2)
+)
+
+# Plot the confidence intervals
+ggplot(data, aes(x = Example, y = p_hat)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = CI_Lower, ymax = CI_Upper), width = 0.2) +
+  labs(title = "95% Confidence Intervals for Coin Flips",
+       x = "Example",
+       y = "Proportion of Heads") +
+  theme_minimal()
+
+```
+:::
 
 **Estimating the SE with bootstrap principle**
 
@@ -1042,10 +1126,13 @@ print(t_test_result)
 
 At the start of a significance test, the hypothesized value might be true or false. At the end, it may be rejected or not, but we still don't know for sure if $H_0$ is true or not. If the null hypothesis holds, then we say that it is a *true null hypothesis* otherwise is a *false null hypothesis* Altogether, there are four possible combinations of these outcomes:
 
-|                       |           $H_0$ is true           |           $H_0$ is false            |
-|----------------------:|:---------------------------------:|:-----------------------------------:|
-|     $H_0$ is rejected | **Type I error** -false positive- |            True Negative            |
-| $H_0$ is not rejected |           True Positive           | **Type II error** -False negative - |
++-----------------------+-----------------------------------+-------------------------------------+
+|                       | $H_0$ is true                     | $H_0$ is false                      |
++======================:+:=================================:+:===================================:+
+| $H_0$ is rejected     | **Type I error** -false positive- | True Negative                       |
++-----------------------+-----------------------------------+-------------------------------------+
+| $H_0$ is not rejected | True Positive                     | **Type II error** -False negative - |
++-----------------------+-----------------------------------+-------------------------------------+
 
 We call the *event* of rejecting the null hypothesis, when it is in fact true, a *Type I error*, we call the *probability* of making a Type I error, the *Type I error rate*, and we say that rejecting the null hypothesis when the $p$-value is less than $\alpha$, *controls* the Type I error rate so that it is equal to $\alpha$
 
@@ -2502,11 +2589,15 @@ It is easy to confuse the testing for homogeneity and the testing for independen
 
 ### Comparing the different uses of the chi-square test:
 
++-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 |                 | sample                                                  | research question                                                                   |
-|-----------------|---------------------------------------------------------|-------------------------------------------------------------------------------------|
++=================+=========================================================+=====================================================================================+
 | goodness of fit | single categorical variable. one sample                 | Are the counts of the different categories matching our expected results            |
++-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 | homogeneity     | single categorical variable measured on several samples | Are the groups homogeneous (have the same distribution of the categorical variable) |
++-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 | independence    | two categorical variables measured on one sample        | Are the two categorical variables independent?                                      |
++-----------------+---------------------------------------------------------+-------------------------------------------------------------------------------------+
 
 Examples:
 

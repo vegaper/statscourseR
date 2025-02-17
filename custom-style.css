@@ -31,6 +31,16 @@ code {
 }
 
 
+.callout-grey {
+ border: 2px solid #48494b;  
+ border-radius: 8px;   
+ background-color: #d9dddc;   
+ padding: 10px;
+}
+.math {
+  font-size: 0.9em;  /* Adjust the value as needed */
+}
+
 blockquote {
   font-size: 0.8em; /* Reduces the font size by 1em */
   background-color: #fcfafc
@@ -86,4 +96,14 @@ ul, ol {
   content: " ▶"; /* Right arrow when closed */
   
 }
-  
+
+/* Highlight important formulas */
+.important-formula {
+  background-color: #f9f9f9; /* Light grey background */
+  border: 0.5px solid #2c3e50; /* Dark grey border */
+  border-radius: 8px;
+  padding: 10px;
+  margin: 20px 0;
+  color: #2c3e50;
+  font-family: Sans-Serif;
+}

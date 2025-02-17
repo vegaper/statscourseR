@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Analysis"
+title: "Exploratory Analysis (EDA)"
 format: html
 editor: visual
 ---
@@ -15,15 +15,13 @@ library(ggplot2)
 library(UsingR)
 ```
 
-# Exploratory Analysis (EDA)
-
-## Mean
+# Mean
 
 The mean (or arithmetic mean) is a measure of central tendency that represents the average value of a set of numbers. It is calculated by summing all the values in the dataset and then dividing by the number of values. $$
 \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
 $$ {#eq-mean} When we talk about the population mean we use the greek letter $\mu$ and when we talk about the sample mean we use our variable with a bar on top $\bar{x}$ .
 
-## Variance
+# Variance
 
 Variance measures the average squared deviations from the mean. To calculate it:
 
@@ -35,7 +33,9 @@ $$ {#eq-variance}
 
 where (N) is the number of data points, $x_i$ are the data points, and $\mu$ is the mean.
 
-## Standard deviation
+Variance has a linear property: Let $X$ and $Y$ be random variables with $\text{Var}(X) = \sigma_X^2$ and $\text{Var}(Y) = \sigma_Y^2$. It is also necessary to assume that $X$ and $Y$ are independent. Suppose we are interested in a new random variable $Z = aX + bY + c$ where $a$, $b$, and $c$ are any real constants. The variance of $Z$ is then $\text{Var(Z)} = \text{Var(aX + bY + c)} =a^2 Var(X)+b^2 Var(Y)+0 = a^2\sigma_X^2+b^2\sigma_Y^2$. Because $c$ is constant, it has variance $0$.
+
+# Standard deviation
 
 Standard deviation is the square root of the variance. It provides a measure of spread in the same units as the data, making it more interpretable. It quantifies how much the values in a dataset deviate from the mean (average) of the dataset. A low standard deviation indicates that the values are close to the mean, while a high standard deviation indicates that the values are spread out over a wider range.
 
@@ -49,7 +49,7 @@ where:
 
 -   ($\sigma$) is the population standard deviation
 
--   \(N\) is the population size
+-   $N$ is the population size
 
 -   ($X_i$) is the (i)-th observation in the population
 
@@ -59,7 +59,7 @@ We can calculate the population standard deviation like this:
 
 ```{r}
 heights=father.son$fheight
-popsd <- function(x) sqrt(mean((x-mean(x))^2))
+popsd <- function(x) sqrt(mean((x-mean(x))^2))[]
 popsd(heights)
 ```
 
@@ -76,7 +76,7 @@ $$
 s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \overline{x})^2}
 $$ {#eq-sampleStandarDeviation}
 
-### The empirical rule:
+## The empirical rule:
 
 If the data follows the normal curve then
 
@@ -115,7 +115,7 @@ Biases, systematic errors and unexpected variability are common in data. Failure
 
 Graphing data is a powerful approach to detecting these problems. We refer to this as *exploratory data analysis* (EDA). Many important methodological contributions to existing techniques in data analysis were initiated by discoveries made via EDA.
 
-## Median, Median Absolute Deviation (MAD) and outliers
+# Median, Median Absolute Deviation (MAD) and outliers
 
 The **median** is a measure of central tendency that represents the middle value in a sorted list of numbers. If the list has an odd number of observations, the median is the middle number. If the list has an even number of observations, the median is the average of the two middle numbers. The median is less affected by outliers and skewed data compared to the mean.
 
@@ -139,7 +139,7 @@ cat("The median is ", median(x))
 cat("The MAD is ", mad(x))
 ```
 
-## Spearman correlation {#spearman-correlation}
+# Spearman correlation {#spearman-correlation}
 
 The correlation (it will be presented later in [another chapter](#confidenceIntvsSignifTest)) is also very sensitive to outliers. In this example we create two datasets with no correlation whatsoever:
 
@@ -177,36 +177,53 @@ abline(0,1)
 
 In general, if we know there are outliers, then median and MAD are recommended over the mean and standard deviation counterparts.
 
-## Empirical Cumulative Density Function (CDF)
+# Expected Values
 
-What exactly is a distribution? The simplest way to think of a *distribution* is as a compact description of many numbers.
-
-Although not as popular as the histogram for EDA, the empirical cumulative density function (CDF) (or cumulative distribution function) shows us the same information and does not require us to define bins. For any number a the empirical CDF reports the proportion of numbers in our list smaller or equal to a.
+The expected value, also known as the expectation or mean, of a random variable $X$ is denoted $E(X)$. It is the weighed average of all values $X$ could take, with weights given by the probabilities of those values. If $X$ is discrete-valued, then
 
 $$
-F(a) \equiv Pr(x \leq a)
-$$ {#eq-cdf}
+E(X) = \sum_{x} x \cdot P(X = x) = \sum_{x} x \cdot f(x)
+$$
 
-This is called the cumulative distribution function (CDF). When the CDF is derived from data, as opposed to theoretically, we also call it the empirical CDF (ECDF).
+If $X$ is a continuous random variable with probability density function (PDF) $f(x)$, we replace the summation with an integral:
 
-R provides a function that has as out the empirical CDF function.
+$$
+E(X) = \int_{-\infty}^{\infty} x \cdot f(x) dx
+$$
 
-```{r}
-heights=father.son$fheight 
-round(sample(heights,20),1) 
-myCDF <- ecdf(heights) 
-```
+The expectation of a random variable can be thought of as the average value. If, for example, we observed many realizations of a random variable $X$ and took their average, it would be close to $E(X)$.
 
-The `ecdf` function is a function that returns a function, which is not typical behavior of R functions. We create a function called myCDF based on our data *heights* that can then be used to generate a plot:
+One nice property of expected values is that they are easy to compute for linear functions of random variables. To see this, let $X$ and $Y$ be random variables with $E(X) = \mu_X$ and $E(Y) = \mu_Y$. Suppose we are interested in a new random variable $Z = aX + bY + c$ where $a$, $b$, and $c$ are any real constants. The mean of $Z$ is easy to compute:
 
-```{r ecdffunction, fig.align='center',echo=FALSE}
-##We will evaluate the function at these values:
-xs<-seq(floor(min(heights)),ceiling(max(heights)),0.1) 
-### and then plot them:
-plot(xs,myCDF(xs),type="l",xlab="x=Height",ylab="F(x)")
-```
+$$
+E(Z) = E(aX + bY + c) = aE(X) + bE(Y) + c = a\mu_X + b\mu_Y + c
+$$
 
-## Boxplot
+::: callout-grey
+We can also compute expectations of functions of $X$. For example, suppose $g(X) = 2/X$. Then we have: $$
+E(g(X)) = \int_{0}^{1} \frac{2}{x} f(x) dx
+$$
+
+Note however that in general, $E(g(X)) \neq g(E(X))$.
+
+Example: Let's say a continuous random variable $X$ has PDF $f(x) = 3x^2 I_{\{0 \leq x \leq 1\}}(x)$. We want to find $E(X)$ and $E(X^2)$. First,
+
+$$
+E(X) = \int_{-\infty}^{\infty} x \cdot 3x^2 I_{\{0 \leq x \leq 1\}}(x) dx
+$$ $$
+= \int_{0}^{1} x \cdot 3x^2 dx 
+$$ $$
+= \int_{0}^{1} 3x^3 dx = \left[ \frac{3}{4} x^4 \right]_0^1 = \frac{3}{4}(1-0)
+$$
+
+And second, $$
+E(X^2) = \int_{-\infty}^{\infty} x^2 \cdot 3x^2 I_{\{0 \leq x \leq 1\}}(x) dx 
+$$ $$
+ = \int_{0}^{1} 3x^4 dx = \left[ \frac{3}{5} x^5 \right]_0^1 = \frac{3}{5}(1-0)
+$$
+:::
+
+# Boxplot
 
 When the data is not normally distributed the mean and the standard deviation are not enough to summarise the data. A better approach would be to present the data in a boxplot.
 
@@ -250,7 +267,7 @@ p + annotate("text", x = 1.2, y = quantile(data, 0.75)+1.5, label = "Q3 (75th pe
 
 -   Outliers: Points beyond the whiskers, marked in red.
 
-## Histogram {#histogram}
+# Histogram {#histogram}
 
 We can think of any given dataset as a list of numbers. Suppose you have measured the heights of all men in a population. Imagine you need to describe these numbers to someone that has no idea what these heights are, for example an alien that has never visited earth. One approach is to simply list out all the numbers for the alien to see. Here are 20 randomly selected heights of 1,078
 
@@ -269,13 +286,113 @@ This denotes the probability that the random variable ( x ) is between ( a ) and
 
 $$P(a \leq x \leq b) = F(b) - F(a)$$ {#eq-probabilityHistogram}
 
-## Probability Distribution
+# Cumulative Density Function (CDF)
+
+What exactly is a distribution? The simplest way to think of a *distribution* is as a compact description of many numbers.
+
+A CDF gives the probability that a random variable will take a value less than or equal to a specific value. It accumulates the probabilities from the [PDF](#pdf)
+
+Although not as popular as the histogram for EDA, the empirical cumulative density function (CDF) (or *cumulative distribution function*) shows us the same information and does not require us to define bins. For any number a the empirical CDF reports the proportion of numbers in our list smaller or equal to $a$.
+
+$$
+F(a) \equiv Pr(x \leq a)
+$$ {#eq-cdf}
+
+When the CDF is derived from data, as opposed to theoretically, we also call it the *empirical CDF* (ECDF).
+
+`R` provides a function that has as out the empirical CDF function.
+
+```{r}
+heights=father.son$fheight 
+round(sample(heights,20),1) 
+myCDF <- ecdf(heights) 
+```
+
+The `ecdf` function is a function that returns a function, which is not typical behavior of `R` functions. We create a function called myCDF based on our data *heights* that can then be used to generate a plot:
+
+```{r ecdffunction, fig.align='center',echo=FALSE}
+##We will evaluate the function at these values:
+xs<-seq(floor(min(heights)),ceiling(max(heights)),0.1) 
+### and then plot them:
+plot(xs,myCDF(xs),type="l",xlab="x=Height",ylab="F(x)")
+```
+
+The cumulative distribution function exists for every distribution. We define it as $F(x) = P(x \leq x)$ for a random variable X. If $X$ is discrete-valued, then the CDF is computed with summation $F(x) = \sum _{t=-\infty}^xf(t)$ where $f(t) = P(X=t)$ is the probability mass function (PMF).
+
+Example:
+
+Suppose $X \sim \text{Binomial}(5, 0.6)$. Then $$F(1) = P(X \leq 1) = \sum_{t=0}^{1} \binom{5}{t} 0.6^t (1 - 0.6)^{5-t} =\\  \binom{5}{0}0.6^0(1 - 0.6)^5 + \binom{5}{1}0.6^1(1 - 0.6)^4 \approx 0.087$$
+
+```{r}
+# Binomial example
+dbinom(x = 1, size = 5, prob = 0.6)
+```
+
+If $X$ is continuous, the CDF is computed with an integral $f(x) = \int^x_{-\infty}f(t)$ where $f(t)$ is the Probability Density Function (PDF) Example exponential distribution: Suppose $Y \sim \text{Exp}(1)$. Then $$F(2) = P(Y \leq 2) = \int_{0}^{2} e^{-t} \,dt = 1 - e^{-2} \approx 0.865$$ The CDF is convenient for calculating probabilities of intervals. Let $a$ and $b$ be any real numbers with $a < b$. Then the probability that $X$ falls between $a$ and $b$ is equal to $P(a < X \leq b) = P(X \leq b) - P(X \leq a) = F(b) - F(a)$. This concept is illustrated in Figure 1.
+
+```{r}
+# Plot example
+x <- seq(-3, 3, length = 100)
+y <- pnorm(x)
+plot(x, y, type = "l", main = "CDF of Standard Normal Distribution")
+abline(h = c(pnorm(-1), pnorm(1)), col = "red")
+text(-2, 0.5, "F(-1)", pos = 2)
+text(2, 0.5, "F(1)", pos = 4)
+
+```
+
+# The Probability Density Function (PDF) {#pdf}
+
+A PDF describes the likelihood of a random variable taking on a specific value. It is used for continuous variables. The area under a curve of a PDF over a certain interval represents the probability of the random variable falling within that interval. The PDF itself is not a probability, but a density.
+
+```{r, fig.align='center', fig.width=8}
+
+par(mfrow = c(1, 3))
+# Plot example
+x <- seq(-3, 3, length = 100)
+y <- dnorm(x)
+plot(x, y, type = "l", main = "P(-1)")
+
+polygon(c(-3, seq(-3, -1, length=100), -1), 
+        c(-3, dnorm(seq(-3, -1, length=100)), 0), 
+        col=rgb(0.1, 0.1, 0.9, 0.2), border=NA)
+
+abline(v = -1, col = "red", lwd = 2, lty = 2)
+
+plot(x, y, type = "l", main = "P(1)")
+
+
+polygon(c(-3, seq(-3, 1, length=100), 1), 
+        c(-3, dnorm(seq(-3, 1, length=100)), 0), 
+        col=rgb(0.1, 0.1, 0.9, 0.2), border=NA)
+
+abline(v = 1, col = "red", lwd = 2, lty = 2)
+
+plot(x, y, type = "l", main = "P(-1 <= 1)")
+polygon(c(-1, seq(-1, 1, length=100), 1),
+        c(0, dnorm(seq(-1, 1, length=100)), 0),
+        col=rgb(0.1, 0.1, 0.9, 0.2), border=NA)
+
+# Add vertical lines at z = ±1.96
+abline(v = 1, col = "red", lwd = 2, lty = 2)
+abline(v = -1, col = "red", lwd = 2, lty = 2)
+```
+
+# Quantile Function
+
+The CDF takes a value for a random variable and returns a probability. Suppose instead that we start with a number between 0 and 1, call it $p$, and we wish to find the value $x$ so that $P(X \leq x) = p$. The value $x$ which satisfies this equation is called the $p$ quantile (or 100$p$ percentile) of the distribution of $X$.
+
+Example: In a standardized test, the 97th percentile of scores among all test-takers is 23. Then 23 is the score you must achieve on the test in order to score higher than 97% of all test-takers. We could equivalently call $q = 23$ the 0.97 quantile of the distribution of test scores.
+
+Later in [this document](/exploratoryAnalysis.html#qq-plot) we will see how we will use this to check for normal distributions in a sample.
+
+# Probability Distribution
 
 Summarizing lists of numbers is one powerful use of distribution. An even more important use is describing the possible outcomes of a random variable. Unlike a fixed list of numbers, we don't actually observe all possible outcomes of random variables, so instead of describing proportions, we describe probabilities. For instance, if we pick a random height from our list, then the probability of it falling between $a$ and $b$ is denoted with: $P(a \leq X \leq b) = F(b) - F(a)$
 
 Note that the $X$ is now capitalized to distinguish it as a random variable and that the equation above defines the probability distribution of the random variable.
 
-### The p-value
+## The p-value
 
 Knowing this distribution is incredibly useful in science. If we know the distribution of our data when the null hypothesis is true, referred to as the *null distribution*, we can compute the probability of observing a value as large as we did in our experiment, referred to as a $p$-value.
 
@@ -316,7 +433,7 @@ head(null)
 
 The values in `null` form what we call the *null distribution*.
 
-What percentage of our 10000 experiments have a difference weight between control and treatment higher or equal to the one we observed for the different diets?
+*What percentage of our 10000 experiments have a difference weight between control and treatment higher or equal to the one we observed for the different diets?*
 
 ```{r}
 mean(null >= obsdiff)
@@ -352,7 +469,7 @@ gg<- ggplot(data, aes(x = values))+
 gg
 ```
 
-probability density function (PDF) of a normal distribution
+*Probability density function* (PDF) of a normal distribution
 
 $$
 f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x - \mu)^2}{2\sigma^2}}
@@ -431,18 +548,34 @@ grid()
 
 ```
 
-## Normal Distribution functions in R
+# Probability Distributions functions in R
 
-### rnorm()
+Each of the distributions introduced have convenient functions in R which allow you to evaluate the PDF/PMF, CDF, and quantile functions, as well as generate random samples from the distribution.
 
-The `rnorm()` function generates random numbers from a normal distribution. 
-`rnorm(n, mean = 0, sd = 1)` 
+dnorm(x, mean, sd) Evaluate the PDF at x (mean = μ and sd = σ). pnorm(q, mean, sd) Evaluate the CDF at q. qnorm(p, mean, sd) Evaluate the quantile function at p. rnorm(n, mean, sd) Generate n pseudo-random samples from the normal distribution.
 
-- n: Number of observations. 
+These four functions exist for each distribution, where the d... function evaluates the density/mass, p... evaluates the CDF, q... evaluates the quantile, and r... generates a sample.
 
-- mean: Mean of the distribution (default is 0). 
+| Distribution   | Function                   | Parameters             |
+|----------------|----------------------------|------------------------|
+| Binomial(n, p) | `dbinom(x, size, prob)`    | size = n, prob = p     |
+| Poisson(λ)     | `dpois(x, lambda)`         | lambda = λ             |
+| Exp(λ)         | `dexp(x, rate)`            | rate = λ               |
+| Gamma(α, β)    | `dgamma(x, shape, rate)`   | shape = α, rate = β    |
+| Uniform(a, b)  | `dunif(x, min, max)`       | min = a, max = b       |
+| Beta(α, β)     | `dbeta(x, shape1, shape2)` | shape1 = α, shape2 = β |
+| N(μ, σ²)       | `dnorm(x, mean, sd)`       | mean = μ, sd = √σ²     |
+| t_ν            | `dt(x, df)`                | df = ν                 |
 
-- sd: Standard deviation of the distribution (default is 1). 
+## rnorm()
+
+The `rnorm()` function generates random numbers from a normal distribution. `rnorm(n, mean = 0, sd = 1)`
+
+-   n: Number of observations.
+
+-   mean: Mean of the distribution (default is 0).
+
+-   sd: Standard deviation of the distribution (default is 1).
 
 ```{r}
 # Generate 5 random numbers from a normal distribution with mean 10 and standard deviation 2
@@ -450,53 +583,51 @@ rnorm(5, mean = 10, sd = 2)
 
 ```
 
-### dnorm()
-The `dnorm()` function computes the density (height of the probability density function) of the normal distribution.
-`dnorm(x, mean = 0, sd = 1, log = FALSE)` 
+## dnorm()
 
-- x: A vector of quantiles.
+The `dnorm()` function computes the density (height of the probability density function) of the normal distribution. `dnorm(x, mean = 0, sd = 1, log = FALSE)`
 
-- mean: Mean of the distribution (default is 0).
+-   x: A vector of quantiles.
 
-- sd: Standard deviation of the distribution (default is 1).
+-   mean: Mean of the distribution (default is 0).
 
-- log: If TRUE, returns the logarithm of the density (default is FALSE).
+-   sd: Standard deviation of the distribution (default is 1).
+
+-   log: If TRUE, returns the logarithm of the density (default is FALSE).
+
 ```{r}
 # Compute the density of the normal distribution at x = 2
 dnorm(2, mean = 0, sd = 1)
 ```
 
+## pnorm()
 
-### pnorm()
-The `pnorm()` function computes the cumulative distribution function (CDF) of the normal distribution.
-`pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)` 
-- q: A vector of quantiles.
+The `pnorm()` function computes the cumulative distribution function (CDF) of the normal distribution. `pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)` - q: A vector of quantiles.
 
-- mean: Mean of the distribution (default is 0).
+-   mean: Mean of the distribution (default is 0).
 
-- sd: Standard deviation of the distribution (default is 1).
+-   sd: Standard deviation of the distribution (default is 1).
 
-- lower.tail: If TRUE, returns the cumulative probability up to q (default is TRUE).
+-   lower.tail: If TRUE, returns the cumulative probability up to q (default is TRUE).
 
-- log.p: If TRUE, returns the logarithm of the cumulative probability (default is FALSE).
+-   log.p: If TRUE, returns the logarithm of the cumulative probability (default is FALSE).
 
 ```{r}
 # Compute the cumulative probability for x = 1.5
 pnorm(1.5, mean = 0, sd = 1)
 ```
 
-### qnorm()
-The `qnorm()` function computes the quantile (inverse of the CDF) of the normal distribution.
-`qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)`
-- p: A vector of probabilities.
+## qnorm()
 
-- mean: Mean of the distribution (default is 0).
+The `qnorm()` function computes the quantile (inverse of the CDF) of the normal distribution. `qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)` - p: A vector of probabilities.
 
-- sd: Standard deviation of the distribution (default is 1).
+-   mean: Mean of the distribution (default is 0).
 
-- lower.tail: If TRUE, returns the quantile corresponding to the cumulative probability p (default is TRUE).
+-   sd: Standard deviation of the distribution (default is 1).
 
-- log.p: If TRUE, p is given as log(p) (default is FALSE).
+-   lower.tail: If TRUE, returns the quantile corresponding to the cumulative probability p (default is TRUE).
+
+-   log.p: If TRUE, p is given as log(p) (default is FALSE).
 
 ```{r}
 # Compute the quantile for cumulative probability 0.975
@@ -504,8 +635,80 @@ qnorm(0.975, mean = 0, sd = 1)
 
 ```
 
+::: exercise-box
+Examples
 
-## Normal approximation
+**Binomial:** Suppose $X \sim \text{Binomial}(5, 0.6)$. Then we can evaluate $F(1) = P(X \leq 1) \approx 0.087$ in `R` with `pbinom(q = 1, size = 5, prob = 0.6)`. Note also that `qbinom(p = 0.087, size = 5, prob = 0.6)` will return 1 as expected.
+
+```{r}
+# Binomial CDF in R
+pbinom(q = 1, size = 5, prob = 0.6)
+qbinom(p = 0.087, size = 5, prob = 0.6)
+
+```
+
+**Exponential:** Suppose $Y \sim \text{Exp}(1)$. The middle 80% of probability mass is located between the 0.1 and 0.9 quantiles. To find these quantiles of the Exp(1) distribution, save them as a vector in `R`: `a = c(0.1, 0.9)` followed by `qexp(p = a, rate = 1)` which returns the vector `(0.105, 2.303)`. Therefore, we have $P(0.105 < Y \leq 2.303) = 0.8$.
+
+```{r}
+# Exponential quantiles in R
+a <- c(0.1, 0.9)
+qexp(p = a, rate = 1)
+
+```
+
+**Quick examples with different distributions**
+
+-   Let $X \sim \text{Pois}(3)$. Find $P(X = 1)$. (0.149)
+
+```{r}
+dpois(x = 1, lambda = 3)
+
+```
+
+-   Let $X \sim \text{Pois}(3)$. Find $P(X \leq 1)$. (0.199)
+
+```{r}
+ppois(q = 1, lambda = 3)
+
+```
+
+-   Let $X \sim \text{Pois}(3)$. Find $P(X > 1)$. (0.801)
+
+```{r}
+1 - ppois(q = 1, lambda = 3)
+
+```
+
+-   Let $Y \sim \text{Gamma}(2, 1/3)$. Find $P(0.5 < Y < 1.5)$. (0.078)
+
+```{r}
+pgamma(q = 1.5, shape = 2, rate = 1/3) - pgamma(q = 0.5, shape = 2, rate = 1/3)
+
+```
+
+-   Let $Z \sim \text{N}(0,1)$. Find $z$ such that $P(Z < z) = 0.975$. (1.96)
+
+```{r}
+qnorm(p = 0.975)
+
+```
+
+-   Let $Z \sim \text{N}(0,1)$. Find $P(-1.96 < Z < 1.96)$. (0.95)
+
+```{r}
+pnorm(q = 1.96) - pnorm(q = -1.96)
+
+```
+
+-   Let $Z \sim \text{N}(0,1)$. Find $z$ such that $P(-∞ < Z < z) = 0.90$. (1.64)
+
+```{r}
+qnorm(p = 0.90)
+
+```
+:::
+
+# Normal approximation
 
 When the histogram of a list of numbers approximates the normal distribution we can use a convenient mathematical formula to approximate the proportion of individuals in any given interval. We already saw this equation (@eq-pnorm)
 
@@ -538,7 +741,7 @@ if we do this check for different values and continue to see that the two values
 
 ## QQ plot
 
-To corroborate that the normal distribution is in fact a good approximation we can use **quantile-quantile plots (QQ-plots)**. Quantiles are best understood by considering the special case of percentiles. The p-th percentile of a list of a distribution is defined as the number $q$ that is bigger than p% of numbers. For example, the median 50-th percentile is the median. We can compute the percentiles for our list and for the normal distribution.
+To corroborate that the normal distribution is in fact a good approximation we can use **quantile-quantile plots (QQ-plots)**. Quantiles are best understood by considering the special case of percentiles. The $p-th$ percentile of a list of a distribution is defined as the number $q$ that is bigger than $p\%$ of numbers. For example, the median $50-th$ percentile is the median. We can compute the percentiles for our list and for the normal distribution.
 
 ```{r, fig.align='center'}
 #generate the percentiles
@@ -573,9 +776,9 @@ qqnorm(exec.pay)
 qqline(exec.pay)
 ```
 
-## Use of standardadization in binomial probability
+# Use of standardization in binomial probability
 
-We know that the probability in any giving birth to have a girl is 0.49%. What is the probability of having 2 girls out of 3 births?
+*We know that the probability in any giving birth to have a girl is 0.49%. What is the probability of having 2 girls out of 3 births?*
 
 In binomial probability we call the outcome we are interested in a 'success' and the other outcome 'failure' in our example, having a girl is success, having a boy is failure. When the number of repetitions in our experiment is small, we can just draw the possible outcomes.
 
@@ -625,7 +828,7 @@ print(probability)
 
 ```
 
-but in r we would do it like this
+but in `r` we would do it like this
 
 ```{r #binomialprobability}
 
@@ -694,7 +897,7 @@ print(zScore)
 
 ## Calculating the p-values {#pvalues}
 
-once we have calculated the $z$-score we can calculate the area on the left of that number under the normal distribution curve, and that will be the probability we are looking for.
+Once we have calculated the $z$-score we can calculate the area on the left of that number under the normal distribution curve, and that will be the probability we are looking for.
 
 ```{r, fig.align='center', echo=FALSE}
 
@@ -710,12 +913,14 @@ plot(x, y, type="l", lwd=2, col="blue", xlab="Z", ylab="Density", main="Standard
 abline(v = 0.71, col = "red", lwd = 2, lty = 2)
 ```
 
-We can now can find manually the probability using $z$-score tables. In R, we may use the `pnorm()` function to find the $p$-value associated with a $z$-score, which has the following syntax.
+We can now can find manually the probability using $z$-score tables. In `R`, we may use the `pnorm()` function to find the $p$-value associated with a $z$-score, which has the following syntax.
 
 `pnorm(q, mean = 0, sd = 1, lower.tail = TRUE)`
 
 Where\
-- `q = z-Score value`. - lower.tail: If TRUE, the probability in the normal distribution to the left of $z$-score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
+- `q = z-Score value`.
+
+\- lower.tail: If TRUE, the probability in the normal distribution to the left of $z$-score is returned. The probability to the right is returned if FALSE. TRUE is the default value.
 
 To find the $p$-value for the two-tailed test:
 
