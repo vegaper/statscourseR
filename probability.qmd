@@ -12,31 +12,23 @@ library(ggplot2)
 
 Probabilities are defined for events. An event is some outcome that we could potentially or hypothetically observe or experience, such as the result of rolling a fair six-sided die. In mathematical notation, we often write an event as a capital letter, for example A. If A is the event of rolling a die and getting a "4", this event has probability 1/6 and we write that as $P(A) = \frac{1}{6}$ We might want to represent the numerical result of the die roll as the random variable X and then we write $P(X=4)=\frac{1}{6}$
 
-Probabilities must be between zero and one for any event A because if we add up the probabilities of all possible events, those probabilities must add to one. For the die rolling example: 
-$$
+Probabilities must be between zero and one for any event A because if we add up the probabilities of all possible events, those probabilities must add to one. For the die rolling example: $$
 \sum^6_{i=1}P(X=i)=1
 $$ The complement of an event $A^C$ means that the event does not happen. Since probabilities must add to one, $P(A^C)=1-P(A)$
 
-If A and B are two events, the probability that A or B happens (this is an inclusive or, meaning that either A or B or both happen) is the probability of the union of the events: 
-$$
+If A and B are two events, the probability that A or B happens (this is an inclusive or, meaning that either A or B or both happen) is the probability of the union of the events: $$
 P(A\cup B) = P(A)+P(B)-P(A \cap B)
-$$ Where $\cup$ represents union "or" and $\cap$ represents intersection "and" . If a set of events $A_i$ for $i=1,\dots,m$ are mutually exclusive (only one can happen), then 
-$$
+$$ Where $\cup$ represents union "or" and $\cap$ represents intersection "and" . If a set of events $A_i$ for $i=1,\dots,m$ are mutually exclusive (only one can happen), then $$
 P(\bigcup^m_{i=m}A_i)=\sum^m_{i=1}P(A_i)
-$$ Odds Probabilities can be re-expressed in terms of odds. Suppose again that we denote rolling a "4" on a fair six-sided die as the event A. Then P(A) = 1/6 The odds for event A, denoted $\mathcal{O}(A)$ is defined as 
-$$
+$$ Odds Probabilities can be re-expressed in terms of odds. Suppose again that we denote rolling a "4" on a fair six-sided die as the event A. Then P(A) = 1/6 The odds for event A, denoted $\mathcal{O}(A)$ is defined as $$
 \mathcal{O}(A) = \frac{P(A)} {P (A ^ c)} = \frac{P(A)}{(1 - P(A))}
-$$ Hence, in this example: 
-$$
+$$ Hence, in this example: $$
 \mathcal{O}(A) = \frac{1/6} {5/6} = \frac{1}{5}
-$$ 
-This can also be expressed as 1:5 or as 5:1 "odds against". Thus, an event with probability 3/10 has 3/7 odds (7:3 "odds against") and an event with probability 4/5 has 4:1 odds.
+$$ This can also be expressed as 1:5 or as 5:1 "odds against". Thus, an event with probability 3/10 has 3/7 odds (7:3 "odds against") and an event with probability 4/5 has 4:1 odds.
 
-We can also calculate probabilities from odds. If an event B has a:b odds, (with a\>0 and b\>0) then 
-$$
+We can also calculate probabilities from odds. If an event B has a:b odds, (with a\>0 and b\>0) then $$
 \frac{P(B)}{(1-P(B))} = \frac{a}{b} \rightarrow P(B)\times b = a-P(B)\times a \rightarrow P(B)= \frac{a}{a+b}
-$$ 
-Thus, an event with 2:5 odds has probability 2/7
+$$ Thus, an event with 2:5 odds has probability 2/7
 
 ## Expectation
 
@@ -52,8 +44,7 @@ An example is provided for the expected value of a fair six-sided die:
 
 $$
 E(X) = \sum_{i=1}^{6} i \cdot P(X = i) = \sum_{i=1}^{6} i \cdot \frac{1}{6} = \frac{1}{6} (1 + 2 + 3 + 4 + 5 + 6) = 3.5
-$$ 
-Note that the die cannot achieve this value, but if you were to roll the die many times and average the values, the result would likely be close to 3.5
+$$ Note that the die cannot achieve this value, but if you were to roll the die many times and average the values, the result would likely be close to 3.5
 
 While the die cannot achieve this value in a single roll, rolling the die many times and averaging the values would likely result in a value close to 3.5.
 
@@ -108,8 +99,7 @@ Now assuming your friend will only agree to fair bets (expected return of \$0), 
 
 To find your friend's personal probability of winning the game of chess under the condition of a fair bet (expected return of \$0), we set up the equation using the concept of expected value.
 
-Let's denote: 
- -$p$ as the probability that your friend will win the game.  -$1 - p$ as the probability that you will win the game. 
+Let's denote: -$p$ as the probability that your friend will win the game. -$1 - p$ as the probability that you will win the game.
 
 The expected return for a fair bet should be 0. Therefore, we set up the expected value equation as follows: $5 \times (1 - p) - 3 \times p = 0$ Now, let's solve for (p):
 
@@ -144,11 +134,7 @@ Apparently your friend doesn't understand the laws of probability. Let's examine
 
 For bet (i) to be fair, his probability that it rains or is overcast must be .6 (you can verify this by calculating his expected return and setting it equal to \$0):
 
-$4p-6(1-p) = 0$
-$4p-6+6p =0$
-$10p -6 =0$
-$10p= 6$
-$p = 6/10 =0.6$
+$4p-6(1-p) = 0$ $4p-6+6p =0$ $10p -6 =0$ $10p= 6$ $p = 6/10 =0.6$
 
 For bet (ii) to be fair, his probability that it will be sunny must be .5:
 
@@ -227,12 +213,9 @@ $P(A|B)$ is the probability of event c occurring, given that event $B$ has alrea
 
 $$
 P(A|B) = \frac{P(A \cap B)}{P(B)}
-$$ 
-**Join Probability** $P(A \cap B)$ is the probability that both events $A$ and $B$ occur simultaneously. This is considering the likelihood of both events happening at the same time without any additional conditions 
-$$
+$$ **Join Probability** $P(A \cap B)$ is the probability that both events $A$ and $B$ occur simultaneously. This is considering the likelihood of both events happening at the same time without any additional conditions $$
 P(A \cap B) = P(B) \times P(A \mid B)
-$$ 
-Let's get a better understanding of the concepts with an example
+$$ Let's get a better understanding of the concepts with an example
 
 ::: exercise-box
 Understanding Conditional and Joint Probability
@@ -241,33 +224,28 @@ Let's consider a deck of 52 cards to understand the difference between condition
 
 *Definitions*
 
--$P(A \mid B)$: The probability of event$A$occurring given that event$B$has already occurred. 
--$P(A \cap B)$: The probability that both events $A$ and $B$ occur simultaneously.
+\-$P(A \mid B)$: The probability of event$A$occurring given that event$B$has already occurred. -$P(A \cap B)$: The probability that both events $A$ and $B$ occur simultaneously.
 
 We want to find the probability of drawing a red card (event $A$) given that the card is a heart (event $B$).
 
-*Event A*: **Probability of Drawing a Red Card** ($P(A)$): 
-$$
+*Event A*: **Probability of Drawing a Red Card** ($P(A)$): $$
    P(A) = \frac{\text{Number of red cards}}{\text{Total number of cards}} = \frac{26}{52} = \frac{1}{2}
 $$
 
-*Event B*: **Probability of Drawing a Heart** ($P(B)$): 
-$$
+*Event B*: **Probability of Drawing a Heart** ($P(B)$): $$
    P(B) = \frac{\text{Number of hearts}}{\text{Total number of cards}} = \frac{13}{52} = \frac{1}{4}
 $$
 
-*Join Probability*: **Probability of Drawing a Red Card and a Heart** ($P(A \cap B)$): Since all hearts are red, the probability of drawing a red card and a heart is the same as the probability of drawing a heart: 
-$$
+*Join Probability*: **Probability of Drawing a Red Card and a Heart** ($P(A \cap B)$): Since all hearts are red, the probability of drawing a red card and a heart is the same as the probability of drawing a heart: $$
    P(A \cap B) = P(B) = \frac{13}{52} = \frac{1}{4}
   $$
 
-*Conditional Probability* **Probability of Drawing a Red Card Given that the Card is a Heart**($P(A \mid B)$): Using Bayes' Theorem: 
-$$
+*Conditional Probability* **Probability of Drawing a Red Card Given that the Card is a Heart**($P(A \mid B)$): Using Bayes' Theorem: $$
    P(A \mid B) = \frac{P(A \cap B)}{P(B)} = \frac{\frac{13}{52}}{\frac{13}{52}} = 1
   $$ *Conclusion*:
 
- - $P(A \mid B)$: The probability of drawing a red card given that the card is a heart is 1.  
- - $P(A \cap B)$: The probability of drawing a red card and a heart is$\frac{1}{4}$.
+-   $P(A \mid B)$: The probability of drawing a red card given that the card is a heart is 1.\
+-   $P(A \cap B)$: The probability of drawing a red card and a heart is$\frac{1}{4}$.
 
 This example demonstrates how conditional probability considers the subset of cases where event$B$has occurred, while joint probability considers the likelihood of both events happening together within the entire sample space.
 :::
@@ -280,8 +258,7 @@ Taking this to the example we just see, we can see that the probability of being
 
 # Bayes Theorem:
 
-The general formula for conditional probability is: 
-$$
+The general formula for conditional probability is: $$
 P(A \mid B) = \frac{P(A \cap B)}{P(B)} \\
 \text{ and  } \\
 P(B \mid A) = \frac{P(B \cap A)}{P(A)}
@@ -316,8 +293,7 @@ P(A \cap B) =  P(A \mid B) \cdot P(B) \\ \text{ and  } \\
 P(B \cap A) =  P(B \mid A) \cdot P(A)
 $$
 
-Using Bayes' Theorem again, we have: 
-$$
+Using Bayes' Theorem again, we have: $$
 P(A \mid B) = \frac{P(B \mid A) \cdot P(A)}{P(B)}
 $$
 
@@ -336,15 +312,13 @@ We want to determine the probability that a student is female given that they ar
 
 Let:
 
- -$F$ be the event that a student is female. 
- -$CS$ be the event that a student is a computer science major.
+\-$F$ be the event that a student is female. -$CS$ be the event that a student is a computer science major.
 
 We are looking for $P(F \mid CS)$, the probability that a student is female given that they are a computer science major.
 
 *Applying Bayes' Theorem:*
 
-Bayes' Theorem states: 
-$$
+Bayes' Theorem states: $$
 P(F \mid CS) = \frac{P(CS \mid F) \cdot P(F)}{P(CS)}
 $$
 
@@ -420,12 +394,11 @@ We calculated that the probability of a USA citizen having HIV is .0026
 
 So if we randomly select someone from this population and tested them with this test, what is the probability that they actually have HIV given that they tested positive?
 
- - $P(T^+ \mid H) = 0.977$ 
- - $P(T^- \mid H^C) = 0.926$ 
- - $P(H) = 0.0026$
+-   $P(T^+ \mid H) = 0.977$
+-   $P(T^- \mid H^C) = 0.926$
+-   $P(H) = 0.0026$
 
-Bayes' Theorem: 
-$$
+Bayes' Theorem: $$
 P(H \mid T^+) = \frac{P(T^+ \mid H) \cdot P(H)}{P(T^+)}
 $$
 
@@ -433,31 +406,25 @@ $$
 
 $$
 P(T^+) = P(T^+ \mid H) \cdot P(H) + P(T^+ \mid H^C) \cdot P(H^C)
-$$ 
+$$
 
-a. **Calculate the probability of not having HIV:** 
-$$
-P(H^C) = 1 - P(H) = 1 - 0.0026 = 0.9974
-$$ 
-b. **Calculate the probability of testing positive given not having HIV:** 
-$$
-P(T^+ \mid H^C) = 1 - P(T^- \mid H^C) = 1 - 0.926 = 0.074
-$$
+a.  **Calculate the probability of not having HIV:** $$
+    P(H^C) = 1 - P(H) = 1 - 0.0026 = 0.9974
+    $$
+b.  **Calculate the probability of testing positive given not having HIV:** $$
+    P(T^+ \mid H^C) = 1 - P(T^- \mid H^C) = 1 - 0.926 = 0.074
+    $$
 
 $$
 P(T^+) = (0.977 \cdot 0.0026) + (0.074 \cdot 0.9974) \rightarrow 0.0025402 + 0.0738076 = 0.0763478
-$$ 
-**Substitute the values in Bayes Theorem:** 
-$$
+$$ **Substitute the values in Bayes Theorem:** $$
 P(H \mid T^+) = \frac{0.977 \cdot 0.0026}{0.0763478} \rightarrow \frac{0.0025402}{0.0763478} \approx 0.0333
-$$ 
-Therefore, the probability that a person has HIV given that they tested positive is approximately 0.0333.
+$$ Therefore, the probability that a person has HIV given that they tested positive is approximately 0.0333.
 :::
 
 # Bayes' Theorem with Multiple Outcomes
 
-For two outcomes we have seen: 
-$$
+For two outcomes we have seen: $$
 P(A \mid B) = \frac{P(B|A)\cdot P(A)}{P(B|A)\cdot P(A) + P(B|A^c)\cdot P(A^C)}
 $$
 
@@ -469,20 +436,20 @@ $$
 
 ## Partition of the Space
 
-If the events $A_1, A_2, \ldots, A_m$ form a partition of the space (exactly one of the $A_i$'s must occur, i.e., the $A_i$'s are mutually exclusive and: 
-$$
+If the events $A_1, A_2, \ldots, A_m$ form a partition of the space (exactly one of the $A_i$'s must occur, i.e., the $A_i$'s are mutually exclusive and: $$
 \sum_{i=1}^{m} P(A_i) = 1
 $$
 
-Then, Bayes' Theorem can be written as: 
-$$
+Then, Bayes' Theorem can be written as: $$
 P(A_1 \mid B) = \frac{P(B \mid A_1) \cdot P(A_1)}{\sum_{i=1}^{m} P(B \mid A_i) \cdot P(A_i)}
 $$
 
 For continuous distributions, the sum in Bayes' Theorem is replaced with an integral. We will explore this in the next lesson.
 
 ::: exercise-box
-Practice exercise: Titanic Refer to the following table regarding passengers of the famous Titanic, which tragically sank on its maiden voyage in 1912. The table organizes passenger/crew counts according to the class of their ticket and whether they survived.
+Practice exercise: Titanic
+
+Refer to the following table regarding passengers of the famous Titanic, which tragically sank on its maiden voyage in 1912. The table organizes passenger/crew counts according to the class of their ticket and whether they survived.
 
 ```{r}
 titanic_data <- data.frame(
@@ -520,10 +487,9 @@ round(titanic_data$Survived[titanic_data$Class =='First']/firstClass,2)
 :::
 
 ::: exercise-box
-Practice exercise: Marbels You have three bags, labeled A, B, and C. 
- - Bag A contains two red marbles and three blue marbles. 
- - Bag B contains five red marbles and one blue marble. 
- - Bag C contains three red marbles only.
+Practice exercise: Marbels 
+
+You have three bags, labeled A, B, and C. - Bag A contains two red marbles and three blue marbles. - Bag B contains five red marbles and one blue marble. - Bag C contains three red marbles only.
 
 ```{r}
 # Creating a dataframe for the marbles in the three bags
@@ -546,11 +512,9 @@ round(5/6,2)
 
 If you randomly select one of the three bags with equal probability (so that P(A)=P(B)=P(C)=1/3) and then randomly draw a marble from that bag, what is the probability that the marble will be blue? Round your answer to two decimal places.
 
-This is the marginal probability P(blue). You can obtain this using the law of total probability (which appears in the denominator in Bayes' theorem) 
-$$
+This is the marginal probability P(blue). You can obtain this using the law of total probability (which appears in the denominator in Bayes' theorem) $$
 P(\text{blue}) = P(\text{blue} \cap A) + P(\text{blue} \cap B) + P(\text{blue} \cap C)
-$$ 
-Using conditional probabilities, we can write this as:
+$$ Using conditional probabilities, we can write this as:
 
 $$
 = P(\text{blue} \mid A) \cdot P(A) + P(\text{blue} \mid B) \cdot P(B) + P(\text{blue} \mid C) \cdot P(C)
@@ -568,8 +532,7 @@ round(pblue,2)
 
 ```
 
-Suppose a bag is randomly selected (again, with equal probability), but you do not know which it is. You randomly draw a marble and observe that it is blue. What is the probability that the bag you selected this marble from is A? That is, find P(A∣blue)
-$$
+Suppose a bag is randomly selected (again, with equal probability), but you do not know which it is. You randomly draw a marble and observe that it is blue. What is the probability that the bag you selected this marble from is A? That is, find P(A∣blue) $$
 P(A|blue) = \frac{P(Blue|A)\cdot P(A)}{P(blue)}
 $$
 
@@ -600,12 +563,11 @@ round(PcRed,2)
 
 # Bernoulli distribution
 
-Bernoulli distribution is used when we have two possible outcomes, such as flipping a coin. We denote this like $X \sim B(p)$ as X follows a Bernoulli distribution with probability: $P(X=1)=p$  $P(x=0) = 1-p$
+Bernoulli distribution is used when we have two possible outcomes, such as flipping a coin. We denote this like $X \sim B(p)$ as X follows a Bernoulli distribution with probability: $P(X=1)=p$ $P(x=0) = 1-p$
 
 We can write this as a function $f(X=x\mid p) \rightarrow f(x \mid p)$ where the capital letters refer to the variable, while the lowercase letters refer to the outcome.
 
-For Bernoulli this is: 
-$$
+For Bernoulli this is: $$
 f(x \mid p)= p^x(1-p)^{1-x}
 $$ {#eq-BernoulliProbability}
 
@@ -629,7 +591,6 @@ $$
 I_A(1) = 0, \quad I_A(2) = 1, \quad I_A(3) = 0, \quad I_A(4) = 1, \quad I_A(5) = 0
 $$
 Indicator functions are useful for making sure that you don't take the log of a negative number, and things like that. Indicator functions are always first in the order of operations if the indicator function is zero, you don't try to evaluate the rest of the expression. When taking derivatives they just go along for the ride. When taking integrals, they may affect the range over which the integral is evaluated.
-
 :::
 
 The indicator function for our Bernoulli distribution can be expressed as: $I_{\{x \in (0,1) \}^x}$
@@ -752,23 +713,19 @@ round(prob, 2)
 or you can also calculate it as P(X=0)+P(X=1)+P(X=2)
 :::
 
-
 # Continuous Distributions
 
 ## Uniform distribution.
+
 The uniform distribution is used for random variables whose possible values are equally likely over an interval.
 
 We can define a random continue variable $X$ with its *Probability Density Function* (PDF). If you integrate the PDF over an interval, it will give you the probability that the random variable will be in that interval.
 
-If the interval is $(a,b)$, then the uniform probability density function (PDF) f(x) is flat for all values in the interval and 0 everywhere else. 
-$$
+If the interval is $(a,b)$, then the uniform probability density function (PDF) f(x) is flat for all values in the interval and 0 everywhere else. $$
 f(X\mid a,b)= \frac{1}{b-a} I_{\{a\leq x \leq b\}}(x)
 $$
 
-
-We have a uniform distribution that can take any value between 0 and 1 $X \sim U[0,1]$
-or using the indicator function>
-$$
+We have a uniform distribution that can take any value between 0 and 1 $X \sim U[0,1]$ or using the indicator function\> $$
 f(x) = \begin{cases} 
 1 & \text{if } x \in [0,1] \\
 0 & \text{alternative } 
@@ -796,13 +753,11 @@ What's the probability that x will be between 0 and 0.5?
 
 The probability that $x$ will be between 0 and 0.5 for a uniform distribution $U(0,1)$ is given by:
 
-
 $$
 P(0 \leq x \leq 0.5) = \int_{0}^{0.5} f(x) \, dx =\int_{0}^{0.5} 1 \, dx = [x]_{0}^{0.5} = 0.5 - 0 = 0.5
 $$
 
-Therefore, the probability is 0.5.
-Let's calculate it using R:
+Therefore, the probability is 0.5. Let's calculate it using R:
 
 ```{r}
 # Define the probability density function for the uniform distribution
@@ -829,6 +784,7 @@ print(prob)
 ```
 
 or in `r` we can simply:
+
 ```{r}
 # Calculate the probability that x is between 0 and 0.5
 prob <- punif(0.5, min = 0, max = 1) - punif(0, min = 0, max = 1)
@@ -843,13 +799,9 @@ The formula for the expected value (mean) of a continuous random variable is giv
 
 $$
 E(X) = \int_{-\infty}^{\infty} x \cdot f(x) \, dx
-$${#eq-ExpectedVAlueContinousRandomVariable}
+$$ {#eq-ExpectedVAlueContinousRandomVariable}
 
-In this formula:
-- $E(X)$ represents the expected value of the continuous random variable $X$.
-- $f(x)$ is the probability density function (PDF) of $X$.
-- The integral is taken over the entire range of $X$, from $-\infty$ to $\infty$.
-
+In this formula: - $E(X)$ represents the expected value of the continuous random variable $X$. - $f(x)$ is the probability density function (PDF) of $X$. - The integral is taken over the entire range of $X$, from $-\infty$ to $\infty$.
 
 For a continuous random variable $X$ uniformly distributed over the interval $[a, b]$, the probability density function (PDF) is given by:
 
@@ -893,22 +845,19 @@ $$
 
 This simplifies to
 
-:::{.important-formula}
-
+::: important-formula
 $$
 E(X) = \frac{b + a}{2}
-$${#eq-ExpectedValueUniformDistribution}
+$$ {#eq-ExpectedValueUniformDistribution}
 :::
+
 Hence, the formula $E(X) = \frac{a+b}{2}$ is derived from the integral expression for the expected value of a uniform distribution. Both expressions are equivalent; the integral formulation is the general definition, while the latter is the specific result for the uniform distribution.
 
 ### General Uniform Distribution.
 
-The above formulas work for a uniform distribution on the interval [0,1]
-When we generalize the uniform distribution to any interval 
+The above formulas work for a uniform distribution on the interval \[0,1\] When we generalize the uniform distribution to any interval
 
-Uniform : $X \sim [\theta_1, \theta_2]$
-the PDF for this distribution changes accordingly to ensure that the total probability across this interval is 1:
-$$
+Uniform : $X \sim [\theta_1, \theta_2]$ the PDF for this distribution changes accordingly to ensure that the total probability across this interval is 1: $$
 f(x\mid \theta_1,\theta_2) = \frac{1}{\theta_2-\theta_1}I_{\{ \theta_1 \leq x \leq \theta_2\}}
 $$
 
@@ -917,11 +866,9 @@ f(x) = \begin{cases}
 \frac{1}{\theta_2-\theta_1} & \text{if } x \in [\theta_1,\theta_2] \\
 0 & \text{otherwise } 
 \end{cases}
-$$
-this formula generalize the concept of the uniform distribution to any interval. 
+$$ this formula generalize the concept of the uniform distribution to any interval.
 
-Example:
-Consider a uniform distribution on the interval [2,5]
+Example: Consider a uniform distribution on the interval \[2,5\]
 
 $$
 f(x\mid 2,5 ) = \begin{cases} 
@@ -976,9 +923,7 @@ print(prob)
 
 ### Variance of uniform Distribution
 
-
-Variance $\text{Var}(X)$
-The variance is calculated as:
+Variance $\text{Var}(X)$ The variance is calculated as:
 
 $$
 \text{Var}(X) = E(X^2) - [E(X)]^2 = \frac{b^2 + ab + a^2}{3} - \left(\frac{a + b}{2}\right)^2
@@ -986,30 +931,27 @@ $$
 
 Simplifying this further, we arrive at:
 
-:::{.important-formula}
+::: important-formula
 $$
 \sigma^2= \frac{(b-a)^2}{12}
-$${#eq-VarianceUniformDistribution}
+$$ {#eq-VarianceUniformDistribution}
 :::
 
 ## Exponential Distribution
 
-The exponential distribution is often used to model the waiting time between random events.
-Indeed, if the waiting times between successive events are independent from an $Exp(\lambda)$ distribution, then for any fixed time window of length $t$, the number of events occurring in that window will follow a *Poisson distribution* with mean $t\lambda$.
-Similar to the Poisson distribution, the parameter $\lambda$ is interpreted as the rate at which the events occur.
+The exponential distribution is often used to model the waiting time between random events. Indeed, if the waiting times between successive events are independent from an $Exp(\lambda)$ distribution, then for any fixed time window of length $t$, the number of events occurring in that window will follow a *Poisson distribution* with mean $t\lambda$. Similar to the Poisson distribution, the parameter $\lambda$ is interpreted as the rate at which the events occur.
 
-If $X$ follows an exponential distribution with a rate parameter: $X \sim Exp(\lambda)$ 
+If $X$ follows an exponential distribution with a rate parameter: $X \sim Exp(\lambda)$
 
-The **probability density function** (PDF) for the exponential distribution  can be written as 
+The **probability density function** (PDF) for the exponential distribution can be written as
 
 $$
 f(x\mid \lambda) = \lambda e^{-\lambda x} I_{\{x \geq 0\}}(x)
-$${#eq-CDFExponential}
+$$ {#eq-CDFExponential}
 
 $$
 f(x \mid \lambda )= \lambda e^{-\lambda x}
-$$
-or:
+$$ or:
 
 $$ f(x \mid \lambda) = 
 \begin{cases} 
@@ -1018,52 +960,41 @@ $$ f(x \mid \lambda) =
 \end{cases}
 $$
 
-
 ::: {callout-grey}
-
 We can integrate the density and show that it is indeed a proper density and integrates to one:
-
 
 $$\int_{0}^{\infty} \lambda e^{-\lambda x} I\{x \ge 0\}(x) dx = \int_{0}^{\infty} \lambda e^{-\lambda x} dx = -e^{-\lambda x} \bigg|_0^{\infty} = 0 - (-1) = 1$$
 
-
-
 The derivative of the density function would be:
-
 
 $$\frac{d}{dx} \left( \lambda e^{-\lambda x} I\{x \geq 0\}(x) \right) = -\lambda^2 e^{-\lambda x} I\{x \geq 0\}(x)$$
 :::
 
-
-
-And the **Expected value** is:
-$$
+And the **Expected value** is: $$
 E[X]= \frac{1}{\lambda}
 $$
 
-**The variance**:
-$$
+**The variance**: $$
 \sigma^2 = \frac{1}{\lambda^2}
 $$
 
-and the **standard deviation**:
-Standard Deviation**: $\sigma = \frac{1}{\lambda}$
+and the **standard deviation**: Standard Deviation\*\*: $\sigma = \frac{1}{\lambda}$
 
 ## Normal distribution
+
 If variable X follows a normal distribution defined by its mean $\mu$ and its variance $\sigma^2$: $X \sim N(\mu, \sigma^2)$
 
 then the probability density function (PDF) comes defined as:
 
 $$
 f(x \mid \mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
-$$ 
-The expected value will be $\mu$
+$$ The expected value will be $\mu$
 
 ### Examples
 
-1. **Lifespan of a Light Bulb**: If the lifespan of a light bulb follows an exponential distribution with a rate parameter $\lambda = 0.1$ (i.e., the average lifespan is 10 hours), then the density function is $f(x) = 0.1 e^{-0.1x}$.
+1.  **Lifespan of a Light Bulb**: If the lifespan of a light bulb follows an exponential distribution with a rate parameter $\lambda = 0.1$ (i.e., the average lifespan is 10 hours), then the density function is $f(x) = 0.1 e^{-0.1x}$.
 
-2. **Customer Arrival Times**: If customers arrive at a bank at an average rate of 3 customers per hour (i.e., $\lambda = 3$), then the time between arrivals follows an exponential distribution with a density function $f(x) = 3 e^{-3x}$.
+2.  **Customer Arrival Times**: If customers arrive at a bank at an average rate of 3 customers per hour (i.e., $\lambda = 3$), then the time between arrivals follows an exponential distribution with a density function $f(x) = 3 e^{-3x}$.
 
 Here's an example of how you can generate and visualize an exponential distribution in R:
 
@@ -1091,11 +1022,11 @@ cat("Sample Mean:", sample_mean, "\n")
 cat("Sample Variance:", sample_variance, "\n")
 ```
 
-:::.callout-orange
-
+::: callout-orange
 # Fundamental Rules of Probability
 
 ## Probability of a Specific Value
+
 For a continuous random variable, the probability of a specific value is always 0. This is because the probability is spread over an interval, and the exact point has no width.
 
 $$
@@ -1103,6 +1034,7 @@ P(X = x) = 0
 $$
 
 ## Probability of an Interval
+
 The probability that a continuous random variable falls within an interval is given by the integral of the probability density function over that interval.
 
 $$
@@ -1110,6 +1042,7 @@ P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx
 $$
 
 ## Probability over the Entire Range
+
 The probability that a continuous random variable falls within its entire range is always 1. This means that the total area under the probability density function is 1.
 
 $$
@@ -1117,6 +1050,7 @@ P(-\infty < X < \infty) = 1
 $$
 
 ## Complement Rule
+
 The probability of an event not occurring is 1 minus the probability of the event occurring.
 
 $$
@@ -1124,6 +1058,7 @@ P(A^c) = 1 - P(A)
 $$
 
 ## Addition Rule
+
 For any two events A and B, the probability of A or B occurring is given by:
 
 $$
@@ -1131,6 +1066,7 @@ P(A \cup B) = P(A) + P(B) - P(A \cap B)
 $$
 
 ## Multiplication Rule
+
 For any two independent events A and B, the probability of both A and B occurring is given by:
 
 $$
@@ -1142,19 +1078,16 @@ These fundamental rules provide a basis for understanding and calculating probab
 
 # Likelihood function
 
-The likelihood function is a fundamental concept in statistics, particularly in the context of parameter estimation. It represents the probability of observing the given data as a function of the parameters of a statistical model. More formally, if we have a set of observed data points $x_1, x_2, \ldots, x_n$ and a statistical model parameterized by the $\theta$.
-The likelihood function $L(\theta)$ is defined as:
+The likelihood function is a fundamental concept in statistics, particularly in the context of parameter estimation. It represents the probability of observing the given data as a function of the parameters of a statistical model. More formally, if we have a set of observed data points $x_1, x_2, \ldots, x_n$ and a statistical model parameterized by the $\theta$. The likelihood function $L(\theta)$ is defined as:
 
 $$
 L(\theta) = P(X=x_1, X= x_2, \cdots, X=x_n \mid \theta)
 $$
-where $X$ represents the random variable, and $P$ denotes the probability. 
-The likelihood function is used to estimate the parameters $\theta$ that are most likely to have generated the observed data. This is done through the method of Maximum Likelihood Estimation (MLE), which finds the parameter values that maximize the likelihood function.
+where $X$ represents the random variable, and $P$ denotes the probability. The likelihood function is used to estimate the parameters $\theta$ that are most likely to have generated the observed data. This is done through the method of Maximum Likelihood Estimation (MLE), which finds the parameter values that maximize the likelihood function.
 
-Theta ($\theta$) is the value of the probability that has the highest likelihood for the data we have observed. 
+Theta ($\theta$) is the value of the probability that has the highest likelihood for the data we have observed.
 
 ::: exercise-box
-
 Let's consider an example where we are trying to infer the death rate of patients admitted to a specific hospital for heart attacks. Suppose we have the following data:
 
 Number of patients admitted for heart attacks: 400
@@ -1167,7 +1100,7 @@ In this case, the likelihood function can be expressed as:
 
 $$
 L(p) = P(X=72 \mid n=400, p) = \binom {400}{72} p^{72}(1-p)^{328}
-$$
+$$ 
 The binomial coefficient $\binom{400}{72}$ represents the number of ways to choose 72 out of 100 patients.
 
 To find the Maximum Likelihood Estimate (MLE) of $p$, we need to maximize the likelihood function $L(p)$. This is typically done by taking the derivative of the log-likelihood function with respect to $p$, setting it to zero, and solving for $p$.
@@ -1214,6 +1147,7 @@ loglike = function(p){
 plot(p,loglike(p), main = "log-likelihood plot")
 abline(v= mle)
 ```
+
 Here's what the MLE tells us in this case:
 
 Observed Data: We have data from a specific hospital where 400 patients were admitted for heart attacks, and 72 of them survived.
@@ -1224,36 +1158,317 @@ Likelihood Function: The likelihood function represents how likely it is to obse
 
 MLE: The value of 𝑝 that maximizes the likelihood function is the MLE. In this case, the MLE of 𝑝 is 0.18, which means that the estimated survival rate for the whole region based on this data is 18%.
 
-So, the MLE provides the most likely value of the survival rate given the observed data. 
-
+So, the MLE provides the most likely value of the survival rate given the observed data.
 :::
 
+
+::: exercise-box
+Is it a fair coin?
+
+*We know our brother has a loaded coin, that falls heads 75% of the times. He makes a bet with us that the coin is going to fall heads and tells us that he is not using the loaded coin. We don't trust him so we agree that he will flip the coin five times to prove that is not loaded. It falls 2 heads and 3 tails. With this information you need to decide if it is the loaded coin or a fair coin and how confident you are so you can decide how much money you want to bet.*
+
+We start by defining our parameter $\theta$ to decide if it is a fair coin 
+$$
+\theta = \{ \text fair, loaded\}
+$$ 
+Our data is a binomial of 5 trials $X \sim \text binomial (5,p)$.
+So we can write our likelihood:
+
+$$
+f(x \mid \theta) = \begin{cases}  \binom{5}{x} (\frac{1}{2})^5 \text { if fair} \\
+\binom{5}{x} (0.7)^x (0.3)^{5-x} \text  { if loaded}
+\end{cases}
+$$
+we can write the same using indicator functions:
+$$
+f(x \mid \theta) = \binom{5}{x} \left[ \left(\frac{1}{2}\right)^5 I_{\{\theta = \text{fair}\}} + (0.7)^x (0.3)^{5-x} I_{\{\theta = \text{loaded}\}} \right]
+$$
+In our trials we have observed $x=2$ what is our likelihood?
+
+For $\theta = \text{fair}$:
+
+
+$$
+f(x=2 \mid \text{fair}) = \binom{5}{2} \left(\frac{1}{2}\right)^5 = 10 \cdot \left(\frac{1}{32}\right) = \frac{10}{32} = \frac{5}{16} = 0.3125
+$$
+
+
+
+For $\theta = \text{loaded}$:
+
+
+$$
+f(x=2 \mid \text{loaded}) = \binom{5}{2} (0.7)^2 (0.3)^3 = 10 \cdot 0.49 \cdot 0.027 = 10 \cdot 0.01323 = 0.1323
+$$
+```{r}
+# Define the binomial coefficient function
+choose <- function(n, x) {
+  factorial(n) / (factorial(x) * factorial(n - x))
+}
+
+# Values for x and n
+x <- 2
+n <- 5
+
+# Case 1: Fair
+prob_fair <- choose(n, x) * (1/2)^5
+cat("f(2 | fair) =", prob_fair, "\n")
+
+# Case 2: Loaded
+prob_loaded <- choose(n, x) * (0.7)^x * (0.3)^(n-x)
+cat("f(2 | loaded) =", prob_loaded, "\n")
+
+```
+giving this data, it is most likely that the coin is fair. 
+
+To know how sure are we of this result, we need to do more calculations.
+
+You need to ask yourself, what is the probability that the coin is fair, given that we have observed two heads $P(\theta = fair \mid x=2)$ 
+
+**Using the frequentist approach**
+
+ - Null hypothesis is that the coin is fair.  
+ - Alternative hypothesis is that the coin is loaded. 
+
+We can use a binomial test, which is suitable for small sample sizes.
+
+The number of heads observed (𝑥=2) out of 5 flips (𝑛=5) can be tested against the expected number of heads for both hypotheses.
+Under the null hypothesis (𝐻0), the probability of getting 2 heads in 5 flips with a fair coin is 0.31 as we saw already:
+
+$$
+f(x=2 \mid \text{fair}) = \binom{5}{2} \left(\frac{1}{2}\right)^5 = 10 \cdot \left(\frac{1}{32}\right) = \frac{10}{32} = \frac{5}{16} = 0.3125
+$$
+We then compare this to the observed frequency of 2 heads.
+Typically, we use a significance level (𝛼), such as 0.05. If the $p$-value is less than or equal to 𝛼, we reject the null hypothesis in favor of the alternative hypothesis.
+```{r}
+# Perform a binomial test
+result <- binom.test(2, 5, p = 0.5, alternative = "two.sided")
+
+# Print the result
+print(result)
+
+```
+*p-value*: The $p$-value of 1 suggests that there is no evidence to reject the null hypothesis. This means the observed result (2 heads out of 5) is very consistent with what we would expect if the coin were fair (with a probability of 0.5 for heads).
+
+*Confidence Interval*: The 95% confidence interval for the true probability of success (getting heads) ranges from approximately 0.053 to 0.853. **This wide interval indicates a high level of uncertainty due to the small sample size (only 5 flips).**
+
+*Sample Estimate*: The estimated probability of success (getting heads) from the observed data is 0.4. This is simply the proportion of heads observed (2 heads out of 5 flips).
+
+This does not really gives us a lot of useful information. 
+
+**Now we can use Bayes to calculate posterior probability.**
+Now, let's use Bayes' theorem to calculate the posterior probability that the coin is fair given the observed data.
+
+*Assume we don't have prior information and both coins have equal prior probability, 𝑃(fair)=𝑃(loaded)=0.5.*
+
+Using Bayes' theorem: 
+$$ P(\text{fair} \mid X = 2) = \frac{P(X = 2 \mid \text{fair}) \cdot P(\text{fair})}{P(X = 2 \mid \text{fair}) \cdot P(\text{fair}) + P(X = 2 \mid \text{loaded}) \cdot P(\text{loaded})} 
+$$
+
+Plugging in the values: 
+$$ P(\text{fair} \mid X = 2) = \frac{0.3125 \cdot 0.5}{0.3125 \cdot 0.5 + 0.1323 \cdot 0.5} = \frac{0.15625}{0.15625 + 0.06615} = \frac{0.15625}{0.2224} \approx 0.703 
+$$
+
+So, with the observed data, we are approximately 70.3% confident that the coin is fair.
+
+*Now let's assume that our brother has played this trick with us many times and we calculate that based on our experience, before tossing the coin, the probability that he is using a loaded coin is 0.6*
+
+If we know that the prior probability for the loaded coin is 𝑃(loaded)=0.6  then the prior probability for the fair coin is 𝑃(fair)=0.4.
+.
+
+Using Bayes' theorem: 
+$$ P(\text{fair} \mid X = 2) = \frac{P(X = 2 \mid \text{fair}) \cdot P(\text{fair})}{P(X = 2 \mid \text{fair}) \cdot P(\text{fair}) + P(X = 2 \mid \text{loaded}) \cdot P(\text{loaded})} 
+$$
+
+Plugging in the values: 
+$$ 
+P(X = 2 \mid \text{fair}) = 0.3125 \quad \text{(calculated earlier)} $$ $$ P(X = 2 \mid \text{loaded}) = 0.1323 \quad \text{(calculated earlier)} 
+$$
+
+Now substituting these into Bayes' theorem: 
+$$
+P(\text{fair} \mid X = 2) = \frac{0.3125 \cdot 0.4}{0.3125 \cdot 0.4 + 0.1323 \cdot 0.6} = \frac{0.125}{0.125 + 0.07938} = \frac{0.125}{0.20438} \approx 0.6114 
+$$
+
+So, with the updated prior probability, we are approximately 61.14% confident that the coin is fair, or $1-0.6114=0.3886$ probability that the coin is loaded. 
+
+
+*How many flip would we need to be sure that coin is fair with 90% confident?*
+
+To determine the number of initial flips needed to be sure with 90% certainty, we need to calculate the posterior probability for various numbers of flips until we achieve a posterior probability of 90%.
+
+This involves calculating probabilities for multiple scenarios. Let's use a script to find the minimum number of flips required:
+
+```{r}
+# Define the binomial coefficient function
+choose <- function(n, x) {
+  factorial(n) / (factorial(x) * factorial(n - x))
+}
+
+# Probability functions
+prob_fair <- function(x, n) {
+  choose(n, x) * (1/2)^n
+}
+
+prob_loaded <- function(x, n) {
+  choose(n, x) * (0.7)^x * (0.3)^(n-x)
+}
+
+# Function to calculate posterior probability for 'fair' coin
+posterior_prob_fair <- function(x, n) {
+  p_fair = prob_fair(x, n)
+  p_loaded = prob_loaded(x, n)
+  p_fair / (p_fair + p_loaded)
+}
+
+# Find the minimum number of flips for 90% certainty
+n <- 5
+while(TRUE) {
+  x <- 0:n
+  probs <- sapply(x, function(k) posterior_prob_fair(k, n))
+  if (max(probs) >= 0.9) break
+  n <- n + 1
+}
+
+cat("Minimum number of flips for 90% certainty:", n, "\n")
+
+```
+Surprisingly, this is the same number of tosses we had before. In the previous calculation, we assumed both coins (fair and loaded) have equal prior probabilities, meaning 𝑃(fair)=𝑃(loaded)=0.5. The posterior probability of 70.3% was calculated for this specific observed outcome (2 heads out of 5) based on the prior probabilities and likelihoods.
+
+However, the R script's loop is designed to find the minimum number of flips needed to achieve 90% posterior probability for any outcome. This means we're looking for the number of flips that would allow us to be 90% certain in at least one scenario, not specifically for the observed 2 heads in 5 flips.
+
+Thus, it is possible for the same number of flips (5) to yield different posterior probabilities depending on the observed outcomes. The loop in the R script checks various outcomes until it finds one that achieves the 90% certainty threshold.
+
+The calculated 70.3% certainty is specific to the observed outcome of 2 heads in 5 flips.
+
+The R script's result of 5 flips indicates that there exists an outcome within 5 flips that would give us 90% certainty.
+
+
+*Suppose now that your brother has a third coin which comes up tails 70% of the time. Again, you don't know which coin your brother has brought to you, so you are going to test it by flipping it 4 times, were X counts the number of heads.* 
+
+Let $\theta$ identify the coin so that there are three possibilities:
+ - $\theta$ = fair
+ - $\theta$ = loaded Heads
+ - $\theta$ = loaded Tails
+ 
+ x= heads
+ 
+ $$
+f(x \mid \theta) = \begin{cases}  \binom{5}{x} (\frac{1}{2})^5 \text { if fair} \\
+\binom{5}{x} (0.7)^x (0.3)^{5-x} \text  { if loaded heads}\\
+\binom{5}{x} (0.3)^x (0.7)^{5-x} \text  { if loaded tails}
+\end{cases}
+$$
+ 
+ Your prior is: 
+  - $P(\theta =fair) = 0.4$ 
+  - $P(\theta =loadedH) = 0.3$ 
+  - $P(\theta =loadedT) = 0.3$ 
+Our prior probability that the coin is loaded is still 0.6, but we do not know which loaded coin it is, so we split the probability evenly between the two options
+
+*What is the form of the likelihood now that we have three options?*
+Likelihood:
+
+$$
+L(\theta) = P(X=x_1, X= x_2, \cdots, X=x_n \mid \theta)
+$$
+the probability function for a binomial distribution:
+$$
+f(x\mid p) = \binom{n}{x}p^x(1-p)^{n-x}
+$$
+
+$n=4$ 
+substituting:
+
+$$f(x \mid \theta) = \binom{4}{x} 0.5^x \times 0.5^{4-x} I_{fair}  + \binom{4}{x} 0.7^x \times 0.3^{4-x} I_{fair.heads}  +\binom{4}{x} 0.3^x \times 0.7^{4-x} I_{fair.tails}$$
+
+$$f(x \mid \theta) = \binom{4}{x} 0.5^x \times 0.5^{4-x} \times 0.4 + \binom{4}{x} 0.7^x \times 0.3^{4-x} \times 0.3 +\binom{4}{x} 0.3^x \times 0.7^{4-x}  \times 0.3$$
+
+
+*Suppose you flip the coin four times and it comes up heads twice. What is the posterior probability that this is the fair coin*
+To determine the posterior probability that the coin is fair, we can use Bayes' theorem. 
+
+$$
+P(\theta=fair \mid x=2)= \frac{P(X=2\mid \theta = fair)P(\theta=fair)}{P(x=2)}
+$$
+
+Where P(x=2) is 
+
+$$P(x=2) =
+P(X=2\mid \theta = fair)P(\theta=fair) + 
+P(X=2\mid \theta = loaded.heads)P(\theta=loaded.heads) + 
+P(X=2\mid \theta = loaded.tails)P(\theta=loaded.tails) 
+$$
+Given the following parameters:
+- $P(\theta = \text{fair}) = 0.4$
+- $P(\theta = \text{loaded heads}) = 0.3$
+- $P(\theta = \text{loaded tails}) = 0.3$
+
+First, we calculate $P(X = 2 \mid \theta = \text{fair})$:
+
+
+$$P(X = 2 \mid \theta = \text{fair}) = \binom{4}{2} (0.5)^2 (0.5)^{2} = \frac{4!}{2!2!} (0.5)^4 = 6 \times 0.0625 = 0.375$$
+
+Next, we calculate $P(X = 2 \mid \theta = \text{loaded heads})$:
+
+
+$$P(X = 2 \mid \theta = \text{loaded heads}) = \binom{4}{2} (0.7)^2 (0.3)^2 = \frac{4!}{2!2!} (0.7)^2 (0.3)^2 = 6 \times 0.49 \times 0.09 = 6 \times 0.0441 = 0.2646$$
+And $P(X = 2 \mid \theta = \text{loaded tails})$:
+
+$$P(X = 2 \mid \theta = \text{loaded tails}) = \binom{4}{2} (0.3)^2 (0.7)^2 = \frac{4!}{2!2!} (0.3)^2 (0.7)^2 = 6 \times 0.09 \times 0.49 = 6 \times 0.0441 = 0.2646$$
+
+Now, we substitute:
+
+$$
+P(\theta=fair \mid x=2)= \frac{0.375\times 0.4} {0.375\times 0.4+0.2646 \times 0.3+0.2646\times 0.3} =0.486
+$$
+In code:
+```{r}
+# Given parameters
+P_fair <- 0.4
+P_loaded_heads <- 0.3
+P_loaded_tails <- 0.3
+
+# Likelihoods
+P_X_2_given_fair <- choose(4, 2) * (0.5^2) * (0.5^2)
+P_X_2_given_loaded_heads <- choose(4, 2) * (0.7^2) * (0.3^2)
+P_X_2_given_loaded_tails <- choose(4, 2) * (0.3^2) * (0.7^2)
+
+# Marginal likelihood
+P_X_2 <- (P_X_2_given_fair * P_fair) + 
+         (P_X_2_given_loaded_heads * P_loaded_heads) + 
+         (P_X_2_given_loaded_tails * P_loaded_tails)
+
+# Posterior probability
+P_fair_given_X_2 <- (P_X_2_given_fair * P_fair) / P_X_2
+
+# Display the result
+P_fair_given_X_2
+```
+
+:::
 
 ## MLE for Uniform Distribution
 
 Let's consider a uniform distribution defined over the interval $[a, b]$. The probability density function (pdf) of the uniform distribution is given by:
 
-
 $$
 f(x \mid a, b) = \frac{1}{b - a} \quad \text{for} \quad a \leq x \leq b
 $$
 
-
-
-Suppose we have a sample of observed data points $ x_1, x_2, \ldots, x_n $ from the uniform distribution. The likelihood function $ L(a, b) $ is given by:
+Suppose we have a sample of observed data points $x_1, x_2, \ldots, x_n$ from the uniform distribution. The likelihood function \$ L(a, b) \$ is given by:
 
 $$
 L(a, b) = \prod_{i=1}^{n} f(x_i \mid a, b) = \prod_{i=1}^{n} \frac{1}{b - a} = \left( \frac{1}{b - a} \right)^n
-$$
-Every value between a and b are equally likely 
-To find the MLE, we need to maximize the likelihood function. In the case of the uniform distribution, we need to find the values of $a$ and $b$ that maximize the likelihood function. The MLE for $a$ and $b$ are:
+$$ 
+Every value between a and b are equally likely To find the MLE, we need to maximize the likelihood function. In the case of the uniform distribution, we need to find the values of $a$ and $b$ that maximize the likelihood function. The MLE for $a$ and $b$ are:
 
 $$
 \hat{a} = \min(x_1, x_2, \ldots, x_n)
-$$
-$$
+$$ $$
 \hat{b} = \max(x_1, x_2, \ldots, x_n)
 $$
+
 ```{r}
 # Sample data
 x <- c(2, 3, 5, 6, 7)
@@ -1268,16 +1483,15 @@ cat("MLE for b:", b_hat, "\n")
 
 ```
 
-
 ## MLE for Exponential Distribution
 
-The exponential distribution is defined by its rate parameter $ \lambda $. The probability density function (pdf) of the exponential distribution is given by:
+The exponential distribution is defined by its rate parameter \$ \lambda \$. The probability density function (pdf) of the exponential distribution is given by:
 
 $$
 f(x \mid \lambda) = \lambda e^{-\lambda x} \quad \text{for} \quad x \geq 0
 $$
 
-Suppose we have a sample of observed data points $ x_1, x_2, \ldots, x_n $ from the exponential distribution. The likelihood function $ L(\lambda) $ is given by:
+Suppose we have a sample of observed data points \$ x_1, x_2, \ldots, x_n \$ from the exponential distribution. The likelihood function \$ L(\lambda) \$ is given by:
 
 $$
 L(\lambda) = \prod_{i=1}^{n} f(x_i \mid \lambda) = \prod_{i=1}^{n} \lambda e^{-\lambda x_i} = \lambda^n e^{-\lambda \sum_{i=1}^{n} x_i}
@@ -1289,14 +1503,13 @@ $$
 \log L(\lambda) = n \log \lambda - \lambda \sum_{i=1}^{n} x_i
 $$
 
-Next, we take the derivative of the log-likelihood function with respect to $ \lambda $ and set it to zero to find the maximum:
+Next, we take the derivative of the log-likelihood function with respect to \$ \lambda \$ and set it to zero to find the maximum:
 
 $$
 \frac{d}{d\lambda} (\log L(\lambda)) = \frac{n}{\lambda} - \sum_{i=1}^{n} x_i = 0
 $$
 
-Solving for $ \lambda $, we get:
-
+Solving for \$ \lambda \$, we get:
 
 $$
 \hat{\lambda} = \frac{n}{\sum_{i=1}^{n} x_i}
@@ -1314,6 +1527,78 @@ lambda_hat <- n / sum(x)
 cat("MLE for lambda:", lambda_hat, "\n")
 
 ```
+
+::: exercise-box
+You are trying to ascertain your American colleague's political preferences. To do so, you design a questionnaire with five yes/no questions relating to current issues. The questions are all worded so that a "yes" response indicates a conservative viewpoint.
+
+Let θ be the unknown political viewpoint of your colleague, which we will assume can only take values θ=conservative or θ=liberal. You have no reason to believe that your colleague leans one way or the other, so you assign the prior 
+P(θ=conservative)=0.5.
+
+Assume the five questions are independent and let Y count the number of "yes" responses. If your colleague is conservative, then the probability of a "yes" response on any given question is 0.8. If your colleague is liberal, the probability of a "no" response on any given question is 0.7.
+
+What is an appropriate likelihood for this scenario?
+
+The likelihood formula:
+
+$$
+L(\theta) = P(X=x_1, X= x_2, \cdots, X=x_n \mid \theta)
+$$
+the probability function for a binomial distribution:
+$$
+f(x\mid p) = \binom{n}{x}p^x(1-p)^{n-x}
+$$
+$P(x = yes \mid \theta=conservative) = \binom{n}{x} 0.8^x \times (1-0.8)^{n-x}$ 
+
+$P(x = no \mid \theta=liberal) = \binom{n}{x} 0.7^x \times (1-0.7)^{n-x}$ 
+
+$P(x = yes \mid \theta=liberal) = \binom{n}{x} 0.3^x \times (1-0.3)^{n-x}$ 
+$n=5$
+
+$$f(x\mid \theta) = \binom{5}{x} 0.8^x \times 0.2^{5-x} +\binom{5}{x} 0.3^x \times (0.7)^{5-x}$$
+*Suppose you ask your colleague the five questions and he answers "no" to all of them. What is the MLE for $\theta$*
+
+```{r}
+n= 5
+x= 0
+pyes_con = 0.8
+pno_con = 0.2
+
+pyes_lib = 0.3
+pno_lib =0.7
+
+# Define the binomial coefficient function
+choose <- function(n, x) {
+  factorial(n) / (factorial(x) * factorial(n - x))
+}
+
+# Probability functions
+prob_conservative <- function(x, n) {
+  choose(n, x) * pyes_con^x *pno_con^(n-x)
+}
+
+prob_liberal <- function(x, n) {
+  choose(n, x) * pyes_lib^x *pno_lib^(n-x)
+}
+
+# Function to calculate posterior probability for 'fair' coin
+posterior_prob_conv <- function(x, n) {
+  p_cons = prob_conservative(x, n)
+  p_lib = prob_liberal(x, n)
+  p_cons / (p_cons + p_lib)
+}
+print(paste0("conservative =", round(posterior_prob_conv(x,n),3)))
+
+posterior_prob_lib <- function(x, n) {
+  p_cons = prob_conservative(x, n)
+  p_lib = prob_liberal(x, n)
+  p_lib / (p_cons + p_lib)
+}
+print(paste0("liberal =", round(posterior_prob_lib(x,n),3)))
+
+```
+he is most likely liberal according to these questions. 
+:::
+
 
 
 
