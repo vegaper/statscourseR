@@ -74,22 +74,6 @@ format:
     margin-right: 10px
     anchor-sections: true
     theme: flatly
-    html-math-method:
-      method: mathjax
-pdf:
-    toc: true
-    toc-depth: 3
-    number-sections: true
-    number-depth: 3
-    fig-align: 'center'
-    fig-cap-location: margin
-    fig-width: 4
-    fig-height: 4
-    embed-resources: true
-    margin-left: 50px
-    margin-right: 10px
-    html-math-method:
-      method: mathjax
 prefer-html: true
 encoding: "UTF-8"
 execute: 

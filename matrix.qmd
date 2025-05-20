@@ -1,34 +1,6 @@
 ---
 title: "Matrix Algebra"
-format:
-  html:
-    toc: true
-    toc-depth: 3
-    toc-title: Contents
-    number-sections: true
-    number-depth: 3
-    embed-resources: true
-    fig-align: 'center'
-    fig-cap-location: margin
-    fig-width: 4
-    fig-height: 4
-    css: custom-style.css
-    page-layout: full
-    grid:
-      sidebar-width: 10px
-      body-width: 1300px
-      gutter-width: 0.5rem
-    margin-left: 50px
-    margin-right: 10px
-  pdf:
-    toc: true
-    number-sections: true
-    colorlinks: true
-editor: visual
-execute:
-  engine: knitr
-  warning: false
-  echo: true
+format: html
 ---
 
 ```{r}
@@ -49,14 +21,14 @@ library(dplyr)
 library(RColorBrewer)
 library(contrast) 
 library(multcomp)
+library(matlib)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
 
 This document is a summary of different stats courses:
 
--   Introduction to Linear Models and Matrix Algebra (HarvardX PH525.2x via Edx)
-There is a free ebook which contains the full course: dataanalysisforthelifesciences.pdf and all the code can be found in the git of the author.
+-   Introduction to Linear Models and Matrix Algebra (HarvardX PH525.2x via Edx) There is a free e-book which contains the full course: dataanalysisforthelifesciences.pdf and all the code can be found in the git of the author.
 
 # Matrices operations
 
@@ -112,11 +84,11 @@ c
 2 \\
 1 
 \end{pmatrix}
-$$ 
+$$
 
 ## Matrix multiplication by scalar
 
-When you have a matrix and you multiply if by a scalar, you multiply each element of the matrix by that scalar: Given a scalar ( k ) and a matrix ( A ):
+When you have a matrix and you multiply it by a scalar, you multiply each element of the matrix by that scalar: Given a scalar (k) and a matrix (A):
 
 $$
 k = 3, \quad A = \begin{pmatrix}
@@ -125,7 +97,7 @@ k = 3, \quad A = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-The result of multiplying the matrix ( A ) by the scalar ( k ) is:
+The result of multiplying the matrix (A) by the scalar (k) is:
 
 $$
 kA = 3 \begin{pmatrix}
@@ -151,7 +123,58 @@ print(X*a)
 
 ## Matrices multiplication
 
-To multiply a matrix by another matrix: Given two matrices ( A ) and ( B ):
+Matrix multiplication is performed by taking the dot product of rows from the first matrix (𝐴) with columns of the second matrix (𝐵). The key steps are:
+
+-   Check compatibility: Ensure the number of columns in 𝐴 matches the number of rows in 𝐵.
+
+-   *Dot Product Computation*: Each element in the resulting matrix is calculated by multiplying corresponding entries from a row of 𝐴 and a column of𝐵, summing the results.
+
+-   The resulting matrix has dimensions $m \times p$ where $A$ is $m \times n$ and $B$ is $n \times p$.
+
+To multiply a $3 \times 4$ matrix $A$ with a $4 \times 2$ matrix $B$, we follow the rule that each row of $A$ interacts with each column of $B$ using the dot product.
+
+Given Matrices:
+
+$$
+A = \begin{pmatrix}
+a_{1,1} & a_{1,2} & a_{1,3} & a_{1,4} \\
+a_{2,1} & a_{2,2} & a_{2,3} & a_{2,4} \\
+a_{3,1} & a_{3,2} & a_{3,3} & a_{3,4}
+\end{pmatrix}, \quad
+B = \begin{pmatrix}
+b_{1,1} & b_{1,2} \\
+b_{2,1} & b_{2,2} \\
+b_{3,1} & b_{3,2} \\
+b_{4,1} & b_{4,2}
+\end{pmatrix}
+$$ These matrices are compatible for multiplication because $A$ has **4 columns**, matching $B$'s **4 rows**.
+
+The resulting $3 \times 2$ matrix $C$ is computed as follows:
+
+$$
+C = A B =
+\begin{pmatrix}
+a_{1,1} \cdot b_{1,1} + a_{1,2} \cdot b_{2,1} + a_{1,3} \cdot b_{3,1} + a_{1,4} \cdot b_{4,1} &
+a_{1,1} \cdot b_{1,2} + a_{1,2} \cdot b_{2,2} + a_{1,3} \cdot b_{3,2} + a_{1,4} \cdot b_{4,2} \\
+a_{2,1} \cdot b_{1,1} + a_{2,2} \cdot b_{2,1} + a_{2,3} \cdot b_{3,1} + a_{2,4} \cdot b_{4,1} &
+a_{2,1} \cdot b_{1,2} + a_{2,2} \cdot b_{2,2} + a_{2,3} \cdot b_{3,2} + a_{2,4} \cdot b_{4,2} \\
+a_{3,1} \cdot b_{1,1} + a_{3,2} \cdot b_{2,1} + a_{3,3} \cdot b_{3,1} + a_{3,4} \cdot b_{4,1} &
+a_{3,1} \cdot b_{1,2} + a_{3,2} \cdot b_{2,2} + a_{3,3} \cdot b_{3,2} + a_{3,4} \cdot b_{4,2}
+\end{pmatrix}
+$$
+
+Each element in $C$ is derived from the dot product of a row in $A$ and a column in $B$.
+
+For example, the top-left element of $C$ (i.e., $c_{1,1}$) is calculated as:
+
+$$
+c_{1,1} = a_{1,1} \cdot b_{1,1} + a_{1,2} \cdot b_{2,1} + a_{1,3} \cdot b_{3,1} + a_{1,4} \cdot b_{4,1}
+$$
+
+Likewise, every position in $C$ follows the same logic.
+
+::: exercise-box
+Given two matrices (A) and (B):
 
 $$
 A = \begin{pmatrix}
@@ -166,7 +189,7 @@ B = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-The result of multiplying matrix ( A ) by matrix ( B ) is:
+The result of multiplying matrix (A) by matrix (B) is:
 
 $$
 AB = \begin{pmatrix}
@@ -189,7 +212,8 @@ AB = \begin{pmatrix}
 -2 \\
 -2
 \end{pmatrix}
-$$ 
+$$
+
 and in r we use `%*%`
 
 ```{r}
@@ -199,10 +223,10 @@ beta<- c(3,2,1)
 X%*%beta
 
 ```
+:::
 
-due to the way the matrices multiplication work, we can only multiply two matrices if the number of rows in one matrix is equal to the number of columns in the other matrix.
-
-Given two matrices ( A ) and ( B ):
+::: exercise-box
+Given two matrices (A) and (B):
 
 $$
 A = \begin{pmatrix}
@@ -216,7 +240,7 @@ B = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-The result of multiplying matrix ( A ) by matrix ( B ) is:
+The result of multiplying matrix (A) by matrix (B) is:
 
 $$
 AB = \begin{pmatrix}
@@ -239,10 +263,77 @@ AB = \begin{pmatrix}
 95 & 106 & 117
 \end{pmatrix}
 $$
+:::
+
+### Understanding Matrix Multiplication
+
+Matrix multiplication is an operation where the product of two matrices is obtained by computing the dot product of rows from the first matrix with columns from the second matrix. However, unlike regular arithmetic multiplication, matrix multiplication does **not** follow the commutative property: $$
+A \times B \neq B \times A
+$$ in general. This means swapping the order of multiplication can lead to different results or may even be **undefined**.
+
+### **Conditions for Matrix Multiplication**
+
+For matrices **A** and **B** to be **multipliable**, their dimensions must satisfy: - $A$ is an $m \times n$ matrix. - $B$ is an $n \times p$ matrix. - The resulting matrix $C$ has dimensions $m \times p$.
+
+**Example: Demonstrating Non-Commutativity**
+
+Let's consider two matrices:
+
+$$
+A = \begin{pmatrix}
+1 & 2 \\
+3 & 4
+\end{pmatrix}, \quad
+B = \begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix}
+$$
+
+Computing $A \times B$:
+
+$$
+A B =
+\begin{pmatrix}
+(1 \cdot 0 + 2 \cdot 1) & (1 \cdot 1 + 2 \cdot 0) \\
+(3 \cdot 0 + 4 \cdot 1) & (3 \cdot 1 + 4 \cdot 0)
+\end{pmatrix}
+=
+\begin{pmatrix}
+2 & 1 \\
+4 & 3
+\end{pmatrix}
+$$
+
+Now computing $B \times A$:
+
+$$
+B A =
+\begin{pmatrix}
+(0 \cdot 1 + 1 \cdot 3) & (0 \cdot 2 + 1 \cdot 4) \\
+(1 \cdot 1 + 0 \cdot 3) & (1 \cdot 2 + 0 \cdot 4)
+\end{pmatrix}
+=
+\begin{pmatrix}
+3 & 4 \\
+1 & 2
+\end{pmatrix}
+$$
+
+Clearly, $A \times B \neq B \times A$, demonstrating non-commutativity.
+
+### **Additional Matrix Multiplication Properties**
+
+1.  **Associative Property**: $$ (A \times B) \times C = A \times (B \times C) $$
+2.  **Distributive Property**: $$ A \times (B + C) = A \times B + A \times C $$
+3.  **Identity Matrix Property**: If $I$ is the identity matrix: $$ A \times I = I \times A = A $$
+4.  **Zero Matrix Property**: $$ A \times 0 = 0 $$
+
+Matrix multiplication plays a fundamental role in linear algebra, forming the basis for transformations, systems of equations, and numerous applications in data science, physics, and engineering.
 
 ## Identity matrix
 
-An identity matrix (also known as a unit matrix) is a square matrix in which all the elements of the principal diagonal are ones, and all other elements are zeros. It is denoted by ( I ). The identity matrix plays a crucial role in matrix multiplication, as multiplying any matrix by the identity matrix leaves the original matrix unchanged. he identity matrix ( I ) of order 3 is:
+An identity matrix (also known as a *unit matrix*) is a square matrix in which all the elements of the principal diagonal are ones, and all other elements are zeros. It is denoted by (I). The identity matrix plays a crucial role in matrix multiplication, as multiplying any matrix by the identity matrix leaves the original matrix unchanged. he identity matrix (I) of order 3 is:
 
 $$
 I_3 = \begin{pmatrix}
@@ -256,9 +347,171 @@ $$ in r we use the function `diag()` with the number of dimensions we want:
 diag(5)
 ```
 
-## Inversion
+## Transpose
 
-The inverse of a square matrix $X$ is denoted as $X^{-1}$ it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$ Note that not all matrices have an inverse. In r we use the function `solve` to get the inverse, and we use it to solve our original equation it gives us the values for a, b and c to resolve the system of equations: 
+Transpose simply turns the rows into columns and vice versa, in r we use `t`
+
+```{r}
+X<- matrix(1:15,5,3)
+X
+t(X)
+```
+
+
+# Inversion
+
+The inverse of a square matrix $X$ is denoted as $X^{-1}$ it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$ 
+
+Note that not all matrices have an inverse. 
+
+
+In linear algebra, the **determinant** and **adjoint** of a matrix are fundamental concepts used to compute the **inverse** of a matrix. Below, we explain these concepts and demonstrates how to use them to find the inverse of a matrix.
+
+## Determinant
+
+The **determinant** of a square matrix is a scalar value that provides important properties of the matrix. It is denoted as `det(A)` for a matrix `A`. A matrix is invertible if and only if its determinant is non-zero.
+
+For a 2×2 matrix:
+
+$$
+A = \begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix}
+$$
+
+The determinant is:
+
+$$
+\text{det}(A) = ad - bc
+$$
+In r we use `det` formula to calculate it. 
+```{r}
+# Define the matrix
+A <- matrix(c(1, 0, 1, 2, 4, 0, 3, 5, 6), nrow = 3, byrow = TRUE)
+
+# Compute the determinant
+det_A <- det(A)
+```
+
+## Adjoint
+
+The **adjoint** (or adjugate) of a matrix is the transpose of the cofactor matrix. For a 2×2 matrix:
+
+$$
+A = \begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix}
+$$
+
+The adjoint is:
+
+$$
+\text{adj}(A) = \begin{bmatrix}
+d & -b \\
+-c & a
+\end{bmatrix}
+$$
+
+## Cofactor Matrix
+
+To compute the **adjoint** of a matrix, we first need the **cofactor matrix**.
+
+The **cofactor** of an element $a_{ij}$ in a matrix is calculated as:
+
+$$
+C_{ij} = (-1)^{i+j} \cdot M_{ij}
+$$
+
+Where:
+- $M_{ij}$ is the **minor** of the element $a_{ij}$, i.e., the determinant of the submatrix formed by removing the $i$-th row and $j$-th column from the original matrix.
+- $(-1)^{i+j}$ gives the correct sign based on the position.
+
+The **cofactor matrix** is the matrix of all $C_{ij}$ values.
+
+## Adjoint of a Matrix (General Case)
+
+The **adjoint** of a matrix is the **transpose** of its cofactor matrix:
+
+$$
+\text{adj}(A) = \text{Cofactor}(A)^T
+$$
+
+This method works for any square matrix, not just 2×2.
+
+
+## Calculating Inverse of a Matrix manually
+
+$$
+A = \begin{bmatrix}
+2 & 3 \\
+1 & 4
+\end{bmatrix}
+$$
+
+```{r}
+# Define the matrix
+A <- matrix(c(2, 1, 3, 4), nrow = 2, byrow = TRUE)
+
+# Compute the determinant
+det_A <- det(A)
+
+# Compute the adjoint manually
+adj_A <- matrix(c(4, -3, -1, 2), nrow = 2, byrow = TRUE)
+
+# Compute the inverse using the formula
+A_inv <- (1 / det_A) * adj_A
+
+# Display the result
+A_inv
+```
+
+
+In `r` there is no formula to calculate the adjoint of a matrix directly, so if you need to calculate the adjoint of a matrix of more than 2x2, you can use the package `matlib` 
+
+```{r}
+
+# Define a matrix
+A <- matrix(c(1, 0, 1, 2, 4, 0, 3, 5, 6), nrow = 3, byrow = TRUE)
+
+# Compute the adjoint
+adj_A <- matlib::adjoint(A)
+
+# Display the result
+adj_A
+
+```
+## Calculating Inverse of a Matrix using software
+
+We rarely need to get the adjoint outside of the scope of calculating the inverse of a matrix, and `r` gives us a formula for directly calculating the inverse of a matrix, the determinant and the adjoint are calculated internally 
+
+:::{.exercise-box}
+Example: Adjoint and Inverse of a 3×3 Matrix in R
+
+Let’s compute the inverse of:
+
+$$
+A = \begin{bmatrix}
+1 & 2 & 3 \\
+0 & 4 & 5 \\
+1 & 0 & 6
+\end{bmatrix}
+$$
+
+```{r}
+# Define the matrix
+A <- matrix(c(1, 0, 1, 2, 4, 0, 3, 5, 6), nrow = 3, byrow = TRUE)
+
+# Compute the inverse using solve (R handles adjoint and cofactors internally)
+A_inv <- solve(A)
+
+# Display the result
+A_inv
+```
+::: 
+
+In `r` we use the function `solve` to get the inverse, and we use it to solve equations: it gives us the values for a, b and c to resolve the system of equations:
 
 $$
 \begin{align*}
@@ -291,17 +544,66 @@ y <- matrix(c(6,2,1),3,1)
 solve(X)%*%y
 ```
 
-## Transpose
+:::{.exercise-box}
+Example
 
-Transpose simply turns the rows into columns and vice versa, in r we use `t`
+A small factory produces two products: **Chairs** and **Tables**. Each product requires a certain amount of **wood** and **labor hours**:
+
+- A **Chair** requires 2 units of wood and 3 hours of labor.
+- A **Table** requires 5 units of wood and 2 hours of labor.
+
+The factory has **available resources** of:
+
+- 40 units of wood
+- 30 hours of labor
+
+We want to determine how many **Chairs (x)** and **Tables (y)** the factory can produce using all available resources.
+
+Step 1: Represent the System as Equations
+
+We can write the constraints as:
+
+$$
+\begin{aligned}
+2x + 5y &= 40 \quad \text{(wood constraint)} \\
+3x + 2y &= 30 \quad \text{(labor constraint)}
+\end{aligned}
+$$
+
+Step 2: Matrix Form
+
+This system can be written in matrix form:
+
+$$
+AX = B
+$$
+
+Where:
+
+$$
+A = \begin{bmatrix} 2 & 5 \\ 3 & 2 \end{bmatrix}, \quad
+X = \begin{bmatrix} x \\ y \end{bmatrix}, \quad
+B = \begin{bmatrix} 40 \\ 30 \end{bmatrix}
+$$
+
+Step 3: Solve in R
 
 ```{r}
-X<- matrix(1:15,5,3)
-X
-t(X)
-```
+# Coefficient matrix A
+A <- matrix(c(2, 3, 5, 2), nrow = 2, byrow = TRUE)
 
-## Calculate an average using matrices
+# Resource vector B
+B <- matrix(c(40, 30), nrow = 2)
+
+# Solve for X (number of chairs and tables)
+X <- solve(A, B)
+
+# Display the result
+X
+```
+:::
+
+# Calculate an average using matrices
 
 ```{r}
 y<- father.son$fheight
@@ -317,14 +619,11 @@ barY<- crossprod(A,Y)/N
 print(barY)
 ```
 
-## Sample variance
-First, remember that the residuals are given by $e=Y-\hat{Y}$ where $e$ is the nX1 vector of residuals, Y is the nx1 vector of observed values and $\hat{Y}$ is the nx1 vector of predicted values from our model. 
-The formula for the sample variance $s^2$ of the residuals is 
-$$
+# Sample variance
+
+First, remember that the residuals are given by $e=Y-\hat{Y}$ where $e$ is the nX1 vector of residuals, Y is the nx1 vector of observed values and $\hat{Y}$ is the nx1 vector of predicted values from our model. The formula for the sample variance $s^2$ of the residuals is $$
 s^2 = \frac{\mathbf{e}^T \mathbf{e}}{n - p}
-$$
-This gives you the average squared deviation of the residuals from their mean, which is an estimate of the variance of the errors in your model. 
-in r:
+$$ This gives you the average squared deviation of the residuals from their mean, which is an estimate of the variance of the errors in your model. in r:
 
 ```{r}
 e<- y -barY
@@ -332,6 +631,7 @@ crossprod(e)/N
 ```
 
 Example:
+
 ```{r}
 # Sample data
 Y <- matrix(c(2, 3, 5, 7, 9), ncol = 1)
@@ -364,7 +664,7 @@ s_squared
 
 # Linear models represented by matrices
 
-We can represent a linear model mathematically like this: 
+We can represent a linear model mathematically like this:
 
 $$ 
 Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} + \varepsilon_i, i=1,\dots,n 
@@ -372,11 +672,9 @@ $$
 
 $$
 Y_i = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij} + \varepsilon_i, \quad i = 1, \ldots, N
-$$ 
-but using matrices we can simplify the formula to: 
-$$
+$$ but using matrices we can simplify the formula to: $$
 Y=X\beta+\epsilon   
-$$ 
+$$
 
 where: Y is the vector of data X is a matrix that has columns representing the different covariants or predictors $\beta$ represent the unknown parameters $\epsilon$ represent the vector of error terms
 
@@ -405,8 +703,7 @@ Y_N
 \vdots \\
 \varepsilon_N
 \end{bmatrix}
-$$ 
-$$
+$$ $$
 \begin{pmatrix}
 Y_1 \\
 Y_2 \\
@@ -433,23 +730,19 @@ Y_N
 \vdots \\
 \varepsilon_N
 \end{pmatrix}
-$$ 
-## Residual sum of squares
+$$ \## Residual sum of squares
 
 Writing it this way we can calculate the values to minimize the *residual sum of squares (RSS)*. The RSS equation now looks like this:
 
 $$
 (Y - X\beta)^T(Y - X\beta)
-$$
-## Least Squares Estimator (LSE)
-LSE is a method used to estimate the parameters of a linear model by minimizing the sum of the squared differences (errors) between observed and predicted values.
+$$ \## Least Squares Estimator (LSE) LSE is a method used to estimate the parameters of a linear model by minimizing the sum of the squared differences (errors) between observed and predicted values.
 
-To find the $\hat{\beta}$ that minimizes this we solve by taking the derivative: 
-$$
+To find the $\hat{\beta}$ that minimizes this we solve by taking the derivative: $$
 2X^T(Y-X\hat{\beta})=0\\
 X^TX\hat{\beta}=X^TY\\
 \hat{\beta}= (X^TX^{-1}X^TY)
-$$ 
+$$
 
 In r:
 
@@ -664,7 +957,7 @@ as we expect. We use this result to obtain the standard errors of the LSE (least
 
 Note that the LSE $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{AY}$ with $\mathbf{A}=\mathbf{(X^\top X)^{-1}X}^\top$, so we can use the equation above to derive the variance of our estimates:
 
-$$\mbox{var}(\boldsymbol{\hat{\beta}}) = \mbox{var}( \mathbf{(X^\top X)^{-1}X^\top Y} ) =  $$
+$$\mbox{var}(\boldsymbol{\hat{\beta}}) = \mbox{var}(\mathbf{(X^\top X)^{-1}X^\top Y}) =  $$
 
 $$\mathbf{(X^\top X)^{-1} X^\top} \mbox{var}(Y) (\mathbf{(X^\top X)^{-1} X^\top})^\top = $$
 
@@ -712,7 +1005,7 @@ XtXinv <- solve(crossprod(X))
 
 resid <- y - X %*% XtXinv %*% crossprod(X,y)
 
-s <- sqrt( sum(resid^2)/(N-p))
+s <- sqrt(sum(resid^2)/(N-p))
 ses <- sqrt(diag(XtXinv))*s 
 ```
 
@@ -772,8 +1065,7 @@ Again, this is because we are not fixing `tt`.
 
 #### Exercise
 
-We are going to calculate the standard error of $\hat{\beta}$ for the heights of father and son. 
-$$
+We are going to calculate the standard error of $\hat{\beta}$ for the heights of father and son. $$
 SE(\hat{\beta})= sqrt{Var(\hat{\beta})}
 $$
 
@@ -851,17 +1143,13 @@ this gives us two numbers, the estandard error of the intercept and the estandar
 summary(fit)
 ```
 
-# Linear models as matrix multiplication. 
-Suppose we have a linear model with 4 variables 
-$$ 
+# Linear models as matrix multiplication.
+
+Suppose we have a linear model with 4 variables $$ 
 Y_i = \beta\_0 + \beta*1 X*{i1} + \beta*2 X*{i2} + \beta*3 X*{i3} + \beta*4 X*{i4} + \epsilon\_i
-$$
-that can be writen as:
-$$ 
+$$ that can be writen as: $$ 
 \mathbf{Y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon} 
-$$
-where 
-$$ 
+$$ where $$ 
 \mathbf{Y} =\begin{pmatrix} Y_1 \ Y_2 \ \vdots \ Y_N \end{pmatrix}
 $$
 
@@ -872,9 +1160,7 @@ $$
 
 $$ 
 \boldsymbol{\beta} =\begin{pmatrix} \beta_0 \ \beta_1 \ \beta_2 \ \beta_3 \ \beta_4 \end{pmatrix}
-$$
-and
-$$ 
+$$ and $$ 
 \boldsymbol{\epsilon} =
 \begin{pmatrix} \epsilon_1 \ \epsilon_2 \ \vdots \ \epsilon_N \end{pmatrix}
 $$
@@ -917,17 +1203,13 @@ Y_6
 \end{equation}
 $$
 
-
-the sum of least squares will be:
-$$ 
+the sum of least squares will be: $$ 
 \sum_{i=1}^{N} (Y_i - \beta_0 - \beta*1 X*{i1} - \beta*2 X*{i2} - \beta*3 X*{i3} - \beta*4 X*{i4})^2
-$$
-in matrix notation that would be
-$$
+$$ in matrix notation that would be $$
 (Y-\beta X)^T(Y-\beta X) 
-$$ 
+$$
 
-# t-test 
+# t-test
 
 When we are doing a t-test we calculate the average in one group and substract from the average in the other group and that is an estimate of the population average.
 
@@ -968,14 +1250,11 @@ ggplot(data, aes(x = x, y = y, color = group)) +
 
 $$
 \bar{Y_A} = \hat{\beta_0} 
-$$ 
-$$
+$$ $$
 \bar{Y_B}= \hat{\beta_0}+\hat{\beta_1}
-$$ 
-$$
+$$ $$
 \bar{Y_A} = 1 \times \hat{\beta_0}+ 0 \times \hat{\beta_1}
-$$ 
-$$
+$$ $$
 \bar{Y_B}= 1 \times \hat{\beta_0}+ 1 \times \hat{\beta_1}
 $$
 
@@ -983,24 +1262,19 @@ And if we had three groups:
 
 $$
 \bar{Y_A} = \hat{\beta_0}
-$$ 
-$$
+$$ $$
 \bar{Y_B}= \hat{\beta_0}+\hat{\beta_1}
-$$ 
-$$
+$$ $$
 \bar{Y_C}= \hat{\beta_0}+\hat{\beta_2}
-$$ 
-$$
+$$ $$
 \bar{Y_A} = 1 \times \hat{\beta_0}+ 0 \times \hat{\beta_1}+0 \times\hat{\beta_2} 
-$$ 
+$$
 
 $$
 \bar{Y_B}= 1 \times \hat{\beta_0}+ 1 \times \hat{\beta_1}+0 \times\hat{\beta_2}
-$$ 
-$$
+$$ $$
 \bar{Y_C}= 1 \times \hat{\beta_0}+ 0 \times \hat{\beta_1}+1 \times\hat{\beta_2}
-$$ 
-how can we create this using r:
+$$ how can we create this using r:
 
 ```{r}
 x<- factor(c(1,1,2,2,3,3))
@@ -1076,14 +1350,14 @@ The fourth column gives us a p.value that is the probability of seeing such a la
 
 The fifth column gives you starts or a dot that symbolizes whether that p-value is below the usual cut-off significant levels $\alpha$
 
-if we want to get only the coefficients we can do it by using `coef(fit)` 
+if we want to get only the coefficients we can do it by using `coef(fit)`
 
-We know that the maths behind the linear model are
-$$
+We know that the maths behind the linear model are $$
 \hat{\beta}= (X^t X)^{-1} X^t y
 $$
 
 and to prove it with our data:
+
 ```{r}
 y<- femaleMiceWeights$Bodyweight
 X<- model.matrix(~ Diet, data= femaleMiceWeights)
@@ -1091,6 +1365,7 @@ solve(t(X) %*% X) %*% t(X) %*% y
 ```
 
 visualizing it:
+
 ```{r, fig.align='center', fig.height=5, fig.width=6}
 
 stripchart(femaleMiceWeights$Bodyweight ~ femaleMiceWeights$Diet,
@@ -1098,7 +1373,7 @@ stripchart(femaleMiceWeights$Bodyweight ~ femaleMiceWeights$Diet,
   main = "Bodyweight over Diet",
   ylim=c(0,40),
   xlim=c(0,3)
-  )
+ )
 a<- -0.25
 lgth<- .1
 
@@ -1109,7 +1384,7 @@ arrows(1+a,0,1+a, #position
   lwd=3, #
   col=cols[1], #color
   length= lgth #arrow point size.
-  )
+ )
 abline(h=coef(fit)[1], col=cols[1]) #intercept (mean of chow)
 arrows(2+a,coef(fit)[1],2+a,
   coef(fit)[1]+coef(fit)[2],
@@ -1135,19 +1410,15 @@ testResult$statistic
 
 Though the linear model in this case is equivalent to a t-test, we will soon explore more complicated designs, whre the linear model is a useful extension (cofounging variables, testing contrast of terms, testing interactions, testing many terms at once etc.) but for now we can review the mathematics on why these produce the same t-value and therefore the same p-value.
 
-We already know that the numerator of the t-value is the difference between the average of the groups, so we only have to see that the denominator is also the same. 
-In the linear model, we saw how to calculate the standard error using the design matrix X and the estimate of $\sigma^2$ from the residuals. 
-The estimate of the variance $\sigma^2$ was the sum of the squared residuals divided by (N-p) where N is the total number of samples and p is the number of terms (in our example an intercept and a group indicator so p=2).
+We already know that the numerator of the t-value is the difference between the average of the groups, so we only have to see that the denominator is also the same. In the linear model, we saw how to calculate the standard error using the design matrix X and the estimate of $\sigma^2$ from the residuals. The estimate of the variance $\sigma^2$ was the sum of the squared residuals divided by (N-p) where N is the total number of samples and p is the number of terms (in our example an intercept and a group indicator so p=2).
 
-In the t-test, the denominator of the t-value is the standard error of the difference. 
+In the t-test, the denominator of the t-value is the standard error of the difference.
 
 The t-test formula for the standard error of the difference, if we assume equal variance in the two groups is:
 
 $$
 SE =\sqrt{var(diff)} = \sqrt{\sigma_{\Delta}^2}
-$$
-and we know that:
-$$
+$$ and we know that: $$
 \sigma^2 = \frac{1}{N}\sum^N_{i=1}(x_i-\mu)^ 2
 $$
 
@@ -1157,28 +1428,17 @@ $$
 var(diff) = \left(\frac{1}{n_x}+\frac{1}{n_y}\right)\frac {\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2}}{(n_x+n_y-2)}
 $$
 
-this formula calculates the variance of the difference between two sample means where
-- $n_x$ and $n_y$ are the sample sizes of the two groups.
-- $x_i$ and $y_i$ are individual data points within each group
-- $\mu_x$ and $\mu_y$ are the means of the two groups.
-- $(\frac{1}{n_x}+\frac{1}{n_y})$ adjusts for the sample sizes.
-- $\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2$ this sums up the squared deviations from the mean for each group.
-- $\frac {\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2}}{(n_x+n_y-2)}$ this calculates the pooled variance, considering both groups together.
-- `2` is the degrees of freedom for the pooled variance calculation. 
+this formula calculates the variance of the difference between two sample means where - $n_x$ and $n_y$ are the sample sizes of the two groups. - $x_i$ and $y_i$ are individual data points within each group - $\mu_x$ and $\mu_y$ are the means of the two groups. - $(\frac{1}{n_x}+\frac{1}{n_y})$ adjusts for the sample sizes. - $\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2$ this sums up the squared deviations from the mean for each group. - $\frac {\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2}}{(n_x+n_y-2)}$ this calculates the pooled variance, considering both groups together. - `2` is the degrees of freedom for the pooled variance calculation.
 
-The variance of the difference tells you how spread out the difference between the group means are likely to be. 
+The variance of the difference tells you how spread out the difference between the group means are likely to be.
 
-The standard Error of the estimated coefficient $\hat{\beta}$ is :
-$$
+The standard Error of the estimated coefficient $\hat{\beta}$ is : $$
 se(\hat{\beta})=\sqrt{s^2(X^TX)^{-1}_{ii}}
-$$
-where $(X^TX)^{-1}_{ii}$ is the i-th diagonal element of this inverse matrix, which corresponds to the variance of the i-th coefficient estimate.
+$$ where $(X^TX)^{-1}_{ii}$ is the i-th diagonal element of this inverse matrix, which corresponds to the variance of the i-th coefficient estimate.
 
 ## Crossed designs
-imagine we are running an experiment and we have two different treatments, group A is the control group and receives no treatment (a), group B receives treatment 1 (b), group C receives treatment 2 (c) and a fourth group receives treatment 1 and 2 (d).
-In this case we consider the effects of receiving both treatments additive. 
-If we write down a model it will look like this:
-$$
+
+imagine we are running an experiment and we have two different treatments, group A is the control group and receives no treatment (a), group B receives treatment 1 (b), group C receives treatment 2 (c) and a fourth group receives treatment 1 and 2 (d). In this case we consider the effects of receiving both treatments additive. If we write down a model it will look like this: $$
 \begin{pmatrix}
 \color{red}1 & \color{red}0 & \color{red}0 \\
 \color{red}1 & \color{red}0 & \color{red}0 \\
@@ -1196,9 +1456,9 @@ $$
 \end{pmatrix}
 $$
 
-we can see that the first two rows are no treatment, the rows 3rd and 4th receive treatment 1 but no treatment 2 , the 5th and the 6th rows receive treatment 2 but no treatment 1 and the last two rows receive both treatments. 
+we can see that the first two rows are no treatment, the rows 3rd and 4th receive treatment 1 but no treatment 2 , the 5th and the 6th rows receive treatment 2 but no treatment 1 and the last two rows receive both treatments.
 
-If the effects of treatment 1 + treatment 2 are not additive, then we need to plug in a fourth element that will gives us a different mean for each group and we call that fourth term *interaction* 
+If the effects of treatment 1 + treatment 2 are not additive, then we need to plug in a fourth element that will gives us a different mean for each group and we call that fourth term *interaction*
 
 $$
 \begin{pmatrix}
@@ -1220,7 +1480,8 @@ $$
 $$
 
 # Interactions and Contrast
-As a running example to learn about more complex linear models, we will be using a dataset which compares the different frictional coefficients on the different legs of a spider. Specifically, we will be determining whether more friction comes from a pushing or pulling motion of the leg. 
+
+As a running example to learn about more complex linear models, we will be using a dataset which compares the different frictional coefficients on the different legs of a spider. Specifically, we will be determining whether more friction comes from a pushing or pulling motion of the leg.
 
 To remind ourselves how the simple two-group linear model looks, we will subset the data to include only the L1 leg pair, and run `lm`:
 
@@ -1232,9 +1493,8 @@ fit <- lm(friction ~ type, data=spider.sub)
 summary(fit)
 (coefs <- coef(fit))
 ```
-These two estimated coefficients are the mean of the pull observations (the first estimated coefficient)
-and the difference between the means of the two groups (the second coefficient). We can show this
-with R code:
+
+These two estimated coefficients are the mean of the pull observations (the first estimated coefficient) and the difference between the means of the two groups (the second coefficient). We can show this with R code:
 
 ```{r}
 s <- split(spider.sub$friction, spider.sub$type)
@@ -1250,15 +1510,17 @@ colnames(X)
 head(X)
 tail(X)
 ```
+
 Now we'll make a plot of the $\mathbf{X}$ matrix by putting a black block for the 1's and a white block for the 0's. This plot will be more interesting for the linear models later on in this script. Along the y-axis is the sample number (the row number of the `data`) and along the x-axis is the column of the design matrix $\mathbf{X}$. If you have installed the *rafalib* library, you can make this plot with the `imagemat` function:
 
 ```{r model_matrix_image, fig.cap="Model matrix for linear model with one variable."}
 
 imagemat(X, main="Model matrix for linear model with one variable")
 ```
-The black represent a 1 and the white represents 0 in the matrix. 
 
-We can visualize the data in a strip plot as well 
+The black represent a 1 and the white represents 0 in the matrix.
+
+We can visualize the data in a strip plot as well
 
 ```{r spider_main_coef, fig.cap="Diagram of the estimated coefficients in the linear model. The green arrow indicates the Intercept term, which goes from zero to the mean of the reference group (here the 'pull' samples). The orange arrow indicates the difference between the push group and the pull group, which is negative in this example. The circles show the individual samples",echo=FALSE}
 set.seed(1) #same jitter in stripchart
@@ -1275,7 +1537,9 @@ arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
 abline(h=coefs[1]+coefs[2],col=cols[2])
 legend("topright",names(coefs),fill=cols,cex=.75,bg="white")
 ```
+
 ## linear model with two variables
+
 Now we are going to use the 4 pairs of legs to show a more complex linear model.
 
 ```{r model_matrix_image2, fig.cap="Image of the model matrix for a formula with type + leg"}
@@ -1284,11 +1548,8 @@ colnames(X)
 head(X)
 imagemat(X, main="Model matrix for linear model with two factors")
 ```
-We have a row for each data point.
-The first column is the intercept, and so it has 1's (black) for all samples. 
-The second column expresses if the data is for a pull or push: it has 1's for the push samples, and we can see that there are four groups of them (one for each pair of legs). 
-Finally, the third, fourth and fifth columns expresses what leg pair we are referencing and have 1's for the L2, L3 and L4 samples. 
-The L1 samples do not have a column, because *L1* is the reference level for `leg`. Similarly, there is no *pull* column, because *pull* is the reference level for the `type` variable.
+
+We have a row for each data point. The first column is the intercept, and so it has 1's (black) for all samples. The second column expresses if the data is for a pull or push: it has 1's for the push samples, and we can see that there are four groups of them (one for each pair of legs). Finally, the third, fourth and fifth columns expresses what leg pair we are referencing and have 1's for the L2, L3 and L4 samples. The L1 samples do not have a column, because *L1* is the reference level for `leg`. Similarly, there is no *pull* column, because *pull* is the reference level for the `type` variable.
 
 To estimate coefficients for this model, we use `lm` with the formula `~ type + leg`. We'll save the linear model to `fitTL` standing for a *fit* with *Type* and *Leg*.
 
@@ -1297,9 +1558,10 @@ fitTL <- lm(friction ~ type + leg, data=spider)
 summary(fitTL)
 (coefs <- coef(fitTL))
 ```
+
 R uses the name `coefficient` to denote the component containing the least squares **estimates**. It is important to remember that the coefficients are parameters that we do not observe, but only estimate.
 
-We can make the same plot as before, with arrows for each of the estimated coefficients in the model. 
+We can make the same plot as before, with arrows for each of the estimated coefficients in the model.
 
 ```{r spider_interactions, fig.cap="Diagram of the estimated coefficients in the linear model. As before, the teal-green arrow represents the Intercept, which fits the mean of the reference group (here, the pull samples for leg L1). The purple, pink, and yellow-green arrows represent differences between the three other leg groups and L1. The orange arrow represents the difference between the push and pull samples for all groups.",echo=FALSE}
 
@@ -1326,21 +1588,20 @@ legend("topright",  inset = c(-0.2, 0),names(coefs),fill=cols,cex=.75,bg="white"
 group_means <- tapply(spider$friction, spider$group, mean)
 points(seq_along(group_means), group_means, pch = 18, col = "red")
 ```
-The intercept is the coefficient for L1 Pull. (dark green)
-The typepush is the difference between pull and push. (orange)
-The LegL2 is the difference between L1 Pull and L2 Pull
-The LegL3 is the difference between L1 Pull and L3 Pull
-The LegL4 is the difference between L1 Pull and L4 Pull
 
-The red diamonds represent the mean of each group. 
+The intercept is the coefficient for L1 Pull. (dark green) The typepush is the difference between pull and push. (orange) The LegL2 is the difference between L1 Pull and L2 Pull The LegL3 is the difference between L1 Pull and L3 Pull The LegL4 is the difference between L1 Pull and L4 Pull
+
+The red diamonds represent the mean of each group.
 
 Notice that the intercept is no longer exactly equal to the mean of the L1 Pull values:
+
 ```{r}
 s <- split(spider$friction, spider$group)
 cat('mean:' , mean(s[["L1pull"]]))
 
 ```
-and same for the other coefficients, the linear model with 8 groups does not manage to accurately fit the LSE in a way that the coefficients match the exact mean for each group. 
+
+and same for the other coefficients, the linear model with 8 groups does not manage to accurately fit the LSE in a way that the coefficients match the exact mean for each group.
 
 Here we can demonstrate that the push vs. pull estimated coefficient, `coefs[2]`, is a *weighted average of the difference of the means for each group*. Furthermore, the weighting is determined by the sample size of each group. The math works out simply here because the sample size is equal for the push and pull subgroups within each leg pair. If the sample sizes were not equal for push and pull within each leg pair, the weighting is more complicated.
 
@@ -1353,10 +1614,9 @@ sum(w * (means[c(2,4,6,8)] - means[c(1,3,5,7)]))
 coefs[2]
 ```
 
-
 ## Contrasting coefficients
 
-So all these coefficients are comparing each leg to Leg 1. What do we do if we want to compare one group to another group that is not the reference level, for example we want to compare L2 vs L3? We can use the library `contrast` 
+So all these coefficients are comparing each leg to Leg 1. What do we do if we want to compare one group to another group that is not the reference level, for example we want to compare L2 vs L3? We can use the library `contrast`
 
 If we want to compare leg pairs L3 and L2, this is equivalent to contrasting two coefficients from the linear model because, in this contrast, the comparison to the reference level *L1* cancels out:
 
@@ -1376,10 +1636,13 @@ The first column `Contrast` gives the L3 vs. L2 estimate from the model we fit a
 L3vsL2 <- contrast::contrast(fitTL,list(leg="L3",type="push"),list(leg="L2",type="push"))
 L3vsL2
 ```
+
 we can check the matrix of the contrast like this:
+
 ```{r}
 L3vsL2$X
 ```
+
 and we see that it gives us 0,0,-1,1,0 which means that to find the contrast we are interested in we need to go take the third coefficient from the linear model times -1 and sum the 4th coefficient. Let's check if that applies:
 
 ```{r}
@@ -1391,7 +1654,7 @@ coefs<- coef(fitTL)
 
 In the previous linear model, we assumed that the push vs. pull effect was the same for all of the leg pairs (the same orange arrow). You can easily see that this does not capture the trends in the data that well. That is, the tips of the arrows did not line up perfectly with the group averages. For the L1 leg pair, the push vs. pull estimated coefficient was too large, and for the L3 leg pair, the push vs. pull coefficient was somewhat too small.
 
-_Interaction terms_ will help us overcome this problem by introducing additional coefficients to compensate for differences in the push vs. pull effect across the 4 groups. As we already have a push vs. pull term in the model, we only need to add three more terms to have the freedom to find leg-pair-specific push vs. pull differences. As we will see, interaction terms are added to the design matrix by multiplying the columns of the design matrix representing existing terms. 
+*Interaction terms* will help us overcome this problem by introducing additional coefficients to compensate for differences in the push vs. pull effect across the 4 groups. As we already have a push vs. pull term in the model, we only need to add three more terms to have the freedom to find leg-pair-specific push vs. pull differences. As we will see, interaction terms are added to the design matrix by multiplying the columns of the design matrix representing existing terms.
 
 We can rebuild our linear model with an interaction between `type` and `leg`, by including an extra term in the formula `type:leg`. The `:` symbol adds an interaction between the two variables surrounding it. An equivalent way to specify this model is `~ type*leg`, which will expand to the formula `~ type + leg + type:leg`, with main effects for `type`, `leg` and an interaction term `type:leg`.
 
@@ -1402,6 +1665,7 @@ colnames(X)
 head(X)
 imagemat(X, main="Model matrix for linear model with interactions")
 ```
+
 Columns 6-8 (`typepush:legL2`, `typepush:legL3`, and `typepush:legL4`) are the product of the 2nd column (`typepush`) and columns 3-5 (the three `leg` columns). Looking at the last column, for example, the `typepush:legL4` column is adding an extra coefficient $\beta_{\textrm{push,L4}}$ to those samples which are both push samples and leg pair L4 samples. This accounts for a possible difference when the mean of samples in the L4-push group are not at the location which would be predicted by adding the estimated intercept, the estimated push coefficient `typepush`, and the estimated L4 coefficient `legL4`.
 
 We can run the linear model using the same code as before:
@@ -1444,7 +1708,9 @@ legend("topright",  names(coefs),fill=cols,cex=.75,bg="white")
 group_means <- tapply(spider$friction, spider$group, mean)
 points(seq_along(group_means), group_means, pch = 18, col = "red")
 ```
+
 Now we want to compare push vs pull in L2:
+
 ```{r contrastPushvsPull}
 L2push.vs.pull <- contrast::contrast(fitX,
   list(leg="L2", type = "push"),
@@ -1452,17 +1718,21 @@ L2push.vs.pull <- contrast::contrast(fitX,
 )
 L2push.vs.pull
 ```
-we can look at the contrast vector that will be : 
+
+we can look at the contrast vector that will be :
+
 ```{r}
 (C<- L2push.vs.pull$X)
 ```
-wich is: 0,1,0,0,0,1,0 and means we need to add the 2nd coefficient to the 6th coefficient 
+
+wich is: 0,1,0,0,0,1,0 and means we need to add the 2nd coefficient to the 6th coefficient
+
 ```{r}
 coefs[2]+coefs[6]
 ```
 
-Now we are interested in comparing if the difference between push and pull from one leg with the difference between push and pull from another leg, let's say L3 and L4. This is a differences of differences and we cannot use the same contrast package. We will use the library `multcomp`.
-Remember we had 8 coefficients from the linear model:
+Now we are interested in comparing if the difference between push and pull from one leg with the difference between push and pull from another leg, let's say L3 and L4. This is a differences of differences and we cannot use the same contrast package. We will use the library `multcomp`. Remember we had 8 coefficients from the linear model:
+
 ```{r}
 coefs
 ```
@@ -1477,31 +1747,30 @@ summary(L3vsL2interaction)
 ```
 
 and we see that it is the same as subtracting the coefficients, but the function above gives us also a t-statistic and a p-value.
+
 ```{r}
 coefs[7]-coefs[6]
 ```
 
-Finally we can ask if the pull vs push difference is different for each pair of legs, and this can be answered using anova. 
+Finally we can ask if the pull vs push difference is different for each pair of legs, and this can be answered using anova.
+
 ```{r}
 anova(fitX)
 ```
-the `Sum Sq` column in the anova results is the variance of the aggregated coefficients and it is telling us what variables are responsible for the variance, so for example in our results the `Sum Sq` for the `type` (push vs pull) is `42.783` it's the highest of them all, which means that this is most responsible for the variance in the coefficients. Then we have a `Sum Sq`  for the leg (in our graph are the purple, pink and green arrows) with a value of of `2.921` so they also explain part of the variance. Finally we also have a `2.098` value in `Sum Sq` for the interaction type:leg (push vs pull by Leg pair) (in our graph the yellow, brown and grey arrows) which means that there is also a difference attributed to that.
-The f-value is like the t-value in a t-test. 
-The p-value works the same as in a t-test, in our case it is smaller than 0.05 so it means that the difference we are seeing in those values are more than what we would expect by chance.
+
+the `Sum Sq` column in the anova results is the variance of the aggregated coefficients and it is telling us what variables are responsible for the variance, so for example in our results the `Sum Sq` for the `type` (push vs pull) is `42.783` it's the highest of them all, which means that this is most responsible for the variance in the coefficients. Then we have a `Sum Sq` for the leg (in our graph are the purple, pink and green arrows) with a value of of `2.921` so they also explain part of the variance. Finally we also have a `2.098` value in `Sum Sq` for the interaction type:leg (push vs pull by Leg pair) (in our graph the yellow, brown and grey arrows) which means that there is also a difference attributed to that. The f-value is like the t-value in a t-test. The p-value works the same as in a t-test, in our case it is smaller than 0.05 so it means that the difference we are seeing in those values are more than what we would expect by chance.
 
 # Collinearity
+
 If an experiment is designed incorrectly we may not be able to estimate the parameters of interest. Similarly, when analyzing data we may incorrectly decide to use a model that can't be fit. If we are using linear models then we can detect these problems mathematically by looking for collinearity in the design matrix.
 
-
-Some system of equations can have more than one solution:
-$$
+Some system of equations can have more than one solution: $$
 \begin{align*}
 a+c &=1\\
 b-c &=1\\
 a+b &=2
 \end{align*}
-$$
-there are an infinite number of triplets that satisfy  $a=1-c, b=1+c$.
+$$ there are an infinite number of triplets that satisfy $a=1-c, b=1+c$.
 
 The system of equations above can be written like this:
 
@@ -1525,8 +1794,7 @@ c
 \end{pmatrix}
 $$
 
-and we can notice that the third column is a linear combination of the first two:
-$$
+and we can notice that the third column is a linear combination of the first two: $$
 \,
 \begin{pmatrix}
 1\\
@@ -1547,10 +1815,10 @@ $$
 \end{pmatrix}
 $$
 
-
 The third column does not add a constraint and what we really have are three equations and two unknowns: $a+c$ and $b-c$. Once we have values for those two quantities, there are an infinity number of triplets that can be used.
 
 ## Collinearity and Least Squares
+
 Consider a design matrix $\mathbf{X}$ with two collinear columns. Here we create an extreme example in which one column is the opposite of another:
 
 $$
@@ -1567,18 +1835,13 @@ $$
 \mathbf{Y}- \left\{ \mathbf{1}\beta_0 + \mathbf{X}_1\beta_1 + \mathbf{X}_2\beta_2 + \mathbf{X}_3\beta_3\right\}\\ 
 = \mathbf{Y}- \left\{ \mathbf{1}\beta_0 + \mathbf{X}_1\beta_1 + \mathbf{X}_2\beta_2 - \mathbf{X}_2\beta_3\right\}\\
 = \mathbf{Y}- \left\{\mathbf{1}\beta_0 + \mathbf{X}_1 \beta_1 + \mathbf{X}_2(\beta_2  - \beta_3)\right\}
-$$
-so if we have a solution, adding one to both beta2 and beta3 will also be a solution, so there is not a single value that minimizes the error.
-
-
+$$ so if we have a solution, adding one to both beta2 and beta3 will also be a solution, so there is not a single value that minimizes the error.
 
 and if $\hat{\beta}_1$, $\hat{\beta}_2$, $\hat{\beta}_3$ is a least squares solution, then, for example, $\hat{\beta}_1$, $\hat{\beta}_2+1$, $\hat{\beta}_3+1$ is also a solution.
 
 #### Confounding as an example
 
-Now we will demonstrate how collinearity helps us determine problems with our design using one of the most common errors made in current experimental design: confounding. To illustrate, let's use an imagined experiment in which we are interested in the effect of four treatments A, B, C and D. We assign two mice to each treatment. After starting the experiment by giving A and B to female mice, we realize there might be a sex effect. 
-We decide to give C and D to males with hopes of estimating this effect. But can we estimate the sex effect? The described design implies the following design matrix:
-
+Now we will demonstrate how collinearity helps us determine problems with our design using one of the most common errors made in current experimental design: confounding. To illustrate, let's use an imagined experiment in which we are interested in the effect of four treatments A, B, C and D. We assign two mice to each treatment. After starting the experiment by giving A and B to female mice, we realize there might be a sex effect. We decide to give C and D to males with hopes of estimating this effect. But can we estimate the sex effect? The described design implies the following design matrix:
 
 $$
 \,
@@ -1642,7 +1905,7 @@ It can be difficult to perceive that just looking at the matrix. In r we have a 
 
 ### Rank
 
-The _rank_ of a matrix columns is the number of columns that are independent of all the others. If the rank is smaller than the number of columns, then the LSE are not unique. In R, we can obtain the rank of matrix with the function `qr`, which we will describe in more detail in a following section.
+The *rank* of a matrix columns is the number of columns that are independent of all the others. If the rank is smaller than the number of columns, then the LSE are not unique. In R, we can obtain the rank of matrix with the function `qr`, which we will describe in more detail in a following section.
 
 ```{r}
 Sex <- c(0,0,0,0,1,1,1,1)
@@ -1655,6 +1918,7 @@ cat("ncol=",ncol(X),"rank=", qr(X)$rank,"\n")
 ```
 
 This particular experiment could have been designed better. Using the same number of male and female mice, we can easily design an experiment that allows us to compute the sex effect as well as all the treatment effects. Specifically, when we balance sex and treatments, the confounding is removed as demonstrated by the fact that the rank is now the same as the number of columns:
+
 ```{r}
 Sex <- c(0,1,0,1,0,1,0,1)
 A <-   c(1,1,0,0,0,0,0,0)
@@ -1666,4 +1930,3 @@ cat("ncol=",ncol(X),"rank=", qr(X)$rank,"\n")
 ```
 
 Here we will not be able to estimate the effect of sex.
-
