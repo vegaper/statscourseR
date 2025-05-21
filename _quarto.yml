@@ -74,6 +74,11 @@ format:
     margin-right: 10px
     anchor-sections: true
     theme: flatly
+  pdf:
+    keep-tex: true
+    include-in-header: custom-style.sty
+    pdf-engine: xelatex
+      
 prefer-html: true
 encoding: "UTF-8"
 execute: 

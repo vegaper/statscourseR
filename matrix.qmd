@@ -22,6 +22,7 @@ library(RColorBrewer)
 library(contrast) 
 library(multcomp)
 library(matlib)
+library(lsa)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -30,24 +31,372 @@ This document is a summary of different stats courses:
 
 -   Introduction to Linear Models and Matrix Algebra (HarvardX PH525.2x via Edx) There is a free e-book which contains the full course: dataanalysisforthelifesciences.pdf and all the code can be found in the git of the author.
 
+# Introduction
+
+*Scalars*: are numbers, for example 3, or -9.898
+
+*Vectors*: are series of numbers. For example (3,5,6.7,-1)
+
+*Matrices*: are a series of vectors. We generally use `X` to represent a matrix, and a matrix will have `N` rows and `p` columns A square matrix has the same number of rows as columns. For example a matrix of 3 rows and 3 columns (3x3):
+
+$$
+\begin{pmatrix}
+1 & 1 & 1.6 \\
+3 & -2 & 0 \\
+2 & 1 & -1
+\end{pmatrix}
+$$ 
+
+# Magnitude of a vector
+
+The magnitude of a vector represents its length in space. The magnitude (also called the Euclidean norm) is calculated using the square root of the sum of the squares of its components.
+
+For a vector: $\vec{v} = [v_1,v_2,\cdots,v_n]$ $$
+\|\vec{v}\| = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2} = \sqrt{\sum_{i=1}^{n} v_i^2}
+$$ Example: $$
+\vec{v} = [3, 4]
+$$
+
+Then:
+
+$$
+\|\vec{v}\| = \sqrt{3^2 + 4^2} = \sqrt{9 + 16} = \sqrt{25} = 5
+$$
+
+```{r, fig.align='center', echo=FALSE}
+# Define the vector
+v <- c(3, 4)
+
+# Set up the plot area
+plot(0, 0, xlim = c(0, 5), ylim = c(0, 5), type = "n",
+     xlab = "X-axis", ylab = "Y-axis", main = "Vector [3, 4]")
+grid()
+
+# Draw the vector as an arrow from the origin
+arrows(0, 0, v[1], v[2], col = "red", lwd = 2)
+
+# Add a point at the end of the vector
+points(v[1], v[2], pch = 19, col = "blue")
+```
+
+```{r}
+# Define the vector
+v <- c(3, 4)
+
+# Calculate the magnitude (Euclidean norm)
+(magnitude <- sqrt(sum(v^2)))
+
+
+```
+
+# Dot product of vectors
+
+The dot product is one way of multiplying two or more vectors. The resultant of the dot product of vectors is a scalar quantity. Thus, the dot product is also known as a scalar product.
+
+Geometrically, the dot product of two vectors is the product of their Euclidean magnitudes and the cosine of the angle between them.
+
+$$
+\vec{a} \cdot \vec{b} = \|\vec{a}\| \|\vec{b}\| \cos(\theta)
+$$
+
+```{r, fig.align='center', echo=FALSE}
+# Define the vectors
+v1 <- c(3, 4)
+v2 <- c(4, 2)
+
+# Calculate the angle between them
+dot_product <- sum(v1 * v2)
+magnitude_v1 <- sqrt(sum(v1^2))
+magnitude_v2 <- sqrt(sum(v2^2))
+cos_theta <- dot_product / (magnitude_v1 * magnitude_v2)
+theta <- acos(cos_theta) * 180 / pi  # Convert to degrees
+
+# Set up the plot
+plot(0, 0, xlim = c(0, 5), ylim = c(0, 5), type = "n",
+     xlab = "X-axis", ylab = "Y-axis", main = "Vectors and the Angle Between Them")
+grid()
+
+# Draw the vectors
+arrows(0, 0, v1[1], v1[2], col = "red", lwd = 2)
+arrows(0, 0, v2[1], v2[2], col = "blue", lwd = 2)
+
+# Add labels
+text(v1[1], v1[2], "v1", pos = 3, col = "red")
+text(v2[1], v2[2], "v2", pos = 3, col = "blue")
+
+
+# Annotate the angle
+text(1.5, 1.5, paste0("theta = ", round(theta, 2), "°"), col = "darkgreen")
+
+```
+
+Algebraically, it is the sum of the products of the corresponding entries of two sequences of numbers.
+
+$$
+\vec{a} \cdot \vec{b} = \sum_{i=1}^{n} a_i b_i = a_1b_1 + a_2b_2 + \dots + a_n b_n
+$$
+
+Example:
+
+Let:
+
+$$
+\vec{a} = [1, 2, 3], \quad \vec{b} = [4, 5, 6]
+$$
+
+Then:
+
+$$
+\vec{a} \cdot \vec{b} = 1 \cdot 4 + 2 \cdot 5 + 3 \cdot 6 = 4 + 10 + 18 = 32
+$$ in `r`
+
+```{r}
+# Define the vectors
+a <- c(1, 2, 3)
+b <- c(4, 5, 6)
+
+# Compute the dot product
+dot_product <- sum(a * b)
+dot_product
+```
+
+# Cosine Similarity
+
+Cosine similarity is a measure of similarity between two non-zero vectors of an inner product space. It is defined as the cosine of the angle between the two vectors. This measure is particularly used in text analysis to measure the similarity between documents.
+
+```{r}
+# Define vectors
+v1 <- c(3, 4)
+v2 <- c(4, 2)
+
+# Calculate angle
+dot <- sum(v1 * v2)
+mag1 <- sqrt(sum(v1^2))
+mag2 <- sqrt(sum(v2^2))
+angle <- acos(dot / (mag1 * mag2)) * 180 / pi
+
+# Plot
+plot(0, 0, xlim = c(0, 5), ylim = c(0, 5), type = "n",
+     xlab = "X-axis", ylab = "Y-axis", main = "Vectors and Angle")
+grid()
+arrows(0, 0, v1[1], v1[2], col = "red", lwd = 2)
+arrows(0, 0, v2[1], v2[2], col = "blue", lwd = 2)
+text(v1[1], v1[2], "v1", pos = 3, col = "red")
+text(v2[1], v2[2], "v2", pos = 3, col = "blue")
+text(1.5, 1.5, paste0("θ = ", round(angle, 2), "°"), col = "darkgreen")
+```
+
+The cosine similarity between two vectors **a** and **b** is calculated as:
+
+$$
+\text{cosine similarity} = \cos(\theta) = \frac{\vec{a} \cdot \vec{b}}{\|\vec{a}\| \|\vec{b}\|}
+$$
+Where: 
+- $\vec{a} \cdot \vec{b}$ is the dot product of vectors **a** and **b** 
+- $\|\vec{a}\|$ and $\|\vec{b}\|$ are the magnitudes (Euclidean norms) of vectors **a** and **b** 
+- $\theta$ is the angle between the vectors
+
+$$
+\vec{a} \cdot \vec{b} = \sum_{i=1}^{n} a_i b_i = a_1b_1 + a_2b_2 + \dots + a_nb_n
+$$ 
+$$
+\|\vec{v}\| = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2} = \sqrt{\sum_{i=1}^{n} v_i^2}
+$$
+
+```{r, fig.align='center', echo=FALSE}
+v1 <- c(3, 4) 
+v2 <- c(4, 5)
+plot(0, 0, xlim = c(0, 6), ylim = c(0, 6), type = "n", xlab = "X-axis", ylab = "Y-axis", main = "Similar Vectors") 
+grid() 
+arrows(0, 0, v1[1], v1[2], col = "red", lwd = 2)
+arrows(0, 0, v2[1], v2[2], col = "blue", lwd = 2) 
+text(v1[1], v1[2], "v1", pos = 3, col = "red")
+text(v2[1], v2[2], "v2", pos = 3, col = "blue")
+```
+
+These vectors point in nearly the same direction, forming a small angle between them. This results in a cosine similarity close to 1, indicating high similarity.
+
+```{r, fig.align='center', echo=FALSE}
+v1 <- c(4, 0)
+v2 <- c(0, 4)
+
+plot(0, 0, xlim = c(0, 5), ylim = c(0, 5), type = "n",
+     xlab = "X-axis", ylab = "Y-axis", main = "Unrelated Vectors (Orthogonal)")
+grid()
+arrows(0, 0, v1[1], v1[2], col = "red", lwd = 2)
+arrows(0, 0, v2[1], v2[2], col = "blue", lwd = 2)
+text(v1[1], v1[2], "v1", pos = 3, col = "red")
+text(v2[1], v2[2], "v2", pos = 3, col = "blue")
+```
+
+These vectors are perpendicular to each other, forming a 90° angle. Their cosine similarity is 0, meaning they are completely unrelated in direction.
+
+```{r, fig.align='center', echo=FALSE}
+v1 <- c(3, 4)
+v2 <- c(-3, -4)
+
+plot(0, 0, xlim = c(-5, 5), ylim = c(-5, 5), type = "n",
+     xlab = "X-axis", ylab = "Y-axis", main = "Opposite Vectors")
+grid()
+arrows(0, 0, v1[1], v1[2], col = "red", lwd = 2)
+arrows(0, 0, v2[1], v2[2], col = "blue", lwd = 2)
+text(v1[1], v1[2], "v1", pos = 3, col = "red")
+text(v2[1], v2[2], "v2", pos = 3, col = "blue")
+```
+
+These vectors point in exactly opposite directions, forming a 180° angle. Their cosine similarity is -1, indicating they are completely dissimilar in direction.
+
+We can calculate this in `r` manually:
+
+```{r}
+# Define vectors
+a <- c(1, 2, 3)
+b <- c(4, 5, 6)
+
+# Dot product
+dot_product <- sum(a * b)
+
+# Magnitudes
+mag_a <- sqrt(sum(a^2))
+mag_b <- sqrt(sum(b^2))
+
+# Cosine similarity
+cos_sim <- dot_product / (mag_a * mag_b)
+cos_sim
+```
+
+or we can use the `cosine` function from the `lsa` package:
+
+```{r}
+x <- c(0.12, 0.44, 0.5, 0.3, 0.7, 0.04, 0.9, 0.8)
+y <- c(0.24, 0.5, 0.7, 0.21, 0.69, 0.2, 0.7, 0.5)
+
+lsa::cosine(x, y)
+```
+
+::: exercise-box
+Creating a basic search engine
+
+We illustrate a simple example of machine learning by using cosine similarity to determine which product description is most correlated with a given search sentence. This basic technique forms the foundation for many text-based similarity and recommendation systems.
+
+We begin by defining 10 product descriptions:
+```{r}
+products <- c(
+  "Sleek red smartphone with powerful battery and excellent display",
+  "Lightweight laptop with fast performance and long battery life",
+  "Noise-cancelling wireless headphones with dynamic sound",
+  "Durable smartwatch with fitness tracking features and water resistance",
+  "Waterproof fitness tracker with heart rate monitoring and step counter",
+  "High resolution tablet with slim design and vibrant colors",
+  "Compact digital camera with optical image stabilization and zoom",
+  "Portable Bluetooth speaker with deep bass and clear audio",
+  "Smart home hub connecting all smart devices seamlessly",
+  "Lightweight e-reader with adjustable backlight and user friendly interface"
+)
+products
+
+```
+
+1. Tokenization and Vectorization
+
+We define a helper function to tokenize the text (by converting to lowercase, removing punctuation, and splitting into words). 
+We then build a vocabulary from both the product descriptions and the search sentence, and create bag-of-words vectors that count occurrences of each vocabulary word.
+
+```{r}
+# Function to tokenize a text string
+tokenize <- function(text) {
+  # Convert to lower case and remove punctuation (keeping only a-z and space)
+  words <- gsub("[^a-z ]", "", tolower(text))
+  unlist(strsplit(words, "\\s+"))
+}
+
+# Tokenize the product descriptions
+tokenized_products <- lapply(products, tokenize)
+
+#print one example:
+tokenized_products[1]
+
+# Define a search sentence
+search_sentence <- "Looking for a smartphone with a powerful battery"
+tokenized_search <- tokenize(search_sentence)
+
+# Create a vocabulary from all tokens in products and search sentence
+vocab <- unique(c(unlist(tokenized_products), tokenized_search))
+
+head(vocab,10)
+
+# Function to vectorize a list of tokens given the vocabulary (count words)
+vectorize <- function(tokens, vocab) {
+  sapply(vocab, function(word) sum(tokens == word))
+}
+
+# Create vectors for each product description and the search sentence
+product_vectors <- lapply(tokenized_products, vectorize, vocab = vocab)
+
+#see the results of the first product description:
+product_vectors[1]
+
+search_vector <- vectorize(tokenized_search, vocab)
+
+```
+2. Cosine Similarity Calculation
+We define a function to compute the cosine similarity between two numeric vectors. Recall that the cosine similarity is defined as
+$$
+\text{cosine similarity} = \cos(\theta) = \frac{\vec{a} \cdot \vec{b}}{\|\vec{a}\| \|\vec{b}\|}
+$$
+```{r}
+cosine_similarity <- function(vec1, vec2) {
+  dot_product <- sum(vec1 * vec2)
+  norm_vec1 <- sqrt(sum(vec1^2))
+  norm_vec2 <- sqrt(sum(vec2^2))
+  if (norm_vec1 == 0 || norm_vec2 == 0) {
+    return(0)
+  }
+  dot_product / (norm_vec1 * norm_vec2)
+}
+```
+
+3. Computing Similarities and Selecting the Best Match
+
+Now, we loop through each product vector, compute its cosine similarity with the search sentence vector, and then identify the product description with the highest similarity score.
+
+```{r}
+# Compute cosine similarity for each product
+similarities <- sapply(product_vectors, cosine_similarity, vec2 = search_vector)
+
+# Combine the results into a data frame for clearer viewing
+results <- data.frame(
+  Product = 1:length(products),
+  Description = products,
+  Similarity = similarities
+)
+
+print(results)
+
+# Identify which product has the highest similarity
+best_match_index <- which.max(similarities)
+best_match <- products[best_match_index]
+
+cat("\nThe best matching product is:\n")
+cat(best_match)
+
+```
+We have created a simple example illustrating how to use cosine similarity in a machine learning context. By tokenizing product descriptions and the search query, building bag-of-words vectors, and computing cosine similarity, we can determine that the product description most related to the query is selected based on how many words they have in common weighted by their occurrences.
+
+This basic approach can be a stepping stone toward more sophisticated text similarity techniques and machine learning applications.
+
+:::
+
 # Matrices operations
-
-Scalars: are numbers
-
-Vectors: are series of numbers.
-
-Matrices: are a series of vectors. We generally use `X` to represent a matrix, and a matrix will have `N` rows and `p` columns A square matrix has the same number of rows as columns.
 
 to create a matrix in r you can create vectors and bind them together using `cbind` or `rbind` or create a matrix directly for example `matrix(1:60,20,3)`
 
 Linear algebra was developed to solve a system of equations. It gives a general solution to any system of equations. Let's see this example:
 
 $$
-\begin{align*}
-a + b + c &= 6 \\
-3a - 2b + c &= 2 \\
-2a + b - c &= 1
-\end{align*}
+a + b + c = 6 \\
+3a - 2b + c = 2 \\
+2a + b - c = 1
 $$
 
 $$
@@ -357,13 +706,11 @@ X
 t(X)
 ```
 
-
 # Inversion
 
-The inverse of a square matrix $X$ is denoted as $X^{-1}$ it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$ 
+The inverse of a square matrix $X$ is denoted as $X^{-1}$ it has the property that if you multiply a matrix by its inverse, it gives you the identity matrix. $X^{-1}X=I$
 
-Note that not all matrices have an inverse. 
-
+Note that not all matrices have an inverse.
 
 In linear algebra, the **determinant** and **adjoint** of a matrix are fundamental concepts used to compute the **inverse** of a matrix. Below, we explain these concepts and demonstrates how to use them to find the inverse of a matrix.
 
@@ -384,8 +731,8 @@ The determinant is:
 
 $$
 \text{det}(A) = ad - bc
-$$
-In r we use `det` formula to calculate it. 
+$$ In r we use `det` formula to calculate it.
+
 ```{r}
 # Define the matrix
 A <- matrix(c(1, 0, 1, 2, 4, 0, 3, 5, 6), nrow = 3, byrow = TRUE)
@@ -424,9 +771,7 @@ $$
 C_{ij} = (-1)^{i+j} \cdot M_{ij}
 $$
 
-Where:
-- $M_{ij}$ is the **minor** of the element $a_{ij}$, i.e., the determinant of the submatrix formed by removing the $i$-th row and $j$-th column from the original matrix.
-- $(-1)^{i+j}$ gives the correct sign based on the position.
+Where: - $M_{ij}$ is the **minor** of the element $a_{ij}$, i.e., the determinant of the submatrix formed by removing the $i$-th row and $j$-th column from the original matrix. - $(-1)^{i+j}$ gives the correct sign based on the position.
 
 The **cofactor matrix** is the matrix of all $C_{ij}$ values.
 
@@ -439,7 +784,6 @@ $$
 $$
 
 This method works for any square matrix, not just 2×2.
-
 
 ## Calculating Inverse of a Matrix manually
 
@@ -467,8 +811,7 @@ A_inv <- (1 / det_A) * adj_A
 A_inv
 ```
 
-
-In `r` there is no formula to calculate the adjoint of a matrix directly, so if you need to calculate the adjoint of a matrix of more than 2x2, you can use the package `matlib` 
+In `r` there is no formula to calculate the adjoint of a matrix directly, so if you need to calculate the adjoint of a matrix of more than 2x2, you can use the package `matlib`
 
 ```{r}
 
@@ -482,14 +825,15 @@ adj_A <- matlib::adjoint(A)
 adj_A
 
 ```
+
 ## Calculating Inverse of a Matrix using software
 
-We rarely need to get the adjoint outside of the scope of calculating the inverse of a matrix, and `r` gives us a formula for directly calculating the inverse of a matrix, the determinant and the adjoint are calculated internally 
+We rarely need to get the adjoint outside of the scope of calculating the inverse of a matrix, and `r` gives us a formula for directly calculating the inverse of a matrix, the determinant and the adjoint are calculated internally
 
-:::{.exercise-box}
+::: exercise-box
 Example: Adjoint and Inverse of a 3×3 Matrix in R
 
-Let’s compute the inverse of:
+Let's compute the inverse of:
 
 $$
 A = \begin{bmatrix}
@@ -509,17 +853,18 @@ A_inv <- solve(A)
 # Display the result
 A_inv
 ```
-::: 
+:::
 
 In `r` we use the function `solve` to get the inverse, and we use it to solve equations: it gives us the values for a, b and c to resolve the system of equations:
 
-$$
+
 \begin{align*}
 a + b + c &= 6 \\
 3a - 2b + c &= 2 \\
 2a + b - c &= 1
 \end{align*}
-\\
+
+$$
 \begin{pmatrix}
 1 & 1 & 1 \\
 3 & -2 & 1 \\
@@ -544,18 +889,18 @@ y <- matrix(c(6,2,1),3,1)
 solve(X)%*%y
 ```
 
-:::{.exercise-box}
+::: exercise-box
 Example
 
 A small factory produces two products: **Chairs** and **Tables**. Each product requires a certain amount of **wood** and **labor hours**:
 
-- A **Chair** requires 2 units of wood and 3 hours of labor.
-- A **Table** requires 5 units of wood and 2 hours of labor.
+-   A **Chair** requires 2 units of wood and 3 hours of labor.
+-   A **Table** requires 5 units of wood and 2 hours of labor.
 
 The factory has **available resources** of:
 
-- 40 units of wood
-- 30 hours of labor
+-   40 units of wood
+-   30 hours of labor
 
 We want to determine how many **Chairs (x)** and **Tables (y)** the factory can produce using all available resources.
 
@@ -623,7 +968,8 @@ print(barY)
 
 First, remember that the residuals are given by $e=Y-\hat{Y}$ where $e$ is the nX1 vector of residuals, Y is the nx1 vector of observed values and $\hat{Y}$ is the nx1 vector of predicted values from our model. The formula for the sample variance $s^2$ of the residuals is $$
 s^2 = \frac{\mathbf{e}^T \mathbf{e}}{n - p}
-$$ This gives you the average squared deviation of the residuals from their mean, which is an estimate of the variance of the errors in your model. in r:
+$$ 
+This gives you the average squared deviation of the residuals from their mean, which is an estimate of the variance of the errors in your model. in r:
 
 ```{r}
 e<- y -barY
@@ -672,14 +1018,18 @@ $$
 
 $$
 Y_i = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij} + \varepsilon_i, \quad i = 1, \ldots, N
-$$ but using matrices we can simplify the formula to: $$
-Y=X\beta+\epsilon   
-$$
-
-where: Y is the vector of data X is a matrix that has columns representing the different covariants or predictors $\beta$ represent the unknown parameters $\epsilon$ represent the vector of error terms
+$$ 
+but using matrices we can simplify the formula to: 
 
 $$
-\mathbf{Y} = \begin{bmatrix}
+Y=X \beta+\epsilon   
+$$
+
+where: $\mathbf{Y}$ is the vector of data, $\mathbf{X}$ is a matrix with columns representing the different covariates or predictors, $\boldsymbol{\beta}$ represents the unknown parameters, and $\boldsymbol{\varepsilon}$ represents the vector of error terms.
+
+
+$$
+Y = \begin{bmatrix}
 Y_1 \\
 Y_2 \\
 \vdots \\
@@ -703,7 +1053,9 @@ Y_N
 \vdots \\
 \varepsilon_N
 \end{bmatrix}
-$$ $$
+$$
+
+$$
 \begin{pmatrix}
 Y_1 \\
 Y_2 \\
@@ -730,15 +1082,20 @@ Y_N
 \vdots \\
 \varepsilon_N
 \end{pmatrix}
-$$ \## Residual sum of squares
+$$
+
+## Residual sum of squares
 
 Writing it this way we can calculate the values to minimize the *residual sum of squares (RSS)*. The RSS equation now looks like this:
 
 $$
 (Y - X\beta)^T(Y - X\beta)
-$$ \## Least Squares Estimator (LSE) LSE is a method used to estimate the parameters of a linear model by minimizing the sum of the squared differences (errors) between observed and predicted values.
+$$ 
 
-To find the $\hat{\beta}$ that minimizes this we solve by taking the derivative: $$
+## Least Squares Estimator (LSE) LSE is a method used to estimate the parameters of a linear model by minimizing the sum of the squared differences (errors) between observed and predicted values.
+
+To find the $\hat{\beta}$ that minimizes this we solve by taking the derivative: 
+$$
 2X^T(Y-X\hat{\beta})=0\\
 X^TX\hat{\beta}=X^TY\\
 \hat{\beta}= (X^TX^{-1}X^TY)
@@ -1137,7 +1494,7 @@ SE<- sqrt(varianceBeta)
 SE
 ```
 
-this gives us two numbers, the estandard error of the intercept and the estandard error for the slope. (Note that the standard error estimate is also printed int eh second column of `summary(fit)`)
+this gives us two numbers, the standard error of the intercept and the standard error for the slope. (Note that the standard error estimate is also printed int eh second column of `summary(fit)`)
 
 ```{r}
 summary(fit)
@@ -1145,28 +1502,59 @@ summary(fit)
 
 # Linear models as matrix multiplication.
 
-Suppose we have a linear model with 4 variables $$ 
-Y_i = \beta\_0 + \beta*1 X*{i1} + \beta*2 X*{i2} + \beta*3 X*{i3} + \beta*4 X*{i4} + \epsilon\_i
-$$ that can be writen as: $$ 
+Suppose we have a linear model with 4 variables 
+$$ 
+Y_i = \beta_0 + \beta_1 X_{i1} + \beta_2 X_{i2} + \beta_3 X_{i3} + \beta_4 X_{i4} + \epsilon_i
+$$ 
+that can be written as: 
+$$ 
 \mathbf{Y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon} 
-$$ where $$ 
-\mathbf{Y} =\begin{pmatrix} Y_1 \ Y_2 \ \vdots \ Y_N \end{pmatrix}
+$$ 
+
+where 
+
+$$ 
+\mathbf{Y} =
+\begin{pmatrix} 
+Y_1 \\ 
+Y_2 \\ 
+\vdots \\
+\ Y_N 
+\end{pmatrix}
 $$
 
 $$ 
 \mathbf{X} =
-\begin{pmatrix} 1 & X_{11} & X_{12} & X_{13} & X_{14} \ 1 & X_{21} & X_{22} & X_{23} & X_{24} \ \vdots & \vdots & \vdots & \vdots & \vdots \ 1 & X_{N1} & X_{N2} & X_{N3} & X_{N4} \end{pmatrix}
+\begin{pmatrix}
+1 & X_{11} & X_{12} & X_{13} & X_{14} \\
+1 & X_{21} & X_{22} & X_{23} & X_{24} \\
+\vdots & \vdots & \vdots & \vdots & \vdots \\
+1 & X_{N1} & X_{N2} & X_{N3} & X_{N4}
+\end{pmatrix}
 $$
 
 $$ 
-\boldsymbol{\beta} =\begin{pmatrix} \beta_0 \ \beta_1 \ \beta_2 \ \beta_3 \ \beta_4 \end{pmatrix}
-$$ and $$ 
+\boldsymbol{\beta} =
+\begin{pmatrix} 
+\beta_0 \\ 
+\beta_1 \\ 
+\beta_2 \\ 
+\beta_3 \\ 
+\beta_4 
+\end{pmatrix}
+$$ 
+and 
+$$ 
 \boldsymbol{\epsilon} =
-\begin{pmatrix} \epsilon_1 \ \epsilon_2 \ \vdots \ \epsilon_N \end{pmatrix}
+\begin{pmatrix}
+\epsilon_1 \\
+\epsilon_2 \\
+\vdots \\
+\epsilon_N
+\end{pmatrix}
 $$
 
 $$
-\begin{equation}
 \begin{bmatrix}
 Y_1 \\
 Y_2 \\
@@ -1200,12 +1588,14 @@ Y_6
 \epsilon_5 \\
 \epsilon_6
 \end{bmatrix}
-\end{equation}
 $$
 
-the sum of least squares will be: $$ 
-\sum_{i=1}^{N} (Y_i - \beta_0 - \beta*1 X*{i1} - \beta*2 X*{i2} - \beta*3 X*{i3} - \beta*4 X*{i4})^2
-$$ in matrix notation that would be $$
+the sum of least squares will be: 
+
+$$ 
+\sum_{i=1}^{N} \left(Y_i - \beta_0 - \beta_1 X_{i1} - \beta_2 X_{i2} - \beta_3 X_{i3} - \beta_4 X_{i4}\right)^2
+$$ 
+in matrix notation that would be $$
 (Y-\beta X)^T(Y-\beta X) 
 $$
 
@@ -1352,7 +1742,8 @@ The fifth column gives you starts or a dot that symbolizes whether that p-value 
 
 if we want to get only the coefficients we can do it by using `coef(fit)`
 
-We know that the maths behind the linear model are $$
+We know that the maths behind the linear model are 
+$$
 \hat{\beta}= (X^t X)^{-1} X^t y
 $$
 
@@ -1428,13 +1819,26 @@ $$
 var(diff) = \left(\frac{1}{n_x}+\frac{1}{n_y}\right)\frac {\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2}}{(n_x+n_y-2)}
 $$
 
-this formula calculates the variance of the difference between two sample means where - $n_x$ and $n_y$ are the sample sizes of the two groups. - $x_i$ and $y_i$ are individual data points within each group - $\mu_x$ and $\mu_y$ are the means of the two groups. - $(\frac{1}{n_x}+\frac{1}{n_y})$ adjusts for the sample sizes. - $\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2$ this sums up the squared deviations from the mean for each group. - $\frac {\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2}}{(n_x+n_y-2)}$ this calculates the pooled variance, considering both groups together. - `2` is the degrees of freedom for the pooled variance calculation.
+this formula calculates the variance of the difference between two sample means where - $n_x$ and $n_y$ are the sample sizes of the two groups. 
+ - $x_i$ and $y_i$ are individual data points within each group
+ 
+ - $\mu_x$ and $\mu_y$ are the means of the two groups.
+ 
+ - $(\frac{1}{n_x}+\frac{1}{n_y})$ adjusts for the sample sizes.
+ 
+ - $\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)}^2$ this sums up the squared deviations from the mean for each group.
+ 
+ - $\frac {\sum{(x_i -\mu_x)^2}+ \sum{(y_i- \mu_y)^2}}{(n_x+n_y-2)}$ this calculates the pooled variance, considering both groups together. 
+ 
+ - `2` is the degrees of freedom for the pooled variance calculation.
 
 The variance of the difference tells you how spread out the difference between the group means are likely to be.
 
-The standard Error of the estimated coefficient $\hat{\beta}$ is : $$
+The standard Error of the estimated coefficient $\hat{\beta}$ is : 
+$$
 se(\hat{\beta})=\sqrt{s^2(X^TX)^{-1}_{ii}}
-$$ where $(X^TX)^{-1}_{ii}$ is the i-th diagonal element of this inverse matrix, which corresponds to the variance of the i-th coefficient estimate.
+$$ 
+where $(X^TX)^{-1}_{ii}$ is the i-th diagonal element of this inverse matrix, which corresponds to the variance of the i-th coefficient estimate.
 
 ## Crossed designs
 
@@ -1523,7 +1927,9 @@ The black represent a 1 and the white represents 0 in the matrix.
 We can visualize the data in a strip plot as well
 
 ```{r spider_main_coef, fig.cap="Diagram of the estimated coefficients in the linear model. The green arrow indicates the Intercept term, which goes from zero to the mean of the reference group (here the 'pull' samples). The orange arrow indicates the difference between the push group and the pull group, which is negative in this example. The circles show the individual samples",echo=FALSE}
+
 set.seed(1) #same jitter in stripchart
+
 stripchart(split(spider.sub$friction, spider.sub$type), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,3), ylim=c(0,2))
 a <- -0.25
@@ -1764,13 +2170,15 @@ the `Sum Sq` column in the anova results is the variance of the aggregated coeff
 
 If an experiment is designed incorrectly we may not be able to estimate the parameters of interest. Similarly, when analyzing data we may incorrectly decide to use a model that can't be fit. If we are using linear models then we can detect these problems mathematically by looking for collinearity in the design matrix.
 
-Some system of equations can have more than one solution: $$
+Some system of equations can have more than one solution: 
+
 \begin{align*}
 a+c &=1\\
 b-c &=1\\
 a+b &=2
 \end{align*}
-$$ there are an infinite number of triplets that satisfy $a=1-c, b=1+c$.
+
+there are an infinite number of triplets that satisfy $a=1-c, b=1+c$.
 
 The system of equations above can be written like this:
 
