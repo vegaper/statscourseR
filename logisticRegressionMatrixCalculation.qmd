@@ -1,0 +1,457 @@
+---
+title: "Understanding Matrices and Logistic Regression in Neural Networks"
+format: html
+---
+```{r}
+#| echo: false
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+theme_set(theme_minimal())
+options(scipen= 999)
+```
+
+In this document, we explore the foundations of matrices in neural networks, logistic regression, forward propagation, and updating weights using stochastic gradient descent. We will implement a basic example in `R` to reinforce learning.
+
+# Understanding Matrices in Neural Networks
+
+Matrices enable efficient mathematical operations in neural networks. For a simple model:
+
+$$
+Z = XW
+$$
+
+where:
+- $X$ is the **input matrix** (containing feature values).
+- $W$ is the **weight matrix** (containing learned coefficients).
+- $Z$ is the **output before activation**.
+
+### **Traditional Logistic Regression Notation**
+In standard **logistic regression**, the equation is expressed using individual predictor variables:
+
+$$
+Z = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_n x_n
+$$
+
+where:
+- $\beta_0$ is the **intercept (bias term)**.
+- $\beta_1, \beta_2, \dots, \beta_n$ are the **weights (coefficients) assigned to each feature**.
+- $x_1, x_2, \dots, x_n$ are the **input feature values** (e.g., time spent, pages visited).
+- $Z$ is the **linear combination before applying the activation function**.
+
+Once $Z$ is computed, the logistic function (**sigmoid activation**) is applied:
+
+$$
+\sigma(Z) = \frac{1}{1 + e^{-Z}}
+$$
+
+Both forms describe the same underlying concept:
+- The **matrix form** ($Z = XW$) is compact and efficient, especially when handling multiple samples.
+- The **traditional logistic regression form** explicitly shows the relationship between individual features and their respective weights.
+
+Both representations lead to the same outcome: a **probability prediction** via the sigmoid function.
+
+# Logistic Regression Model
+Logistic regression predicts probabilities using the **sigmoid function**:
+The sigmoid function is a mathematical function that outputs values between 0 and 1, making it ideal for logistic regression, where we interpret the result as a probability.
+$$\sigma(Z) = \frac{1}{1 + e^{-Z}}$$
+where:
+- $z$ is the input value (can be any real number)
+- $e$ is Euler's number 
+
+If $z$ is large and positive, $\sigma(z)$ approaches 1 (strong positive probability)
+If $z$ is large and negative, $\sigma(z)$ approaches 0 (strong negative probability)
+when $z=0$, $\sigma(z)=0.5)$, meaning neutral probability
+```{r, echo=FALSE}
+# Define the sigmoid function
+sigmoid <- function(z) {
+  return(1 / (1 + exp(-z)))
+}
+
+# Generate values for plotting
+z_values <- seq(-10, 10, by=0.1)  # Range from -10 to 10
+sigmoid_values <- sigmoid(z_values)
+
+# Create a dataframe for plotting
+df <- data.frame(z = z_values, sigmoid = sigmoid_values)
+
+# Plot the sigmoid function
+ggplot(df, aes(x = z, y = sigmoid)) +
+  geom_line(color = "blue", size = 1) +
+  ggtitle("Sigmoid Function") +
+  xlab("z") +
+  ylab("σ(z)") +
+  theme_minimal()
+
+```
+
+
+# Forward Propagation & Loss Function
+Predictions ($\hat{y}$) are made using:
+$$\hat{y} = \sigma(Z)$$
+The **binary cross-entropy loss function** quantifies the error between the estimate and the real output provided to the model:
+$$L = -\frac{1}{m} \sum_{i=1}^{m} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]$$
+
+# Updating Weights with Gradient Descent
+Since we don't know the optimal values of $W$, we start with random weights and iteratively update them to minimize the loss function. Now, let's break down the equation further and clarify the partial derivatives.
+
+Gradient loss function:
+$$
+\frac{\partial L}{\partial W}
+$$
+This term represents the gradient, or the slope, of the loss function $L$ with respect to $W$. Essentially, it tells us:
+
+How much the loss function changes when we slightly change $W$
+The direction we should move $W$ to minimize the loss.
+
+Since $L$ depends on $W$ (because changing 𝑊affects predictions), we need to calculate the rate of change of $L$ concerning $W$, which is where the partial derivative comes in.
+
+*Partial Derivatives Explained*
+A partial derivative calculates how one variable changes while keeping others constant. In our case:
+$$
+\frac{\partial L}{\partial W}
+$$
+measures how much the loss function changes if we make a small adjustment to $W$.
+If we visualize the loss function as a mountain, the gradient tells us which direction leads us downhill the fastest (toward lower loss).
+The gradient gives the best direction for adjusting W, but how far we step in that direction is controlled by the learning rate $\alpha$
+$$
+W = W -\alpha \cdot \frac{\partial L}{\partial W}
+$$
+where:
+- $ \alpha $ is the **learning rate** (a small step size to prevent large jumps)
+- $ \frac{\partial L}{\partial W} $ is the **gradient**
+$W$ is updated gradually with each iteration.
+
+Fro logistic regression, the gradient of the *binary cross-entropy loss function* with respect to $W$ is:
+$$
+ \frac{\partial L}{\partial W} = \frac{1}{m}X^T(\hat y -y)
+$$
+Where:
+- $X$ is the input matrix (features)
+- $y$ is the actual target values.
+- $\hat y = \sigma(XW)$ is the predicted output after applying the sigmoid function.
+- $X^T(\hat y- y)$ measures the error's contribution to weight updates.
+
+```{r}
+# Example loss reduction over iterations
+iterations <- seq(1, 100)
+loss_values <- exp(-0.05 * iterations)  # Simulated loss decreasing
+
+# Create dataframe
+df <- data.frame(iteration = iterations, loss = loss_values)
+
+# Plot loss reduction
+ggplot(df, aes(x = iteration, y = loss)) +
+  geom_line(color = "red", size = 1) +
+  ggtitle("Loss Reduction Over Iterations") +
+  xlab("Iteration") +
+  ylab("Loss") +
+  theme_minimal()
+
+```
+
+
+# Implementation in R
+
+Scenario: Predicting Whether Someone Will Buy a Product
+Imagine you're running an online store, and you want to predict whether a customer will buy a product based on two simple features:
+
+- Time spent on the website (in minutes)
+- Number of pages visited
+
+We'll create a small dataset with these features and train a logistic regression model using gradient descent to predict whether a customer will buy the product (1) or not (0).
+
+The traditional logistical regression formula would be:
+$$
+Z=\beta_0+\beta_1 x_{1i}+\beta_2 x_{2i}+\epsilon_i
+$$
+
+where:
+- $\beta_0$ is the **intercept (bias term)**.
+- $\beta_1, \beta_2$ are the **weights (coefficients) assigned to each feature**.
+- $x_{1i}, x_{2i}$ are the **feature values** for the $i$-th sample.
+- $\epsilon_i$ is the **error term** accounting for noise in the data.
+
+
+Instead of writing the equation explicitly for each feature, we can use matrix multiplication:
+
+$$
+Z = XW + \epsilon
+$$
+
+where:
+- $X$ is the **input matrix** containing feature values.
+- $W$ is the **weight matrix** (vector of coefficients).
+- $\epsilon$ is the **error term**.
+
+Expanding this in **matrix notation**:
+
+$$
+\begin{bmatrix}
+Z_1 \\
+Z_2 \\
+Z_3 \\
+\vdots \\
+Z_m
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & x_{11} & x_{21} \\
+1 & x_{12} & x_{22} \\
+1 & x_{13} & x_{23} \\
+\vdots & \vdots & \vdots \\
+1 & x_{1m} & x_{2m}
+\end{bmatrix}
+\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\beta_2
+\end{bmatrix}
++ 
+\begin{bmatrix}
+\epsilon_1 \\
+\epsilon_2 \\
+\epsilon_3 \\
+\vdots \\
+\epsilon_m
+\end{bmatrix}
+$$
+
+where:
+- Each row in $X$ represents **one sample**, including a **bias term (1), feature 1, and feature 2**.
+- The column vector $W$ contains the **learned parameters** ($\beta_0, \beta_1, \beta_2$).
+- The error term $\epsilon$ accounts for **random noise in predictions**.
+
+
+We have data from 5 customers, we will create a matrix for this:
+Each row in $X$ represents a customer.
+First column = Bias term (always 1).
+Second column = Time spent on the website.
+Third column = Number of pages visited.
+y contains whether the customer bought the product (1) or not (0).
+
+```{r}
+ # Real-world dataset (Time spent & Pages visited)
+X <- matrix(c(
+  1, 5, 2,
+  1, 15, 5,
+  1, 20, 7,
+  1, 2, 1,
+  1, 30, 10
+), ncol=3, byrow=TRUE)
+
+y <- c(0, 1, 1, 0, 1)  # Labels
+```
+
+As a recapitulation, we use the sigmoid function to predict the expected output of any specific combination of minutes in the website and pages visited. We will create a function for this:
+
+```{r}
+
+# Sigmoid function
+sigmoid <- function(z) {
+  return(1 / (1 + exp(-z)))
+}
+```
+
+the loss function will tell us how far our predicted value is from the actual value, we will also create a function for this:
+
+```{r}
+# Loss function (binary cross-entropy)
+loss_function <- function(y, y_hat) {
+  return(-mean(y * log(y_hat) + (1 - y) * log(1 - y_hat)))
+}
+```
+
+Now we create a function to calculate the gradient descent and store the results of each iteration in a dataset so we can visualize it. 
+
+```{r}
+# Gradient Descent Implementation (Track Progress)
+gradient_descent_progress <- function(X, y, learning_rate = 0.01, iterations = 50) {
+  m <- nrow(X)
+  W <- runif(ncol(X))  # Initialize weights randomly
+  progress <- data.frame(Iteration = integer(), 
+                         Weight1 = numeric(), Weight2 = numeric(),
+                         Z1 = numeric(), Z2 = numeric(), Z3 = numeric(), Z4 = numeric(), Z5 = numeric(),
+                         y_hat1 = numeric(), y_hat2 = numeric(), y_hat3 = numeric(), y_hat4 = numeric(), y_hat5 = numeric(),
+                         Grad1 = numeric(), Grad2 = numeric())  # Tracking all five samples
+
+  for (i in 1:iterations) {
+    Z <- X %*% W   # Compute Z values for all samples
+    y_hat <- sigmoid(Z)  # Apply sigmoid function to all samples
+    gradient <- t(X) %*% (y_hat - y) / m  # Compute gradient for weight updates
+    W <- W - learning_rate * gradient  # Update weights
+
+    # Store results for all five samples
+    progress <- rbind(progress, data.frame(
+      Iteration = i,
+      Weight1 = W[2], Weight2 = W[3],
+      Z1 = Z[1], Z2 = Z[2], Z3 = Z[3], Z4 = Z[4], Z5 = Z[5],
+      y_hat1 = y_hat[1], y_hat2 = y_hat[2], y_hat3 = y_hat[3], y_hat4 = y_hat[4], y_hat5 = y_hat[5],
+      Grad1 = gradient[2], Grad2 = gradient[3]
+    ))
+  }
+  
+  return(progress)
+}
+```
+At the beginning, the weights are random.
+
+Over each iteration, the values change towards better predictions.
+- Z values show the raw linear transformation before activation.
+
+- y_hat tracks how probabilities evolve as weights adjust.
+
+- Gradient values indicate how weights update to minimize the loss.
+
+If you increase iterations, you'll see further refinement!
+```{r}
+
+# Train Model
+
+
+# Run gradient descent and track evolution
+progress_df <- gradient_descent_progress(X, y)
+
+# Print evolution table
+print(head(progress_df))
+
+# Plot how weights change over iterations
+ggplot(progress_df, aes(x = Iteration)) +
+  geom_point(aes(y = Weight1, color = "Weight1"), size = 1) +
+  geom_point(aes(y = Weight2, color = "Weight2"), size = 1) +
+  ggtitle("Gradient Descent: Evolution of Weights") +
+  xlab("Iteration") +
+  ylab("Weight Value") +
+  theme_minimal() +
+  scale_color_manual(values = c("Weight1" = "blue", "Weight2" = "red"))
+
+
+# Reshape progress_df for separate plots
+long_df <- tidyr::gather(progress_df, key = "Variable", value = "Value", -Iteration)
+
+# **Plot 1: Gradient Evolution**
+gradient_df <- long_df %>% filter(Variable %in% c("Grad1", "Grad2"))
+
+ggplot(gradient_df, aes(x = Iteration, y = Value, color = Variable)) +
+  geom_point(size = 2) +  # Use points instead of lines
+  ggtitle("Gradient Descent: Evolution of Gradients") +
+  xlab("Iteration") +
+  ylab("Gradient Value") +
+  theme_minimal()
+
+# **Plot 2: Predicted Probabilities (y_hat) Evolution**
+y_hat_df <- long_df %>% filter(grepl("y_hat", Variable))
+
+ggplot(y_hat_df, aes(x = Iteration, y = Value, color = Variable)) +
+  geom_point(size = 2) +  # Use points instead of lines
+  ggtitle("Gradient Descent: Evolution of Predicted Probabilities") +
+  xlab("Iteration") +
+  ylab("Probability (y_hat)") +
+  theme_minimal()
+
+# **Plot 3: Z Values Evolution**
+z_values_df <- long_df %>% filter(grepl("Z", Variable))
+
+ggplot(z_values_df, aes(x = Iteration, y = Value, color = Variable)) +
+  geom_point(size = 2) +  # Use points instead of lines
+  ggtitle("Gradient Descent: Evolution of Z Values") +
+  xlab("Iteration") +
+  ylab("Z Value") +
+  theme_minimal()
+```
+
+**Understanding the Learned Weights**
+After running gradient descent, we obtained the following learned weights:
+
+the final weights:
+```{r}
+set.seed(2)
+# Gradient Descent Implementation (Track Progress)
+gradient_descent <- function(X, y, learning_rate = 0.01, iterations = 50) {
+  m <- nrow(X)
+  W <- runif(ncol(X))  # Initialize weights randomly
+  for (i in 1:iterations) {
+    Z <- X %*% W   # Compute Z values for all samples
+    y_hat <- sigmoid(Z)  # Apply sigmoid function to all samples
+    gradient <- t(X) %*% (y_hat - y) / m  # Compute gradient for weight updates
+    W <- W - learning_rate * gradient  # Update weights
+  }
+  return (W)
+}
+W <- gradient_descent(X, y)
+print(W)
+```
+
+These correspond to:
+- $W_0$ → **Bias term** (Intercept).
+- $W_1$ → **Effect of Time Spent on probability of purchasing**.
+- $W_2$ → **Effect of Pages Visited on probability of purchasing**.A positive value increases probability, while a negative value decreases probability.
+
+To predict whether a new customer will buy a product, we use the following equation:
+
+$$
+Z = W_0 + W_1 \cdot \text{Time Spent} + W_2 \cdot \text{Pages Visited}
+$$
+
+Once we calculate $Z$, we apply the **sigmoid activation function**:
+
+$$
+\sigma(Z) = \frac{1}{1 + e^{-Z}}
+$$
+
+where $\sigma(Z)$ represents the **probability** that the customer will buy.
+
+
+**Example Calculation**
+Let's take a new customer who spends **12 minutes** on the website and visits **4 pages**. We calculate $Z$ as:
+
+$$
+Z = 0.01567795 + (0.09666904 \times 12) + (0.31485151 \times 4)
+$$
+
+Applying the learned weights, the prediction follows:
+
+$$
+Z = 2.435112
+$$
+
+Applying the sigmoid function:
+
+$$
+\sigma(2.435112) = \frac{1}{1 + e^{-2.435112}}
+$$
+
+Approximating:
+
+$$
+\sigma(2.435112) \approx 0.91
+$$
+
+Thus, the model predicts **91% probability** that this customer **will buy** the product.
+
+let's see the predictions calculated in `r` over the same data we used for training:
+
+```{r}
+# Get predictions
+
+# Function to predict probability based on learned weights
+predict_probability <- function(X, W) {
+  return(sigmoid(X %*% W))
+}
+predicted_probs <- predict_probability(X, W)
+
+# Create dataframe for plotting
+df <- data.frame(TimeSpent = X[,2], PagesVisited = X[,3], Probability = predicted_probs)
+
+# Plot results
+ggplot(df, aes(x = TimeSpent, y = PagesVisited, color = Probability)) +
+  geom_point(size = 4) +
+  scale_color_gradient(low = "blue", high = "red") +
+  ggtitle("Logistic Regression: Probability of Purchase") +
+  xlab("Time Spent on Website (minutes)") +
+  ylab("Number of Pages Visited") +
+  theme_minimal()
+```
+
+We apply gradient descent to learn optimal weights and predict whether future customers will buy by minimizing the loss function iteratively.
+

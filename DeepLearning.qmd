@@ -2,17 +2,17 @@
 title: "Deep Learning"
 editor: visual
 execute: 
-  eval: false
+  eval: true
 ---
 
 ```{r eval=TRUE}
 library(ggplot2)
 library(ggforce)
 library(ISLR2)
-library(keras)
-library(tensorflow)
 library(glmnet)
 library(tidyverse)
+theme_set(theme_minimal())
+options(scipen= 999)
 ```
 
 # Resources
@@ -22,7 +22,7 @@ library(tidyverse)
 [ISLR RBook club](https://r4ds.github.io/bookclub-islr/deep-learning.html)
 
 ::: callout-warning
-Unfortunately I can run the code locally but it crashes if I try to render the markdown, so I have resorted to put eval=false to all the code so I can at least render the text and code scripts. Hopefully in the future I will be able to render the doc properly.
+Following the instructions above did not solve issues for me, so I created a new document on how I installed it (Gemini instructions)
 :::
 
 # Neural Networks.
@@ -102,68 +102,36 @@ There are two ways to fit the Neural Network:
 
 -   using `torch`
 
-Keras requires some installation on RStudio
+Keras requires some installation on RStudio see document [Tensorflow Installation Guide](installingTensorFlow.qmd).
 
 ```{r}
-# 
-# tryCatch(
-#   remove.packages(c("keras", "tensorflow", "reticulate")),
-#   error = function(e) "Some or all packages not previously installed, that's ok!"
-# )
-# 
-# install.packages("keras", repos = 'https://cloud.r-project.org')
-# 
-# write('RETICULATE_AUTOCONFIGURE=FALSE', file = "~/.Renviron", append = TRUE)
-# write(sprintf('RETICULATE_MINICONDA_PATH=%s',
-#            normalizePath("~/islr-miniconda", winslash = "/", mustWork = FALSE)),
-#    file = "~/.Renviron", append = TRUE)
-# 
-# # # restart R
+# Step 1: Explicitly tell reticulate which Python to use
+Sys.setenv(RETICULATE_PYTHON = "C:/Users/vegap/miniconda3/envs/islr-miniconda/python.exe")
 
+# Step 2: Load the reticulate package
+library(reticulate)
+
+# Step 3: Verify reticulate's configuration
+# This should now show numpy and tensorflow paths correctly
+reticulate::py_config()
+
+# Step 4: Load the R keras and tensorflow packages
+library(keras)
+library(tensorflow)
+
+# Step 5: Try to import tensorflow directly via reticulate
+# This is the line that previously failed
+tf <- reticulate::import("tensorflow")
+
+# Step 6: Confirm TensorFlow version and that it's working
+print(tf$`__version__`)
+
+# Optional: Basic TensorFlow operation to confirm
+hello_tensor <- tf$constant("Hello, TensorFlow from R!")
+tf$print(hello_tensor)
 ```
-
-Restart R
 
 ```{r}
-
-# source(system.file("helpers", "install.R", package = "ISLR2"))
-# reticulate::install_miniconda(force = TRUE)
-# devtools::install_github("rstudio/tensorflow")
-```
-
-```{r }
-# library(keras)
-# library(tensorflow)
-
-reticulate::conda_create("r-tensorflow")
-tensorflow::install_tensorflow()
-```
-
-load the libraries and check python environment. This can be a bit of a trial error if you have problems.
-
-```{r eval=FALSE}
-# Check Python configuration to ensure correct environment
-# reticulate::py_config()
-# 
-# #check tensorflow config
-# tensorflow::tf_version()
-# config <- tensorflow::tf_config()
-# 
-# # see the conda environmets:
-# reticulate::conda_list()
-# 
-# # if r-tensorflow is not listed, create it.
-# reticulate::conda_create("r-tensorflow")
-
-#if there is a problem and you need to kill the environment use this:
-#reticulate::conda_remove("r-tensorflow")
-
-# Install packages within the new environment
-#reticulate::conda_install("r-tensorflow", c("tensorflow", "keras", "numpy", "pandas"))
-
-#define it as the environment to use:
-#reticulate::use_condaenv(condaenv = "r-tensorflow", required = TRUE)
-
 #test it with a random data set:
 x <- matrix(rnorm(1000), ncol = 10)  # Sample data for illustration
 
@@ -178,7 +146,6 @@ modnn <- keras_model_sequential() %>%
 # Summary of the model
 summary(modnn)
 ```
-
 
 We are going to use the `Hitters` dataset as we have done in previous chapters. First we fit a linear model:
 
@@ -246,7 +213,7 @@ In the previous line, the pipe operator passes `modnn` as the first argument to 
 
 Now we fit the model. We supply the training data and two fitting parameters, `epochs` and `batch_size`. Using 32 for the latter means that at each step of SGD, the algorithm randomly selects 32 training observations for the computation of the gradient. An epoch amounts to the number of SGD steps required to process $n$ observations. Since the training set has $n=176$, an epoch is $176/32=5.5$ SGD steps. The `fit()` function has an argument `validation_data`; these data are not used in the fitting, but can be used to track the progress of the model (in this case reporting the mean absolute error). Here we actually supply the test data so we can see the mean absolute error of both the training data and test data as the epochs proceed. To see more options for fitting, use `?fit.keras.engine.training.Model`.
 
-```{r chunk9}
+```{r chunk9,echo=TRUE}
 history <- modnn %>% fit(
     x[-testid, ], y[-testid], epochs = 600, batch_size = 32,
     validation_data = list(x[testid, ], y[testid])
@@ -264,7 +231,7 @@ mean(abs(y[testid] - npred))
 
 In this case our results are a bit worse than with the `gmln`
 
-:::{.exercise-box}
+::: exercise-box
 A Multilayer Network on the MNIST Digit Data
 
 The `keras` package comes with a number of example datasets, including the `MNIST` digit data. Our first step is to load the `MNIST` data. The `dataset_mnist()` function is provided for this purpose.
@@ -352,6 +319,7 @@ To obtain the test error, we first write a simple function `accuracy()` that com
 accuracy <- function(pred, truth)
   mean(drop(as.numeric(pred)) == drop(truth))
 ```
+
 ```{r eval=FALSE}
 modelnn %>% 
   predict(x_test) %>% 
@@ -392,7 +360,7 @@ modellr %>%
 And we see that the model accuracy is smaller now. This will be a similar result as running `glmn` instead of `keras`.
 :::
 
-:::{.exercise-box}
+::: exercise-box
 Convolutional Neural Networks (CNN)
 
 In this section we fit a CNN to the `CIFAR` data, which is available in the `keras` package. It is arranged in a similar fashion as the `MNIST` data.
@@ -509,11 +477,10 @@ print(pred6)
 ```
 :::
 
-:::{.exercise-box}
+::: exercise-box
 Document Classification
 
-IMDb Document Classification:
-Now we perform document classification on the `IMDB` dataset, which is available as part of the `keras` package. We  limit the dictionary size to the 10,000  most frequently-used words and tokens.
+IMDb Document Classification: Now we perform document classification on the `IMDB` dataset, which is available as part of the `keras` package. We limit the dictionary size to the 10,000 most frequently-used words and tokens.
 
 ```{r chunk30,eval=TRUE}
 max_features <- 10000
@@ -521,11 +488,7 @@ imdb <- keras::dataset_imdb(num_words = max_features)
 c(c(x_train, y_train), c(x_test, y_test)) %<-% imdb
 ```
 
-The third line is a shortcut for unpacking the list of lists.
-Each element of `x_train` is a vector of numbers between 0 and
-9999 (the document), referring to the words found in the dictionary.
-For example, the first training document is the positive review on
-page 419. The indices of the first 12 words are given below.
+The third line is a shortcut for unpacking the list of lists. Each element of `x_train` is a vector of numbers between 0 and 9999 (the document), referring to the words found in the dictionary. For example, the first training document is the positive review on page 419. The indices of the first 12 words are given below.
 
 ```{r chunk31,eval=TRUE}
 x_train[[3]][1:12]
@@ -546,8 +509,8 @@ decode_review <- function(text, word_index) {
 }
 decode_review(x_train[[3]][1:12], word_index)
 ```
-Next we write a function to "one-hot" encode each document in a list
-of documents, and return a binary matrix in sparse-matrix format.
+
+Next we write a function to "one-hot" encode each document in a list of documents, and return a binary matrix in sparse-matrix format.
 
 ```{r chunk33,eval=TRUE}
 library(Matrix)
@@ -561,13 +524,7 @@ one_hot <- function(sequences, dimension) {
 }
 ```
 
-To construct the sparse matrix, one supplies just the entries that are
-nonzero. In the last line we call the function `sparseMatrix()` and supply the
-row indices corresponding to each document and the column indices
-corresponding to the words in each document, since we omit the
-values they are taken to be all ones.
-Words that appear more than once in any given document still get
-recorded as a one.
+To construct the sparse matrix, one supplies just the entries that are nonzero. In the last line we call the function `sparseMatrix()` and supply the row indices corresponding to each document and the column indices corresponding to the words in each document, since we omit the values they are taken to be all ones. Words that appear more than once in any given document still get recorded as a one.
 
 ```{r chunk34 ,eval=TRUE}
 x_train_1h <- one_hot(x_train, 10000)
@@ -576,24 +533,14 @@ dim(x_train_1h)
 nnzero(x_train_1h) / (25000 * 10000)
 ```
 
-Only 1.3\% of the entries are nonzero, so this amounts to considerable
-savings in memory.
-We create a validation set of size 2,000, leaving 23,000 for training.
+Only 1.3% of the entries are nonzero, so this amounts to considerable savings in memory. We create a validation set of size 2,000, leaving 23,000 for training.
 
 ```{r chunk35, eval=TRUE}
 set.seed(3)
 ival <- sample(seq(along = y_train), 2000)
 ```
 
-First we fit a lasso logistic regression model using `glmnet()`
-on the training data, and evaluate its performance on the validation
-data. Finally, we plot the accuracy, `acclmv`, as a function of
-the shrinkage parameter, $\lambda$. Similar expressions compute the
-performance on the test data, and were used to produce the left plot
-in Figure 10.11.
-The code  takes advantage of the sparse-matrix format of
-`x_train_1h`, and runs in about 5 seconds; in the usual
-dense format it would take about 5 minutes.
+First we fit a lasso logistic regression model using `glmnet()` on the training data, and evaluate its performance on the validation data. Finally, we plot the accuracy, `acclmv`, as a function of the shrinkage parameter, $\lambda$. Similar expressions compute the performance on the test data, and were used to produce the left plot in Figure 10.11. The code takes advantage of the sparse-matrix format of `x_train_1h`, and runs in about 5 seconds; in the usual dense format it would take about 5 minutes.
 
 ```{r eval=TRUE}
 library(glmnet)
@@ -603,9 +550,7 @@ classlmv <- predict(fitlm, x_train_1h[ival, ]) > 0
 acclmv <- apply(classlmv, 2, accuracy,  y_train[ival] > 0)
 ```
 
-We applied the `accuracy()` function that we wrote in Lab 10.9.2 to every column of the prediction matrix
-`classlmv`, and since this is a logical matrix of  `TRUE/FALSE` values, we
-supply the second argument `truth` as a logical vector as well.
+We applied the `accuracy()` function that we wrote in Lab 10.9.2 to every column of the prediction matrix `classlmv`, and since this is a logical matrix of `TRUE/FALSE` values, we supply the second argument `truth` as a logical vector as well.
 
 Before making a plot, we adjust the plotting window.
 
@@ -614,10 +559,7 @@ par(mar = c(4, 4, 4, 4), mfrow = c(1, 1))
 plot(-log(fitlm$lambda), acclmv)
 ```
 
-
-Next we fit a fully-connected neural network with two hidden layers,
-each with 16 units and ReLU activation.
-
+Next we fit a fully-connected neural network with two hidden layers, each with 16 units and ReLU activation.
 
 ```{r chunk38}
 model <- keras_model_sequential() %>%
@@ -632,11 +574,7 @@ history <- model %>% fit(x_train_1h[-ival, ], y_train[-ival],
     validation_data = list(x_train_1h[ival, ], y_train[ival]))
 ```
 
-The `history` object has a `metrics` component that
-records both the training and validation accuracy at each epoch.
-Figure 10.11 includes test accuracy at each epoch as well. To
-compute the test accuracy, we
-rerun the entire sequence above, replacing the last line with
+The `history` object has a `metrics` component that records both the training and validation accuracy at each epoch. Figure 10.11 includes test accuracy at each epoch as well. To compute the test accuracy, we rerun the entire sequence above, replacing the last line with
 
 ```{r chunk39}
 history <- model %>% fit(
@@ -645,24 +583,19 @@ history <- model %>% fit(
   )
 ```
 
-
 **Recurrent Neural Networks**
 
 Sequential Models for Document Classification. Before we just use the model to give us a response based on the presence or abcense of words, in recurrent neural networks we are actually taking into consideration the sequence of words
 
-Here we  fit a simple  LSTM RNN for sentiment analysis with
-the `IMDb` movie-review data. 
-We first calculate the lengths of the documents.
+Here we fit a simple LSTM RNN for sentiment analysis with the `IMDb` movie-review data. We first calculate the lengths of the documents.
 
 ```{r chunk40}
 wc <- sapply(x_train, length) #count of words
 median(wc)
 sum(wc <= 500) / length(wc) #percentage with less or equal 500 words
 ```
-We see that over 91\% of the documents have fewer than 500 words. Our
-RNN requires all the document sequences to have the same length. We hence
-restrict the document lengths to the last $L=500$ words, and pad the
-beginning of the shorter ones with blanks.
+
+We see that over 91% of the documents have fewer than 500 words. Our RNN requires all the document sequences to have the same length. We hence restrict the document lengths to the last $L=500$ words, and pad the beginning of the shorter ones with blanks.
 
 ```{r chunk41}
 maxlen <- 500
@@ -672,13 +605,10 @@ dim(x_train)
 dim(x_test)
 x_train[1, 490:500]
 ```
-The last expression shows the last few words in the first document. At this stage, each of the 500 words in the document  is represented using an integer
-corresponding to the location of that word in the 10,000-word dictionary.
 
-The first layer of the RNN is an embedding layer of size 32, which will be
-learned during  training. This layer one-hot encodes  each document
-as a matrix of dimension $500 \times 10,000$, and then maps these
-$10,000$ dimensions down to $32$.
+The last expression shows the last few words in the first document. At this stage, each of the 500 words in the document is represented using an integer corresponding to the location of that word in the 10,000-word dictionary.
+
+The first layer of the RNN is an embedding layer of size 32, which will be learned during training. This layer one-hot encodes each document as a matrix of dimension $500 \times 10,000$, and then maps these $10,000$ dimensions down to $32$.
 
 ```{r chunk42}
 model <- keras_model_sequential() %>%
@@ -687,11 +617,9 @@ model <- keras_model_sequential() %>%
   layer_dense(units = 1, activation = "sigmoid")
 ```
 
-The second  layer is an LSTM with 32 units, and the output
-layer is a single sigmoid for the binary classification task.
+The second layer is an LSTM with 32 units, and the output layer is a single sigmoid for the binary classification task.
 
-The rest is now similar to other networks we have fit. We
-track the test performance as the network is fit, and see that it attains 87\% accuracy.
+The rest is now similar to other networks we have fit. We track the test performance as the network is fit, and see that it attains 87% accuracy.
 
 ```{r chunk43}
 model %>% compile(optimizer = "rmsprop",
@@ -705,21 +633,12 @@ mean(abs(y_test == as.numeric(predy)))
 ```
 :::
 
-:::{.exercise-box}
+::: exercise-box
 Time series prediction
 
-We now show how to fit the models for  time series prediction.
-We first set up the data, and standardize each of the variables.
-The data has three different time-series:
-*Log trading volume*. This is the fraction of all outstanding shares that
-are traded on that day, relative to a 100-day moving average of past
-turnover, on the log scale.
-• *Dow Jones return*. This is the difference between the log of the Dow
-Jones Industrial Index on consecutive trading days.
-• *Log volatility*. This is based on the absolute values of daily price
-movements.
+We now show how to fit the models for time series prediction. We first set up the data, and standardize each of the variables. The data has three different time-series: *Log trading volume*. This is the fraction of all outstanding shares that are traded on that day, relative to a 100-day moving average of past turnover, on the log scale. • *Dow Jones return*. This is the difference between the log of the Dow Jones Industrial Index on consecutive trading days. • *Log volatility*. This is based on the absolute values of daily price movements.
 
-We are interested in predicting trading volume. 
+We are interested in predicting trading volume.
 
 ```{r echo=FALSE,eval = TRUE}
 # Transform the dataset into a long format for easier plotting
@@ -749,9 +668,9 @@ library(gridExtra)
 grid.arrange(p1, p2, p3, ncol = 1)
 
 ```
-An observation here consists of the measurements (vt, rt, zt) on day t, in this case the values for log_volume, DJ_return and log_volatility.
-One feature that strikes us immediately is that the dayto-day observations are not independent of each other. The series exhibit auto-correlation — in this case values nearby in time tend to be similar to each other. This distinguishes time series from other data sets we have correlation
-encountered, in which observations can be assumed to be independent of each other. To be clear, consider pairs of observations (vt, vt−ℓ), a lag of ℓ days apart. If we take all such pairs in the vt series and compute their correlation coefficient, this gives the autocorrelation at lag ℓ.
+
+An observation here consists of the measurements (vt, rt, zt) on day t, in this case the values for log_volume, DJ_return and log_volatility. One feature that strikes us immediately is that the dayto-day observations are not independent of each other. The series exhibit auto-correlation --- in this case values nearby in time tend to be similar to each other. This distinguishes time series from other data sets we have correlation encountered, in which observations can be assumed to be independent of each other. To be clear, consider pairs of observations (vt, vt−ℓ), a lag of ℓ days apart. If we take all such pairs in the vt series and compute their correlation coefficient, this gives the autocorrelation at lag ℓ.
+
 ```{r eval = TRUE, fig.align='center'}
 
 rt <- NYSE$log_volume  # Replace with your actual time series column
@@ -763,10 +682,10 @@ acf_result <- acf(rt, plot = TRUE, main = "Autocorrelation of log_volume")
 acf_values <- acf(rt, plot = FALSE)
 acf_data <- with(acf_values, data.frame(lag, acf))
 ```
-We see that nerby values are strongly correlated. 
 
-We are going to use the last 5 days to predict the next day's trading volume, this is $L=5$ 
-First, we are going to create a matrix with the data and standardize the values for our model:
+We see that nerby values are strongly correlated.
+
+We are going to use the last 5 days to predict the next day's trading volume, this is $L=5$ First, we are going to create a matrix with the data and standardize the values for our model:
 
 ```{r eval = TRUE}
 xdata <- data.matrix(
@@ -778,16 +697,14 @@ istrain <- NYSE[, "train"]
 xdata <- scale(xdata) #this standardize the variables in a dataset
 head(xdata)
 ```
-The  variable `istrain` contains a `TRUE` for each year that  is in the training set, and a `FALSE` for each year in the test set.
 
-The `scale` function in R is used to standardize variables in a dataset. This is particularly useful in machine learning and statistical modeling where different variables may have different scales (units or magnitudes). Here’s a breakdown of what scale does:
-*Centers the Data*: Subtracts the mean of each column (variable) from the values in that column. This shifts the data so that it has a mean of zero.
-*Scales the Data*: Divides each column by its standard deviation. This rescales the data so that each column has a standard deviation of one.
+The variable `istrain` contains a `TRUE` for each year that is in the training set, and a `FALSE` for each year in the test set.
+
+The `scale` function in R is used to standardize variables in a dataset. This is particularly useful in machine learning and statistical modeling where different variables may have different scales (units or magnitudes). Here's a breakdown of what scale does: *Centers the Data*: Subtracts the mean of each column (variable) from the values in that column. This shifts the data so that it has a mean of zero. *Scales the Data*: Divides each column by its standard deviation. This rescales the data so that each column has a standard deviation of one.
 
 This normalization ensures that each variable contributes equally to the analysis, avoiding bias towards variables with larger magnitudes. It also helps with the convergence of gradient descent in machine learning algorithms and makes coefficients in regression models more interpretable.
 
-Now we write functions to create lagged versions of the three time series.  We start with a function that takes as input a data matrix and a lag $L$, and returns a lagged version of the matrix. It simply inserts $L$ rows of `NA` at the top, and truncates the
-bottom.
+Now we write functions to create lagged versions of the three time series. We start with a function that takes as input a data matrix and a lag $L$, and returns a lagged version of the matrix. It simply inserts $L$ rows of `NA` at the top, and truncates the bottom.
 
 ```{r eval = TRUE}
 lagm <- function(x, k = 1) {
@@ -797,8 +714,7 @@ lagm <- function(x, k = 1) {
 }
 ```
 
-We now use this function to create a data frame with all the required
-lags, as well as the response variable.
+We now use this function to create a data frame with all the required lags, as well as the response variable.
 
 ```{r eval = TRUE}
 arframe <- data.frame(log_volume = 
@@ -812,9 +728,7 @@ arframe <- data.frame(log_volume =
 head(arframe)
 ```
 
-If we look at the first five rows of this frame, we will see some
-missing values in the lagged variables (due to the construction above). We remove these rows, and adjust `istrain`
-accordingly.
+If we look at the first five rows of this frame, we will see some missing values in the lagged variables (due to the construction above). We remove these rows, and adjust `istrain` accordingly.
 
 ```{r eval = TRUE}
 arframe <- arframe[-(1:5), ]
@@ -822,8 +736,7 @@ istrain <- istrain[-(1:5)]
 head(arframe)
 ```
 
-We now fit the linear AR model to the training data using `lm()`, and predict on the
-test data.
+We now fit the linear AR model to the training data using `lm()`, and predict on the test data.
 
 ```{r eval = TRUE}
 arfit <- lm(log_volume ~ ., data = arframe[istrain, ])
@@ -831,6 +744,7 @@ arpred <- predict(arfit, arframe[!istrain, ])
 V0 <- var(arframe[!istrain, "log_volume"])
 1 - mean((arpred - arframe[!istrain, "log_volume"])^2) / V0
 ```
+
 The last two lines compute the $R^2$ on the test data.
 
 We refit this model, including the factor variable `day_of_week`.
@@ -843,8 +757,7 @@ arpredd <- predict(arfitd, arframed[!istrain, ])
 1 - mean((arpredd - arframe[!istrain, "log_volume"])^2) / V0
 ```
 
-
-To fit the RNN, we need to reshape these data, since it expects a sequence of $L=5$ feature vectors $X={X_\ell}_1^L$ for each observation. These are  lagged versions of the time series going back $L$ time points. 
+To fit the RNN, we need to reshape these data, since it expects a sequence of $L=5$ feature vectors $X={X_\ell}_1^L$ for each observation. These are lagged versions of the time series going back $L$ time points.
 
 ```{r eval = TRUE}
 n <- nrow(arframe)
@@ -856,16 +769,7 @@ dim(xrnn)
 head(xrnn)
 ```
 
-We have done this in four steps. The first simply extracts the
-$n\times 15$ matrix of lagged versions of the three predictor
-variables from `arframe`. The second converts this matrix to an
-$n\times 3\times 5$ array. We can do this by simply changing the
-dimension attribute, since the new array is filled column wise. The
-third step reverses the order of lagged variables, so that index $1$
-is furthest back in time, and index $5$ closest. The
-final step rearranges the coordinates of the array (like a partial
-transpose) into the format that the RNN module in `keras`
-expects.
+We have done this in four steps. The first simply extracts the $n\times 15$ matrix of lagged versions of the three predictor variables from `arframe`. The second converts this matrix to an $n\times 3\times 5$ array. We can do this by simply changing the dimension attribute, since the new array is filled column wise. The third step reverses the order of lagged variables, so that index $1$ is furthest back in time, and index $5$ closest. The final step rearranges the coordinates of the array (like a partial transpose) into the format that the RNN module in `keras` expects.
 
 Now we are ready to proceed with the RNN, which uses 12 hidden units.
 
@@ -879,17 +783,9 @@ model %>% compile(optimizer = optimizer_rmsprop(),
     loss = "mse")
 ```
 
-We specify two forms of dropout for the units feeding into the  hidden
- layer. The first is for
-the input sequence feeding into this layer, and the second is for the
-previous hidden units feeding into the layer.
-The output layer has a single unit for the response.
+We specify two forms of dropout for the units feeding into the hidden layer. The first is for the input sequence feeding into this layer, and the second is for the previous hidden units feeding into the layer. The output layer has a single unit for the response.
 
-We  fit the model in a similar fashion to previous networks. We
-supply the `fit` function with test data as validation data, so that when
-we monitor its progress and plot the history function we can see the
-progress on the test data. Of course we should not use this as a basis for
-early stopping, since then the test performance would be biased.
+We fit the model in a similar fashion to previous networks. We supply the `fit` function with test data as validation data, so that when we monitor its progress and plot the history function we can see the progress on the test data. Of course we should not use this as a basis for early stopping, since then the test performance would be biased.
 
 ```{r chunk52}
 history <- model %>% fit(
@@ -903,9 +799,9 @@ kpred <- predict(model, xrnn[!istrain,, ])
 1 - mean((kpred - arframe[!istrain, "log_volume"])^2) / V0
 ```
 
- This model takes about one minute to train.
+This model takes about one minute to train.
 
-We could replace the  `keras_model_sequential()`  command above with the following command:
+We could replace the `keras_model_sequential()` command above with the following command:
 
 ```{r chunk53}
 model <- keras_model_sequential() %>%
@@ -919,18 +815,14 @@ To fit a nonlinear AR model, we could add in a hidden layer.
 
 However, since we already have the matrix of lagged variables from the AR model that we fit earlier using the `lm()` command, we can actually fit a nonlinear AR model without needing to perform flattening.
 
-We extract the model matrix `x` from `arframed`, which
-includes the `day_of_week` variable.
+We extract the model matrix `x` from `arframed`, which includes the `day_of_week` variable.
 
 ```{r chunk54}
 x <- model.matrix(log_volume ~ . - 1, data = arframed)
 head(x)
 ```
 
-The `-1` in the formula avoids the creation of a column of ones for the intercept. 
-The variable `day_of_week` is a five-level
-factor (there are five trading days), and the
- `-1` results in  five rather than four dummy variables. 
+The `-1` in the formula avoids the creation of a column of ones for the intercept. The variable `day_of_week` is a five-level factor (there are five trading days), and the `-1` results in five rather than four dummy variables.
 
 The rest of the steps to fit a nonlinear Auto Regressive model should by now be familiar.
 

@@ -5,7 +5,6 @@ project:
     - "*.qmd"
     - "!courseSummary.qmd"
     - "!ignored-dir/"
-    - "!DeepLearning.qmd"
 website:
   search: true
   title: "Mastering Statistics: Fundamentals of Data Analysis."
@@ -38,14 +37,22 @@ website:
             text: Tree Based Methods
           - href: supportVectorMachines.qmd
             text: Support Vector Machines
-          - href: DeepLearning.qmd
+          - text: Deep Learning with TensorFlow 
+          - href: installingTensorFlow.qmd      
+            text: Installing TensorFlow        
+          - href: DeepLearning.qmd            
             text: Deep Learning
           - href: deepLearningTorch.qmd
             text: Deep Learning Lab with Torch
       - href: unsupervisedLearning.qmd
         text: Unsupervised Learning
-      - href: matrix.qmd
-        text: Matrix Algebra
+      - text: Matrices
+        menu:
+          - href: matrix.qmd
+            text: Matrix Algebra
+          - href: logisticRegressionMatrixCalculation.qmd
+            text: Matrices in Logistic Regression in Neural Networks
+          
 format: 
   html: 
     toc: true
