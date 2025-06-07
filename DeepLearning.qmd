@@ -22,7 +22,7 @@ options(scipen= 999)
 [ISLR RBook club](https://r4ds.github.io/bookclub-islr/deep-learning.html)
 
 ::: callout-warning
-Following the instructions above did not solve issues for me, so I created a new document on how I installed it (Gemini instructions)
+Following the instructions above did not solve issues for me, so I created a new document on how I installed it (Gemini instructions). I installed python 3.8
 :::
 
 # Neural Networks.
@@ -31,7 +31,7 @@ Single Layer Neural Network (Feed Forward Neural Network)
 
 Neural networks are usually represented by a neural diagram.
 
-```{r echo=FALSE, eval=TRUE, fig.align='center'}
+```{r echo=FALSE, eval=TRUE, fig.align='center', fig.width= 7}
 
 # Define the coordinates for the nodes
 input_layer <- data.frame(x = rep(1, 4), y = seq(4, 1))
@@ -72,9 +72,9 @@ In orange we have the input layer, in this example with four variables, and then
 
 The hidden layer are transformations of the inputs, the A stands for *activations*
 
-$$
+\[
 \begin{align*}f(X) &= \beta_0 + \sum_{k=1}^{K} \beta_k h_k(X) \\     &= \beta_0 + \sum_{k=1}^{K} \beta_k g \left( w_{k0} + \sum_{j=1}^{p} w_{kj} X_j \right)\end{align*}
-$$
+\]
 
 Each of the lines are nonlinear function of a linear combination of the inputs. \$\$A_k =h_k(X) = g(w\_{kj}X_j)\$\$ are called the activations in the hidden layer. And $g(z)$ is called the *activation function*. These non linear functions can be of different types. A popular ones is ReLU or Rectified Linear Unit. So the activations are like derived features.
 
@@ -179,7 +179,7 @@ y<- hitters$Salary
 
 The first line makes a call to `model.matrix()`, which produces the same matrix that was used by `lm()` (the `-1` omits the intercept). This function automatically converts factors to dummy variables. The `scale()` function standardizes the matrix so each column has mean zero and variance one. We make the predictions using `lambda.min` which is the min error in the cross validation.
 
-```{r,eval=TRUE, fig.align='center'}
+```{r, eval=TRUE, fig.align='center', fig.width=10, fig.asp=0.318}
 cvfit <- cv.glmnet(x[-testid,], y[-testid], type.measure= "mae")
 cpred <- predict(cvfit, x[testid,], s="lambda.min")
 mean(abs(y[testid] - cpred))
@@ -213,11 +213,23 @@ In the previous line, the pipe operator passes `modnn` as the first argument to 
 
 Now we fit the model. We supply the training data and two fitting parameters, `epochs` and `batch_size`. Using 32 for the latter means that at each step of SGD, the algorithm randomly selects 32 training observations for the computation of the gradient. An epoch amounts to the number of SGD steps required to process $n$ observations. Since the training set has $n=176$, an epoch is $176/32=5.5$ SGD steps. The `fit()` function has an argument `validation_data`; these data are not used in the fitting, but can be used to track the progress of the model (in this case reporting the mean absolute error). Here we actually supply the test data so we can see the mean absolute error of both the training data and test data as the epochs proceed. To see more options for fitting, use `?fit.keras.engine.training.Model`.
 
-```{r chunk9,echo=TRUE}
+We are displaying the output for the first 5 epochs only
+
+```{r chunk9, fig.align='center', fig.width=10, fig.asp=0.318}
+
+#| class-output: "scrollable-output"
+
 history <- modnn %>% fit(
-    x[-testid, ], y[-testid], epochs = 600, batch_size = 32,
-    validation_data = list(x[testid, ], y[testid])
-  )
+  x[-testid, ], y[-testid], epochs = 600, batch_size = 32,
+  validation_data = list(x[testid, ], y[testid]),
+  verbose = 0 # This is the key to suppress the full output
+)
+
+# The history object contains a 'metrics' dataframe
+cat("Displaying metrics for the first 5 epochs:\n")
+print(head(history$metrics, 5))
+
+plot(history)
 ```
 
 It is worth noting that if you run the `fit()` command a second time in the same \text{R} session, then the fitting process will pick up where it left off. Try re-running the `fit()` command, and then the `plot()` command, to see!
@@ -301,13 +313,15 @@ modelnn %>%
 
 Now we are ready to go. The final step is to supply training data, and fit the model.
 
-```{r chunk18}
+```{r chunk18, fig.align='center', fig.width=10, fig.asp=0.4}
 system.time(
   history <- modelnn %>%
 #     fit(x_train, y_train, epochs = 30, batch_size = 128,
       fit(x_train, y_train, epochs = 15, batch_size = 128,
-        validation_split = 0.2)
+        validation_split = 0.2,
+      verbose = 0)
 )
+print(head(history$metrics, 5))
 plot(history, smooth = FALSE)
 ```
 
@@ -341,10 +355,11 @@ summary(modellr)
 We fit the model just as before.
 
 ```{r chunk21}
+#| class-output: "scrollable-output"
 modellr %>% 
   compile(
     loss = "categorical_crossentropy",
-    ptimizer = optimizer_rmsprop(), 
+    optimizer = optimizer_rmsprop(), 
     metrics = c("accuracy"))
 
 modellr %>% 
@@ -430,11 +445,12 @@ model %>%
     loss = "categorical_crossentropy",
     optimizer = optimizer_rmsprop(), 
     metrics = c("accuracy"))
-#history <- model %>% fit(x_train, y_train, epochs = 30,
+#history <- model %>% fit(x_train, y_train, epochs = 30,#this is better but takes too long
 history <- model %>% 
   fit(x_train, y_train, epochs = 10,
-    batch_size = 128, validation_split = 0.2)
-
+    batch_size = 128, validation_split = 0.2,
+    verbose =0)
+print(head(history$metrics, 5))
 model %>% 
   predict(x_test) %>% 
   k_argmax() %>% 
@@ -554,7 +570,7 @@ We applied the `accuracy()` function that we wrote in Lab 10.9.2 to every column
 
 Before making a plot, we adjust the plotting window.
 
-```{r chunk37}
+```{r chunk37, fig.align='center', fig.width=10, fig.asp=0.318}
 par(mar = c(4, 4, 4, 4), mfrow = c(1, 1))
 plot(-log(fitlm$lambda), acclmv)
 ```
@@ -571,7 +587,9 @@ model %>% compile(optimizer = "rmsprop",
     loss = "binary_crossentropy", metrics = c("accuracy"))
 history <- model %>% fit(x_train_1h[-ival, ], y_train[-ival],
     epochs = 20, batch_size = 512,
-    validation_data = list(x_train_1h[ival, ], y_train[ival]))
+    validation_data = list(x_train_1h[ival, ], y_train[ival]),
+  verbose = 0)
+print(head(history$metrics, 5))
 ```
 
 The `history` object has a `metrics` component that records both the training and validation accuracy at each epoch. Figure 10.11 includes test accuracy at each epoch as well. To compute the test accuracy, we rerun the entire sequence above, replacing the last line with
@@ -579,8 +597,10 @@ The `history` object has a `metrics` component that records both the training an
 ```{r chunk39}
 history <- model %>% fit(
     x_train_1h[-ival, ], y_train[-ival], epochs = 20,
-    batch_size = 512, validation_data = list(x_test_1h, y_test)
+    batch_size = 512, validation_data = list(x_test_1h, y_test),
+      verbose = 0
   )
+print(head(history$metrics, 5))
 ```
 
 **Recurrent Neural Networks**
@@ -626,7 +646,9 @@ model %>% compile(optimizer = "rmsprop",
     loss = "binary_crossentropy", metrics = c("acc"))
 #history <- model %>% fit(x_train, y_train, epochs = 10,
 history <- model %>% fit(x_train, y_train, epochs = 3,
-    batch_size = 128, validation_data = list(x_test, y_test))
+    batch_size = 128, validation_data = list(x_test, y_test),
+  verbose = 0)
+print(head(history$metrics, 5))
 plot(history)
 predy <- predict(model, x_test) > 0.5
 mean(abs(y_test == as.numeric(predy)))
@@ -640,7 +662,7 @@ We now show how to fit the models for time series prediction. We first set up th
 
 We are interested in predicting trading volume.
 
-```{r echo=FALSE,eval = TRUE}
+```{r echo=FALSE,eval = TRUE, fig.align='center', fig.width=10, fig.asp=0.7}
 # Transform the dataset into a long format for easier plotting
 xdata <- NYSE %>%
   select(DJ_return, log_volume, log_volatility) %>%
@@ -793,8 +815,10 @@ history <- model %>% fit(
 #    batch_size = 64, epochs = 200,
     batch_size = 64, epochs = 75,
     validation_data =
-      list(xrnn[!istrain,, ], arframe[!istrain, "log_volume"])
+      list(xrnn[!istrain,, ], arframe[!istrain, "log_volume"]),
+  verbose = 0
   )
+print(head(history$metrics, 5))
 kpred <- predict(model, xrnn[!istrain,, ])
 1 - mean((kpred - arframe[!istrain, "log_volume"])^2) / V0
 ```
@@ -826,7 +850,7 @@ The `-1` in the formula avoids the creation of a column of ones for the intercep
 
 The rest of the steps to fit a nonlinear Auto Regressive model should by now be familiar.
 
-```{r chunk55}
+```{r chunk55, fig.align='center', fig.width=10, fig.asp=0.318}
 arnnd <- keras_model_sequential() %>%
   layer_dense(units = 32, activation = 'relu',
       input_shape = ncol(x)) %>%
@@ -838,8 +862,10 @@ history <- arnnd %>% fit(
 #    x[istrain, ], arframe[istrain, "log_volume"], epochs = 100, 
     x[istrain, ], arframe[istrain, "log_volume"], epochs = 30, 
     batch_size = 32, validation_data =
-      list(x[!istrain, ], arframe[!istrain, "log_volume"])
+      list(x[!istrain, ], arframe[!istrain, "log_volume"]),
+  verbose = 0
   )
+print(head(history$metrics, 5))
 plot(history)
 npred <- predict(arnnd, x[!istrain, ])
 1 - mean((arframe[!istrain, "log_volume"] - npred)^2) / V0

@@ -83,7 +83,7 @@ format:
     theme: flatly
   pdf:
     keep-tex: true
-    include-in-header: custom-style.sty
+    #include-in-header: custom-style.sty
     pdf-engine: xelatex
       
 prefer-html: true
