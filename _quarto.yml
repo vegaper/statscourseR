@@ -4,6 +4,7 @@ project:
   render: 
     - "*.qmd"
     - "!courseSummary.qmd"
+    - "!test.qud"
     - "!ignored-dir/"
 website:
   search: true

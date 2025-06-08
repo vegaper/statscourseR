@@ -51,20 +51,15 @@ $$
 
 The magnitude of a vector represents its length in space. The magnitude (also called the Euclidean norm) is calculated using the square root of the sum of the squares of its components.
 
-For a vector: $\vec{v} = [v_1,v_2,\cdots,v_n]$ $$
+For a vector: $\vec{v} = [v_1,v_2,\cdots,v_n]$ 
+$$
 \|\vec{v}\| = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2} = \sqrt{\sum_{i=1}^{n} v_i^2}
-$$ Example: $$
-\vec{v} = [3, 4]
-$$
+$$ 
+Example: Let: $\vec{v} = [3, 4]$
 
-Then:
-
-$$
-\|\vec{v}\| = \sqrt{3^2 + 4^2} = \sqrt{9 + 16} = \sqrt{25} = 5
-$$
+Then: $\|\vec{v}\| = \sqrt{3^2 + 4^2} = \sqrt{9 + 16} = \sqrt{25} = 5$
 
 ```{r, fig.align='center', echo=FALSE}
-# Define the vector
 v <- c(3, 4)
 
 # Set up the plot area
@@ -80,13 +75,10 @@ points(v[1], v[2], pch = 19, col = "blue")
 ```
 
 ```{r}
-# Define the vector
 v <- c(3, 4)
 
 # Calculate the magnitude (Euclidean norm)
 (magnitude <- sqrt(sum(v^2)))
-
-
 ```
 
 # Dot product of vectors
@@ -100,7 +92,6 @@ $$
 $$
 
 ```{r, fig.align='center', echo=FALSE}
-# Define the vectors
 v1 <- c(3, 4)
 v2 <- c(4, 2)
 
@@ -138,17 +129,9 @@ $$
 
 Example:
 
-Let:
+Let: $\vec{a} = [1, 2, 3], \quad \vec{b} = [4, 5, 6]$
 
-$$
-\vec{a} = [1, 2, 3], \quad \vec{b} = [4, 5, 6]
-$$
-
-Then:
-
-$$
-\vec{a} \cdot \vec{b} = 1 \cdot 4 + 2 \cdot 5 + 3 \cdot 6 = 4 + 10 + 18 = 32
-$$ in `r`
+Then: $\vec{a} \cdot \vec{b} = 1 \cdot 4 + 2 \cdot 5 + 3 \cdot 6 = 4 + 10 + 18 = 32$ in `r`
 
 ```{r}
 # Define the vectors
@@ -162,10 +145,9 @@ dot_product
 
 # Cosine Similarity
 
-Cosine similarity is a measure of similarity between two non-zero vectors of an inner product space. It is defined as the cosine of the angle between the two vectors. This measure is particularly used in text analysis to measure the similarity between documents.
+*Cosine similarity* is a measure of similarity between two non-zero vectors of an inner product space. It is defined as the cosine of the angle between the two vectors. This measure is particularly used in text analysis to measure the similarity between documents.
 
-```{r}
-# Define vectors
+```{r, fig.align='center', echo=FALSE}
 v1 <- c(3, 4)
 v2 <- c(4, 2)
 
@@ -339,11 +321,14 @@ product_vectors[1]
 search_vector <- vectorize(tokenized_search, vocab)
 
 ```
+
 2. Cosine Similarity Calculation
+
 We define a function to compute the cosine similarity between two numeric vectors. Recall that the cosine similarity is defined as
 $$
 \text{cosine similarity} = \cos(\theta) = \frac{\vec{a} \cdot \vec{b}}{\|\vec{a}\| \|\vec{b}\|}
 $$
+
 ```{r}
 cosine_similarity <- function(vec1, vec2) {
   dot_product <- sum(vec1 * vec2)
@@ -389,7 +374,7 @@ This basic approach can be a stepping stone toward more sophisticated text simil
 
 # Matrices operations
 
-to create a matrix in r you can create vectors and bind them together using `cbind` or `rbind` or create a matrix directly for example `matrix(1:60,20,3)`
+to create a matrix in `r` you can create vectors and bind them together using `cbind` or `rbind` or create a matrix directly for example `matrix(1:60,20,3)`
 
 Linear algebra was developed to solve a system of equations. It gives a general solution to any system of equations. Let's see this example:
 
@@ -461,7 +446,7 @@ kA = 3 \begin{pmatrix}
 \end{pmatrix}
 $$
 
-in r is also very simple:
+in `r` is also very simple:
 
 ```{r}
 X<- matrix(1:12,4,3)
@@ -472,9 +457,9 @@ print(X*a)
 
 ## Matrices multiplication
 
-Matrix multiplication is performed by taking the dot product of rows from the first matrix (𝐴) with columns of the second matrix (𝐵). The key steps are:
+Matrix multiplication is performed by taking the *dot product* of rows from the first matrix (𝐴) with columns of the second matrix (𝐵). The key steps are:
 
--   Check compatibility: Ensure the number of columns in 𝐴 matches the number of rows in 𝐵.
+-   *Check dimension compatibility*: Ensure the number of columns in 𝐴 matches the number of rows in 𝐵.
 
 -   *Dot Product Computation*: Each element in the resulting matrix is calculated by multiplying corresponding entries from a row of 𝐴 and a column of𝐵, summing the results.
 
@@ -501,7 +486,7 @@ $$ These matrices are compatible for multiplication because $A$ has **4 columns*
 The resulting $3 \times 2$ matrix $C$ is computed as follows:
 
 $$
-C = A B =
+C=
 \begin{pmatrix}
 a_{1,1} \cdot b_{1,1} + a_{1,2} \cdot b_{2,1} + a_{1,3} \cdot b_{3,1} + a_{1,4} \cdot b_{4,1} &
 a_{1,1} \cdot b_{1,2} + a_{1,2} \cdot b_{2,2} + a_{1,3} \cdot b_{3,2} + a_{1,4} \cdot b_{4,2} \\
@@ -512,15 +497,7 @@ a_{3,1} \cdot b_{1,2} + a_{3,2} \cdot b_{2,2} + a_{3,3} \cdot b_{3,2} + a_{3,4} 
 \end{pmatrix}
 $$
 
-Each element in $C$ is derived from the dot product of a row in $A$ and a column in $B$.
-
-For example, the top-left element of $C$ (i.e., $c_{1,1}$) is calculated as:
-
-$$
-c_{1,1} = a_{1,1} \cdot b_{1,1} + a_{1,2} \cdot b_{2,1} + a_{1,3} \cdot b_{3,1} + a_{1,4} \cdot b_{4,1}
-$$
-
-Likewise, every position in $C$ follows the same logic.
+Each element in $C$ is derived from the *dot product* of a row in $A$ and a column in $B$.
 
 ::: exercise-box
 Given two matrices (A) and (B):
@@ -563,7 +540,7 @@ AB = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-and in r we use `%*%`
+and in `r` we use `%*%`
 
 ```{r}
 X<- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
@@ -592,15 +569,20 @@ $$
 The result of multiplying matrix (A) by matrix (B) is:
 
 $$
-AB = \begin{pmatrix}
+A = \begin{pmatrix}
 1 & 2 \\
 3 & 4 \\
 5 & 6
 \end{pmatrix}
+B = 
 \begin{pmatrix}
 7 & 8 & 9 \\
 10 & 11 & 12
 \end{pmatrix}
+$$
+
+$$
+AB 
 = \begin{pmatrix}
 1 \cdot 7 + 2 \cdot 10 & 1 \cdot 8 + 2 \cdot 11 & 1 \cdot 9 + 2 \cdot 12 \\
 3 \cdot 7 + 4 \cdot 10 & 3 \cdot 8 + 4 \cdot 11 & 3 \cdot 9 + 4 \cdot 12 \\
@@ -616,13 +598,18 @@ $$
 
 ### Understanding Matrix Multiplication
 
-Matrix multiplication is an operation where the product of two matrices is obtained by computing the dot product of rows from the first matrix with columns from the second matrix. However, unlike regular arithmetic multiplication, matrix multiplication does **not** follow the commutative property: $$
+Matrix multiplication is an operation where the product of two matrices is obtained by computing the *dot product* of rows from the first matrix with columns from the second matrix. However, unlike regular arithmetic multiplication, matrix multiplication does **not** follow the commutative property: 
+$$
 A \times B \neq B \times A
-$$ in general. This means swapping the order of multiplication can lead to different results or may even be **undefined**.
+$$ 
+in general. This means swapping the order of multiplication can lead to different results or may even be **undefined**.
 
-### **Conditions for Matrix Multiplication**
+### Conditions for Matrix Multiplication
 
-For matrices **A** and **B** to be **multipliable**, their dimensions must satisfy: - $A$ is an $m \times n$ matrix. - $B$ is an $n \times p$ matrix. - The resulting matrix $C$ has dimensions $m \times p$.
+For matrices **A** and **B** to be **multipliable**, their dimensions must satisfy: 
+ - $A$ is an $m \times n$ matrix. 
+ - $B$ is an $n \times p$ matrix. 
+ - The resulting matrix $C$ has dimensions $m \times p$.
 
 **Example: Demonstrating Non-Commutativity**
 
@@ -669,14 +656,12 @@ B A =
 \end{pmatrix}
 $$
 
-Clearly, $A \times B \neq B \times A$, demonstrating non-commutativity.
+### Additional Matrix Multiplication Properties
 
-### **Additional Matrix Multiplication Properties**
-
-1.  **Associative Property**: $$ (A \times B) \times C = A \times (B \times C) $$
-2.  **Distributive Property**: $$ A \times (B + C) = A \times B + A \times C $$
-3.  **Identity Matrix Property**: If $I$ is the identity matrix: $$ A \times I = I \times A = A $$
-4.  **Zero Matrix Property**: $$ A \times 0 = 0 $$
+1.  **Associative Property**: $(A \times B) \times C = A \times (B \times C)$
+2.  **Distributive Property**: $A \times (B + C) = A \times B + A \times C$
+3.  **Identity Matrix Property**: If $I$ is the identity matrix: $A \times I = I \times A = A$
+4.  **Zero Matrix Property**: $A \times 0 = 0$
 
 Matrix multiplication plays a fundamental role in linear algebra, forming the basis for transformations, systems of equations, and numerous applications in data science, physics, and engineering.
 
@@ -690,7 +675,9 @@ I_3 = \begin{pmatrix}
 0 & 1 & 0 \\
 0 & 0 & 1
 \end{pmatrix}
-$$ in r we use the function `diag()` with the number of dimensions we want:
+$$ 
+
+In r we use the function `diag()` with the number of dimensions we want:
 
 ```{r}
 diag(5)
@@ -698,7 +685,7 @@ diag(5)
 
 ## Transpose
 
-Transpose simply turns the rows into columns and vice versa, in r we use `t`
+Transpose simply turns the rows into columns and vice versa, in `r` we use `t`
 
 ```{r}
 X<- matrix(1:15,5,3)
@@ -712,11 +699,11 @@ The inverse of a square matrix $X$ is denoted as $X^{-1}$ it has the property th
 
 Note that not all matrices have an inverse.
 
-In linear algebra, the **determinant** and **adjoint** of a matrix are fundamental concepts used to compute the **inverse** of a matrix. Below, we explain these concepts and demonstrates how to use them to find the inverse of a matrix.
+In linear algebra, the *determinant* and *adjoint* of a matrix are fundamental concepts used to compute the *inverse* of a matrix. 
 
 ## Determinant
 
-The **determinant** of a square matrix is a scalar value that provides important properties of the matrix. It is denoted as `det(A)` for a matrix `A`. A matrix is invertible if and only if its determinant is non-zero.
+The *determinant* of a square matrix is a scalar value that provides important properties of the matrix. It is denoted as `det(A)` for a matrix `A`. A matrix is invertible if and only if its determinant is non-zero.
 
 For a 2×2 matrix:
 
@@ -731,19 +718,19 @@ The determinant is:
 
 $$
 \text{det}(A) = ad - bc
-$$ In r we use `det` formula to calculate it.
+$$ 
+
+In `r` we use `det` formula to calculate it.
 
 ```{r}
-# Define the matrix
 A <- matrix(c(1, 0, 1, 2, 4, 0, 3, 5, 6), nrow = 3, byrow = TRUE)
 
-# Compute the determinant
 det_A <- det(A)
 ```
 
 ## Adjoint
 
-The **adjoint** (or adjugate) of a matrix is the transpose of the cofactor matrix. For a 2×2 matrix:
+The *adjoint* (or adjugate) of a matrix is the transpose of the *cofactor matrix*. For a 2×2 matrix:
 
 $$
 A = \begin{bmatrix}
@@ -763,21 +750,23 @@ $$
 
 ## Cofactor Matrix
 
-To compute the **adjoint** of a matrix, we first need the **cofactor matrix**.
+To compute the **adjoint** of a matrix of other dimensions, we first need the *cofactor matrix*.
 
-The **cofactor** of an element $a_{ij}$ in a matrix is calculated as:
+The *cofactor* of an element $a_{ij}$ in a matrix is calculated as:
 
 $$
 C_{ij} = (-1)^{i+j} \cdot M_{ij}
 $$
 
-Where: - $M_{ij}$ is the **minor** of the element $a_{ij}$, i.e., the determinant of the submatrix formed by removing the $i$-th row and $j$-th column from the original matrix. - $(-1)^{i+j}$ gives the correct sign based on the position.
+Where: 
+ - $M_{ij}$ is the **minor** of the element $a_{ij}$, i.e., the determinant of the submatrix formed by removing the $i$-th row and $j$-th column from the original matrix. 
+- $(-1)^{i+j}$ gives the correct sign based on the position.
 
 The **cofactor matrix** is the matrix of all $C_{ij}$ values.
 
 ## Adjoint of a Matrix (General Case)
 
-The **adjoint** of a matrix is the **transpose** of its cofactor matrix:
+The *adjoint* of a matrix is the *transpose* of its *cofactor matrix*:
 
 $$
 \text{adj}(A) = \text{Cofactor}(A)^T
@@ -795,7 +784,6 @@ A = \begin{bmatrix}
 $$
 
 ```{r}
-# Define the matrix
 A <- matrix(c(2, 1, 3, 4), nrow = 2, byrow = TRUE)
 
 # Compute the determinant
@@ -805,25 +793,18 @@ det_A <- det(A)
 adj_A <- matrix(c(4, -3, -1, 2), nrow = 2, byrow = TRUE)
 
 # Compute the inverse using the formula
-A_inv <- (1 / det_A) * adj_A
+(A_inv <- (1 / det_A) * adj_A)
 
-# Display the result
-A_inv
 ```
 
-In `r` there is no formula to calculate the adjoint of a matrix directly, so if you need to calculate the adjoint of a matrix of more than 2x2, you can use the package `matlib`
+In base `r` there is no formula to calculate the adjoint of a matrix directly, so if you need to calculate the adjoint of a matrix of more than 2x2, you can use the package `matlib`
 
 ```{r}
-
 # Define a matrix
 A <- matrix(c(1, 0, 1, 2, 4, 0, 3, 5, 6), nrow = 3, byrow = TRUE)
 
 # Compute the adjoint
-adj_A <- matlib::adjoint(A)
-
-# Display the result
-adj_A
-
+(adj_A <- matlib::adjoint(A))
 ```
 
 ## Calculating Inverse of a Matrix using software
@@ -844,25 +825,21 @@ A = \begin{bmatrix}
 $$
 
 ```{r}
-# Define the matrix
+
 A <- matrix(c(1, 0, 1, 2, 4, 0, 3, 5, 6), nrow = 3, byrow = TRUE)
 
 # Compute the inverse using solve (R handles adjoint and cofactors internally)
-A_inv <- solve(A)
-
-# Display the result
-A_inv
+(A_inv <- solve(A))
 ```
 :::
 
 In `r` we use the function `solve` to get the inverse, and we use it to solve equations: it gives us the values for a, b and c to resolve the system of equations:
 
-
-\begin{align*}
-a + b + c &= 6 \\
-3a - 2b + c &= 2 \\
-2a + b - c &= 1
-\end{align*}
+$$
+a + b + c = 6 \\
+3a - 2b + c = 2 \\
+2a + b - c = 1
+$$
 
 $$
 \begin{pmatrix}
@@ -904,7 +881,7 @@ The factory has **available resources** of:
 
 We want to determine how many **Chairs (x)** and **Tables (y)** the factory can produce using all available resources.
 
-Step 1: Represent the System as Equations
+*Step 1: Represent the System as Equations*
 
 We can write the constraints as:
 
@@ -915,7 +892,7 @@ $$
 \end{aligned}
 $$
 
-Step 2: Matrix Form
+*Step 2: Matrix Form*
 
 This system can be written in matrix form:
 
@@ -931,7 +908,7 @@ X = \begin{bmatrix} x \\ y \end{bmatrix}, \quad
 B = \begin{bmatrix} 40 \\ 30 \end{bmatrix}
 $$
 
-Step 3: Solve in R
+*Step 3: Solve in R*
 
 ```{r}
 # Coefficient matrix A
@@ -941,10 +918,8 @@ A <- matrix(c(2, 3, 5, 2), nrow = 2, byrow = TRUE)
 B <- matrix(c(40, 30), nrow = 2)
 
 # Solve for X (number of chairs and tables)
-X <- solve(A, B)
+(X <- solve(A, B))
 
-# Display the result
-X
 ```
 :::
 
@@ -966,10 +941,12 @@ print(barY)
 
 # Sample variance
 
-First, remember that the residuals are given by $e=Y-\hat{Y}$ where $e$ is the nX1 vector of residuals, Y is the nx1 vector of observed values and $\hat{Y}$ is the nx1 vector of predicted values from our model. The formula for the sample variance $s^2$ of the residuals is $$
+First, remember that the residuals are given by $e=Y-\hat{Y}$ where $e$ is the $n \times 1$ vector of residuals, Y is the $n \times 1$  vector of observed values and $\hat{Y}$ is the $n \times 1$  vector of predicted values from our model. The formula for the sample variance $s^2$ of the residuals is 
+$$
 s^2 = \frac{\mathbf{e}^T \mathbf{e}}{n - p}
 $$ 
-This gives you the average squared deviation of the residuals from their mean, which is an estimate of the variance of the errors in your model. in r:
+This gives you the average squared deviation of the residuals from their mean, which is an estimate of the variance of the errors in your model. 
+In `r`:
 
 ```{r}
 e<- y -barY
@@ -1092,7 +1069,8 @@ $$
 (Y - X\beta)^T(Y - X\beta)
 $$ 
 
-## Least Squares Estimator (LSE) LSE is a method used to estimate the parameters of a linear model by minimizing the sum of the squared differences (errors) between observed and predicted values.
+## Least Squares Estimator (LSE) 
+LSE is a method used to estimate the parameters of a linear model by minimizing the sum of the squared differences (errors) between observed and predicted values.
 
 To find the $\hat{\beta}$ that minimizes this we solve by taking the derivative: 
 $$
@@ -1126,7 +1104,7 @@ abline(intercept, slope, col = "blue")
 
 ## Motivating Examples
 
-#### Falling objects
+### Falling objects
 
 Imagine you are Galileo in the 16th century trying to describe the velocity of a falling object. An assistant climbs the Tower of Pisa and drops a ball, while several other assistants record the position at different times. Let's simulate some data using the equations we know today and adding some measurement error:
 
@@ -1170,7 +1148,7 @@ Beta <- matrix(c(55,0,5),3,1)
 Beta
 ```
 
-the residuals will be y - X times Beta.
+the residuals will be $y - X \times \beta$.
 
 ```{r}
 r<- d - X%*%Beta
@@ -1191,7 +1169,10 @@ betahat <- solve(crossprod(X))%*% crossprod(X,d)
 betahat
 ```
 
-which gives us: 57.0212322 is the hight of the tower of Pisa -0.4223921 is the starting velocity (should be 0) -4.8175119 is half of the gravity acceleration.
+which gives us: 
+- 57.0212322 is the hight of the tower of Pisa 
+- 0.4223921 is the starting velocity (should be 0) 
+- 4.8175119 is half of the gravity acceleration.
 
 which will result in our formula: `d <- 57.0212322 - 0.4223921 tt - 4.8175119 tt^2`
 
@@ -1223,7 +1204,7 @@ fit <- lm(d~tt+tt2)
 summary(fit)
 ```
 
-## Standard Error in the context of linear models
+# Standard Error in the context of linear models
 
 We have shown how to find the least squares estimates with matrix algebra. These estimates are random variables as they are linear combinations of the data. For these estimates to be useful we also need to compute the standard errors.
 
@@ -1240,14 +1221,14 @@ y = h0 + v0 *tt  - 0.5* g*tt^2 + rnorm(n,sd=1)
 
 now we act as if we didn't know `h0`, `v0` and `-0.5g` and use regression to estimate these. We can rewrite the models as `y=b0+b1 t+ b2 t^2 +e` and obtain LSE. Note that g will be `g=-2*b2`
 
-To obtain the LSE in r
+To obtain the LSE in `r`
 
 ```{r}
 X = cbind(1,tt,tt^2)
 A = solve(crossprod(X))%*%t(X)%*%y
 ```
 
-so g will be measured after this experiment as:
+so $g$ will be measured after this experiment as:
 
 ```{r}
 -2*A[3]
@@ -1279,11 +1260,12 @@ sd(gs)
 
 Now we are going to use matrix algebra to compute standard errors of regression coefficients. We will start by defining the *variance covariance matrix*.
 
-### Variance-covariance matrix (Advanced)
+## Variance-covariance matrix (Advanced)
 
 As a first step we need to define the *variance-covariance matrix*, $\boldsymbol{\Sigma}$. For a vector of random variables, $\mathbf{Y}$, we define $\boldsymbol{\Sigma}$ as the matrix with the $i,j$ entry:
 
-$$ \Sigma_{i,j} \equiv \mbox{Cov}(Y_i, Y_j) $$ The covariance is equal to the variance if $i = j$ and equal to 0 if the variables are independent. In the kinds of vectors considered up to now, for example, a vector $\mathbf{Y}$ of individual observations $Y_i$ sampled from a population, we have assumed independence of each observation and assumed the $Y_i$ all have the same variance $\sigma^2$, so the variance-covariance matrix has had only two kinds of elements:
+$$ \Sigma_{i,j} \equiv \mbox{Cov}(Y_i, Y_j) $$ 
+The covariance is equal to the variance if $i = j$ and equal to $0$ if the variables are independent. In the kinds of vectors considered up to now, for example, a vector $\mathbf{Y}$ of individual observations $Y_i$ sampled from a population, we have assumed independence of each observation and assumed the $Y_i$ all have the same variance $\sigma^2$, so the variance-covariance matrix has had only two kinds of elements:
 
 $$ \mbox{Cov}(Y_i, Y_i) = \mbox{var}(Y_i) = \sigma^2$$
 
@@ -1293,7 +1275,7 @@ which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$
 
 Later, we will see a case, specifically the estimate coefficients of a linear model, $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonal elements of $\boldsymbol{\Sigma}$. Furthermore, the diagonal elements will not be equal to a single value $\sigma^2$.
 
-### Variance of a linear combination
+## Variance of a linear combination
 
 A useful result provided by linear algebra is that the variance covariance-matrix of a linear combination $\mathbf{AY}$ of $\mathbf{Y}$ can be computed as follows:
 
@@ -1326,7 +1308,7 @@ $$\sigma^2\mathbf{(X^\top X)^{-1}}$$
 
 The diagonal of the square root of this matrix contains the standard error of our estimates.
 
-#### Estimating $\sigma^2$
+* Estimating $\sigma^2$*
 
 To obtain an actual estimate in practice from the formulas above, we need to estimate $\sigma^2$. Previously we estimated the standard errors from the sample. However, the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals.
 
@@ -1398,7 +1380,7 @@ Using the above, we know how to compute the variance covariance matrix of $\hat{
 
 ## CLT and t-distribution
 
-We have shown how we can obtain standard errors for our estimates. However, as we learned in the first chapter, to perform inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is because the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{\beta}$ and standard errors as described. For small samples, if the $\varepsilon$ are normally distributed, then the $\hat{\beta}-\beta$ follow a t-distribution. We do not derive this result here, but the results are extremely useful since it is how we construct p-values and confidence intervals in the context of linear models.
+We have shown how we can obtain standard errors for our estimates. However, as we learned in the first chapter, to perform inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is because the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{\beta}$ and standard errors as described. For small samples, if the $\varepsilon$ are normally distributed, then the $\hat{\beta}-\beta$ follow a $t$-distribution. We do not derive this result here, but the results are extremely useful since it is how we construct $p$-values and confidence intervals in the context of linear models.
 
 #### Code versus math
 
@@ -1410,7 +1392,7 @@ beta =  c(34,0.5)
 var(beta[1]+beta[2]*x)
 ```
 
-it is nowhere near 0. This is an example in which we have to be careful in distinguishing code from math. The function `var` is simply computing the variance of the list we feed it, while the mathematical definition of variance is considering only quantities that are random variables. In the R code above, `x` is not fixed at all: we are letting it vary, but when we write $\mbox{var}(Y_i) = \sigma^2$ we are imposing, mathematically, `x` to be fixed. Similarly, if we use R to compute the variance of $Y$ in our object dropping example, we obtain something very different than $\sigma^2=1$ (the known variance):
+it is nowhere near $0$. This is an example in which we have to be careful in distinguishing code from math. The function `var` is simply computing the variance of the list we feed it, while the mathematical definition of variance is considering only quantities that are random variables. In the R code above, `x` is not fixed at all: we are letting it vary, but when we write $\mbox{var}(Y_i) = \sigma^2$ we are imposing, mathematically, `x` to be fixed. Similarly, if we use R to compute the variance of $Y$ in our object dropping example, we obtain something very different than $\sigma^2=1$ (the known variance):
 
 ```{r}
 n <- length(tt)
@@ -1803,9 +1785,9 @@ Though the linear model in this case is equivalent to a t-test, we will soon exp
 
 We already know that the numerator of the t-value is the difference between the average of the groups, so we only have to see that the denominator is also the same. In the linear model, we saw how to calculate the standard error using the design matrix X and the estimate of $\sigma^2$ from the residuals. The estimate of the variance $\sigma^2$ was the sum of the squared residuals divided by (N-p) where N is the total number of samples and p is the number of terms (in our example an intercept and a group indicator so p=2).
 
-In the t-test, the denominator of the t-value is the standard error of the difference.
+In the $t$-test, the denominator of the $t$-value is the standard error of the difference.
 
-The t-test formula for the standard error of the difference, if we assume equal variance in the two groups is:
+The $t$-test formula for the standard error of the difference, if we assume equal variance in the two groups is:
 
 $$
 SE =\sqrt{var(diff)} = \sqrt{\sigma_{\Delta}^2}
@@ -1842,7 +1824,7 @@ where $(X^TX)^{-1}_{ii}$ is the i-th diagonal element of this inverse matrix, wh
 
 ## Crossed designs
 
-imagine we are running an experiment and we have two different treatments, group A is the control group and receives no treatment (a), group B receives treatment 1 (b), group C receives treatment 2 (c) and a fourth group receives treatment 1 and 2 (d). In this case we consider the effects of receiving both treatments additive. If we write down a model it will look like this: $$
+Imagine we are running an experiment and we have two different treatments, group A is the control group and receives no treatment (a), group B receives treatment 1 (b), group C receives treatment 2 (c) and a fourth group receives treatment 1 and 2 (d). In this case we consider the effects of receiving both treatments additive. If we write down a model it will look like this: $$
 \begin{pmatrix}
 \color{red}1 & \color{red}0 & \color{red}0 \\
 \color{red}1 & \color{red}0 & \color{red}0 \\

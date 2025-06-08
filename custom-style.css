@@ -3,21 +3,54 @@ pre.sourceCode {
   background-color: #f8f8f8;
 }
 
-/* Change the text color of code output */
-div.cell-output {
- border: 2px solid #cae8dc;
- border-radius: 8px;
- background-color: #fff;
- padding: 10px;
+/* General code styling */
+pre.code {
+  color: #367588;
+}
+code {
   color: #367588;
 }
 
-pre.code {
-   color: #367588;
+/* Base styling for all cell outputs containers */
+div.cell-output {
+  border: 2px solid #cae8dc;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 10px;
+  color: #367588;
+  margin-bottom: 5px; /* Common margin for outputs */
+
+  /* Apply scrollbar properties here, for the container */
+  max-height: 350px; /* Adjust this value to your desired max height */
+  overflow-y: auto;  /* This creates the vertical scrollbar */
+  overflow-x: auto;  /* Optional: also handle horizontal overflow for long lines */
 }
-code {
-   color: #367588;
+
+/* Ensure no inner elements cause their own scrollbars. */
+/* Target the pre and code tags directly inside cell-output. */
+div.cell-output pre,
+div.cell-output code {
+  max-height: none;
+  overflow: visible;
+  white-space: pre-wrap; /* Forces content to wrap within its container */
+  word-break: break-word; /* Allows breaking long words if necessary to fit */
+  display: block; /* Ensure it behaves as a block element */
+  box-sizing: border-box; /* Standard box model */
+  max-width: none; /* Keep this to ensure no other default max-width interferes */
+  padding: 10px;
 }
+
+
+/* Specific styles for scrollable FIGURE output */
+/* When class-figure is used, it's typically applied to the <figure> element. */
+figure.scrollable-figure { /* Target the <figure> element directly */
+  max-height: 400px; /* Adjust as needed */
+  overflow-y: auto;
+  overflow-x: auto; /* Also handle horizontal overflow for wide plots if needed */
+  border: 1px solid #ddd; /* Example border for scrollable figures */
+  margin-bottom: 15px;
+}
+
 
 .centered-text p {
     text-align: center;

@@ -585,8 +585,7 @@ These standard errors can be used to compute *confidence intervals* For example 
 
 $$
 \hat{\beta_1} \mp 2 * SE(\hat{\beta_1}) = \left[\hat{\beta_1}-2 * SE(\hat{\beta_1}),\hat{\beta_1}+2 * SE(\hat{\beta_1})\right]
-$$
-## Hypothesis testing and significance of correlation
+$$ \## Hypothesis testing and significance of correlation
 
 The most important thing to remember about correlation testing is that **it only applies to quantitative variables that have a generally linear relationship**.
 
@@ -780,6 +779,7 @@ y= 0.5 +2*x+e
 summary(y)
 plot(x,y)
 ```
+
 if $x$ is binomial:
 
 ```{r}
@@ -791,9 +791,6 @@ y= 0.5 +2*x+e
 summary(y)
 plot(x,y)
 ```
-
-
-
 
 ::: {.callout-orange appearance="simple" icon="false"}
 Linear regression models the relationship between a dependent variable and one or more independent variables. Remember a well-fitting model doesn't always imply causality.
@@ -1204,36 +1201,37 @@ Generalized Linear Models (GLMs) are a flexible extension of ordinary linear reg
 
 **Common types of GLMs**
 
-- Linear Regression: when the response variable is continuous and normally distributed.
+-   Linear Regression: when the response variable is continuous and normally distributed.
 
-- Logistic Regression: When the response is binary (e.g. success/failure)
+-   Logistic Regression: When the response is binary (e.g. success/failure)
 
-- Poisson Regression: For count data (e.g. number of events)
+-   Poisson Regression: For count data (e.g. number of events)
 
 ## Poisson Distribution
 
 The Poisson distribution is a probability distribution that expresses the probability of a given number of events occurring within a fixed interval of time or space, provided that these events occur with a known constant mean rate and independently of the time since the last event.
 
 ### Characteristics
-- **Discrete distribution**: The Poisson distribution applies to events that can be counted in whole numbers.
 
-- **Parameter**: The Poisson distribution is characterized by a single parameter, \(\lambda\) (lambda), which represents the average rate (mean) of occurrences within a given interval.
+-   **Discrete distribution**: The Poisson distribution applies to events that can be counted in whole numbers.
 
-- **Probability Mass Function (PMF)**: The probability of observing \(k\) events (where \(k\) is a non-negative integer) is given by the formula:
+-   **Parameter**: The Poisson distribution is characterized by a single parameter, (\lambda) (lambda), which represents the average rate (mean) of occurrences within a given interval.
+
+-   **Probability Mass Function (PMF)**: The probability of observing (k) events (where (k) is a non-negative integer) is given by the formula:
 
 $$
   P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}
-$$
-where \(e\) is the base of the natural logarithm (approximately equal to 2.71828), and \(k!\) is the factorial of \(k\).
+$$ where (e) is the base of the natural logarithm (approximately equal to 2.71828), and (k!) is the factorial of (k).
 
 ### Usage
 
-- **Modeling Rare Events**: The Poisson distribution is often used to model rare events, such as the number of phone calls received by a call center per hour or the number of accidents occurring at a busy intersection per day.
+-   **Modeling Rare Events**: The Poisson distribution is often used to model rare events, such as the number of phone calls received by a call center per hour or the number of accidents occurring at a busy intersection per day.
 
-- **Independent Events**: It assumes that the number of events occurring in disjoint intervals are independent.
+-   **Independent Events**: It assumes that the number of events occurring in disjoint intervals are independent.
 
 ### Example
-Suppose a bookstore observes that, on average, 3 customers enter the store per hour. To calculate the probability that exactly 5 customers will enter the store in the next hour, we can use the Poisson distribution with \(\lambda = 3\) and \(k = 5\):
+
+Suppose a bookstore observes that, on average, 3 customers enter the store per hour. To calculate the probability that exactly 5 customers will enter the store in the next hour, we can use the Poisson distribution with (\lambda = 3) and (k = 5):
 
 ```{r}
 # Calculate the probability of exactly 5 customers entering the bookstore
@@ -1247,7 +1245,6 @@ probability
 # Compute the probability using dpois
 dpois(5, lambda = 3)
 ```
-
 
 ## Poison regression model
 
@@ -1419,9 +1416,8 @@ col = " blue ", pch = 19, type = "o")
 The predictions from the Poisson regression model are correlated with those from the linear model; however, our Poisson model produces non-negative outputs. For Poisson regression the responses at each level of X become more variable with increasing means, where variance=mean.In addition, the mean values of Y at each level of X fall on a curve, not a line. AS a result, at either very low or very high levels of Y, the Poisson regression predictions tend to be larger than those from the linear model.
 
 ## Simulating data from a Generalized Linear Model
-Suppose we want to simulate from a Poisson model where Y~poisson($\mu$)
-$ log \mu = \beta_0\beta_1x$ 
-and $\beta_0 = 0.5$ and $\beta_1 = 0.3$
+
+Suppose we want to simulate from a Poisson model where Y\~poisson($\mu$) \$ log \mu = \beta\_0\beta\_1x\$ and $\beta_0 = 0.5$ and $\beta_1 = 0.3$
 
 ```{r}
 set.seed(1)
@@ -1433,8 +1429,8 @@ plot(x,y)
 
 ```
 
-
 # Summary
+
 ::: orange-box
 **Linear Regression:** Use When: You want to predict a continuous outcome based on one or more predictor numerical variables. Example: Predicting house prices based on size, location, and age.
 

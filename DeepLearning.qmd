@@ -1,11 +1,10 @@
 ---
 title: "Deep Learning"
-editor: visual
 execute: 
   eval: true
 ---
 
-```{r eval=TRUE}
+```{r eval=TRUE, echo=FALSE}
 library(ggplot2)
 library(ggforce)
 library(ISLR2)
