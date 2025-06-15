@@ -30,11 +30,11 @@ $$
 
 where:
 
- - $X$ is the **input matrix** (containing feature values).
+-   $X$ is the **input matrix** (containing feature values).
 
- - $W$ is the **weight matrix** (containing learned coefficients).
+-   $W$ is the **weight matrix** (containing learned coefficients).
 
- - $Z$ is the **output before activation**.
+-   $Z$ is the **output before activation**.
 
 ### **Traditional Logistic Regression Notation**
 
@@ -47,23 +47,25 @@ $$
 
 where:
 
- - $\beta_0$ is the **intercept (bias term)**.
+-   $\beta_0$ is the **intercept (bias term)**.
 
- - $\beta_1, \beta_2, \dots, \beta_n$ are the **weights (coefficients)
-assigned to each feature**.
+-   $\beta_1, \beta_2, \dots, \beta_n$ are the **weights (coefficients)
+    assigned to each feature**.
 
- - $x_1, x_2, \dots, x_n$ are the **input feature values** (e.g., time
-spent, pages visited).
+-   $x_1, x_2, \dots, x_n$ are the **input feature values** (e.g., time
+    spent, pages visited).
 
- - $Z$ is the **linear combination before applying the activation
-function**.
+-   $Z$ is the **linear combination before applying the activation
+    function**.
 
 Once $Z$ is computed, the logistic function (**sigmoid activation**) is
 applied:
 
+::: important-formula
 $$
 \sigma(Z) = \frac{1}{1 + e^{-Z}}
-$$
+$${eq-sigmoid-function}
+:::
 
 Both forms describe the same underlying concept:
 
@@ -77,22 +79,58 @@ Both forms describe the same underlying concept:
 Both representations lead to the same outcome: a **probability
 prediction** via the sigmoid function.
 
+The term $Z$ in the sigmoid activation function is most commonly
+referred as the weighted sum of imputs (plus bias)
+
+Herer's a breakdown: In a single neuron, before an activation function
+is applied, a neuron takes multiple inputs, multiplies each input by a
+corresponding weight, sums these weighted inputs, and then adds the bias
+term. So $Z$ represents the linear combination of the inputs to a neuron
+before any any non-linear transformation is applied.
+
+**The concept around activation functions** 1. Introducing
+Non-linearity: this is the most important reason for activation
+functions. Imagine a neural network without activation functions. Each
+neuron would simply perform a linear transformation (weighted sum
++bias). If you stack multiple layers of linear transformations, the
+entire network would still be a single linear transformation. Real world
+data is almost never linearly separable. Problems like image
+recognition, natural language or complex pattern detection involve
+highly non-linear relationships. Activation functions introduce
+non-linearity, allowing neural network to learn and approximate complex,
+non-linear functions and relationships in the data. You can think of an
+activation function as determining whether a neuron should "activate" or
+"fire" and pass its signal to the next layer. It transforms the raw,
+unbounded weighted sum (Z) into an output that is typically within a
+specific range, often interpreted as probability or a strength of
+activation. Sigmoid maps any real number (Z) to a value between 0 and 1.
+This makes it ideal for output layers in binary classification problems,
+where the output can be interpreted as a probability.
+
 # Logistic Regression Model
 
 Logistic regression predicts probabilities using the **sigmoid
 function**: The sigmoid function is a mathematical function that outputs
 values between 0 and 1, making it ideal for logistic regression, where
 we interpret the result as a probability.
-$$\sigma(Z) = \frac{1}{1 + e^{-Z}}$$ where:
 
- - $z$ is the input value (can be any real number)
+$$
+\sigma(Z) = \frac{1}{1 + e^{-Z}}
+$$ {#eq-sigmoid}
 
- - $e$ is Euler's number
+-   $Z$ is the input value (can be any real number)
 
-If $z$ is large and positive,$\sigma(z)$ approaches 1 (strong positive
-probability) If $z$ is large and negative,$\sigma(z)$ approaches 0
-(strong negative probability) when $z=0$, $\sigma(z)=0.5)$, meaning
-neutral probability
+-   $e$ is Euler's number
+
+::: callout-tip
+If $Z$ is large and positive,$\sigma(z)$ approaches 1 (strong positive
+probability)
+
+If $z$ is large and negative,$\sigma(z)$ approaches 0 (strong negative
+probability)
+
+when $z=0$, $\sigma(z)=0.5)$, meaning neutral probability
+:::
 
 ```{r chunk1, echo=FALSE, fig.align='center', fig.width=10, fig.asp=0.318}
 # Define the sigmoid function
@@ -121,25 +159,23 @@ ggplot(df, aes(x = z, y = sigmoid)) +
 
 Predictions ($\hat{y}$) are made using: $$\hat{y} = \sigma(Z)$$ The
 **binary cross-entropy loss function** quantifies the error between the
-estimate and the real output provided to the model:
-$$
+estimate and the real output provided to the model: $$
 L = -\frac{1}{m} \sum_{i=1}^{m} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
-$${#eq-loss-function}
+$$ {#eq-loss-function}
 
 # Updating Weights with Gradient Descent
 
-Since we don't know the optimal values of$W$, we start with random
+Since we don't know the optimal values of $W$, we start with random
 weights and iteratively update them to minimize the loss function. Now,
 let's break down the equation further and clarify the partial
 derivatives.
 
-Gradient loss function: 
-$$
-\frac{\partial L}{\partial W}
-$${#gradient-loss-function}
+Gradient loss function: $$
+dw =\frac{\partial L}{\partial W} = \frac{1}{m} X^T (A-Y)
+$$ {#eq-gradient-loss-function}
 
-This term represents the gradient, or the slope, of the loss
-function$L$with respect to $W$. Essentially, it tells us:
+This term represents the gradient, or the slope, of the loss function
+$L$ with respect to $W$. Essentially, it tells us:
 
 How much the loss function changes when we slightly change$W$ The
 direction we should move $W$ to minimize the loss.
@@ -149,44 +185,40 @@ need to calculate the rate of change of $L$ concerning $W$, which is
 where the partial derivative comes in.
 
 *Partial Derivatives Explained* A partial derivative calculates how one
-variable changes while keeping others constant. In our case: 
-$$
+variable changes while keeping others constant. In our case: $$
 \frac{\partial L}{\partial W}
-$$ 
-measures how much the loss function changes if we make a small
+$$ measures how much the loss function changes if we make a small
 adjustment to $W$. If we visualize the loss function as a mountain, the
 gradient tells us which direction leads us downhill the fastest (toward
 lower loss). The gradient gives the best direction for adjusting W, but
 how far we step in that direction is controlled by the learning rate
-$\alpha$ 
+$\alpha$
 
 $$
 W = W -\alpha \cdot \frac{\partial L}{\partial W}
-$$ 
-where:
+$$ Where:
 
- - $\alpha$ is the **learning rate** (a small step size to prevent large
-jumps)
+-   $\alpha$ is the **learning rate** (a small step size to prevent
+    large jumps)
 
- - $\frac{\partial L}{\partial W}$ is the **gradient**
+-   $\frac{\partial L}{\partial W}$ is the **gradient**
 
 $W$ is updated gradually with each iteration.
 
 For logistic regression, the gradient of the *binary cross-entropy loss
-function* with respect to $W$ is: 
-$$
+function* with respect to $W$ is: $$
  \frac{\partial L}{\partial W} = \frac{1}{m}X^T(\hat y -y)
-$$ 
-Where:
+$$ Where:
 
- - $X$ is the input matrix (features)
+-   $X$ is the input matrix (features)
 
- - $y$ is the actual target values.
+-   $y$ is the actual target values.
 
- - $\hat y = \sigma(XW)$ is the predicted output after applying the
-sigmoid function.
+-   $\hat y = \sigma(XW)$ is the predicted output after applying the
+    sigmoid function.
 
- - $X^T(\hat y- y)$ measures the error's contribution to weight updates.
+-   $X^T(\hat y- y)$ measures the error's contribution to weight
+    updates.
 
 ```{r chunk2, fig.align='center', fig.width=10, fig.asp=0.318}
 # Example loss reduction over iterations
@@ -220,21 +252,20 @@ We'll create a small dataset with these features and train a logistic
 regression model using gradient descent to predict whether a customer
 will buy the product (1) or not (0).
 
-The traditional logistical regression formula would be: 
-$$
+The traditional logistical regression formula would be: $$
 Z=\beta_0+\beta_1 x_{1i}+\beta_2 x_{2i}+\epsilon_i
 $$
 
 where:
 
- - $\beta_0$ is the **intercept (bias term)**.
+-   $\beta_0$ is the **intercept (bias term)**.
 
- - $\beta_1, \beta_2$ are the **weights (coefficients) assigned to each
-feature**.
+-   $\beta_1, \beta_2$ are the **weights (coefficients) assigned to each
+    feature**.
 
- - $x_{1i}, x_{2i}$ are the **feature values** for the$i$-th sample.
+-   $x_{1i}, x_{2i}$ are the **feature values** for the$i$-th sample.
 
- - $\epsilon_i$ is the **error term** accounting for noise in the data.
+-   $\epsilon_i$ is the **error term** accounting for noise in the data.
 
 Instead of writing the equation explicitly for each feature, we can use
 matrix multiplication:
@@ -243,13 +274,13 @@ $$
 Z = XW + \epsilon
 $$
 
-where:
+Where:
 
- - $X$ is the **input matrix** containing feature values.
+-   $X$ is the **input matrix** containing feature values.
 
- - $W$ is the **weight matrix** (vector of coefficients).
+-   $W$ is the **weight matrix** (vector of coefficients).
 
- - $\epsilon$ is the **error term**.
+-   $\epsilon$ is the **error term**.
 
 Expanding this in **matrix notation**:
 
@@ -278,7 +309,7 @@ Z_m
 \end{bmatrix}
 $$
 
-where:
+Where:
 
 -   Each row in $X$ represents **one sample**, including a **bias term
     (1), feature 1, and feature 2**.
@@ -313,7 +344,6 @@ expected output of any specific combination of minutes in the website
 and pages visited. We will create a function for this:
 
 ```{r sigmoid-function}
-
 # Sigmoid function
 sigmoid <- function(z) {
   return(1 / (1 + exp(-z)))
@@ -403,6 +433,9 @@ set.seed(2)
 progress_df <- gradient_descent_progress(X, y)
 
 print(head(progress_df))
+```
+
+```{r progres-plot, fig.align='center', fig.width=10, fig.asp=0.318, echo=FALSE}
 
 # Plot how weights change over iterations
 ggplot(progress_df, aes(x = Iteration)) +
@@ -448,13 +481,12 @@ ggplot(z_values_df, aes(x = Iteration, y = Value, color = Variable)) +
   theme_minimal()
 ```
 
-
 **Understanding the Learned Weights**
 
 After running gradient descent, we obtained the following learned
 weights:
 
-```{r}
+```{r, chunk5}
 set.seed(2)
 # Gradient Descent Implementation (Track Progress)
 gradient_descent <- function(X, y, learning_rate = 0.01, iterations = 50) {
@@ -536,7 +568,7 @@ predict_probability <- function(X, W) {
 }
 ```
 
-```{r, fig.align='center', fig.width=10, fig.asp=0.318}
+```{r chunk 6, fig.align='center', fig.width=10, fig.asp=0.318}
 # Get predictions
 predicted_probs <- predict_probability(X, W)
 
@@ -556,29 +588,31 @@ ggplot(df, aes(x = TimeSpent, y = PagesVisited, color = Probability)) +
 We apply gradient descent to learn optimal weights and predict whether
 future customers will buy by minimizing the loss function iteratively.
 
-# cat /non-cat exercise
+# Cat /Non-cat exercise
 
-we are going to use the cat/non-cat dataset from `kaggle` package to see
+We are going to use the cat/non-cat dataset from `kaggle` package to see
 how to use these maths to find out if a given image is a cat or not a
 cat. The cat dataset comes in `hdf5`format so we will need to install a
 couple of libraries to load it.
 
-```{r, echo=FALSE}
+```{r setup-packages, echo=FALSE, warning=FALSE, message=FALSE}
 # Install BiocManager if you don't have it (needed for rhdf5)
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
+# Load BiocManager (needed for its install function)
 library(BiocManager)
+
 # Install rhdf5 if not already installed
 if (!requireNamespace("rhdf5", quietly = TRUE)) {
     BiocManager::install("rhdf5")
 }
-
+# Load rhdf5 for use in the script
 library(rhdf5)
 ```
 
 Now we load the datasets for our model. You can download the data from
-\[https://www.kaggle.com/datasets/sagar2522/cat-vs-non-cat?resource=download\]@https://www.kaggle.com/datasets/sagar2522/cat-vs-non-cat?resource=download
+[cat/non-cat](@https://www.kaggle.com/datasets/sagar2522/cat-vs-non-cat?resource=download)
 
 **Data Loading and Preprocessing for Image Classification**
 
@@ -619,18 +653,18 @@ test_labels <- h5read(test_data_file_path, "test_set_y")
 Raw image data is inherently multi-dimensional (e.g.,
 `64 pixels height x 64 pixels width x 3 color channels for RGB`).
 
-By looking at the dimensions of the datasets we can see that we have 209 images in the train dataset and 50 in the test dataset:
+By looking at the dimensions of the datasets we can see that we have 209
+images in the train dataset and 50 in the test dataset:
 
-```{r}
+```{r chunk8 }
 dim(test_dataset)
 dim(train_dataset)
 ```
 
-
 If we want to extract the data for the first cat image (the first cat
 image is the third image in the train dataset), for example:\
 
-```{r}
+```{r chunk9}
 # Extract the third image (which is a 3D array)
 first_cat_image_raw <- train_dataset[,,,3]
 dim(first_cat_image_raw)
@@ -639,11 +673,10 @@ dim(first_cat_image_raw)
 
 This will give us a 3X64x64 matrix
 
-To get just the first channel (Red) for the first image:\
+To get just the first channel (Red) for the first image:
 
-```{r}
-
-# Extract the Red channel (1st channel) of the first image
+```{r chunk10}
+# Extract the Red channel (1st channel)
 first_cat_image_red_channel_raw <- train_dataset[1,,,3]
 dim(first_cat_image_red_channel_raw)
 
@@ -658,9 +691,10 @@ first_cat_image_red_channel_raw[1:10,1:10]
 We can see that we have hexadecimal values, so we will need to convert
 them to numeric:
 
-```{r}
+```{r chunk11}
 # Convert character (hex) values to numeric integers ---
-# 'strtoi()' converts string representations of numbers in a given base (here, 16 for hexadecimal) to integers. We apply it directly to the entire array, preserving its dimensions.
+# 'strtoi()' converts string representations of numbers in a given base 
+#(here, 16 for hexadecimal) to integers. We apply it directly to the entire array, preserving its dimensions.
 original_train_dims <- dim(train_dataset)
 original_test_dims <- dim(test_dataset)
 
@@ -669,18 +703,17 @@ test_dataset <- array(strtoi(as.vector(test_dataset), base = 16), dim = original
 
 ```
 
-Let's see the Red channel of the first image again to see if its numeric
-now:\
+Let's see the Red channel of the image again to see if its numeric now:\
 
-```{r}
+```{r chunk12}
 dim(train_dataset)
-first_cat_image_red_channel_raw <- train_dataset[1,,,1]
+first_cat_image_red_channel_raw <- train_dataset[1,,,3]
 first_cat_image_red_channel_raw[1:10,1:10]
 ```
 
 Now we can display the Red channel as a grayscale image
 
-```{r}
+```{r redchannelcat, fig.align='center'}
  
  # Normalize pixel values (0-255 to 0-1) for plotting
 first_cat_image_red_channel_normalized <- first_cat_image_red_channel_raw / 255
@@ -692,8 +725,10 @@ plot(as.raster(first_cat_image_red_channel_normalized),
 
 2.  **Flattening the Images**
 
-As we have seen, the image data is multi-dimensional, however, our logistic regression model, which operates on linear
-combinations of features, expects each image to be represented as a single, flat vector of features.
+As we have seen, the image data is multi-dimensional, however, our
+logistic regression model, which operates on linear combinations of
+features, expects each image to be represented as a single, flat vector
+of features.
 
 ![](images/imagepixelvector.png){fig-align="center"}
 
@@ -704,7 +739,7 @@ image (sample) and each column represents a specific pixel feature. This
 conversion makes the data compatible with standard matrix multiplication
 operations like $Z = XW$, where $X$ is a `(samples x features)` matrix.
 
-```{r}
+```{r  chunk13}
 # Flattening the images:
 # Each image (accessed by the 4th dimension) is converted to a vector.
 # 't()' transposes the result to get samples as rows, features (pixels) as columns.
@@ -713,8 +748,6 @@ X_test <- t(apply(test_dataset, 4, as.vector))
 dim(X_train)
 dim(X_test)
 ```
-
-
 
 3.  **Converting Labels to a Matrix (Column Vector)**
 
@@ -726,7 +759,7 @@ single-column matrices. This ensures that matrix multiplication and
 subtraction behave as expected without unexpected R vector recycling
 rules.
 
-```{r}
+```{r chunk14}
 # Converting labels to a matrix (column vector):
 # Ensures y_train and y_test are treated as column matrices for consistent
 # matrix operations later in the gradient descent.
@@ -739,29 +772,29 @@ dim(y_test)
 **4. Normalizing Pixel Values**
 
 Image pixel intensities range from 0 to 255. This step involves dividing
-all pixel values by 255 (the max value), scaling them down to a standardized range
-between 0 and 1.
+all pixel values by 255 (the max value), scaling them down to a
+standardized range between 0 and 1.
 
-This normalization is critical for several reasons: 
-* **Numerical Stability:** 
-Machine learning algorithms, especially those that rely on
-gradient descent, perform much better and converge more reliably when
-input features are on a similar, small scale. Large input values can
-lead to extremely large intermediate calculations ($Z$ values) and
-gradients, potentially causing numerical overflow or instability. 
+This normalization is critical for several reasons:
 
-* **Faster Convergence:** Scaling features to a consistent range helps the
-optimization algorithm find the optimal weights more efficiently. The
-sigmoid activation function, in particular, has a very flat gradient for
-very large or very small inputs; normalizing helps keep inputs within
-the active range of the sigmoid, where gradients are stronger and
-learning is more effective.
+-   **Numerical Stability:** Machine learning algorithms, especially
+    those that rely on gradient descent, perform much better and
+    converge more reliably when input features are on a similar, small
+    scale. Large input values can lead to extremely large intermediate
+    calculations ($Z$ values) and gradients, potentially causing
+    numerical overflow or instability.
 
-```{r}
+-   **Faster Convergence:** Scaling features to a consistent range helps
+    the optimization algorithm find the optimal weights more
+    efficiently. The sigmoid activation function, in particular, has a
+    very flat gradient for very large or very small inputs; normalizing
+    helps keep inputs within the active range of the sigmoid, where
+    gradients are stronger and learning is more effective.
+
+```{r chunk15}
 X_train <- X_train/255
 X_test <- X_test/255
 ```
-
 
 **5. Adding a Bias Term (Intercept)**
 
@@ -776,3 +809,565 @@ a baseline probability (or a baseline activation) even if all other
 feature values are zero. It effectively shifts the decision boundary,
 giving the model more flexibility to fit the data.
 
+```{r}
+# Prepends a column of '1's to the feature matrices. This allows the model
+# to learn an intercept, which is a baseline prediction independent of features.
+X_train <- cbind(1, X_train)
+X_test <- cbind(1, X_test)
+
+# --- Display Final Dimensions for Verification ---
+# These outputs confirm the shape of your data matrices after preprocessing.
+cat("--- Final Data Dimensions (after preprocessing) ---\n")
+cat("Dimensions of X_train (samples x (features + bias)):", dim(X_train), "\n")
+cat("Dimensions of y_train (samples x 1):", dim(y_train), "\n")
+cat("Dimensions of X_test (samples x (features + bias)):", dim(X_test), "\n")
+cat("Dimensions of y_test (samples x 1):", dim(y_test), "\n")
+```
+
+**Building the parts of our algorithm**
+
+The main steps for building a neural network are:
+
+1.  Define the model structure (such as number of input features)
+
+2.  Initialize the model's parameters
+
+3.  loop:
+
+    1.  Calculate current loss (forward propagation)
+
+    2.  Calculate current gradient (Backward propagation)
+
+    3.  Update parameters (gradient descent)
+
+4.  You often build 1-3 separately and integrate them into one function
+    we call model.
+
+------------------------------------------------------------------------
+
+Let's start:
+
+For one sample image $x_i$ :
+
+$$
+z_i= w^Tx_i+b
+$$ the probability of belonging to the cat class will be calculated as:
+
+$$
+\hat{y_i} = a_i = sigmoid(z_i)
+$$
+
+where the formula for the *sigmoid* function is:
+
+$$
+\sigma(Z) = \frac{1}{1 + e^{-Z}}
+$$
+
+and loss function:\
+$$
+L = -\frac{1}{m} \sum_{i=1}^{m} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
+$$
+
+so for each image $x_i$:
+
+$$
+L(a_i,y_i) = -y_i \log(a_i)- (1-y_i)log(1-a_i)
+$$
+
+The cost is then computed by summing over all training examples:
+
+$$
+J=\frac{1}{m} \sum^m_{i=1} L(a_1,y_i)
+$$
+
+This will:
+
+-   initialize the parameters of the model
+
+-   learn the parameters for the model by minimizing the cost
+
+-   Use the learned parameters to make predictions (on the test set)
+
+-   Analyse the results.
+
+**Create the helper functions**
+
+Implement `sigmoid()` where $z$ is a scalar or array of any size
+
+```{r}
+# Sigmoid function
+sigmoid <- function(z) {
+  return(1 / (1 + exp(-z)))
+}
+```
+
+Initialize a initial weight vector with zeros:
+
+```{r}
+initialize_W_with_zeros<- function(dim){
+  w = matrix(0,dim,1)
+}
+
+```
+
+Initialize bias as 0
+
+```{r}
+bias = 0
+```
+
+The activated input will be the *sigmoid* for all the $x_i$ values:
+
+$$
+A= (a_1,a_2,\cdots,a_m)
+$$
+
+and $a_1 = sigmoid (W^T x_i + b)$
+
+::: {#formulaexplanation .callout-orange}
+When we apply the formula above in our code, we do it differently:
+$XW+b$ The difference between the mathematical notation $(W^T x_i + b)$
+and the R code `X %*%W +b` is due to how vector and matrix dimensions
+are conceptualized and applied in different contexts. Both approaches
+are mathematically equivalent: In many mathematical texts and
+derivations, $W$ (the weight vector) is typically represented as a
+column vector of dimensions (number_of_features X 1). $x_i$ (a single
+input sample) is also typically represented as a column vector. To
+compute the doc product for a single sample, you need to multiply a row
+vector by a column vector, therefore, you just transpose $W$ to get
+$W^T$ (a $1 \times \text{number_of_features}$ row vector), which can
+then be multiplied by $x_i$. This results in a $1 \times 1$ scalar value
+for $z_i$ for that single sample.
+
+In `R` and many other programming languages and machine language
+libraries, the standard convention for the input matrix $X$ is *Rows
+represent individual samples* and *Columns represent features.*
+
+So our $X$ matrix has dimensions (*number_of_samples* x
+*number_of_features*) (209 x 12288). Given this and our $W$ vector being
+a (*number_of_features* x 1) (12288 x 1), the matrix multiplication
+perfectly aligns. The result is a (number_of_samples x 1) matrix, where
+each row contains the linear combination (z) for one sample.
+:::
+
+```{r activate-function}
+# Computes the activated output (predicted probabilities A) given weights W, bias b, and input X.
+# Returns: A vector/matrix of activated outputs (probabilities), (samples x 1)
+
+activate <- function(W, b, X){
+  Z <- X %*% W + b
+  
+  # Apply the sigmoid activation function element-wise to Z
+  A <- sigmoid(Z)
+  
+  return(A)
+}
+```
+
+Now we create a function to calculate the *binary cross-entropy loss*:
+
+$$
+L = -\frac{1}{m} \sum_{i=1}^{m} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
+$$
+
+```{r cost-function}
+# Returns: A single scalar value representing the total cost.
+cost_function <- function(W, b, X, Y) {
+  # Calculate the number of samples (m) from the dimensions of X
+  m <- nrow(X)
+  
+  # Calculate the activated output (predicted probabilities A) using the activate function
+  A <- activate(W, b, X)
+  
+  # Calculate the binary cross-entropy loss 
+  cost <- - (1/m) * sum(Y * log(A) + (1 - Y) * log(1 - A))
+  
+  return(cost)
+}
+
+```
+
+Where:
+
+-   $w$ is the weights matrix, it will be an array of the same
+    dimensions as features in the flattered dataset
+    ($64 \times 64 \times 3, 1$)
+
+-   $b$ is a scalar representing the bias
+
+-   $X$ is the data (our flattened array)
+
+-   $Y$ is the labels matrix
+
+::: callout-note
+## Understanding Cost
+
+In machine learning, a **cost function** is a mathematical measure of
+how well (or how poorly) a model performs relative to its task. It
+quantifies the "error" or "discrepancy" between the model's predicted
+output and the actual true values (labels) in your training data.
+
+Think of it as a scoring system:
+
+-   **Low Cost:** Indicates that your model's predictions are very close
+    to the actual values.
+
+-   **High Cost:** Means your model's predictions are significantly
+    different from the actual values, indicating poor performance.
+
+The primary goal of training a machine learning model is to **minimize
+this cost function**. We do this by adjusting the model's internal
+parameters (your weights $W$ and bias $b$) during the learning process
+(*gradient descent*).
+
+**The Binary Cross-Entropy Cost Function in Detail**
+
+In our cat/non-cat example, we're using a specific type of cost function
+called **Binary Cross-Entropy (BCE) Loss**, also known as **Log Loss**.
+This is the standard choice for binary classification problems (where
+there are only two possible outcomes, like cat/non-cat, 0/1,
+true/false).
+
+$$
+L(a_i,y_i) = -y_i \log(a_i)- (1-y_i)log(1-a_i)
+$$
+
+This single-example loss function behaves differently depending on the
+true label $y_i$:
+
+1.  **When** $y_i=1$ (it's a cat): The formula simplifies to:
+
+$$ 
+  L(a_i, 1) = -1 \cdot \log(a_i) - (1 - 1) \cdot \log(1-a_i) 
+$$ $$ 
+    L(a_i, 1) = -\log(a_i) -0
+$$
+
+-   In this case, the cost is only influenced by $\log(a_i)$.
+
+-   If the model predicts a high probability for a cat ($a_i$ close to
+    1), $\log(a_i)$ will be close to 0 (since $\log(1)=0$), and thus the
+    loss $\log(a_i)$ will be close to 0. This is good!
+
+-   If the model incorrectly predicts a low probability for a cat ($a_i$
+    close to 0), $\log(a_i)$ will be a large negative number (e.g.,
+    $\log(0.01)≈−4.6$), and thus the loss $-\log(a_i)$ will be a large
+    positive number (e.g., 4.6). This penalizes the model heavily for
+    being confident but wrong.
+
+2.  **When** $y_i=0$ (it's a non-cat): The formula simplifies to: $$
+    L(a_i, 0) = -0 \cdot \log(a_i) - (1 - 0) \cdot \log(1 - a_i)
+    $$ $$ L(a_i, 0) = -\log(1 - a_i) $$ Here, the cost is only
+    influenced by $\log(1−a_i)$.
+
+-   If the model predicts a low probability for a cat ($a_i$) close to
+    0, meaning $1−a_i$ is close to 1), $\log(1−a_i)$ will be close to 0,
+    and the loss: $-\log(1−a_i)$) will be close to 0.
+-   If the model incorrectly predicts a high probability for a cat
+    ($a_i$ close to 1, meaning $1−a_i$ is close to 0), $\log(1−a_i)$
+    will be a large negative number, and the loss $-\log(1−a_i)$) will
+    be a large positive number. Again, this penalizes confident wrong
+    predictions.
+
+**The total Cost(**$J$**)**: The overall cost $J$ for the entire
+training set is the average of the individual losses over all $m$
+training examples: $$
+   J= \frac{1}{m}\sum_{i=1}^m L(a_1,y_i)
+   $$Averaging the cost is representative of the model's performance
+across the entire dataset, and it makes the cost function less sensitive
+to the size of the training set.
+
+**Cost vs. Accuracy** It's important to distinguish between "cost" and
+"accuracy":
+
+-   Cost (e.g., BCE Loss): This is a continuous value that measures the
+    overall "error" of the model. It's what the optimization algorithm
+    directly tries to minimize. It's often not directly interpretable as
+    "percentage correct" but provides a nuanced measure of certainty and
+    error.
+-   Accuracy: This is a simple metric that measures the proportion of
+    predictions that were exactly correct (e.g., 90% of images
+    classified correctly). It's easy for humans to understand, but it's
+    a discrete measure (either right or wrong).
+:::
+
+The logical next step in building a logistic regression model with
+gradient descent is to implement the "backward pass", which involves
+calculating the gradients. **These gradients tell us how much each
+weight (W) and the bias (b) contribute to the total cost, and in which
+direction they need to be adjusted to minimize that cost.**
+
+We will create a propagate function. It will combine the forward pass
+(computing A and cost) with the backward pass (computing the gradients
+dW and db).
+
+To update our weights (W) and bias (b) during gradient descenct, we need
+to know the derivative of the *cost function* with respect to these
+parameters. These derivatives are known as gradients
+
+Gradient of the cost with respect to the weights (dW): $$
+dw = \frac{1}{m} X^T (A-Y)
+$$ In `R` this computes to `(1/m) * t(X) %*% (A-Y)`.
+
+For bias (db): $$
+db = \frac{1}{m} \sum_{i=1}^m (A_i-Y_i)
+$$
+
+in `R` this simplifies to `(1/m)* sum(A-Y)`
+
+```{r propagate-function}
+# Returns: A list containing 'cost', 'dW', and 'db'.
+propagate <- function(W, b, X, Y) {
+  # Get the number of samples (m)
+  m <- nrow(X)
+  
+  # --- Forward Propagation ---
+  # 1. Calculate activated output (predicted probabilities A)
+  A <- activate(W, b, X)
+  
+  # 2. Calculate the cost
+  cost <- cost_function(W, b, X, Y) # Using the integrated cost_function
+  
+  # --- Backward Propagation (Calculate Gradients) ---
+  # 1. Calculate gradient for weights (dW)
+ 
+  dW <- (1/m) * (t(X) %*% (A - Y))
+  
+  # 2. Calculate gradient for bias (db)
+  # Sums all elements of (A - Y) and averages them.
+  db <- (1/m) * sum(A - Y)
+  
+  # Store gradients in a list
+  gradients <- list(dW = dW, db = db)
+  
+  # Return results as a list
+  return(list(cost = cost, gradients = gradients))
+}
+```
+
+**Optimization: Learning with Gradient descent**
+
+Now that we have a function (propagate) that can calculate the cost and
+the gradients, we need to use those gradients to "learn". This is done
+through an optimization algorithm called *Gradient Descent*.
+
+The core idea is simple: we will iteratively adjust our parameters, $W$
+and $b$, in the direction that minimally reduces the cost function $J$.
+The gradients, $dW$ and $db$, tell us the direction of the steepest
+ascent of the cost function, so to decrease the cost, we move in the
+opposite direction.
+
+The update rules for the parameters are: $$
+W = W- \alpha \cdot dW
+$$
+
+$$
+b = b- \alpha \cdot db
+$$ Alpha is the learning rate, a crucial hyperparameter that controls
+how large of a step we take during each update. If $\alpha$ is too
+large, we might overshoot the optimal value. If it is too small, the
+training process will be very slow. Finding a good learning rate is a
+key part of training neural networks
+
+Let's create an `optimize()` function that performs this process for a
+specified number of iterations
+
+```{r}
+# This function optimizes W and b by running a gradient descent algorithm.
+#
+# Arguments:
+# W              -- weights, a numerical matrix of size (num_features, 1)
+# b              -- bias, a scalar
+# X              -- data of size (num_samples, num_features)
+# Y              -- true "label" vector (e.g., 0 for non-cat, 1 for cat)
+# num_iterations -- number of iterations for the optimization loop
+# learning_rate  -- learning rate of the gradient descent update rule
+# print_cost     -- if TRUE, prints the cost every 100 iterations
+#
+# Returns:
+# A list containing the final learned parameters (W, b) and a record of the costs.
+
+optimize <- function(W, b, X, Y, num_iterations, learning_rate, print_cost = FALSE) {
+  
+  costs <- c() # Vector to store the cost at each interval
+  
+  for (i in 1:num_iterations) {
+    # Calculate cost and gradient for the current parameters (W, b)
+    results <- propagate(W, b, X, Y)
+    cost <- results$cost
+    gradients <- results$gradients
+    dW <- gradients$dW
+    db <- gradients$db
+    
+    # Update rule for W and b
+    W <- W - learning_rate * dW
+    b <- b - learning_rate * db
+    
+    # Record the cost every 100 iterations
+    if (i %% 100 == 0) {
+      costs <- c(costs, cost)
+      if (print_cost) {
+        cat("Cost after iteration", i, ":", cost, "\n")
+      }
+    }
+  }
+  
+  # Return the learned parameters and tracked information
+  return(list(
+    W = W,
+    b = b,
+    costs = costs,
+    gradients = list(dW = dW, db = db)
+  ))
+}
+```
+
+**Making predictions** Once the model has been trained and we have our
+optimized parameters $W$ and $b$, the final step is to make predictions
+on new data. The prediction process involves two steps:
+
+1.  Calculate the predicted probabilities \$\\hatY = A = \\sigma(XW+b)\$
+    for a given dataset \$X\$.
+
+2.  Convert these probabilities into final predictions (0 or 1). A
+    common convention is to classify an image as cat (1) if its
+    corresponding probability in $A$ is greater than 0.5, and as
+    non-cat (0) otherwise.
+
+```{r}
+# Predicts whether the label is 0 or 1 using learned logistic regression parameters (W, b).
+#
+# Arguments:
+# W -- weights, a numerical matrix of size (num_features, 1)
+# b -- bias, a scalar
+# X -- data of size (num_samples, num_features)
+#
+# Returns:
+# Y_prediction -- a vector of size (num_samples, 1) containing all predictions (0/1) for the examples in X.
+predict <- function(W, b, X) {
+  
+  m <- nrow(X)
+  Y_prediction <- matrix(0, m, 1)
+  
+  # Compute the activation (probabilities) for the input data X
+  A <- activate(W, b, X)
+  
+  # Convert probabilities to actual predictions
+  for (i in 1:nrow(A)) {
+    if (A[i, 1] > 0.5) {
+      Y_prediction[i, 1] <- 1
+    } else {
+      Y_prediction[i, 1] <- 0
+    }
+  }
+  
+  return(Y_prediction)
+}
+```
+
+**Integrating everything into a complete model**
+
+We now have all the necessary components. The final step is to assemble
+them into a single, high level model function. This function will
+orchestrate the entire workflow: it will initialize the parameters, call
+the `optimize()` function to train them, and then use the `predict()`
+function to evaluate the model's performance on both the training and
+the test data sets.
+
+```{r}
+# Builds the logistic regression model by calling the functions we've implemented.
+#
+# Arguments:
+# X_train, Y_train -- training set and its labels
+# X_test, Y_test   -- test set and its labels
+# num_iterations   -- hyperparameter for the number of training iterations
+# learning_rate    -- hyperparameter for the optimization step
+# print_cost       -- if TRUE, prints the cost during training
+#
+# Returns:
+# A list containing information about the trained model.
+model <- function(X_train, Y_train, X_test, Y_test, num_iterations = 2000, learning_rate = 0.5, print_cost = FALSE) {
+  
+  # 1. Initialize parameters with zeros
+  # The number of features corresponds to the number of columns in X_train
+  num_features <- ncol(X_train)
+  W <- initialize_W_with_zeros(num_features)
+  b <- 0
+  
+  # 2. Gradient Descent: Learn parameters by calling optimize()
+  optimization_results <- optimize(W, b, X_train, Y_train, num_iterations, learning_rate, print_cost)
+  
+  W_final <- optimization_results$W
+  b_final <- optimization_results$b
+  costs <- optimization_results$costs
+  
+  # 3. Predict on the training and test sets
+  Y_prediction_test <- predict(W_final, b_final, X_test)
+  Y_prediction_train <- predict(W_final, b_final, X_train)
+  
+  # 4. Calculate and print accuracies
+  train_accuracy <- 100 - mean(abs(Y_prediction_train - Y_train)) * 100
+  test_accuracy <- 100 - mean(abs(Y_prediction_test - Y_test)) * 100
+  
+  cat("\n-------------------------------------------\n")
+  cat("Train Accuracy:", train_accuracy, "%\n")
+  cat("Test Accuracy:", test_accuracy, "%\n")
+  cat("-------------------------------------------\n")
+  
+  # Return a comprehensive list of model results
+  return(list(
+    costs = costs,
+    Y_prediction_test = Y_prediction_test,
+    Y_prediction_train = Y_prediction_train,
+    W = W_final,
+    b = b_final,
+    learning_rate = learning_rate,
+    num_iterations = num_iterations
+  ))
+}
+```
+
+**Training the model and analyzing the results**
+
+Let's call our `model()` function with our preprocessed data and see how
+well it performs. We will set the learning rate to $0.005$ and run for
+2000 iterations.
+
+```{r}
+# Set hyperparameters
+learning_rate_val <- 0.005
+num_iterations_val <- 2000
+
+# Run the model
+model_results <- model(X_train, y_train, X_test, y_test, 
+                       num_iterations = num_iterations_val, 
+                       learning_rate = learning_rate_val, 
+                       print_cost = TRUE)
+```
+
+**Analyzing the learning curve**
+
+A great way to check if our gradient descent is working correctly is to
+plot the cost against the number of iterations. If the model is
+learning, we should see the cost steadily decrease over time.
+
+```{r}
+library(ggplot2)
+
+# Create a data frame for plotting
+cost_data <- data.frame(
+  iterations = seq(100, num_iterations_val, by = 100),
+  cost = model_results$costs
+)
+
+# Plot the cost
+ggplot(cost_data, aes(x = iterations, y = cost)) +
+  geom_line(color = "blue") +
+  geom_point(color = "blue") +
+  labs(
+    title = "Cost Function Decrease Over Iterations",
+    x = "Number of Iterations",
+    y = "Cost"
+  ) +
+  theme_minimal()
+```
