@@ -403,13 +403,11 @@ That means that we can use normal approximation to compute probabilities. The ke
 
 The mathematical theory behind that:
 
-The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): 
-$$ 
+The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{y}$ of a random sample follows a normal distribution centered at the population average μ and with standard deviation equal to the population standard deviation σ, divided by the square root of the sample size N. We refer to the standard deviation of the distribution of a random variable as the random variable's standard error. We have seen this formula before when studying the Standard Error (@eq-standardErrorMean): $$ 
 \text{SE} (\bar{x_n})= \frac{\sigma}{\sqrt{n}} 
 $$
 
 This is telling us that when we take more samples and plot their results in a histogram, the spread of the histogram becomes smaller (closer to the population average) as we saw in the histograms above.
-
 
 **Standardized sample mean**
 
@@ -656,7 +654,6 @@ z_score
 ```
 
 ::: exercise-box
-
 Confidence Intervals for Coin Flips
 
 **Example 1: Flipping a Coin 100 Times**
@@ -667,13 +664,7 @@ $$
 CI= \hat{p} \pm z \sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}
 $$
 
-where:
- - $\hat{p}$ is the observed proportion of heads
- - $z$ is the critical value from the standard normal distribution for a 95% confidence level (approximately 1.96)
- - $n$ is the number of trials (100 in this case)
-$
-p = \frac{44}{100}
-$
+where: - $\hat{p}$ is the observed proportion of heads - $z$ is the critical value from the standard normal distribution for a 95% confidence level (approximately 1.96) - $n$ is the number of trials (100 in this case) \$ p = \frac{44}{100} \$
 
 ```{r}
 n1 <- 100
@@ -686,6 +677,7 @@ z <- 1.96
 (ci_upper1 <- p_hat1 + z * sqrt(p_hat1 * (1 - p_hat1) / n1))
 
 ```
+
 p: (0.343, 0.537)
 
 From this, we concluded that it is plausible that the coin may be fair because $p = 0.5$ is in the interval.
@@ -708,9 +700,7 @@ p_hat2 <- x2 / n2
 
 p: (0.437, 0.443)
 
-*Is it reasonable to conclude that this is a fair coin with 95% confidence? *
-Based on this narrower confidence interval, it appears less likely that the coin is fair since $p = 0.5$ is not within the interval.
-
+*Is it reasonable to conclude that this is a fair coin with 95% confidence?* Based on this narrower confidence interval, it appears less likely that the coin is fair since $p = 0.5$ is not within the interval.
 
 ```{r, echo=FALSE}
 # Data for plotting
@@ -732,8 +722,6 @@ ggplot(data, aes(x = Example, y = p_hat)) +
 
 ```
 :::
-
-
 
 **Estimating the SE with bootstrap principle**
 
