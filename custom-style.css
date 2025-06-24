@@ -1,3 +1,16 @@
+.toc {
+  margin-right: 10px;  
+}
+
+body {
+   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+}
+
+ul, ol {
+  line-height: 1;
+  margin-bottom: 0.2em;  
+}
+
 /* Change the background color of code blocks */
 pre.sourceCode {
   background-color: #f8f8f8;
@@ -16,9 +29,12 @@ div.cell-output {
   border: 2px solid #cae8dc;
   border-radius: 8px;
   background-color: #fff;
-  padding: 10px;
+  padding-bottom: 1px;
+  padding-top: 1px;
+  padding-left: 3px;
+  padding-right: 3px;
   color: #367588;
-  margin-bottom: 5px; /* Common margin for outputs */
+  margin-bottom: 7px; /* Common margin for outputs */
 
   /* Apply scrollbar properties here, for the container */
   max-height: 350px; /* Adjust this value to your desired max height */
@@ -51,7 +67,6 @@ figure.scrollable-figure { /* Target the <figure> element directly */
   margin-bottom: 15px;
 }
 
-
 .centered-text p {
     text-align: center;
 }
@@ -62,7 +77,6 @@ figure.scrollable-figure { /* Target the <figure> element directly */
  background-color: #fff3cd;   
  padding: 10px;
 }
-
 
 .callout-grey {
  border: 2px solid #48494b;  
@@ -81,19 +95,6 @@ blockquote {
 
 .blockquote {
   font-size: 0.8em; /* Reduces the font size by 1em */
-}
-
-.toc {
-  margin-right: 10px;  
-}
-
-body {
-   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
-}
-
-ul, ol {
-  line-height: 1;
-  margin-bottom: 0.2em;  
 }
 
 .exercise-box {
@@ -135,8 +136,8 @@ ul, ol {
   background-color: #f9f9f9; /* Light grey background */
   border: 0.5px solid #2c3e50; /* Dark grey border */
   border-radius: 8px;
-  padding: 10px;
-  margin: 20px 0;
+  padding: 5px;
+  margin: 10px 0;
   color: #2c3e50;
   font-family: Sans-Serif;
 }

@@ -1,0 +1,769 @@
+---
+title: "Titanic exercise"
+format: html
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r}
+#| echo: false
+library(dplyr)
+library(tidyverse)
+
+library(readxl)
+library(easystats)
+
+library(kableExtra)
+
+library(ggplot2)
+library(ggpattern)
+theme_set(theme_minimal())
+options(scipen= 999)
+```
+
+# Titanic Dataset Description
+
+This document details the analysis of the famous Titanic dataset, a popular choice for introductory data science projects.
+The dataset contains information about passengers aboard the RMS Titanic, including whether they survived the disaster.
+
+## Dataset Overview
+
+Lets see the first 10 rows of each dataset and the main characteristics of each feature.
+
+```{r, echo=TRUE}
+titanic_train <- read_csv("data/titanic/train.csv")
+kable(head(titanic_train))%>%
+  kable_styling(latex_options = "scale_down")%>%
+  landscape()
+ 
+as.data.frame(report(titanic_train))
+titanic_test <- read_csv("data/titanic/test.csv")
+kable(head(titanic_test))%>%
+  kable_styling(latex_options = "scale_down")%>%
+  landscape()
+as.data.frame(report(titanic_test))
+```
+
+The dataset is typically split into two main files: `train.csv` and `test.csv`.
+\* **`train.csv`**: Contains a set of passengers for whom the survival outcome (`Survived`) is provided.
+This is the dataset we will primarily use for exploratory data analysis (EDA), cleaning, feature engineering, and model training.
+\* **`test.csv`**: Contains a similar set of passenger information but *without* the `Survived` column.
+In a typical Kaggle competition scenario, you would predict survival for these passengers.
+For this analysis, we will focus on understanding and modeling the `train.csv` data.
+
+The goal of analyzing this dataset is to predict which passengers survived the Titanic shipwreck based on various features like age, gender, passenger class, and more.
+
+## Column Descriptions
+
+Here's a detailed description of each column (feature) present in the `train.csv` dataset:
+
+| Column Name   | Description                                         | Data Type         | Notes                                                                           |
+|:-----------------|:-----------------|:-----------------|:-----------------|
+| `PassengerId` | A unique identifier for each passenger.             | Integer           | Used to identify rows; typically not used as a feature for modeling.            |
+| `Survived`    | Survival status (our target variable).              | Integer (0 or 1)  | `0 = No` (Did not survive), `1 = Yes` (Survived)                                |
+| `Pclass`      | Passenger Class. A proxy for socio-economic status. | Integer (1, 2, 3) | `1 = 1st Class`, `2 = 2nd Class`, `3 = 3rd Class`                               |
+| `Name`        | Passenger's name.                                   | String            | Can be used to extract titles (Mr., Mrs., Miss, Master, etc.)                   |
+| `Sex`         | Passenger's gender.                                 | String            | `male` or `female`                                                              |
+| `Age`         | Age of the passenger in years.                      | Float             | Has missing values.                                                             |
+| `SibSp`       | Number of siblings/spouses aboard the Titanic.      | Integer           | `SibSp` (Sibling/Spouse)                                                        |
+| `Parch`       | Number of parents/children aboard the Titanic.      | Integer           | `Parch` (Parent/Child)                                                          |
+| `Ticket`      | Ticket number.                                      | String            | Often contains alphanumeric characters.                                         |
+| `Fare`        | Passenger fare.                                     | Float             | The cost of the ticket.                                                         |
+| `Cabin`       | Cabin number.                                       | String            | Many missing values. The first letter often indicates the deck.                 |
+| `Embarked`    | Port of embarkation.                                | String            | `C = Cherbourg`, `Q = Queenstown`, `S = Southampton`. Has a few missing values. |
+
+Understanding these features is the first crucial step in preparing the data for analysis and building predictive models.
+
+## visualizing the data
+
+Other useful thing we can do to understand the data before any further analysis is to visualize it.
+As an example we are going to plot the Sex and Age in a graph for the two possible target values.
+
+```{r}
+table(titanic_train$Survived,titanic_train$Sex)
+```
+
+```{r, fig.height=5, fig.width=7, fig.align='center', echo=FALSE}
+
+titanic_train_processed <- titanic_train %>%
+  mutate(
+    Survived = factor(Survived, levels = c(0, 1), labels = c("Perished", "Survived")),
+    Sex = factor(Sex, levels = c("male", "female"), labels = c("Male", "Female"))
+  )
+
+g_survival_by_gender <- ggplot(titanic_train_processed, aes(x = Sex, fill = Survived)) +
+  geom_bar(position = "fill", color = "white") + # position = "fill" makes bars sum to 1 (100%)
+  labs(
+    title = "Proportion of Survival by Gender",
+    x = "Gender",
+    y = "Proportion",
+    fill = "Survival Status"
+  ) +
+  #scale_fill_manual(values = c("Perished" = "#e41a1c", "Survived" = "#377eb8")) + # Consistent colors
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.margin = unit(c(1,1,1,1), "cm")
+  )
+g_survival_by_gender
+```
+
+```{r, fig.height=5, fig.width=10, fig.align='center', echo=FALSE}
+
+
+g_survival_by_age <- ggplot(titanic_train_processed, aes(x = Age, fill = Survived, color = Survived)) +
+  geom_density(alpha = 0.2) + # alpha for transparency when densities overlap
+  facet_wrap(~Sex)+
+  labs(
+    title = "Age Distribution by Survival Status and Gender",
+    x = "Age",
+    y = "Density",
+    fill = "Group", # Renamed legend title
+    color = "Group"  # Renamed legend title
+  ) 
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.margin = unit(c(1,1,1,1), "cm") # Add some margin around the plot
+  )
+
+# Print the plot
+print(g_survival_by_age)
+```
+
+```{r, fig.height=5, fig.width=10, fig.align='center', echo=FALSE}
+
+fig <- ggplot(titanic_train_processed, aes(x = factor(Pclass), y = Age, color = Sex)) +
+  geom_boxplot() +
+  # Using a different palette, e.g., "Set1" or "Paired" which tend to have more distinct colors
+  scale_color_brewer(palette = "Set2") + # "Set1" is generally good for distinct colors
+  labs(
+    title = "Age Distribution by Passenger Class, Colored by Gender",
+    x = "Passenger Class",
+    y = "Age",
+    color = "Gender"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "bottom"
+  )
+fig
+```
+
+## Handling missing values
+
+Some of the fields have nulls.
+Based on our experience with the data we will decide on what to do with those.
+A common way of dealing with nulls is to assign the nulls to the most common class in their category, or the mean if it is a numerical value.
+
+Embarked has only 2 missing values, so we can probably just fill in those blanks with the most frequent category, in this case S
+
+```{r}
+
+table(titanic_train$Embarked)
+titanic_train_processed <- titanic_train #let's reset our working dataset to the original version
+
+#this will assing the most frequent value to the missing Embarked rows. 
+titanic_train_processed<- titanic_train_processed %>% 
+  mutate(Embarked = ifelse(is.na(Embarked), 
+    names(sort(table(Embarked), decreasing = TRUE))[1], Embarked))
+table(titanic_train_processed$Embarked)
+
+```
+
+Cabin has 687 out of 891 missing values, so it does not look like a good decision to do this generalization here.
+We are going to drop the full field.
+
+```{r}
+titanic_train_reduced <- titanic_train_processed %>% select (-c('Cabin'))
+```
+
+For age, we are going to assign the average age by sex for the missing values
+
+```{r}
+sum(is.na(titanic_train_reduced$Age))
+titanic_train_reduced <- titanic_train_reduced %>% 
+group_by(Sex) %>% 
+  mutate(Age = ifelse(is.na(Age), mean(Age, na.rm = TRUE), Age)) %>% 
+  ungroup() 
+
+sum(is.na(titanic_train_reduced$Age))
+```
+
+# Selecting the important features.
+
+The first thing that we notice is that there are numerical and categorical variables in the dataset.
+
+There are some variables (features) that will not add any predictive value.
+For example Passenger Id is a unique value for each passenger, so it will not show any correlation between them.
+We can also assume that the name will not have any value to predict the survival.
+We will drop Name, PassengerId and Ticket
+
+```{r}
+titanic_train_reduced <- titanic_train_reduced %>% select (-c('Ticket', 'PassengerId', 'Name'))
+```
+
+## Feature encoding
+
+We can calculate the correlation between the variables to help with selecting the important ones.
+
+The cor() function in R (and correlation functions in other languages) calculates the Pearson correlation coefficient, which is designed for numerical variables.
+
+```{r}
+
+# Select only numerical columns for correlation analysis
+
+numerical_data <- titanic_train_reduced %>% 
+  select(c('Survived', 'Pclass', 'Age', 'SibSp', 'Parch', 'Fare'))
+  
+kable (head(numerical_data))
+correlation_matrix <- cor(numerical_data)
+
+kable(correlation_matrix)
+
+# Create the correlation plot
+# 'number' displays the correlation coefficients
+# 'col' sets the color palette
+# 'diag=FALSE' removes numbers on the diagonal
+corrplot::corrplot(correlation_matrix,
+                   method = "circle", # Can be "circle", "square", "ellipse", "number", "shade", "color", "pie"
+                   type = "upper",   # Show only the upper triangle
+                   tl.col = "black", # Color of text labels
+                   addCoef.col = "black", # Add coefficients to the plot
+                   number.cex = 0.8, # Size of the coefficients
+                   tl.cex = 0.9,     # Size of the labels
+                   diag = FALSE # Do not show correlation of a variable with itself
+                   )
+```
+
+To include categorical variables in such a matrix, you need to transform them into a numerical format.
+This has some benefits:
+
+**Comprehensive View**: It allows you to see the linear relationships between all your numerical and relevant categorical features in one single matrix, providing a more holistic view of the dataset's structure.
+**Insights into Categorical Predictors**: You can directly quantify how strong the linear relationship is between a categorical variable (e.g., 'Sex') and your target variable ('Survived'), or other numerical features.
+**Preparation for Modeling**: This is a standard preprocessing step for many linear models (like linear regression or logistic regression) where categorical predictors need to be numeric.
+
+Considerations:
+
+-   While useful, interpreting correlations involving dummy variables (especially for multi-level ones) requires care.
+    A high correlation with one dummy variable (e.g., Embarked_C) doesn't necessarily mean a high correlation with the overall 'Embarked' variable, but rather with that specific category compared to the reference group.
+
+-   Effect of Multi-collinearity: If you include all dummy variables for a multi-level categorical feature, it can introduce perfect multicollinearity, which some statistical tools might struggle with (though cor() will still compute it).
+    This is why one dummy variable is usually dropped as a reference category in modeling, but for correlation, you might include all to see all pairwise relationships.
+
+Processing:
+
+-   Binary Variables (like 'Sex'): For a binary categorical variable (e.g., 'Male' and 'Female'), you can convert it into a single dummy variable (e.g., Sex_Male where 1 = Male, 0 = Female, or vice-versa).
+    The correlation coefficient between this dummy variable and another numerical variable is equivalent to a point-biserial correlation, which measures the relationship between a binary variable and a continuous one.
+    This allows you to see how 'Sex' correlates with 'Survived', 'Age', 'Fare', etc.
+
+-   Multi-level Categorical Variables (like 'Embarked' or 'Pclass'): For variables with more than two categories (e.g., 'Embarked' has C, Q, S), you would typically create a separate dummy variable for each category, minus one (to avoid multicollinearity).
+    For instance, 'Embarked' could become Embarked_C, Embarked_Q, Embarked_S (dropping one as a reference).
+    The correlation matrix would then show correlations of each of these dummy variables with other numerical features.
+
+::: {#Multicollinearity .callout-orange}
+What is Multicollinearity?
+
+Multicollinearity occurs in a regression model when two or more predictor variables are highly correlated with each other.
+In essence, one predictor variable can be linearly predicted from the others with a substantial degree of accuracy.
+
+Why is Multicollinearity a Problem?
+While multicollinearity doesn't usually affect the overall predictive power of a model, it can severely impact the interpretation of individual predictor variables:
+
+-   **Unreliable Coefficient Estimates**: The estimated regression coefficients for the correlated variables become unstable and difficult to interpret. Small changes in the data can lead to large changes in the coefficients, making it hard to determine the true effect of each variable.
+-   **Increased Standard Errors**: Multicollinearity inflates the standard errors of the coefficients, making them less statistically significant. This means you might incorrectly conclude that a variable is not important when it actually is.
+-   **Difficulty in Inferring Causality**: It becomes challenging to isolate the independent effect of each correlated predictor on the response variable.
+
+*How Dummy Variables Cause Perfect Multicollinearity*: Consider a categorical variable like Sex with two levels: "Male" and "Female".
+When you create dummy variables (also known as one-hot encoding):
+
+You might create Sex_Male (1 if Male, 0 if Female) And Sex_Female (1 if Female, 0 if Male).
+If you include both Sex_Male and Sex_Female in a regression model, you introduce perfect multicollinearity, because Sex_Male and Sex_Female are perfectly negatively correlated.
+Knowing the value of one (e.g., Sex_Male = 1) immediately tells you the value of the other (Sex_Female = 0).
+They convey redundant information.
+In a linear equation, Sex_Female = 1 - Sex_Male.
+
+This perfect linear relationship makes it impossible for the regression algorithm to uniquely estimate the coefficients for both variables.
+
+Similarly, for Embark: If you have $k$ categories for a variable (e.g., Embarked_C, Embarked_Q, Embarked_S for C, Q, S), and you include all $k$ dummy variables along with an intercept term in your model, you create a perfect linear dependency.
+For any observation, $Embarked_C + Embarked_Q + Embarked_S = 1$.
+This makes it impossible for the model's underlying matrix inversion (which is how coefficients are estimated) to yield a unique solution.
+This is known as the "dummy variable trap."
+
+The Solution: Dropping a Dummy Variable (Reference Category) To avoid perfect multicollinearity, the standard practice for regression modeling is to drop one of the dummy variables.
+The dropped category becomes the "reference category."
+
+If you keep Sex_Male and drop Sex_Female, the coefficient for Sex_Male will represent the difference in the outcome compared to the "Female" reference group (when Sex_Male is 0).
+Similarly, for 'Embarked' (C, Q, S), you'd create Embarked_C, Embarked_Q, and Embarked_S.
+To avoid multicollinearity, you'd drop one (e.g., Embarked_S), and the coefficients for Embarked_C and Embarked_Q would represent the difference compared to the "Southampton" reference group.
+:::
+
+in `R` the library `fastDummies` will help creating these dummy numerical values from our categorical features.
+Let's see how the first 10 rows look like after the transformation:
+
+```{r}
+# Select numerical columns and categorical columns to be dummified
+correlation_data <- titanic_train_reduced %>% 
+  # Convert Sex to factor for dummy_cols (if not already)
+  mutate(Sex = as.factor(Sex), Embarked = as.factor(Embarked)) %>%
+  # Create dummy variables for 'Sex' and 'Embarked'
+  # .keep = "unused" removes the original columns that were dummified
+  # remove_first_dummy = FALSE keeps all dummies to show all pairwise correlations
+  fastDummies::dummy_cols(
+    select_columns = c("Sex", "Embarked"),
+    remove_first_dummy = FALSE, 
+    remove_selected_columns = TRUE 
+  ) 
+kable(head(correlation_data))
+```
+
+In the code above, `remove_first_dummy = FALSE` is intentionally set.
+This is because:
+
+-   **Correlation vs. Regression:** While perfect multicollinearity is problematic for *estimating regression coefficients*, it's not a direct issue for simply *calculating* a correlation matrix.
+    The `cor()` function will still produce values.
+
+-   **Complete Pairwise Relationships:** By keeping all dummy variables, you get to see the pairwise correlation of each individual dummy (e.g., `Sex_Male`) with all other variables, which can still be informative for exploratory data analysis, even if you wouldn't use all of them in a final regression model.
+    For example, you can see the correlation between `Sex_Male` and `Survived`, and also between `Sex_Female` and `Survived` separately.
+
+So, while dropping a dummy is crucial for building stable regression models, for the purpose of a purely descriptive correlation plot, including all dummy variables can sometimes offer more complete visual insights, provided you understand the underlying perfect collinearity between them.
+
+```{r}
+#| label: correlation-plot
+#| echo: true
+#| output: true
+#| fig-width: 7 # Increased width for more variables
+#| fig-height: 7 # Increased height for more variables
+
+# Calculate the correlation matrix
+correlation_matrix_dummies <- cor(correlation_data)
+
+# Create the correlation plot
+corrplot::corrplot(correlation_matrix_dummies,
+                   method = "circle", # Can be "circle", "square", "ellipse", "number", "shade", "color", "pie"
+                   type = "upper",   # Show only the upper triangle
+                   tl.col = "black", # Color of text labels
+                   addCoef.col = "black", # Add coefficients to the plot
+                   number.cex = 0.6, # Size of the coefficients (reduced for more variables)
+                   tl.cex = 0.7,     # Size of the labels (reduced for more variables)
+                   diag = FALSE,     # Do not show correlation of a variable with itself
+                   #order = "hclust", # Optional: Order variables by hierarchical clustering
+                   hclust.method = "complete" # Clustering method
+                   )
+```
+
+## Normalizing the numerical values
+
+Normalizing numerical variables (also known as standardization when using methods like Z-score, which is `scale()` in R) is a very common preprocessing step in data analysis and machine learning).
+We need to do this for algorithms sensitive to scale.
+
+Here's why we often do it:
+
+1.  **Ensuring Fair Comparison (especially for algorithms sensitive to scale):**
+
+    -   Many machine learning algorithms (like *K-Nearest Neighbors*, *Support Vector Machines*, *K-Means clustering*, or even regularization techniques in linear models) calculate distances between data points or rely on the magnitude of feature values.
+
+    -   If features are on vastly different scales (e.g., 'Age' typically 0-80, 'Fare' potentially 0-500+), the feature with the larger scale can disproportionately influence the algorithm.
+        'Fare' might end up dominating the distance calculations simply because its values are numerically larger, even if 'Age' is equally or more important in reality.
+
+    -   Normalization brings all numerical features to a comparable scale, preventing features with larger numerical ranges from artificially dominating the analysis.
+
+2.  **Improving Algorithm Convergence and Performance:** - For optimization algorithms used in training models (e.g., *gradient descent* in neural networks or logistic regression), features on different scales can lead to "lopsided" cost functions that are harder and slower for the optimizer to converge on.
+    Normalizing can create a more symmetrical and easier-to-navigate cost landscape, leading to faster and more stable model training.
+
+3.  **For Correlation Plots Specifically:** - While **Pearson correlation coefficients** themselves (`cor()` output) are **scale-invariant** (meaning the correlation value between two variables won't change if you normalize one or both of them), normalizing the data *before* visualizing it can sometimes make the *visual representation* clearer, especially if you were using methods that plot the raw data points where scales matter.
+
+```         
+-   However, the primary reason for including normalization *before* calculating the correlation matrix in our specific R code was often driven by the next step in a typical data analysis pipeline: preparing data for machine learning models where normalization *is* critical.
+    By incorporating it early, we create a consistent `numerical_correlation_data_scaled` dataset that is ready for subsequent modeling steps.
+```
+
+In essence, normalization is a way to preprocess your data so that all numerical features contribute equally to the analysis, preventing biases introduced by their original scales and often leading to more robust and better-performing models.
+
+We can use different methods for normalization.
+For example we can use z-score standardization:
+
+```{r}
+# Normalize numerical variables (Age, SibSp, Parch, Fare) using Z-score standardization
+# Survived and Pclass are treated as discrete numerical variables, so usually not scaled for correlation.
+# Sex_ and Embarked_ dummies are already 0/1.
+numerical_correlation_data_scaled <- correlation_data %>%
+  mutate(
+    Age = scale(Age)[,1], # scale() returns a matrix, need to select the column
+    SibSp = scale(SibSp)[,1],
+    Parch = scale(Parch)[,1],
+    Fare = scale(Fare)[,1]
+    # Pclass is technically numeric but represents categories; scaling might obscure its meaning
+    # for correlation interpretation if its values 1,2,3 are seen as categories.
+    # For now, we'll leave Pclass unscaled as it's often treated ordinally.
+  )
+
+kable(head(numerical_correlation_data_scaled))
+```
+
+We can draw our correlation plot again and see that the normalization has not affected our coefficients:
+
+```{r}
+correlation_matrix_dummies <- cor(numerical_correlation_data_scaled)
+
+# Create the correlation plot
+corrplot::corrplot(correlation_matrix_dummies,
+                   method = "circle",
+                   type = "upper",   
+                   tl.col = "black", 
+                   addCoef.col = "black", 
+                   number.cex = 0.6, 
+                   tl.cex = 0.7,     
+                   diag = FALSE,     
+                   #order = "hclust",
+                   hclust.method = "complete" # Clustering method
+                   )
+```
+
+::: callout-orange
+## Normalization Techniques
+
+When preparing data for modeling, especially for algorithms sensitive to feature scale, it's important to normalize or standardize numerical variables.
+Below are several common techniques besides the z-score we just saw:
+
+### 1. Min-Max Scaling
+
+This rescales the feature to a fixed range, typically (\[0, 1\]):
+
+$$
+x' = \frac{x - \min(x)}{\max(x) - \min(x)}
+$$
+
+-   **Use case**: Preserves the shape of the original distribution.
+-   **Sensitive to outliers**.
+
+------------------------------------------------------------------------
+
+### 2. Robust Scaling
+
+This method uses the median and interquartile range (IQR), making it robust to outliers:
+
+$$
+x' = \frac{x - \text{median}(x)}{\text{IQR}(x)}
+$$
+
+-   **Use case**: When data contains outliers.
+-   **IQR** is the difference between the 75th and 25th percentiles.
+
+------------------------------------------------------------------------
+
+### 3. Max Abs Scaling
+
+Scales each feature by its maximum absolute value:
+
+$$
+x' = \frac{x}{\max(|x|)}
+$$
+
+-   **Use case**: When data is already centered at zero.
+-   **Resulting range**: (\[-1, 1\])
+
+------------------------------------------------------------------------
+
+### 4. Log Transformation
+
+Useful for reducing right skewness in data:
+
+$$
+x' = \log(x + 1)
+$$
+
+-   **Use case**: When data is highly skewed.
+-   **Note**: Adding 1 avoids issues with (\log(0)).
+
+------------------------------------------------------------------------
+
+### 5. Power Transformations
+
+These aim to make data more Gaussian-like.
+
+#### Box-Cox (for positive values only):
+
+$$
+x' = \frac{x^\lambda - 1}{\lambda}, \quad \text{if } \lambda \ne 0
+$$
+
+$$
+x' = \log(x), \quad \text{if } \lambda = 0
+$$
+
+#### Yeo-Johnson (works with zero and negative values):
+
+$$
+x' =
+\begin{cases}
+\frac{(x + 1)^\lambda - 1}{\lambda}, & x \ge 0, \lambda \ne 0 \\
+\log(x + 1), & x \ge 0, \lambda = 0 \\
+\frac{-(-x + 1)^{2 - \lambda} + 1}{2 - \lambda}, & x < 0, \lambda \ne 2 \\
+-\log(-x + 1), & x < 0, \lambda = 2
+\end{cases}
+$$
+
+-   **Use case**: When you want to normalize skewed data and make it more Gaussian.
+
+------------------------------------------------------------------------
+
+Each method has its strengths depending on the data distribution and the model you're using.
+Choose the one that best fits your use case.
+
+We will see the results of each applied to the field Fare as an example:
+
+```{r}
+
+library(tidyverse)
+library(bestNormalize)
+
+
+# 2. Extract fare (replace NAs with 0)
+fare <- titanic_train$Fare %>% replace_na(0)
+
+# 3. Fit Box-Cox and Yeo-Johnson (they return objects; use predict())
+bc_obj <- boxcox(fare + 1)        # add 1 so that zero fares are valid
+yj_obj <- yeojohnson(fare)
+
+# 4. Build a data.frame of all transforms
+df_tall <- tibble(
+  Original   = fare,
+  `Min–Max`  = (fare - min(fare)) / (max(fare) - min(fare)),
+  Robust     = (fare - median(fare)) / IQR(fare),
+  `Max–Abs`  = fare / max(abs(fare)),
+  `Log₁ₚ₁`   = log1p(fare),
+  `Box–Cox`  = predict(bc_obj),
+  `Yeo–Johnson` = predict(yj_obj)
+) %>%
+  pivot_longer(everything(), names_to = "Method", values_to = "Value")
+
+# 5. Plot
+ggplot(df_tall, aes(x = Value)) +
+  geom_histogram(
+    bins  = 50,
+    fill  = "steelblue",
+    color = "white",
+    alpha = .6
+  ) +
+  geom_density(
+    aes(y = after_stat(count)), 
+    color = "firebrick",
+    size  = .7
+  ) +
+  facet_wrap(~ Method, scales = "free", ncol = 2) +
+  labs(
+    title = "Normalization Techniques on Titanic Fare",
+    x     = "Transformed Fare",
+    y     = "Count"
+  ) +
+  theme_minimal(base_size = 12)
+
+```
+:::
+
+## Feature selection Techniques
+
+To enhance model performance and interpretability, we evaluate features in the Titanic dataset using four key selection methods: - Correlation Coefficient, - ANOVA, - Chi-Square, - Mutual Information.
+Each technique brings a unique perspective depending on whether the feature is numerical or categorical and the nature of the response variable.
+
+### Correlation Coefficient
+
+The Pearson Correlation Coefficient measures linear association between continuous variables.
+It is defined as 
+$$
+r = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum(x_i - \bar{x})^2 \sum(y_i - \bar{y})^2}}
+$$ 
+In our context, we apply it between continuous predictors and the binary outcome `survived`
+
+```{r}
+# Correlation of each feature with the target
+cor_matrix <- cor(numerical_correlation_data_scaled, use = "complete.obs")
+cor_matrix["Survived", ][-1]  # Drop self-correlation
+
+```
+
+Note: Since Survived is binary, results are interpretable but not strictly Pearson-optimal.
+
+### ANOVA (Analysis of Variance)
+
+([see ANOVA section in Linear Models](linearModels.qmd#sec-anova))
+
+ANOVA assesses whether the means of a numeric variable differ significantly across categories of a factor (e.g., Sex, Pclass).
+
+The F-statistic formula is: 
+$$
+F = \frac{\text{Between-group variability}}{\text{Within-group variability}}
+$$
+
+```{r}
+# One-way ANOVA for each feature
+anova_results <- sapply(names(numerical_correlation_data_scaled)[-1], function(var) {
+  aov_formula <- as.formula(paste(var, "~ factor(Survived)"))
+  summary(aov(aov_formula, data = numerical_correlation_data_scaled))[[1]][["Pr(>F)"]][1]
+})
+
+sort(anova_results)  # Features with smallest p-values are more significant
+
+
+```
+
+### Chi-Square Test
+
+see ([Goodness of fit](Inferential#sec-goodness-of-fit) and [Chi-Square](Inferential#sec-chiSquare))
+
+Used for categorical predictors against a categorical response (both Survived and, say, Sex).
+The chi-squared statistic is 
+$$
+\chi^2 = \sum \frac{(O_i - E_i)^2}{E_i}
+$$
+as an example with a single variable:
+
+```{r}
+chisq.test(table(numerical_correlation_data_scaled$Sex_female, numerical_correlation_data_scaled$Survived))
+
+```
+
+Over the full dataset:
+Notice that we are using the `discretize()` function from the `infotheo` package, what it does is transform continuous numeric variables into categorical bins.
+Some techniques — like Chi-Square and Mutual Information — work best (or sometimes only) on categorical data. 
+What does discretize() actually do?
+-   It takes each numeric column and divides it into a small number of intervals (by default, 10 equal-frequency bins).
+
+Think of it like saying: "Let's convert the Age variable into groups: youngest 10%, next 10%, ..., oldest 10%.”
+
+The result is a data frame of factors (categories) instead of raw numbers, which can then be passed to methods like Chi-Square or Mutual Information.
+If you want to control the number of bins or method of binning, you can do something like:
+`disc_data <- discretize(numerical_correlation_data_scaled, disc = "equalfreq", nbins = 5)`
+
+
+```{r}
+library(infotheo)
+
+# Discretize all features including target
+disc_data <- discretize(numerical_correlation_data_scaled)
+
+head(disc_data)
+
+```
+Let's see how it has changed the Survival field, for example:
+```{r}
+
+table(numerical_correlation_data_scaled$Survived)
+table(disc_data$Survived)
+```
+And the Age:
+```{r}
+table(round(numerical_correlation_data_scaled$Age,2))
+table(disc_data$Age)
+```
+
+
+
+
+```{r}
+# Apply chi-squared test against Survived
+chi_square_scores <- sapply(names(disc_data)[-1], function(var) {
+  chisq.test(table(disc_data[[var]], disc_data$Survived))$p.value
+})
+
+sort(chi_square_scores)  # Smaller p-values indicate stronger association
+
+
+```
+
+
+Higher values with low $p$-values indicate dependence: useful in selecting relevant categorical variables
+
+### Mutual Information
+Mutual information captures any dependency (linear o nonlinear) between two variables. 
+$$
+I(X; Y) = \sum_{x \in X} \sum_{y \in Y} p(x, y) \log \left( \frac{p(x, y)}{p(x)p(y)} \right)
+
+$$
+
+```{r}
+library(infotheo)
+
+# Use same discretized data
+mi_scores <- mutinformation(disc_data[ , -1], disc_data$Survived)
+sort(mi_scores, decreasing = TRUE)
+
+
+```
+Variables with high mutual information have stronger predictive potential.
+
+
+## Feature selection table
+```{r}
+# Combine scores into a summary table
+feature_names <- names(numerical_correlation_data_scaled)[-1]  # exclude 'Survived'
+
+# Correlation coefficients (absolute value for strength)
+cor_scores <- abs(cor_matrix["Survived", feature_names])
+
+# Chi-square and ANOVA used p-values (lower is better, so take -log10 for comparability)
+chi_scores <- -log10(chi_square_scores[feature_names])
+anova_scores <- -log10(anova_results[feature_names])
+
+# Mutual information already works as-is
+mi_ordered <- mi_scores[feature_names]
+
+# Combine into a tibble
+library(tibble)
+library(dplyr)
+
+feature_summary <- tibble(
+  Feature = feature_names,
+  Correlation = cor_scores,
+  ANOVA = anova_scores,
+  Chi_Square = chi_scores,
+  Mutual_Information = mi_ordered
+)
+
+# Normalize each column (method) between 0 and 1
+normalized_summary <- feature_summary %>%
+  mutate(across(-Feature, ~ (.x - min(.x)) / (max(.x) - min(.x))))
+
+
+normalized_long <- normalized_summary %>%
+  pivot_longer(cols = -Feature, names_to = "Method", values_to = "Score")
+
+ggplot(normalized_long, aes(x = reorder(Feature, Score), y = Score, fill = Method)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  labs(title = "Normalized Feature Importance by Method",
+       x = "Feature", y = "Normalized Score",
+       fill = "Method") +
+  theme_minimal()
+
+
+```
+
+Now we want to select the top 5 features:
+```{r}
+# Set how many top features to consider from each method
+k <- 5
+
+# Rank features per method (higher = more important)
+ranked_features <- feature_summary %>%
+  mutate(across(-Feature, ~ rank(-.x)))  # descending rank
+
+# Count how often each feature appears in top k
+top_k_counts <- ranked_features %>%
+  mutate(across(-Feature, ~ .x <= k)) %>%
+  mutate(Vote_Count = rowSums(across(-Feature))) %>%
+  arrange(desc(Vote_Count))
+
+top_k_counts
+
+```
+Vote_Count indicates how many methods placed the feature in their top k.
+
+Features with the highest count were consistently important across techniques.
+
+You can now choose a threshold (e.g., keep features with votes ≥ 2) to filter your most robust predictors.

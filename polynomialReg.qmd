@@ -3,6 +3,7 @@ title: "Polynomial Regression"
 format: html
 editor: visual
 ---
+
 ```{r}
 #| echo: false
 library(dplyr)
@@ -35,7 +36,6 @@ library(splines) #splines
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
-
 
 Polynomial regression is an extension of linear regression that models the relationship between the independent variable𝑥and the dependent variable𝑦as an𝑛th-degree polynomial. In linear regression, the relationship between $x$ and $y$ is modeled as a straight line: $y=\beta_0+\beta_1X$ In polynomial regression, the relationship is modeled as a polynomial. For example for a single variable $x$: $y=\beta_0+\beta_1x+\beta_2x^2+\dots+\beta_nx^n$. It can capture more complex patterns in the data that linear regression might miss. By adjusting the degree of the polynomial, you can model different types of curves. To choose the degree of polynomial to use, we can use cross-validation for example.
 
@@ -429,7 +429,7 @@ Generalized Additive Models (GAMs) are a type of statistical model used to captu
 
 *Additive Structure*: The model is a sum of smooth functions of the predictor variables. *Flexibility*: Can capture non-linear patterns without specifying a particular form for the relationship. *Interpretability*: Each predictor's effect is represented by a smooth function, making it easier to interpret.
 
-$$Y = \beta_0 + f_1(X_1) + f_2(X_2) + \ldots + f_p(X_p) + \epsilon$$ 
+$$Y = \beta_0 + f_1(X_1) + f_2(X_2) + \ldots + f_p(X_p) + \epsilon$$
 
 where Y is the dependent variable, $\beta_0$ is the intercept, $f_1(X_1) + f_2(X_2) + \ldots + f_p(X_p)$ are the smooth functions of the predictor variables $X_1,X_2,\dots,X_p$ $\epsilon$ is the error term.
 
@@ -559,4 +559,3 @@ par(mfrow=c(1,2))
 plot(gam.lo.i)
 ```
 :::
-

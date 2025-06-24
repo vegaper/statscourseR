@@ -24,6 +24,8 @@ website:
         menu:
           - href: Inferencial.qmd
             text: Statistical Tests
+          - href: Titanic.qmd
+            text: Titanic exercise
           - href: linearModels.qmd
             text: Linear Models
           - href: modelAccuracy.qmd

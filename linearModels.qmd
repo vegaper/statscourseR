@@ -938,7 +938,7 @@ We already talked about most of them, but let's do a summary:
 6.  **Collinearity**: we already dedicated [a section](#collinearity) to these problem.
 :::
 
-# Introduction to ANOVA (Analysis of Variance)
+# Introduction to ANOVA (Analysis of Variance) {#sec-anova}
 
 Analysis of variance, or ANOVA, is used to test **the relationship between a categorical and a quantitative variable**. Specifically, it test the null hypothesis that the population mean of the quantitative variable is the same in each of the groups. A low $p$-value indicates that the data would be unlikely if in fact those population means where equal.
 
@@ -1034,7 +1034,7 @@ We have k groups with n observations:
 | ...         | ...      | ...      | ...      |
 | n           | $y_{n1}$ | $y_{n2}$ | $y_{nk}$ |
 
-in total there are $N=n_1+n_2+\cdots+n_k$ observations. The sample mean of one group is $\bar{y_j}=\frac{1}{n_j}\sum_{i=1}^{n_j}y_{ij}$ and the overal sample mean or grand mean is $\bar{\bar{y}}= \frac{1}{N}\sum_{j=1}^{k}\sum_{i=1}^{n_j}y_{ij}$
+in total there are $N=n_1+n_2+\cdots+n_k$ observations. The sample mean of one group is $\bar{y_j}=\frac{1}{n_j}\sum_{i=1}^{n_j}y_{ij}$ and the overall sample mean or grand mean is $\bar{\bar{y}}= \frac{1}{N}\sum_{j=1}^{k}\sum_{i=1}^{n_j}y_{ij}$
 
 The analysis of variance compute two important variables, one is the **treatment sum of squares (SST)** that look at the difference between the group means to the overall mean
 
