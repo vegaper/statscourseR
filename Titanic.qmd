@@ -364,23 +364,19 @@ We need to do this for algorithms sensitive to scale.
 Here's why we often do it:
 
 1.  **Ensuring Fair Comparison (especially for algorithms sensitive to scale):**
-
-    -   Many machine learning algorithms (like *K-Nearest Neighbors*, *Support Vector Machines*, *K-Means clustering*, or even regularization techniques in linear models) calculate distances between data points or rely on the magnitude of feature values.
-
-    -   If features are on vastly different scales (e.g., 'Age' typically 0-80, 'Fare' potentially 0-500+), the feature with the larger scale can disproportionately influence the algorithm.
+   -   Many machine learning algorithms (like *K-Nearest Neighbors*, *Support Vector Machines*, *K-Means clustering*, or even regularization techniques in linear models) calculate distances between data points or rely on the magnitude of feature values.
+  -   If features are on vastly different scales (e.g., 'Age' typically 0-80, 'Fare' potentially 0-500+), the feature with the larger scale can disproportionately influence the algorithm.
         'Fare' might end up dominating the distance calculations simply because its values are numerically larger, even if 'Age' is equally or more important in reality.
-
-    -   Normalization brings all numerical features to a comparable scale, preventing features with larger numerical ranges from artificially dominating the analysis.
+  -   Normalization brings all numerical features to a comparable scale, preventing features with larger numerical ranges from artificially dominating the analysis.
 
 2.  **Improving Algorithm Convergence and Performance:** - For optimization algorithms used in training models (e.g., *gradient descent* in neural networks or logistic regression), features on different scales can lead to "lopsided" cost functions that are harder and slower for the optimizer to converge on.
     Normalizing can create a more symmetrical and easier-to-navigate cost landscape, leading to faster and more stable model training.
 
 3.  **For Correlation Plots Specifically:** - While **Pearson correlation coefficients** themselves (`cor()` output) are **scale-invariant** (meaning the correlation value between two variables won't change if you normalize one or both of them), normalizing the data *before* visualizing it can sometimes make the *visual representation* clearer, especially if you were using methods that plot the raw data points where scales matter.
 
-```         
--   However, the primary reason for including normalization *before* calculating the correlation matrix in our specific R code was often driven by the next step in a typical data analysis pipeline: preparing data for machine learning models where normalization *is* critical.
+       
+However, the primary reason for including normalization *before* calculating the correlation matrix in our specific R code was often driven by the next step in a typical data analysis pipeline: preparing data for machine learning models where normalization *is* critical.
     By incorporating it early, we create a consistent `numerical_correlation_data_scaled` dataset that is ready for subsequent modeling steps.
-```
 
 In essence, normalization is a way to preprocess your data so that all numerical features contribute equally to the analysis, preventing biases introduced by their original scales and often leading to more robust and better-performing models.
 
@@ -430,7 +426,7 @@ corrplot::corrplot(correlation_matrix_dummies,
 When preparing data for modeling, especially for algorithms sensitive to feature scale, it's important to normalize or standardize numerical variables.
 Below are several common techniques besides the z-score we just saw:
 
-### 1. Min-Max Scaling
+###  Min-Max Scaling
 
 This rescales the feature to a fixed range, typically (\[0, 1\]):
 
@@ -443,7 +439,7 @@ $$
 
 ------------------------------------------------------------------------
 
-### 2. Robust Scaling
+###  Robust Scaling
 
 This method uses the median and interquartile range (IQR), making it robust to outliers:
 
@@ -456,7 +452,7 @@ $$
 
 ------------------------------------------------------------------------
 
-### 3. Max Abs Scaling
+###  Max Abs Scaling
 
 Scales each feature by its maximum absolute value:
 
@@ -469,7 +465,7 @@ $$
 
 ------------------------------------------------------------------------
 
-### 4. Log Transformation
+###  Log Transformation
 
 Useful for reducing right skewness in data:
 
@@ -482,11 +478,11 @@ $$
 
 ------------------------------------------------------------------------
 
-### 5. Power Transformations
+###  Power Transformations
 
 These aim to make data more Gaussian-like.
 
-#### Box-Cox (for positive values only):
+### Box-Cox (for positive values only):
 
 $$
 x' = \frac{x^\lambda - 1}{\lambda}, \quad \text{if } \lambda \ne 0
@@ -496,7 +492,7 @@ $$
 x' = \log(x), \quad \text{if } \lambda = 0
 $$
 
-#### Yeo-Johnson (works with zero and negative values):
+### Yeo-Johnson (works with zero and negative values):
 
 $$
 x' =
