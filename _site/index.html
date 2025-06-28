@@ -3834,7 +3834,7 @@ vertical-align: -.125em;
 }</script>
 
 
-<style type="text/css">pre.sourceCode {background-color: #f8f8f8;}div.cell-output {border: 2px solid #cae8dc;border-radius: 8px;background-color: #fff;padding: 10px;color: #367588;}pre.code {color: #367588;}code {color: #367588;}.centered-text p {text-align: center;}.callout-orange {border: 2px solid #f0ad4e; border-radius: 8px; background-color: #fff3cd; padding: 10px;}.callout-grey {border: 2px solid #48494b; border-radius: 8px; background-color: #d9dddc; padding: 10px;}.math {font-size: 0.9em; }blockquote {font-size: 0.8em; background-color: #fcfafc}.blockquote {font-size: 0.8em; }.toc {margin-right: 10px; }body {font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;}ul, ol {line-height: 1;margin-bottom: 0.2em; }.exercise-box {background-color: #f9f9f9;  border-left: 5px solid #2c3e50;  padding: 10px;font-size: .9em;color: #2c3e50;margin: 20px 0;font-family: Sans-Serif;box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }.exercise-box p:first-of-type {font-weight: bold;text-decoration: underline;}.exercise-box summary { font-weight: bold; text-decoration: underline; cursor: pointer;  padding: 5px 0;  } .exercise-box details[open] summary::after { content: " ▼";  } .exercise-box summary::after { content: " ▶"; }.important-formula {background-color: #f9f9f9; border: 0.5px solid #2c3e50; border-radius: 8px;padding: 10px;margin: 20px 0;color: #2c3e50;font-family: Sans-Serif;}</style>
+<style type="text/css">.toc {margin-right: 10px; }body {font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;}ul, ol {line-height: 1;margin-bottom: 0.2em; }pre.sourceCode {background-color: #f8f8f8;}pre.code {color: #367588;}code {color: #367588;}div.cell-output {border: 2px solid #cae8dc;border-radius: 8px;background-color: #fff;padding-bottom: 1px;padding-top: 1px;padding-left: 3px;padding-right: 3px;color: #367588;margin-bottom: 7px; max-height: 350px; overflow-y: auto; overflow-x: auto; }div.cell-output pre,div.cell-output code {max-height: none;overflow: visible;white-space: pre-wrap; word-break: break-word; display: block; box-sizing: border-box; max-width: none; padding: 10px;}figure.scrollable-figure { max-height: 400px; overflow-y: auto;overflow-x: auto; border: 1px solid #ddd; margin-bottom: 15px;}.centered-text p {text-align: center;}.callout-orange {border: 2px solid #f0ad4e; border-radius: 8px; background-color: #fff3cd; padding: 10px;}.callout-grey {border: 2px solid #48494b; border-radius: 8px; background-color: #d9dddc; padding: 10px;}.math {font-size: 0.9em; }blockquote {font-size: 0.8em; background-color: #fcfafc}.blockquote {font-size: 0.8em; }.exercise-box {background-color: #f9f9f9;  border-left: 5px solid #2c3e50;  padding: 10px;font-size: .9em;color: #2c3e50;margin: 20px 0;font-family: Sans-Serif;box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }.exercise-box p:first-of-type {font-weight: bold;text-decoration: underline;}.exercise-box summary { font-weight: bold; text-decoration: underline; cursor: pointer;  padding: 5px 0;  } .exercise-box details[open] summary::after { content: " ▼";  } .exercise-box summary::after { content: " ▶"; }.important-formula {background-color: #f9f9f9; border: 0.5px solid #2c3e50; border-radius: 8px;padding: 5px;margin: 10px 0;color: #2c3e50;font-family: Sans-Serif;}</style>
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -3880,6 +3880,10 @@ vertical-align: -.125em;
  <span class="dropdown-text">Statistical Tests</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./Titanic.html">
+ <span class="dropdown-text">Titanic exercise</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./linearModels.html">
  <span class="dropdown-text">Linear Models</span></a>
   </li>  
@@ -3907,8 +3911,13 @@ vertical-align: -.125em;
     <a class="dropdown-item" href="./supportVectorMachines.html">
  <span class="dropdown-text">Support Vector Machines</span></a>
   </li>  
+        <li class="dropdown-header">Deep Learning with TensorFlow</li>
         <li>
-    <a class="dropdown-item" href="./DeepLearning.qmd">
+    <a class="dropdown-item" href="./installingTensorFlow.html">
+ <span class="dropdown-text">Installing TensorFlow</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./DeepLearning.html">
  <span class="dropdown-text">Deep Learning</span></a>
   </li>  
         <li>
@@ -3921,10 +3930,21 @@ vertical-align: -.125em;
     <a class="nav-link" href="./unsupervisedLearning.html"> 
 <span class="menu-text">Unsupervised Learning</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./matrix.html"> 
-<span class="menu-text">Matrix Algebra</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-matrices" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Matrices</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-matrices">    
+        <li>
+    <a class="dropdown-item" href="./matrix.html">
+ <span class="dropdown-text">Matrix Algebra</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./logisticRegressionMatrixCalculation.html">
+ <span class="dropdown-text">Matrices in Logistic Regression in Neural Networks</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
