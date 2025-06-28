@@ -98,7 +98,7 @@ Given some estimates $\hat{\beta_0}$ and $\hat{\beta_p}$ for the model coefficie
 
 A linear model is almost never correct, but it is usually a good approximation to the real function of the data. There are other models that may fit the data better, but there is a trade off in interpretability. Linear model have less prediction accuracy but are easy to interpret.
 
-## Correlation coefficient {#correlation-coefficient}
+## Correlation coefficient (Pearson) {#correlation-coefficient}
 
 If we standardize the values of our data, the line that we use to predict one value from the other follows a slope. That slope is the correlation.
 
@@ -132,26 +132,32 @@ ggplot(data, aes(x = x, y = y)) +
 The **correlation coefficient formula**:
 
 $$
-r = \frac{1}{n} \sum_{i=1}^{n} \left( \frac{x_i - \bar{x}}{s_x} \right) \times \left( \frac{y_i - \bar{y}}{s_y} \right)
-$$
+r = \frac{1}{n} \sum_{i=1}^{n} \left( \frac{x_i - \bar{x}}{s_x} \right) \times \left( \frac{y_i - \bar{y}}{s_y} \right) = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum(x_i - \bar{x})^2}\sqrt{\sum(y_i - \bar{y})^2}}
+$$ {#eq-pearsoncorrelation}
 
-This formula standardizes the values of ( x ) and ( y ) by subtracting their means $\bar{x}$ and $\bar{y}$ and dividing by their standard deviations $s_x$ and $s_y$, then calculates the average product of these standardized values.
+This formula standardizes the values of ($x$) and ($y$) by subtracting their means $\bar{x}$ and $\bar{y}$ and dividing by their standard deviations $s_x$ and $s_y$, then calculates the average product of these standardized values. It's essentially the covariance of the variables divided by the product of their standard deviations.
 
 **Sample correlation** measures the strength of an observed **linear** relationship between two variables in a data set. Fundamentally, it measures the spread (or variability) of sample data along a line of best fit
 
 As a convention, the variable on the horizontal axis is called **explanatory variable or predictor** and the one in the vertical axis is called **response variable.**
 
 ```{r, fig.align='center'}
-ggplot(treatment, aes(x = DLA1, y = DLA2)) + 
+ ggplot(treatment, aes(x = DLA1, y = DLA2)) + 
   geom_point() +
   geom_smooth(method = "lm",
                            se = FALSE,
                            color = "grey")
 ```
 
-To calculate the correlation we just have to use the command 'cor' and it's value will go from -1 to 1. The sign of r gives the direction of the association and its absolute value gives the strength.
+To calculate the correlation we just have to use the command `cor()` and it's value will go from -1 to 1. The sign of $r$ gives the direction of the association and its absolute value gives the strength. The default type of correlation for `cor()` is the Pearson correlation, so it is the same as writing `cor(x, y, method = "pearson")`
 
-Since both x and y were standardized when computing r, r has no units ans it is not affected by changing the center or the scale of either variable.
+::: callout-note
+You can use `cor()` with other types of correlation specifying them, for example:
+
+\`cor(x, y, method = "spearman")
+:::
+
+Since both $x$ and $y$ were standardized when computing $r$, $r$ has no units ans it is not affected by changing the center or the scale of either variable.
 
 ```{r}
 cor(treatment$DLA1,
@@ -201,7 +207,7 @@ Remember that we already saw that the correlation coefficient is very sensitive 
 
 ## Covariance
 
-Covariance measures the extent to which two variables change together. If the variables tend to increase together, the covariance is positive. If one tends to increase while the other decreases, the covariance is negative. For variables X and Y: $$ \text{Cov}(X, Y) = \frac{1}{n-1} \sum_{i=1}^{n} (X_i - \bar{X})(Y_i - \bar{Y})$$ {#eq-covariance}
+Covariance measures the extent to which two variables change together. If the variables tend to increase together, the covariance is positive. If one tends to increase while the other decreases, the covariance is negative. For variables $X$ and $Y$: $$ \text{Cov}(X, Y) = \frac{1}{n-1} \sum_{i=1}^{n} (X_i - \bar{X})(Y_i - \bar{Y})$$ {#eq-covariance}
 
 Covariance and correlation are related, but they're not the same thing:
 
@@ -585,7 +591,9 @@ These standard errors can be used to compute *confidence intervals* For example 
 
 $$
 \hat{\beta_1} \mp 2 * SE(\hat{\beta_1}) = \left[\hat{\beta_1}-2 * SE(\hat{\beta_1}),\hat{\beta_1}+2 * SE(\hat{\beta_1})\right]
-$$ \## Hypothesis testing and significance of correlation
+$$
+
+## Hypothesis testing and significance of correlation
 
 The most important thing to remember about correlation testing is that **it only applies to quantitative variables that have a generally linear relationship**.
 

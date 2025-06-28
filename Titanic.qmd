@@ -10,12 +10,10 @@ editor:
 #| echo: false
 library(dplyr)
 library(tidyverse)
-
+library(tibble)
 library(readxl)
 library(easystats)
-
 library(kableExtra)
-
 library(ggplot2)
 library(ggpattern)
 theme_set(theme_minimal())
@@ -46,9 +44,9 @@ as.data.frame(report(titanic_test))
 ```
 
 The dataset is typically split into two main files: `train.csv` and `test.csv`.
-\* **`train.csv`**: Contains a set of passengers for whom the survival outcome (`Survived`) is provided.
+ **`train.csv`**: Contains a set of passengers for whom the survival outcome (`Survived`) is provided.
 This is the dataset we will primarily use for exploratory data analysis (EDA), cleaning, feature engineering, and model training.
-\* **`test.csv`**: Contains a similar set of passenger information but *without* the `Survived` column.
+ **`test.csv`**: Contains a similar set of passenger information but *without* the `Survived` column.
 In a typical Kaggle competition scenario, you would predict survival for these passengers.
 For this analysis, we will focus on understanding and modeling the `train.csv` data.
 
@@ -568,6 +566,7 @@ To enhance model performance and interpretability, we evaluate features in the T
 Each technique brings a unique perspective depending on whether the feature is numerical or categorical and the nature of the response variable.
 
 ### Correlation Coefficient
+[See more detail in our linear models chapter](linearModels.qmd#correlation-coefficient)
 
 The Pearson Correlation Coefficient measures linear association between continuous variables.
 It is defined as 
@@ -604,8 +603,6 @@ anova_results <- sapply(names(numerical_correlation_data_scaled)[-1], function(v
 })
 
 sort(anova_results)  # Features with smallest p-values are more significant
-
-
 ```
 
 ### Chi-Square Test
@@ -621,7 +618,6 @@ as an example with a single variable:
 
 ```{r}
 chisq.test(table(numerical_correlation_data_scaled$Sex_female, numerical_correlation_data_scaled$Survived))
-
 ```
 
 Over the full dataset:
@@ -657,8 +653,6 @@ And the Age:
 table(round(numerical_correlation_data_scaled$Age,2))
 table(disc_data$Age)
 ```
-
-
 
 
 ```{r}
@@ -710,8 +704,7 @@ anova_scores <- -log10(anova_results[feature_names])
 mi_ordered <- mi_scores[feature_names]
 
 # Combine into a tibble
-library(tibble)
-library(dplyr)
+
 
 feature_summary <- tibble(
   Feature = feature_names,
@@ -736,8 +729,6 @@ ggplot(normalized_long, aes(x = reorder(Feature, Score), y = Score, fill = Metho
        x = "Feature", y = "Normalized Score",
        fill = "Method") +
   theme_minimal()
-
-
 ```
 
 Now we want to select the top 5 features:
