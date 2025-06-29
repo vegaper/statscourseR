@@ -22,7 +22,7 @@ theme_set(theme_minimal())
 options(scipen= 999)
 ```
 
-# ![](book_images/huey.jpg)Titanic Dataset Description1
+# Titanic Dataset Description
 
 This document details the analysis of the famous Titanic dataset, a popular choice for introductory data science projects.
 The dataset contains information about passengers aboard the RMS Titanic, including whether they survived the disaster.
@@ -59,7 +59,7 @@ The goal of analyzing this dataset is to predict which passengers survived the T
 Here's a detailed description of each column (feature) present in the `train.csv` dataset:
 
 | Column Name   | Description                                         | Data Type         | Notes                                                                           |
-|:-----------------|:-----------------|:-----------------|:-----------------|
+|:--------------|:----------------------------------------------------|:------------------|:--------------------------------------------------------------------------------|
 | `PassengerId` | A unique identifier for each passenger.             | Integer           | Used to identify rows; typically not used as a feature for modeling.            |
 | `Survived`    | Survival status (our target variable).              | Integer (0 or 1)  | `0 = No` (Did not survive), `1 = Yes` (Survived)                                |
 | `Pclass`      | Passenger Class. A proxy for socio-economic status. | Integer (1, 2, 3) | `1 = 1st Class`, `2 = 2nd Class`, `3 = 3rd Class`                               |
@@ -566,7 +566,7 @@ Each technique brings a unique perspective depending on whether the feature is n
 
 ### Correlation Coefficient
 
-The Pearson Correlation Coefficient measures linear association between continuous variables.
+The [Pearson Correlation Coefficient](linearModels.qmd#correlation-coefficient) measures linear association between continuous variables.
 It is defined as $$
 r = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum(x_i - \bar{x})^2 \sum(y_i - \bar{y})^2}}
 $$ In our context, we apply it between continuous predictors and the binary outcome `survived`
@@ -666,7 +666,7 @@ Higher values with low $p$-values indicate dependence: useful in selecting relev
 ### Mutual Information
 
 Mutual information captures any dependency (linear o nonlinear) between two variables.
-\$\$ I(X; Y) = \sum*{x* \in X} \sum{y \in Y} p(x, y) \log \left( \frac{p(x, y)}{p(x)p(y)} \right)
+\$\$ I(X; Y) = \sum\*{x\* \\in X} \sum{y \in Y} p(x, y) \log \left( \frac{p(x, y)}{p(x)p(y)} \right)
 
 \$\$
 
