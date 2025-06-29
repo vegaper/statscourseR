@@ -10,17 +10,19 @@ editor:
 #| echo: false
 library(dplyr)
 library(tidyverse)
-library(tibble)
+
 library(readxl)
 library(easystats)
+
 library(kableExtra)
+
 library(ggplot2)
 library(ggpattern)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
 
-# Titanic Dataset Description
+# ![](book_images/huey.jpg)Titanic Dataset Description
 
 This document details the analysis of the famous Titanic dataset, a popular choice for introductory data science projects.
 The dataset contains information about passengers aboard the RMS Titanic, including whether they survived the disaster.
@@ -44,9 +46,9 @@ as.data.frame(report(titanic_test))
 ```
 
 The dataset is typically split into two main files: `train.csv` and `test.csv`.
- **`train.csv`**: Contains a set of passengers for whom the survival outcome (`Survived`) is provided.
+\* **`train.csv`**: Contains a set of passengers for whom the survival outcome (`Survived`) is provided.
 This is the dataset we will primarily use for exploratory data analysis (EDA), cleaning, feature engineering, and model training.
- **`test.csv`**: Contains a similar set of passenger information but *without* the `Survived` column.
+\* **`test.csv`**: Contains a similar set of passenger information but *without* the `Survived` column.
 In a typical Kaggle competition scenario, you would predict survival for these passengers.
 For this analysis, we will focus on understanding and modeling the `train.csv` data.
 
@@ -211,7 +213,7 @@ We can calculate the correlation between the variables to help with selecting th
 
 The cor() function in R (and correlation functions in other languages) calculates the Pearson correlation coefficient, which is designed for numerical variables.
 
-```{r}
+```{r, fig.align='center', fig.width=6}
 
 # Select only numerical columns for correlation analysis
 
@@ -362,19 +364,17 @@ We need to do this for algorithms sensitive to scale.
 Here's why we often do it:
 
 1.  **Ensuring Fair Comparison (especially for algorithms sensitive to scale):**
-   -   Many machine learning algorithms (like *K-Nearest Neighbors*, *Support Vector Machines*, *K-Means clustering*, or even regularization techniques in linear models) calculate distances between data points or rely on the magnitude of feature values.
-  -   If features are on vastly different scales (e.g., 'Age' typically 0-80, 'Fare' potentially 0-500+), the feature with the larger scale can disproportionately influence the algorithm.
-        'Fare' might end up dominating the distance calculations simply because its values are numerically larger, even if 'Age' is equally or more important in reality.
-  -   Normalization brings all numerical features to a comparable scale, preventing features with larger numerical ranges from artificially dominating the analysis.
+
+-   Many machine learning algorithms (like *K-Nearest Neighbors*, *Support Vector Machines*, *K-Means clustering*, or even regularization techniques in linear models) calculate distances between data points or rely on the magnitude of feature values.
+-   If features are on vastly different scales (e.g., 'Age' typically 0-80, 'Fare' potentially 0-500+), the feature with the larger scale can disproportionately influence the algorithm. 'Fare' might end up dominating the distance calculations simply because its values are numerically larger, even if 'Age' is equally or more important in reality. - Normalization brings all numerical features to a comparable scale, preventing features with larger numerical ranges from artificially dominating the analysis.
 
 2.  **Improving Algorithm Convergence and Performance:** - For optimization algorithms used in training models (e.g., *gradient descent* in neural networks or logistic regression), features on different scales can lead to "lopsided" cost functions that are harder and slower for the optimizer to converge on.
     Normalizing can create a more symmetrical and easier-to-navigate cost landscape, leading to faster and more stable model training.
 
 3.  **For Correlation Plots Specifically:** - While **Pearson correlation coefficients** themselves (`cor()` output) are **scale-invariant** (meaning the correlation value between two variables won't change if you normalize one or both of them), normalizing the data *before* visualizing it can sometimes make the *visual representation* clearer, especially if you were using methods that plot the raw data points where scales matter.
 
-       
 However, the primary reason for including normalization *before* calculating the correlation matrix in our specific R code was often driven by the next step in a typical data analysis pipeline: preparing data for machine learning models where normalization *is* critical.
-    By incorporating it early, we create a consistent `numerical_correlation_data_scaled` dataset that is ready for subsequent modeling steps.
+By incorporating it early, we create a consistent `numerical_correlation_data_scaled` dataset that is ready for subsequent modeling steps.
 
 In essence, normalization is a way to preprocess your data so that all numerical features contribute equally to the analysis, preventing biases introduced by their original scales and often leading to more robust and better-performing models.
 
@@ -401,7 +401,7 @@ kable(head(numerical_correlation_data_scaled))
 
 We can draw our correlation plot again and see that the normalization has not affected our coefficients:
 
-```{r}
+```{r, fig.align='center', fig.width=6}
 correlation_matrix_dummies <- cor(numerical_correlation_data_scaled)
 
 # Create the correlation plot
@@ -424,7 +424,7 @@ corrplot::corrplot(correlation_matrix_dummies,
 When preparing data for modeling, especially for algorithms sensitive to feature scale, it's important to normalize or standardize numerical variables.
 Below are several common techniques besides the z-score we just saw:
 
-###  Min-Max Scaling
+### Min-Max Scaling
 
 This rescales the feature to a fixed range, typically (\[0, 1\]):
 
@@ -437,7 +437,7 @@ $$
 
 ------------------------------------------------------------------------
 
-###  Robust Scaling
+### Robust Scaling
 
 This method uses the median and interquartile range (IQR), making it robust to outliers:
 
@@ -450,7 +450,7 @@ $$
 
 ------------------------------------------------------------------------
 
-###  Max Abs Scaling
+### Max Abs Scaling
 
 Scales each feature by its maximum absolute value:
 
@@ -463,7 +463,7 @@ $$
 
 ------------------------------------------------------------------------
 
-###  Log Transformation
+### Log Transformation
 
 Useful for reducing right skewness in data:
 
@@ -476,7 +476,7 @@ $$
 
 ------------------------------------------------------------------------
 
-###  Power Transformations
+### Power Transformations
 
 These aim to make data more Gaussian-like.
 
@@ -490,7 +490,7 @@ $$
 x' = \log(x), \quad \text{if } \lambda = 0
 $$
 
-### Yeo-Johnson (works with zero and negative values):
+#### Yeo-Johnson (works with zero and negative values):
 
 $$
 x' =
@@ -511,9 +511,8 @@ Choose the one that best fits your use case.
 
 We will see the results of each applied to the field Fare as an example:
 
-```{r}
+```{r, fig.align='center', fig.width=6}
 
-library(tidyverse)
 library(bestNormalize)
 
 
@@ -566,14 +565,11 @@ To enhance model performance and interpretability, we evaluate features in the T
 Each technique brings a unique perspective depending on whether the feature is numerical or categorical and the nature of the response variable.
 
 ### Correlation Coefficient
-[See more detail in our linear models chapter](linearModels.qmd#correlation-coefficient)
 
 The Pearson Correlation Coefficient measures linear association between continuous variables.
-It is defined as 
-$$
+It is defined as $$
 r = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum(x_i - \bar{x})^2 \sum(y_i - \bar{y})^2}}
-$$ 
-In our context, we apply it between continuous predictors and the binary outcome `survived`
+$$ In our context, we apply it between continuous predictors and the binary outcome `survived`
 
 ```{r}
 # Correlation of each feature with the target
@@ -590,8 +586,7 @@ Note: Since Survived is binary, results are interpretable but not strictly Pears
 
 ANOVA assesses whether the means of a numeric variable differ significantly across categories of a factor (e.g., Sex, Pclass).
 
-The F-statistic formula is: 
-$$
+The F-statistic formula is: $$
 F = \frac{\text{Between-group variability}}{\text{Within-group variability}}
 $$
 
@@ -603,6 +598,8 @@ anova_results <- sapply(names(numerical_correlation_data_scaled)[-1], function(v
 })
 
 sort(anova_results)  # Features with smallest p-values are more significant
+
+
 ```
 
 ### Chi-Square Test
@@ -610,28 +607,23 @@ sort(anova_results)  # Features with smallest p-values are more significant
 see ([Goodness of fit](Inferential#sec-goodness-of-fit) and [Chi-Square](Inferential#sec-chiSquare))
 
 Used for categorical predictors against a categorical response (both Survived and, say, Sex).
-The chi-squared statistic is 
-$$
+The chi-squared statistic is $$
 \chi^2 = \sum \frac{(O_i - E_i)^2}{E_i}
-$$
-as an example with a single variable:
+$$ as an example with a single variable:
 
 ```{r}
 chisq.test(table(numerical_correlation_data_scaled$Sex_female, numerical_correlation_data_scaled$Survived))
+
 ```
 
-Over the full dataset:
-Notice that we are using the `discretize()` function from the `infotheo` package, what it does is transform continuous numeric variables into categorical bins.
-Some techniques — like Chi-Square and Mutual Information — work best (or sometimes only) on categorical data. 
-What does discretize() actually do?
--   It takes each numeric column and divides it into a small number of intervals (by default, 10 equal-frequency bins).
+Over the full dataset: Notice that we are using the `discretize()` function from the `infotheo` package, what it does is transform continuous numeric variables into categorical bins.
+Some techniques --- like Chi-Square and Mutual Information --- work best (or sometimes only) on categorical data.
+- It takes each numeric column and divides it into a small number of intervals (by default, 10 equal-frequency bins).
 
-Think of it like saying: "Let's convert the Age variable into groups: youngest 10%, next 10%, ..., oldest 10%.”
+Think of it like saying: "Let's convert the Age variable into groups: youngest 10%, next 10%, ..., oldest 10%."
 
 The result is a data frame of factors (categories) instead of raw numbers, which can then be passed to methods like Chi-Square or Mutual Information.
-If you want to control the number of bins or method of binning, you can do something like:
-`disc_data <- discretize(numerical_correlation_data_scaled, disc = "equalfreq", nbins = 5)`
-
+If you want to control the number of bins or method of binning, you can do something like: `disc_data <- discretize(numerical_correlation_data_scaled, disc = "equalfreq", nbins = 5)`
 
 ```{r}
 library(infotheo)
@@ -642,18 +634,21 @@ disc_data <- discretize(numerical_correlation_data_scaled)
 head(disc_data)
 
 ```
+
 Let's see how it has changed the Survival field, for example:
+
 ```{r}
 
 table(numerical_correlation_data_scaled$Survived)
 table(disc_data$Survived)
 ```
+
 And the Age:
+
 ```{r}
 table(round(numerical_correlation_data_scaled$Age,2))
 table(disc_data$Age)
 ```
-
 
 ```{r}
 # Apply chi-squared test against Survived
@@ -666,15 +661,14 @@ sort(chi_square_scores)  # Smaller p-values indicate stronger association
 
 ```
 
-
 Higher values with low $p$-values indicate dependence: useful in selecting relevant categorical variables
 
 ### Mutual Information
-Mutual information captures any dependency (linear o nonlinear) between two variables. 
-$$
-I(X; Y) = \sum_{x \in X} \sum_{y \in Y} p(x, y) \log \left( \frac{p(x, y)}{p(x)p(y)} \right)
 
-$$
+Mutual information captures any dependency (linear o nonlinear) between two variables.
+\$\$ I(X; Y) = \sum*{x* \in X} \sum{y \in Y} p(x, y) \log \left( \frac{p(x, y)}{p(x)p(y)} \right)
+
+\$\$
 
 ```{r}
 library(infotheo)
@@ -685,11 +679,12 @@ sort(mi_scores, decreasing = TRUE)
 
 
 ```
+
 Variables with high mutual information have stronger predictive potential.
 
-
 ## Feature selection table
-```{r}
+
+```{r, fig.align='center', fig.width=6}
 # Combine scores into a summary table
 feature_names <- names(numerical_correlation_data_scaled)[-1]  # exclude 'Survived'
 
@@ -704,7 +699,8 @@ anova_scores <- -log10(anova_results[feature_names])
 mi_ordered <- mi_scores[feature_names]
 
 # Combine into a tibble
-
+library(tibble)
+library(dplyr)
 
 feature_summary <- tibble(
   Feature = feature_names,
@@ -729,9 +725,12 @@ ggplot(normalized_long, aes(x = reorder(Feature, Score), y = Score, fill = Metho
        x = "Feature", y = "Normalized Score",
        fill = "Method") +
   theme_minimal()
+
+
 ```
 
 Now we want to select the top 5 features:
+
 ```{r}
 # Set how many top features to consider from each method
 k <- 5
@@ -749,6 +748,7 @@ top_k_counts <- ranked_features %>%
 top_k_counts
 
 ```
+
 Vote_Count indicates how many methods placed the feature in their top k.
 
 Features with the highest count were consistently important across techniques.
