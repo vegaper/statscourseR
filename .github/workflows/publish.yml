@@ -1,0 +1,28 @@
+# .github/workflows/publish.yml
+# A simple workflow to publish the contents of the _site directory
+
+name: Publish Website
+
+on:
+  push:
+    branches:
+      - main # or master, depending on your branch name
+
+jobs:
+  publish-site:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          # The token is needed to push to your repository
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # The directory to publish from
+          publish_dir: ./_site
+          # The branch to publish to
+          publish_branch: gh-pages
