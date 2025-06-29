@@ -22,7 +22,7 @@ theme_set(theme_minimal())
 options(scipen= 999)
 ```
 
-# ![](book_images/huey.jpg)Titanic Dataset Description
+# ![](book_images/huey.jpg)Titanic Dataset Description1
 
 This document details the analysis of the famous Titanic dataset, a popular choice for introductory data science projects.
 The dataset contains information about passengers aboard the RMS Titanic, including whether they survived the disaster.
