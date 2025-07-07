@@ -10,14 +10,13 @@ editor:
 #| echo: false
 library(dplyr)
 library(tidyverse)
-
 library(readxl)
 library(easystats)
-
 library(kableExtra)
-
+library(tibble)
 library(ggplot2)
 library(ggpattern)
+library(caret)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -43,6 +42,18 @@ kable(head(titanic_test))%>%
   kable_styling(latex_options = "scale_down")%>%
   landscape()
 as.data.frame(report(titanic_test))
+
+#the Test dataset from kaggel does not come with the survival data, so we need to find it in another dataset and match.
+titanic_complete <- titanic_complete <- read_delim("data/titanic/titanic_complete.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+titanic_test <- titanic_test %>% left_join(titanic_complete %>% select(name, ticket, survived), by = c('Name'='name','Ticket'='ticket')) %>% 
+  rename(Survived = survived)
+
+kable(head(titanic_test))%>%
+  kable_styling(latex_options = "scale_down")%>%
+  landscape()
+as.data.frame(report(titanic_test))
 ```
 
 The dataset is typically split into two main files: `train.csv` and `test.csv`.
@@ -59,7 +70,7 @@ The goal of analyzing this dataset is to predict which passengers survived the T
 Here's a detailed description of each column (feature) present in the `train.csv` dataset:
 
 | Column Name   | Description                                         | Data Type         | Notes                                                                           |
-|:--------------|:----------------------------------------------------|:------------------|:--------------------------------------------------------------------------------|
+|:---------------|:---------------|:---------------|:-------------------------|
 | `PassengerId` | A unique identifier for each passenger.             | Integer           | Used to identify rows; typically not used as a feature for modeling.            |
 | `Survived`    | Survival status (our target variable).              | Integer (0 or 1)  | `0 = No` (Did not survive), `1 = Yes` (Survived)                                |
 | `Pclass`      | Passenger Class. A proxy for socio-economic status. | Integer (1, 2, 3) | `1 = 1st Class`, `2 = 2nd Class`, `3 = 3rd Class`                               |
@@ -211,7 +222,7 @@ titanic_train_reduced <- titanic_train_reduced %>% select (-c('Ticket', 'Passeng
 
 We can calculate the correlation between the variables to help with selecting the important ones.
 
-The cor() function in R (and correlation functions in other languages) calculates the Pearson correlation coefficient, which is designed for numerical variables.
+The `cor()` function in R (and correlation functions in other languages) calculates the Pearson correlation coefficient, which is designed for numerical variables.
 
 ```{r, fig.align='center', fig.width=6}
 
@@ -309,7 +320,11 @@ Let's see how the first 10 rows look like after the transformation:
 # Select numerical columns and categorical columns to be dummified
 correlation_data <- titanic_train_reduced %>% 
   # Convert Sex to factor for dummy_cols (if not already)
-  mutate(Sex = as.factor(Sex), Embarked = as.factor(Embarked)) %>%
+  mutate(
+    #Survived = factor(Survived, levels = c(0, 1), labels = c("Perished", "Survived")),
+    Sex = factor(Sex, levels = c("male", "female"), labels = c("Male", "Female")),
+    Embarked = as.factor(Embarked)
+  ) %>%
   # Create dummy variables for 'Sex' and 'Embarked'
   # .keep = "unused" removes the original columns that were dummified
   # remove_first_dummy = FALSE keeps all dummies to show all pairwise correlations
@@ -332,12 +347,8 @@ This is because:
 
 So, while dropping a dummy is crucial for building stable regression models, for the purpose of a purely descriptive correlation plot, including all dummy variables can sometimes offer more complete visual insights, provided you understand the underlying perfect collinearity between them.
 
-```{r}
+```{r, fig.align='center', fig.width=8}
 #| label: correlation-plot
-#| echo: true
-#| output: true
-#| fig-width: 7 # Increased width for more variables
-#| fig-height: 7 # Increased height for more variables
 
 # Calculate the correlation matrix
 correlation_matrix_dummies <- cor(correlation_data)
@@ -382,40 +393,36 @@ We can use different methods for normalization.
 For example we can use z-score standardization:
 
 ```{r}
-# Normalize numerical variables (Age, SibSp, Parch, Fare) using Z-score standardization
-# Survived and Pclass are treated as discrete numerical variables, so usually not scaled for correlation.
-# Sex_ and Embarked_ dummies are already 0/1.
+# Normalize numerical variables (Age, SibSp, Parch, Fare) using Z-score standardization 
+# Survived and Pclass are treated as discrete numerical variables, so usually not scaled for correlation. 
+# Sex_ and Embarked_ dummies are already 0/1. 
 numerical_correlation_data_scaled <- correlation_data %>%
-  mutate(
-    Age = scale(Age)[,1], # scale() returns a matrix, need to select the column
-    SibSp = scale(SibSp)[,1],
-    Parch = scale(Parch)[,1],
-    Fare = scale(Fare)[,1]
-    # Pclass is technically numeric but represents categories; scaling might obscure its meaning
-    # for correlation interpretation if its values 1,2,3 are seen as categories.
-    # For now, we'll leave Pclass unscaled as it's often treated ordinally.
-  )
-
+  mutate(     Age = scale(Age)[,1], # scale() returns a matrix, need to select the column     S
+    ibSp = scale(SibSp)[,1],     Parch = scale(Parch)[,1],     
+    Fare = scale(Fare)[,1]     
+    # Pclass is technically numeric but represents categories; scaling might obscure its meaning     
+    # for correlation interpretation if its values 1,2,3 are seen as categories.     
+    # For now, we'll leave Pclass unscaled as it's often treated ordinally.   
+  )  
 kable(head(numerical_correlation_data_scaled))
+
 ```
 
 We can draw our correlation plot again and see that the normalization has not affected our coefficients:
 
-```{r, fig.align='center', fig.width=6}
-correlation_matrix_dummies <- cor(numerical_correlation_data_scaled)
-
-# Create the correlation plot
+```{r, fig.align='center', fig.width=8}
+correlation_matrix_dummies <- cor(numerical_correlation_data_scaled)  # Create the correlation plot
 corrplot::corrplot(correlation_matrix_dummies,
-                   method = "circle",
-                   type = "upper",   
-                   tl.col = "black", 
-                   addCoef.col = "black", 
-                   number.cex = 0.6, 
-                   tl.cex = 0.7,     
-                   diag = FALSE,     
-                   #order = "hclust",
-                   hclust.method = "complete" # Clustering method
-                   )
+  method = "circle", 
+  type = "upper",   
+  tl.col = "black",     
+  addCoef.col = "black", 
+  number.cex = 0.6,         
+  tl.cex = 0.7,           
+  diag = FALSE,           
+  #order = "hclust",        
+  hclust.method = "complete" # Clustering method                   
+  )
 ```
 
 ::: callout-orange
@@ -428,9 +435,7 @@ Below are several common techniques besides the z-score we just saw:
 
 This rescales the feature to a fixed range, typically (\[0, 1\]):
 
-$$
-x' = \frac{x - \min(x)}{\max(x) - \min(x)}
-$$
+$$ x' = \frac{x - \min(x)}{\max(x) - \min(x)} $$
 
 -   **Use case**: Preserves the shape of the original distribution.
 -   **Sensitive to outliers**.
@@ -441,9 +446,7 @@ $$
 
 This method uses the median and interquartile range (IQR), making it robust to outliers:
 
-$$
-x' = \frac{x - \text{median}(x)}{\text{IQR}(x)}
-$$
+$$ x' = \frac{x - \text{median}(x)}{\text{IQR}(x)} $$
 
 -   **Use case**: When data contains outliers.
 -   **IQR** is the difference between the 75th and 25th percentiles.
@@ -454,9 +457,7 @@ $$
 
 Scales each feature by its maximum absolute value:
 
-$$
-x' = \frac{x}{\max(|x|)}
-$$
+$$ x' = \frac{x}{\max(|x|)} $$
 
 -   **Use case**: When data is already centered at zero.
 -   **Resulting range**: (\[-1, 1\])
@@ -467,40 +468,24 @@ $$
 
 Useful for reducing right skewness in data:
 
-$$
-x' = \log(x + 1)
-$$
+$$ x' = \log(x + 1) $$
 
 -   **Use case**: When data is highly skewed.
 -   **Note**: Adding 1 avoids issues with (\log(0)).
 
 ------------------------------------------------------------------------
 
-### Power Transformations
-
-These aim to make data more Gaussian-like.
-
 ### Box-Cox (for positive values only):
 
-$$
-x' = \frac{x^\lambda - 1}{\lambda}, \quad \text{if } \lambda \ne 0
-$$
+$$ x' = \frac{x^\lambda - 1}{\lambda}, \quad \text{if } \lambda \ne 0 $$
 
-$$
-x' = \log(x), \quad \text{if } \lambda = 0
-$$
+$$ x' = \log(x), \quad \text{if } \lambda = 0 $$
 
-#### Yeo-Johnson (works with zero and negative values):
+------------------------------------------------------------------------
 
-$$
-x' =
-\begin{cases}
-\frac{(x + 1)^\lambda - 1}{\lambda}, & x \ge 0, \lambda \ne 0 \\
-\log(x + 1), & x \ge 0, \lambda = 0 \\
-\frac{-(-x + 1)^{2 - \lambda} + 1}{2 - \lambda}, & x < 0, \lambda \ne 2 \\
--\log(-x + 1), & x < 0, \lambda = 2
-\end{cases}
-$$
+### Yeo-Johnson (works with zero and negative values):
+
+$$ x' = \begin{cases} \frac{(x + 1)^\lambda - 1}{\lambda}, & x \ge 0, \lambda \ne 0 \\ \log(x + 1), & x \ge 0, \lambda = 0 \\ \frac{-(-x + 1)^{2 - \lambda} + 1}{2 - \lambda}, & x < 0, \lambda \ne 2 \\ -\log(-x + 1), & x < 0, \lambda = 2 \end{cases} $$
 
 -   **Use case**: When you want to normalize skewed data and make it more Gaussian.
 
@@ -509,60 +494,98 @@ $$
 Each method has its strengths depending on the data distribution and the model you're using.
 Choose the one that best fits your use case.
 
+Selecting the right technique for normalization is important depending on the method you are goint to use for feature selection: **Scaling affects feature distributions, which may in turn influence how statistical tests behave.** Here's how this plays out:
+:::
+
+-   When Scaling Helps: For distance-based models (like k-NN or SVM), scaling ensures features are on similar ranges.
+
+-   It's harmless when you're using methods that rely purely on variance or entropy, like mutual information or correlation, provided the transformation doesn't distort relationships.
+
+-   When Scaling Might Mislead: ANOVA and Chi-Square depend on the distribution shape.
+    Transformations like log1p() alter skewness and variance.
+    That can:
+
+    -   Make a feature look artificially more or less discriminative.
+    -   Violate assumptions of homogeneity of variances and normality, which ANOVA leans on.
+
+`Log1p()` transformation alters the distribution of the data, which may leads us to think that we should only use it **after** feature selection to avoid those biases, but `log1p()` is often used precisely to normalize skewed data like Fare, which tends to follow a long-tail distribution.
+In fact, it might make the ANOVA more robust, not worse.
+
+If you're still uneasy or want to compare, try running ANOVA on both unscaled and scaled data to check if results diverge dramatically.
+
+Consider visualizing distributions before and after transformation
+
+::: callout-orange
 We will see the results of each applied to the field Fare as an example:
 
-```{r, fig.align='center', fig.width=6}
+```{r, fig.align='center', fig.width=6} library(bestNormalize)}
 
-library(bestNormalize)
+# 2. Extract fare (replace NAs with 0) 
+fare <- titanic_train$Fare %>% replace_na(0)   
+# 3. Fit Box-Cox and Yeo-Johnson (they return objects; use predict()) 
+bc_obj <- bestNormalize::boxcox(fare + 1)    # add 1 so that zero fares are valid  
+yj_obj <- bestNormalize::yeojohnson(fare)   
 
+# 4. Build a data.frame of all transforms  
+df_tall <- tibble(   Original   = fare,
+  `Min–Max`  = (fare - min(fare)) / (max(fare) - min(fare)),  
+  Robust     = (fare - median(fare)) / IQR(fare), 
+  `Max–Abs`  = fare / max(abs(fare)),    
+  `Log₁ₚ₁`   = log1p(fare),    `Box–Cox`  = predict(bc_obj),  
+  `Yeo–Johnson` = predict(yj_obj) ) %>%  
+  pivot_longer(everything(),      
+    names_to = "Method", 
+    values_to = "Value")    
 
-# 2. Extract fare (replace NAs with 0)
-fare <- titanic_train$Fare %>% replace_na(0)
-
-# 3. Fit Box-Cox and Yeo-Johnson (they return objects; use predict())
-bc_obj <- boxcox(fare + 1)        # add 1 so that zero fares are valid
-yj_obj <- yeojohnson(fare)
-
-# 4. Build a data.frame of all transforms
-df_tall <- tibble(
-  Original   = fare,
-  `Min–Max`  = (fare - min(fare)) / (max(fare) - min(fare)),
-  Robust     = (fare - median(fare)) / IQR(fare),
-  `Max–Abs`  = fare / max(abs(fare)),
-  `Log₁ₚ₁`   = log1p(fare),
-  `Box–Cox`  = predict(bc_obj),
-  `Yeo–Johnson` = predict(yj_obj)
-) %>%
-  pivot_longer(everything(), names_to = "Method", values_to = "Value")
-
-# 5. Plot
-ggplot(df_tall, aes(x = Value)) +
-  geom_histogram(
-    bins  = 50,
-    fill  = "steelblue",
-    color = "white",
-    alpha = .6
-  ) +
-  geom_density(
-    aes(y = after_stat(count)), 
-    color = "firebrick",
-    size  = .7
-  ) +
-  facet_wrap(~ Method, scales = "free", ncol = 2) +
-  labs(
-    title = "Normalization Techniques on Titanic Fare",
-    x     = "Transformed Fare",
-    y     = "Count"
-  ) +
+ggplot(df_tall, aes(x = Value)) + 
+  geom_histogram(     bins  = 50,     fill  = "steelblue",     color = "white",     alpha = .6   ) + 
+  geom_density(     aes(y = after_stat(count)),      color = "firebrick",     size  = .7   ) +  
+  facet_wrap(~ Method, scales = "free", ncol = 2) +  
+  labs(     title = "Normalization Techniques on Titanic Fare",     x     = "Transformed Fare",     y     = "Count"   ) +   
   theme_minimal(base_size = 12)
-
 ```
 :::
 
 ## Feature selection Techniques
 
-To enhance model performance and interpretability, we evaluate features in the Titanic dataset using four key selection methods: - Correlation Coefficient, - ANOVA, - Chi-Square, - Mutual Information.
+To enhance model performance and interpretability, we evaluate features in the Titanic dataset using four key selection methods:
+
+-   Correlation Coefficient,
+
+-   ANOVA,
+
+-   Chi-Square,
+
+-   Mutual Information.
+
 Each technique brings a unique perspective depending on whether the feature is numerical or categorical and the nature of the response variable.
+
+Before we continue, we are going to create again dummy variables but this time dropping one to avoid multicolinearity as explained.
+
+We are starting again with the not normalized values, and we are going to use log transformation to Fare, and min-max to Age and Parch, and z-score to SibSp.
+
+```{r}
+
+# Select numerical columns and categorical columns to be dummified
+correlation_data <- titanic_train_reduced %>% 
+  mutate(Sex = factor(Sex, levels = c("male", "female"), labels = c("Male", "Female")),
+    Embarked = as.factor(Embarked)) %>%
+  fastDummies::dummy_cols(
+    select_columns = c("Sex", "Embarked"),
+    remove_first_dummy = TRUE, 
+    remove_selected_columns = TRUE 
+  ) 
+numerical_correlation_data_scaled <- correlation_data %>%
+  mutate(
+    Age = (Age - min(Age)) / (max(Age) - min(Age)),
+    SibSp = scale(SibSp)[,1], # scale() returns a matrix, need to select the column
+    Parch = (Parch - min(Parch)) / (max(Parch) - min(Parch)),
+    Fare =  log1p(Fare),
+    # Pclass is technically numeric but represents categories; scaling might obscure its meaning
+    # for correlation interpretation if its values 1,2,3 are seen as categories.
+    # For now, we'll leave Pclass unscaled as it's often treated ordinally.
+  )
+```
 
 ### Correlation Coefficient
 
@@ -578,7 +601,36 @@ cor_matrix["Survived", ][-1]  # Drop self-correlation
 
 ```
 
+#### Interpreting the results:
+
 Note: Since Survived is binary, results are interpretable but not strictly Pearson-optimal.
+
+What the Correlation Values Mean Value Range: Correlation coefficients range from -1 to +1.
+
+-   +1 indicates a perfect positive linear relationship.
+
+-   -1 indicates a perfect negative linear relationship.
+
+-   0 means no linear relationship.
+
+Direction:
+
+A positive correlation (e.g. 0.4) with Survived suggests that as the feature increases, the probability of survival tends to increase.
+
+A negative correlation (e.g. -0.3) implies that higher values of that feature are associated with lower survival probability.
+
+Magnitude: Larger absolute values (closer to 1 or -1) show stronger linear relationships.
+However, anything under ±0.2 tends to be considered weak.
+
+::: callout-note
+Logistic regression models log-odds, not direct linear relationships---so correlation can guide but not fully capture predictive power.
+
+Correlation only works on numeric variables.
+Categorical ones (like Sex, Pclass) need to be converted first or explored with Chi-Square or ANOVA.
+
+Multicollinearity can be an issue if features are highly correlated with each other.
+That's something to check before fitting your model.
+:::
 
 ### ANOVA (Analysis of Variance)
 
@@ -599,8 +651,38 @@ anova_results <- sapply(names(numerical_correlation_data_scaled)[-1], function(v
 
 sort(anova_results)  # Features with smallest p-values are more significant
 
+# Convert to a data frame for presentation
+anova_df <- data.frame(
+  Feature = names(anova_results),
+  P_Value = round(anova_results, 5)  # Round for neatness
+)
+
+# Sort by p-value
+anova_df <- anova_df[order(anova_df$P_Value), ]
+
+# Display as a formatted table
+knitr::kable(anova_df, caption = "One-Way ANOVA P-values by Feature")
 
 ```
+
+#### Interpreting One-Way ANOVA for Feature Selection
+
+**Goal**: To see if the means of a numeric feature differ significantly between the groups (Survived = 0 vs. 1).
+
+**Output Breakdown**
+
+-   The `Pr(>F)` value is the **p-value** for the F-test.
+
+-   A **low p-value** (typically \< 0.05) means there's a **statistically significant** difference in the feature's distribution between survivors and non-survivors.
+    **Significant Difference** → The feature likely has predictive power for survival.
+
+-   **High p-value** → The feature might not vary much between groups and could be less useful in your model.
+
+Features with **smallest p-values** are most likely to provide separation between the classes.
+They're your strongest contenders for logistic regression.
+
+> Quick note: ANOVA assumes normality and equal variances, so if your data's skewed or heteroscedastic, results might need deeper diagnostics.
+> But as a first-pass filter---it's pretty effective.
 
 ### Chi-Square Test
 
@@ -612,7 +694,7 @@ The chi-squared statistic is $$
 $$ as an example with a single variable:
 
 ```{r}
-chisq.test(table(numerical_correlation_data_scaled$Sex_female, numerical_correlation_data_scaled$Survived))
+chisq.test(table(numerical_correlation_data_scaled$Sex_Female, numerical_correlation_data_scaled$Survived))
 
 ```
 
@@ -651,38 +733,96 @@ table(disc_data$Age)
 ```
 
 ```{r}
-# Apply chi-squared test against Survived
+# Chi-Square test for each categorical variable (excluding Survived)
 chi_square_scores <- sapply(names(disc_data)[-1], function(var) {
   chisq.test(table(disc_data[[var]], disc_data$Survived))$p.value
 })
 
-sort(chi_square_scores)  # Smaller p-values indicate stronger association
+# Build a data frame
+chi_square_df <- data.frame(
+  Feature = names(chi_square_scores),
+  P_Value = round(chi_square_scores, 5)
+)
+
+# Sort by p-value
+chi_square_df <- chi_square_df[order(chi_square_df$P_Value), ]
+
+# Display table with kable
+knitr::kable(chi_square_df, caption = "Chi-Square P-values by Feature")
 
 
 ```
 
 Higher values with low $p$-values indicate dependence: useful in selecting relevant categorical variables
 
+#### What the Chi-Square Test Tells You
+
+**Purpose**: It checks for a **statistical association** between two categorical variables---like your discretized features and survival status.
+
+-   **Low p-value** (\< 0.05): Indicates a **significant association** between the feature and `Survived`.
+    This means survival rates vary meaningfully across the categories of that feature.
+
+-   **High p-value**: Suggests no strong relationship---survival proportions are fairly uniform across the feature's levels.
+
+The lower the $p$-value, the better the feature at splitting the survival outcome across its categories.
+
+-   Chi-Square doesn't tell you **how** the categories differ---just that they're **not all the same** in terms of survival rates.
+
+-   It requires **adequate sample sizes** per category.
+    Sparse levels might distort results.
+
+-   Works **only** with categorical features---so any numeric variable needs to be discretized meaningfully beforehand (e.g. binning `Age`).
+
 ### Mutual Information
 
 Mutual information captures any dependency (linear o nonlinear) between two variables.
-\$\$ I(X; Y) = \sum\*{x\* \\in X} \sum{y \in Y} p(x, y) \log \left( \frac{p(x, y)}{p(x)p(y)} \right)
 
-\$\$
+$$ 
+I(X; Y) = \sum_{x \in X} \sum_{y \in Y} p(x, y) \log \left( \frac{p(x, y)}{p(x)p(y)} \right)
+$$
 
 ```{r}
 library(infotheo)
 
-# Use same discretized data
-mi_scores <- mutinformation(disc_data[ , -1], disc_data$Survived)
-sort(mi_scores, decreasing = TRUE)
+# Discretize all features including target
+disc_data <- discretize(numerical_correlation_data_scaled)
+# Calculate MI per feature
+mi_scores <- sapply(names(disc_data)[-1], function(var) {
+  mutinformation(disc_data[[var]], disc_data$Survived)
+})
+
+# Format into a tidy table
+mi_df <- data.frame(
+  Feature = names(mi_scores),
+  MI_Score = round(mi_scores, 5)
+) %>% 
+  dplyr::arrange(desc(MI_Score))
+
+# Display in HTML-rendered table
+knitr::kable(mi_df, caption = "Mutual Information Scores by Feature")
 
 
 ```
 
-Variables with high mutual information have stronger predictive potential.
+This method is especially powerful because it doesn't assume linear relationships, normal distributions, or equal variances.
+It's the intuitive wild card in your feature selection deck.
+
+#### Interpreting Mutual Information Scores
+
+Mutual information quantifies **how much knowing one variable reduces uncertainty about another**.
+In this case, it tells you how much info each feature gives you about `Survived`.
+
+-   A **higher MI score** means the feature shares more information with the target.
+
+-   **Lower or zero scores** mean that the feature offers little insight into survival.
+
+Think of it like this: if a feature slices the survival data into clearly different patterns, MI will be high.
+
+MI handles both linear and nonlinear relationships, and it works great with discretized data.
 
 ## Feature selection table
+
+We are going to apply all the different methods to the features and create a table that rates the best selected by each method:
 
 ```{r, fig.align='center', fig.width=6}
 # Combine scores into a summary table
@@ -698,9 +838,6 @@ anova_scores <- -log10(anova_results[feature_names])
 # Mutual information already works as-is
 mi_ordered <- mi_scores[feature_names]
 
-# Combine into a tibble
-library(tibble)
-library(dplyr)
 
 feature_summary <- tibble(
   Feature = feature_names,
@@ -710,7 +847,7 @@ feature_summary <- tibble(
   Mutual_Information = mi_ordered
 )
 
-# Normalize each column (method) between 0 and 1
+# Normalize each column (method) between 0 and 1 this is just so we see them represented `equal` in the graph.
 normalized_summary <- feature_summary %>%
   mutate(across(-Feature, ~ (.x - min(.x)) / (max(.x) - min(.x))))
 
@@ -754,3 +891,139 @@ Vote_Count indicates how many methods placed the feature in their top k.
 Features with the highest count were consistently important across techniques.
 
 You can now choose a threshold (e.g., keep features with votes ≥ 2) to filter your most robust predictors.
+
+In our case we are going to drop Embarked_Q and SibSp.
+
+```{r}
+numerical_correlation_data_scaled <- numerical_correlation_data_scaled %>% 
+  select (-c('SibSp','Embarked_Q'))
+```
+
+# Fitting the Logistic Regression Model
+
+```{r}
+# Fit logistic regression model
+model <- glm(Survived ~ ., data = numerical_correlation_data_scaled, family = binomial)
+
+# View summary of the model
+summary(model)
+
+```
+
+To check how it is doing over the test data, we need to also drop the variables that we are not using in the model for this dataset and apply the same transformation that we did to the train dataset:
+Treat NAs
+
+```{r}
+summary(titanic_test)
+```
+There are 22 rows without survival data. We will drop those rows as they will not help assessing the model.
+We will assign the average for the missing values in Age and Fare.
+
+```{r, echo=FALSE}
+#some missing data in survived column, we will drop those.
+titanic_test_clean <- titanic_test %>% filter (!is.na(Survived))
+
+
+titanic_test_clean <- titanic_test_clean %>% 
+group_by(Sex) %>% 
+  mutate(Age = ifelse(is.na(Age), mean(Age, na.rm = TRUE), Age)) %>% 
+  ungroup() 
+
+titanic_test_clean < titanic_test_clean %>% 
+  group_by(Pclass) %>% 
+  mutate(Fare = ifelse(is.na(Fare), mean(Fare, na.rm = TRUE), Fare)) %>% 
+  ungroup() 
+
+```
+
+```{r}
+
+
+# remove columns
+titanic_test_reduced <- titanic_test_clean %>% select (-c(PassengerId,Name,SibSp,Ticket,Cabin))
+#factor and create dummies
+titanic_test_encoded <- titanic_test_reduced %>% 
+  mutate(
+    Sex = factor(Sex, levels = c("male", "female"), labels = c("Male", "Female")),
+    Embarked = as.factor(Embarked)
+  ) %>%
+  fastDummies::dummy_cols(
+    select_columns = c("Sex", "Embarked"),
+    remove_first_dummy = FALSE, 
+    remove_selected_columns = TRUE 
+  ) 
+
+
+
+```
+
+Note that we didn't drop the columns this time when creating the dummies.
+
+This is because remove_first_dummy = TRUE, removes the first value in the column, and in the test dataset it may not be the same as the train dataset, so we create them all and drop them manually.
+
+```{r}
+# Get the column names used for training (excluding Survived if needed)
+train_features <- colnames(numerical_correlation_data_scaled)
+
+# Select those same columns from the test set
+titanic_test_encoded <- titanic_test_encoded[, train_features]
+```
+
+```{r}
+#normalize variables
+titanic_test_normalized <- titanic_test_encoded %>%
+  mutate(
+    Age = (Age - min(Age)) / (max(Age) - min(Age)),
+    Parch = (Parch - min(Parch)) / (max(Parch) - min(Parch)),
+    Fare =  log1p(Fare)
+  )
+```
+
+Now we apply the model to the dataset:
+
+```{r}
+# Predict on the test set (assuming titanic_test_encoded is prepared similarly)
+pred_probs <- predict(model, newdata = titanic_test_normalized, type = "response")
+
+# Convert probabilities to class predictions (threshold = 0.5)
+pred_classes <- ifelse(pred_probs >= 0.5, 1, 0)
+
+# Confusion matrix (assuming titanic_test_encoded$Survived is available for evaluation)
+table(Predicted = pred_classes, Actual = titanic_test_normalized$Survived)
+
+
+```
+```{r}
+# Define the common levels, based on what Survived should be (e.g. 0 and 1)
+common_levels <- levels(factor(titanic_test_normalized$Survived))
+
+# Ensure both vectors use the same levels
+# Define the common levels, based on what Survived should be (e.g. 0 and 1)
+common_levels <- levels(factor(titanic_test_normalized$Survived))
+pred_classes_factor <- factor(pred_classes, levels = common_levels)
+true_classes_factor <- factor(titanic_test_normalized$Survived, levels = common_levels)
+
+# Now call confusionMatrix
+cm<- caret::confusionMatrix(pred_classes_factor, true_classes_factor)
+# Extract metrics
+overall <- cm$overall
+byClass <- cm$byClass
+
+# Combine into a data frame
+cm_summary <- data.frame(
+  Metric = c("Accuracy", "Kappa", "Sensitivity", "Specificity", 
+             "Precision", "Recall", "F1"),
+  Value = c(
+    round(overall["Accuracy"], 3),
+    round(overall["Kappa"], 3),
+    round(byClass["Sensitivity"], 3),
+    round(byClass["Specificity"], 3),
+    round(byClass["Pos Pred Value"], 3),  # Precision
+    round(byClass["Sensitivity"], 3),     # Recall
+    round(byClass["F1"], 3)
+  )
+)
+
+knitr::kable(cm_summary, caption = "Confusion Matrix Performance Summary", format = "markdown")
+```
+
