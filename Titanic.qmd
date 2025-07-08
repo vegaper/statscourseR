@@ -9,6 +9,7 @@ editor:
 ```{r}
 #| echo: false
 library(dplyr)
+library(tidyr)
 library(tidyverse)
 library(readxl)
 library(easystats)
@@ -17,6 +18,8 @@ library(tibble)
 library(ggplot2)
 library(ggpattern)
 library(caret)
+library(kableExtra)
+library(pROC)
 theme_set(theme_minimal())
 options(scipen= 999)
 ```
@@ -70,7 +73,7 @@ The goal of analyzing this dataset is to predict which passengers survived the T
 Here's a detailed description of each column (feature) present in the `train.csv` dataset:
 
 | Column Name   | Description                                         | Data Type         | Notes                                                                           |
-|:---------------|:---------------|:---------------|:-------------------------|
+|:----------------|:----------------|:----------------|:----------------------|
 | `PassengerId` | A unique identifier for each passenger.             | Integer           | Used to identify rows; typically not used as a feature for modeling.            |
 | `Survived`    | Survival status (our target variable).              | Integer (0 or 1)  | `0 = No` (Did not survive), `1 = Yes` (Survived)                                |
 | `Pclass`      | Passenger Class. A proxy for socio-economic status. | Integer (1, 2, 3) | `1 = 1st Class`, `2 = 2nd Class`, `3 = 3rd Class`                               |
@@ -518,7 +521,8 @@ Consider visualizing distributions before and after transformation
 ::: callout-orange
 We will see the results of each applied to the field Fare as an example:
 
-```{r, fig.align='center', fig.width=6} library(bestNormalize)}
+```{r, fig.align='center', fig.width=6}
+library(bestNormalize)
 
 # 2. Extract fare (replace NAs with 0) 
 fare <- titanic_train$Fare %>% replace_na(0)   
@@ -590,9 +594,11 @@ numerical_correlation_data_scaled <- correlation_data %>%
 ### Correlation Coefficient
 
 The [Pearson Correlation Coefficient](linearModels.qmd#correlation-coefficient) measures linear association between continuous variables.
-It is defined as $$
+It is defined as 
+$$
 r = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum(x_i - \bar{x})^2 \sum(y_i - \bar{y})^2}}
-$$ In our context, we apply it between continuous predictors and the binary outcome `survived`
+$$ 
+In our context, we apply it between continuous predictors and the binary outcome `survived`
 
 ```{r}
 # Correlation of each feature with the target
@@ -643,6 +649,7 @@ F = \frac{\text{Between-group variability}}{\text{Within-group variability}}
 $$
 
 ```{r}
+#|layout-ncol: 2
 # One-way ANOVA for each feature
 anova_results <- sapply(names(numerical_correlation_data_scaled)[-1], function(var) {
   aov_formula <- as.formula(paste(var, "~ factor(Survived)"))
@@ -908,28 +915,55 @@ model <- glm(Survived ~ ., data = numerical_correlation_data_scaled, family = bi
 # View summary of the model
 summary(model)
 
+# Get predicted probabilities on the training data
+train_probs <- predict(model, type = "response")
+
+# Convert to predicted classes
+train_pred_classes <- ifelse(train_probs > 0.5, 1, 0)
 ```
 
-To check how it is doing over the test data, we need to also drop the variables that we are not using in the model for this dataset and apply the same transformation that we did to the train dataset:
-Treat NAs
+For more information about how to interpret the results you can visit [Classification problems](\classificaion.qmd#logisticRegressionResults)
+
+The confusion matrix with the results is
+
+```{r}
+train_conf <- table(Predicted = train_pred_classes, Actual = numerical_correlation_data_scaled$Survived)
+train_conf
+```
+
+or using `caret` 
+```{r}
+conf_train <- confusionMatrix(as.factor(train_pred_classes), as.factor(numerical_correlation_data_scaled$Survived))
+conf_train
+```
+
+
+
+## Testing it with the test dataset
+
+### Preparing the data
+
+To check how it is doing over the test data, we need to also drop the variables that we are not using in the model for this dataset and apply the same transformation that we did to the train dataset: Treat NAs
 
 ```{r}
 summary(titanic_test)
 ```
-There are 22 rows without survival data. We will drop those rows as they will not help assessing the model.
+
+There are 22 rows without survival data.
+We will drop those rows as they will not help assessing the model.
 We will assign the average for the missing values in Age and Fare.
 
 ```{r, echo=FALSE}
+#| echo: false
 #some missing data in survived column, we will drop those.
 titanic_test_clean <- titanic_test %>% filter (!is.na(Survived))
-
 
 titanic_test_clean <- titanic_test_clean %>% 
 group_by(Sex) %>% 
   mutate(Age = ifelse(is.na(Age), mean(Age, na.rm = TRUE), Age)) %>% 
   ungroup() 
 
-titanic_test_clean < titanic_test_clean %>% 
+titanic_test_clean <- titanic_test_clean %>% 
   group_by(Pclass) %>% 
   mutate(Fare = ifelse(is.na(Fare), mean(Fare, na.rm = TRUE), Fare)) %>% 
   ungroup() 
@@ -937,8 +971,6 @@ titanic_test_clean < titanic_test_clean %>%
 ```
 
 ```{r}
-
-
 # remove columns
 titanic_test_reduced <- titanic_test_clean %>% select (-c(PassengerId,Name,SibSp,Ticket,Cabin))
 #factor and create dummies
@@ -952,8 +984,6 @@ titanic_test_encoded <- titanic_test_reduced %>%
     remove_first_dummy = FALSE, 
     remove_selected_columns = TRUE 
   ) 
-
-
 
 ```
 
@@ -979,20 +1009,71 @@ titanic_test_normalized <- titanic_test_encoded %>%
   )
 ```
 
-Now we apply the model to the dataset:
+### Predicting survival
 
-```{r}
+Now we apply the model to the dataset and see how many classifications it got right from each class using a Table
+
+```{r, fig.align='center', fig.width=6}
 # Predict on the test set (assuming titanic_test_encoded is prepared similarly)
 pred_probs <- predict(model, newdata = titanic_test_normalized, type = "response")
 
 # Convert probabilities to class predictions (threshold = 0.5)
 pred_classes <- ifelse(pred_probs >= 0.5, 1, 0)
 
-# Confusion matrix (assuming titanic_test_encoded$Survived is available for evaluation)
-table(Predicted = pred_classes, Actual = titanic_test_normalized$Survived)
+# Create confusion matrix
+t <- table(Predicted = pred_classes, 
+  Actual = titanic_test_normalized$Survived)
 
+
+# Render the nicely styled table
+kable(t, format = "html", caption = "Confusion Matrix:Survival Status ") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F) %>%
+  add_header_above(c("Predicted" = 1, "Actual" = 2))
 
 ```
+
+## How to interpret the results:
+
+-   True Positives (TP) = 99 → Correctly predicted survivors
+
+-   True Negatives (TN) = 201 → Correctly predicted non-survivors
+
+-   False Positives (FP) = 48 → Incorrectly predicted survivors
+
+-   False Negatives (FN) = 47 → Incorrectly predicted non-survivors
+
+### Model Accuracy
+
+Proportion of total predictions that are correct.
+
+$$
+\text{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}= \frac{99+201}{99+201+48+47}= \frac{300}{395} = 0.759
+$$
+
+The model has an accuracy of \~76%, meaning it correctly predicted about three out of four passengers.
+
+### Precision
+
+Out of the passengers predicted as survivors, how many truly survived?
+
+$$
+\text{Precision} = \frac{TP}{TP+FP}= \frac{99}{99+48}= \frac{99}{147} = 0.673
+$$
+
+Precision is about 67%, which means that when your model predicts survival, it's correct 2 out of 3 times.
+
+::: callout-note
+Quick Tips for Interpretation Accuracy is useful when classes are balanced---but Titanic data isn't entirely balanced.
+
+Precision is crucial when false positives are costly (e.g., medical diagnosis or fraud detection).
+:::
+
+You might also want to look at [missclassification](\classification.qmd#missclassificationRate)
+
+Recall (sensitivity): $$ \frac{TP}{TP + FN} = \frac{99}{99 + 47} \approx 0.678 $$
+
+we can also use the `caret` package to create a confusion matrix and get a summary of the results:
+
 ```{r}
 # Define the common levels, based on what Survived should be (e.g. 0 and 1)
 common_levels <- levels(factor(titanic_test_normalized$Survived))
@@ -1005,6 +1086,13 @@ true_classes_factor <- factor(titanic_test_normalized$Survived, levels = common_
 
 # Now call confusionMatrix
 cm<- caret::confusionMatrix(pred_classes_factor, true_classes_factor)
+cm
+```
+
+There's detailed information on how to interpret these results in [confusion matrix](\classification.qmd#confusion-matrix)
+
+we can also get the summary:
+```{r}
 # Extract metrics
 overall <- cm$overall
 byClass <- cm$byClass
@@ -1025,5 +1113,167 @@ cm_summary <- data.frame(
 )
 
 knitr::kable(cm_summary, caption = "Confusion Matrix Performance Summary", format = "markdown")
+
+```
+
+
+### ROC Curve (Receiver Operating Characteristic)
+
+We can adjust a [ROC curve](\classification.qmd#ROCcurve).
+This plot helps you visualize the trade-off between true positive rate (recall) and false positive rate across different thresholds.
+
+The ROC Curve will show how well your model separates the classes. If your AUC (Area Under Curve) is close to 1, your model’s on point; near 0.5, it’s not so great.
+
+```{r, fig.align='center', fig.width=6}
+
+
+# Generate ROC curve
+roc_obj <- roc(titanic_test_normalized$Survived, pred_probs)  # 'probs' is your predicted probabilities
+plot(roc_obj, main = "ROC Curve: Titanic Logistic Model", col = "#2c7fb8", lwd = 2)
+
+# AUC value
+auc(roc_obj)
+
+```
+
+### Precision-Recall Curve 
+
+This is especially useful if the positive class is rare (like survivors in Titanic).
+
+```{r, fig.align='center', fig.width=6}
+
+library(PRROC)
+pr_obj <- PRROC::pr.curve(scores.class0 = pred_probs[titanic_test_normalized$Survived == 1],
+                   scores.class1 = pred_probs[titanic_test_normalized$Survived == 0],
+                   curve = TRUE)
+
+plot(pr_obj, main = "Precision-Recall Curve: Titanic Logistic Model", col = "#41ab5d", lwd = 2)
+
+```
+Unlike ROC curves—which track true vs false positive rates—the PR curve focuses more tightly on the model’s performance for the positive class (in this case, passengers who survived).
+
+*Precision*: Out of all passengers the model said survived, what proportion actually did.
+
+*Recall (Sensitivity)*: Out of all passengers who actually survived, how many did the model correctly identify.
+
+So on the graph:
+
+The x-axis is Recall: how many actual survivors we captured.
+
+The y-axis is Precision: how cleanly we predicted survivors without mixing in false positives.
+
+**Interpreting the Curve's Shape**
+If the curve hugs the top right corner, your model nails both precision and recall
+
+If the curve drops off fast, it means the model struggles either with finding actual survivors or is overpredicting survival, diluting precision.
+
+A flat curve near the bottom suggests predictions for survivors are mostly wrong—or barely better than random guessing.
+
+**Area Under the Curve (AUC-PR)**
+If you retrieved the AUC score from pr_obj, that would quantify the curve’s strength. AUC-PR close to 1.0 means excellent predictive quality. Around 0.5 means “meh,” and lower values suggest your model’s having a rough time.
+
+This is especially helpful when your positive class (survivors) is much rarer than the negative class, which is often the case in Titanic datasets.
+
+From this graph, you’re able to:
+
+Visualize the trade-off: At higher recall, precision may drop—because you’re casting a wider net.
+
+Fine-tune thresholds: This guides you in choosing a threshold that balances precision vs recall based on what matters most (e.g., in healthcare you might prioritize recall; in fraud detection, precision).
+
+### Test vs Train results
+Let's see a few ways of comparing how our model is doing in the training vs the test dataset:
+
+#### Predicted vs actual survival stacked bar plot
+
+```{r, fig.align='center', fig.width=6}
+
+# Prepare data frames with predictions and actuals
+train_df <- data.frame(
+  Actual = numerical_correlation_data_scaled$Survived,
+  Predicted = train_pred_classes,  # predictions from training set
+  Set = "Train"
+)
+
+test_df <- data.frame(
+  Actual = titanic_test_normalized$Survived,
+  Predicted = pred_classes,  # predictions from test set
+  Set = "Test"
+)
+
+# Combine for plotting
+combined_df <- bind_rows(train_df, test_df)
+
+ggplot(combined_df, aes(x = as.factor(Actual), fill = as.factor(Predicted))) +
+  geom_bar(position = "fill") +
+  facet_wrap(~Set) +
+  labs(
+    title = "Proportion of Predicted vs Actual Survival by Dataset",
+    x = "Actual Survival",
+    y = "Proportion",
+    fill = "Predicted"
+  ) +
+  scale_fill_manual(values = c("firebrick", "steelblue")) +
+  theme_minimal()
+
+
+```
+#### Confusion Matrix Heatmaps
+```{r, fig.align='center', fig.width=6}
+library(reshape2)
+
+# Create confusion matrices
+train_mat <- table(Predicted = train_pred_classes, Actual = numerical_correlation_data_scaled$Survived)
+test_mat <- table(Predicted = pred_classes, Actual = titanic_test_normalized$Survived)
+
+# Convert to data frame for plotting
+train_melt <- melt(train_mat)
+train_melt$Set <- "Train"
+test_melt <- melt(test_mat)
+test_melt$Set <- "Test"
+
+conf_df <- bind_rows(train_melt, test_melt)
+
+ggplot(conf_df, aes(x = Actual, y = Predicted, fill = value)) +
+  geom_tile(color = "white") +
+  facet_wrap(~Set) +
+  scale_fill_gradient(low = "white", high = "#2c7fb8") +
+  labs(title = "Confusion Matrix Heatmap", fill = "Count") +
+  theme_minimal()
+
+```
+
+#### Performance Metrics Comparison Plot
+
+Compute and visualize metrics like accuracy, precision, recall, F1-score, AUC across both sets.
+```{r, fig.align='center', fig.width=6}
+library(caret)
+# Example using confusionMatrix()
+conf_train <- confusionMatrix(as.factor(train_pred_classes), as.factor(numerical_correlation_data_scaled$Survived))
+conf_test  <- confusionMatrix(as.factor(pred_classes), as.factor(titanic_test_normalized$Survived))
+
+metrics_df <- data.frame(
+  Metric = c("Accuracy", "Precision", "Recall", "F1"),
+  Train = c(conf_train$overall["Accuracy"],
+            conf_train$byClass["Precision"],
+            conf_train$byClass["Recall"],
+            conf_train$byClass["F1"]),
+  Test = c(conf_test$overall["Accuracy"],
+           conf_test$byClass["Precision"],
+           conf_test$byClass["Recall"],
+           conf_test$byClass["F1"])
+)
+
+# Plot
+
+
+metrics_long <- metrics_df %>%
+  pivot_longer(-Metric, names_to = "Set", values_to = "Score")
+
+ggplot(metrics_long, aes(x = Metric, y = Score, fill = Set)) +
+  geom_col(position = "dodge") +
+  labs(title = "Model Performance Comparison", y = "Score", x = "Metric") +
+  scale_fill_manual(values = c("steelblue", "firebrick")) +
+  theme_minimal()
+
 ```
 
