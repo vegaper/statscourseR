@@ -24,14 +24,14 @@ website:
         menu:
           - href: Inferencial.qmd
             text: Statistical Tests
-          - href: Titanic.qmd
-            text: Titanic exercise
           - href: linearModels.qmd
             text: Linear Models
           - href: modelAccuracy.qmd
             text: Assessing Model Accuracy
           - href: classification.qmd
             text: Classification problems
+          - href: Titanic.qmd
+            text: Titanic exercise
           - href: polynomialReg.qmd
             text: Polynomial Regression
           - href: survival.qmd

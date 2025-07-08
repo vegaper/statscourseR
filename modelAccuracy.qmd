@@ -1649,9 +1649,7 @@ plot(TukeyHSD(x = a1))
 
 **The False Discovery Rate** When $m$ is large, then trying to prevent any false positives (as in FWER control) is simply too stringent. Instead, we might try to make sure that the ratio of false positives to total positives (is sufficiently low, so that most of the rejected null hypotheses are not false positives. The ratio is known as the false discovery proportion (FDP).
 
-It might be tempting to ask the data analyst to control the FDP: to make sure that no more than, say, 20% of the rejected null hypotheses are false positives. However, in practice, controlling the FDP is an impossible task for the data analyst, since she has no way to be certain, on any particular dataset, which hypotheses are true and which are false, Therefore, we instead control the false discovery rate (FDR) defined as 
-FDR = E(FDP) = E(False Rejections/Total Rejections) 
-When we control the FDR at (say) level q = 20%, we are rejecting as many null hypotheses as possible while guaranteeing that no more than 20% of those rejected null hypotheses are false positives, on average. The expectation is taken over the population from which the data are generated. For instance, suppose we control the FDR for $m$ null hypotheses at $q = 0.2$. This means that if we repeat this experiment a huge number of times, and each time control the FDR at $q = 0.2$, then we should expect that, on average, 20% of the rejected null hypotheses will be false positives. On a given dataset, the fraction of false positives among the rejected hypotheses may be greater than or less than 20%.
+It might be tempting to ask the data analyst to control the FDP: to make sure that no more than, say, 20% of the rejected null hypotheses are false positives. However, in practice, controlling the FDP is an impossible task for the data analyst, since she has no way to be certain, on any particular dataset, which hypotheses are true and which are false, Therefore, we instead control the false discovery rate (FDR) defined as FDR = E(FDP) = E(False Rejections/Total Rejections) When we control the FDR at (say) level q = 20%, we are rejecting as many null hypotheses as possible while guaranteeing that no more than 20% of those rejected null hypotheses are false positives, on average. The expectation is taken over the population from which the data are generated. For instance, suppose we control the FDR for $m$ null hypotheses at $q = 0.2$. This means that if we repeat this experiment a huge number of times, and each time control the FDR at $q = 0.2$, then we should expect that, on average, 20% of the rejected null hypotheses will be false positives. On a given dataset, the fraction of false positives among the rejected hypotheses may be greater than or less than 20%.
 
 It is worth noting that unlike $p$-values, for which a threshold of 0.05 is typically viewed as the minimum standard of evidence for a "positive" result, and a threshold of 0.01 or even 0.001 is viewed as much more compelling, there is no standard accepted threshold for FDR control. Instead, the choice of FDR threshold is typically context-dependent, or even dataset dependent.
 
@@ -1748,19 +1746,16 @@ We have two samples $X$ and $Y$ and the $H_0$ is that the means of thos two samp
 
 $$
  p=\frac{ \sum^B_{b=1}1_{(|T^{*b}| \geq |T|)}}{B}
-$$ 
-- now we can compare this calculated $p$-value with that one calculated at the beginning on the original two sample test.
+$$ - now we can compare this calculated $p$-value with that one calculated at the beginning on the original two sample test.
 
 The reason why we work with absolute values for the $T$ is because in this particular case it is a two-sided $t$-test so we are interested in whether $X$ is larger than $Y$ or vice-versa but if it's a one side $t$-test then we can get rid of the absolute values.
 
-:::exercise-box
+::: exercise-box
 Practice
 
-Here, we implement the re-sampling approach to hypothesis testing using the `Khan` dataset. 
-We merge together train and test datasets because we are not using that here and we do the same for the response $y$ that gives us the type of cancer. 
+Here, we implement the re-sampling approach to hypothesis testing using the `Khan` dataset. We merge together train and test datasets because we are not using that here and we do the same for the response $y$ that gives us the type of cancer.
 
-First, we merge the training and testing data, which results in observations (rows) on $83$ patients for $2{,}308$ columns. Each column represent a gene. So we are going to perform $2{,}308$ hypothesis test here. 
- 
+First, we merge the training and testing data, which results in observations (rows) on $83$ patients for $2{,}308$ columns. Each column represent a gene. So we are going to perform $2{,}308$ hypothesis test here.
 
 ```{r }
 attach(Khan)
@@ -1786,11 +1781,7 @@ TT
 t.out$p.value
 ```
 
-However, this $p$-value relies on the assumption that under the null hypothesis of no difference between the two groups, the test statistic follows a $t$-distribution with $29+25-2=52$ degrees of freedom.
-Instead of using this theoretical null distribution, we can randomly split the 54 patients into two groups of 29 and 25, and compute a new test statistic.
-Under the null hypothesis of no difference between the groups, this new test statistic should have the same distribution as our original one.
-Repeating this process 10,000 times allows us to approximate the null distribution of the test statistic.
-We compute the fraction of the time that our observed test statistic exceeds the test statistics obtained via re-sampling.
+However, this $p$-value relies on the assumption that under the null hypothesis of no difference between the two groups, the test statistic follows a $t$-distribution with $29+25-2=52$ degrees of freedom. Instead of using this theoretical null distribution, we can randomly split the 54 patients into two groups of 29 and 25, and compute a new test statistic. Under the null hypothesis of no difference between the groups, this new test statistic should have the same distribution as our original one. Repeating this process 10,000 times allows us to approximate the null distribution of the test statistic. We compute the fraction of the time that our observed test statistic exceeds the test statistics obtained via re-sampling.
 
 ```{r}
 set.seed(1)
@@ -1808,7 +1799,7 @@ mean((abs(Tbs) >= abs(TT))) #calculate how many T's are higher than the original
 
 This fraction, $0.0416$, is our re-sampling-based $p$-value. It is almost identical to the $p$-value of $0.0412$ obtained using the theoretical null distribution. This means that the assumptions we made in the original test hold for this data
 
-We can plot  a histogram of the re-sampling-based test statistics.
+We can plot a histogram of the re-sampling-based test statistics.
 
 ```{r fig.align='center'}
 hist(Tbs, breaks = 100, xlim = c(-4.2, 4.2), main = "",
@@ -1822,17 +1813,12 @@ abline(v = TT, col = 4, lwd = 2)
 text(TT + 0.5, 350, paste("T = ", round(TT, 4), sep = ""),
     col = 4)
 ```
-In yellow we have the resampling null distribution and in red the theoretical $t$ distribution for mean 0, sd 1 and 52 degrees of freedom. 
 
-The re-sampling-based null distribution is almost identical to the theoretical null distribution, which is displayed in red, so it is to no surprise that the theoretical $p$-value from the test is almost the same as the resampling $p$-value. This just confirms that it is reasonable to use the $t$-distribution here. 
+In yellow we have the resampling null distribution and in red the theoretical $t$ distribution for mean 0, sd 1 and 52 degrees of freedom.
 
+The re-sampling-based null distribution is almost identical to the theoretical null distribution, which is displayed in red, so it is to no surprise that the theoretical $p$-value from the test is almost the same as the resampling $p$-value. This just confirms that it is reasonable to use the $t$-distribution here.
 
-Finally, we implement the plug-in re-sampling FDR approach outlined.
-Depending on the speed of your computer, calculating the FDR for all 2,308 genes in the `Khan` dataset may take a while.
-Hence, we will illustrate the approach on a random subset of 100 genes.
-For each  gene, we first compute the observed test statistic,
-and then produce $10{,}000$ re-sampled test statistics. This may take a few minutes to run.  If you are in a rush, then you could set `B` equal to a smaller
-value (e.g. `B = 500`).
+Finally, we implement the plug-in re-sampling FDR approach outlined. Depending on the speed of your computer, calculating the FDR for all 2,308 genes in the `Khan` dataset may take a while. Hence, we will illustrate the approach on a random subset of 100 genes. For each gene, we first compute the observed test statistic, and then produce $10{,}000$ re-sampled test statistics. This may take a few minutes to run. If you are in a rush, then you could set `B` equal to a smaller value (e.g. `B = 500`).
 
 ```{r}
 m <- 100
@@ -1872,8 +1858,7 @@ for (j in 1:m) {
 
 Now, for any given FDR, we can find the genes that will be rejected. For example, with the FDR controlled at 0.1, we reject 15 of the 100 null hypotheses. On average, we would expect about one or two of these genes (i.e. $10\%$ of 15) to be false discoveries.
 
-At an FDR of $0.2$, we can reject the null hypothesis for $28$ genes, of which we expect around six to be false discoveries. 
-The variable `index` is needed here since we restricted our analysis to just $100$ randomly-selected genes.
+At an FDR of $0.2$, we can reject the null hypothesis for $28$ genes, of which we expect around six to be false discoveries. The variable `index` is needed here since we restricted our analysis to just $100$ randomly-selected genes.
 
 ```{r chunk27}
 max(Rs[FDRs <= .1])
@@ -1882,13 +1867,10 @@ max(Rs[FDRs <= .2])
 sort(index[abs(Ts) >= min(cs[FDRs < .2])])
 ```
 
-
 ```{r fig.align='center'}
 plot(Rs, FDRs, xlab = "Number of Rejections", type = "l",
     ylab = "False Discovery Rate", col = 4, lwd = 3)
 ```
 
-As noted in the chapter, much more efficient implementations of the re-sampling approach to FDR calculation are available, using
-e.g. the `samr` package in `R`.
-
+As noted in the chapter, much more efficient implementations of the re-sampling approach to FDR calculation are available, using e.g. the `samr` package in `R`.
 :::

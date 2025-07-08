@@ -4019,10 +4019,6 @@ window.Quarto = {
  <span class="dropdown-text">Statistical Tests</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Titanic.html">
- <span class="dropdown-text">Titanic exercise</span></a>
-  </li>  
-        <li>
     <a class="dropdown-item" href="./linearModels.html">
  <span class="dropdown-text">Linear Models</span></a>
   </li>  
@@ -4033,6 +4029,10 @@ window.Quarto = {
         <li>
     <a class="dropdown-item" href="./classification.html">
  <span class="dropdown-text">Classification problems</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./Titanic.html">
+ <span class="dropdown-text">Titanic exercise</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./polynomialReg.html">
@@ -4105,7 +4105,7 @@ window.Quarto = {
   <li><a href="#logisticRegression" id="toc-logisticRegression" class="nav-link" data-scroll-target="#logisticRegression"><span class="header-section-number">1.1</span> Logistic regression</a>
   <ul class="collapse">
   <li><a href="#MaximumLikelihoodEstimation" id="toc-MaximumLikelihoodEstimation" class="nav-link" data-scroll-target="#MaximumLikelihoodEstimation"><span class="header-section-number">1.1.1</span> Maximum Likelihood Estimation (MLE)</a></li>
-  <li><a href="#interpreting-the-results" id="toc-interpreting-the-results" class="nav-link" data-scroll-target="#interpreting-the-results"><span class="header-section-number">1.1.2</span> Interpreting the results:</a></li>
+  <li><a href="#logisticRegressionResults" id="toc-logisticRegressionResults" class="nav-link" data-scroll-target="#logisticRegressionResults"><span class="header-section-number">1.1.2</span> Interpreting the results:</a></li>
   <li><a href="#MultipleLogisticRegression" id="toc-MultipleLogisticRegression" class="nav-link" data-scroll-target="#MultipleLogisticRegression"><span class="header-section-number">1.1.3</span> Multiple Logistic Regression.</a></li>
   <li><a href="#case-control-sampling-and-logistic-regression." id="toc-case-control-sampling-and-logistic-regression." class="nav-link" data-scroll-target="#case-control-sampling-and-logistic-regression."><span class="header-section-number">1.1.4</span> Case-control sampling and logistic regression.</a></li>
   <li><a href="#multinomial-regression" id="toc-multinomial-regression" class="nav-link" data-scroll-target="#multinomial-regression"><span class="header-section-number">1.1.5</span> Multinomial regression</a></li>
@@ -4292,8 +4292,8 @@ Number of Fisher Scoring iterations: 8</code></pre>
 </div>
 </div>
 </section>
-<section id="interpreting-the-results" class="level3" data-number="1.1.2">
-<h3 data-number="1.1.2" class="anchored" data-anchor-id="interpreting-the-results"><span class="header-section-number">1.1.2</span> Interpreting the results:</h3>
+<section id="logisticRegressionResults" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="logisticRegressionResults"><span class="header-section-number">1.1.2</span> Interpreting the results:</h3>
 <p>For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with <span class="math inline">\(\beta_1\)</span> is equal to <span class="math inline">\(\hat{\beta_1}/SE(\hat{\beta_1})\)</span>, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis <span class="math inline">\(H_0:\beta_1=0\)</span>. This null hypothesis implies that the probability of default does not depend on balance. Since the <code>$p$-value</code> associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. ### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (<a href="#eq-logisticRegression" class="quarto-xref">Equation 3</a>)</p>
 <p><span class="math display">\[
 \hat{p}(X) = \frac{e^{\hat{\beta_0} + \hat{\beta_1} X_1}}{1 + e^{\hat{\beta_0} + \hat{\beta_1} X_1 }}
@@ -4374,8 +4374,8 @@ Number of Fisher Scoring iterations: 8</code></pre>
 </div>
 </div>
 </div>
-<section id="misclassification-rate" class="level4">
-<h4 class="anchored" data-anchor-id="misclassification-rate">Misclassification rate</h4>
+<section id="missclassificationRate" class="level4">
+<h4 class="anchored" data-anchor-id="missclassificationRate">Misclassification rate</h4>
 <p>How many values does our model get right and how many get wrong? for that we can use a <em>confusion matrix</em> :</p>
 <div class="cell">
 <details open class="code-fold">
@@ -4416,7 +4416,10 @@ Number of Fisher Scoring iterations: 8</code></pre>
 <h4 class="anchored" data-anchor-id="null-rate">Null rate</h4>
 <p>Although this misclassification rate might seem very small, we need to take into consideration, that the data has a majority of ‘No’ in the response, so if we would fit every single value to ‘No’ without using any model, we would only get 333/10000 errors, so only 3.33% misclassification. This is called the <em>null rate</em></p>
 <p>Another way of looking at it would be seeing what percentage of No’s and Yes’s we have missclassified.</p>
-<p>For No’s we have missclassified 40 out of 9667 = 0.4% For Yes’s we have missclassified 228 out of 333 = 68.5%</p>
+<ul>
+<li><p>For No’s we have missclassified 40 out of 9667 = 0.4%</p></li>
+<li><p>For Yes’s we have missclassified 228 out of 333 = 68.5%</p></li>
+</ul>
 </section>
 <section id="visualizing-the-relationship-between-variables" class="level4">
 <h4 class="anchored" data-anchor-id="visualizing-the-relationship-between-variables">Visualizing the relationship between variables</h4>
@@ -6098,7 +6101,7 @@ predictions  setosa versicolor virginica
 <span id="cb111-169"><a href="#cb111-169"></a><span class="fu">summary</span>(glm.balance)</span>
 <span id="cb111-170"><a href="#cb111-170"></a><span class="in">```</span></span>
 <span id="cb111-171"><a href="#cb111-171"></a></span>
-<span id="cb111-172"><a href="#cb111-172"></a><span class="fu">### Interpreting the results:</span></span>
+<span id="cb111-172"><a href="#cb111-172"></a><span class="fu">### Interpreting the results: {#logisticRegressionResults}</span></span>
 <span id="cb111-173"><a href="#cb111-173"></a></span>
 <span id="cb111-174"><a href="#cb111-174"></a>For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the <span class="in">`$p$-value`</span> associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. <span class="sc">\#</span>## Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression)</span>
 <span id="cb111-175"><a href="#cb111-175"></a></span>
@@ -6163,7 +6166,7 @@ predictions  setosa versicolor virginica
 <span id="cb111-240"><a href="#cb111-240"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(p1, p2, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
 <span id="cb111-241"><a href="#cb111-241"></a><span class="in">```</span></span>
 <span id="cb111-242"><a href="#cb111-242"></a></span>
-<span id="cb111-243"><a href="#cb111-243"></a><span class="fu">#### Misclassification rate</span></span>
+<span id="cb111-243"><a href="#cb111-243"></a><span class="fu">#### Misclassification rate {#missclassificationRate}</span></span>
 <span id="cb111-244"><a href="#cb111-244"></a></span>
 <span id="cb111-245"><a href="#cb111-245"></a>How many values does our model get right and how many get wrong? for that we can use a *confusion matrix* :</span>
 <span id="cb111-246"><a href="#cb111-246"></a></span>
@@ -6192,639 +6195,643 @@ predictions  setosa versicolor virginica
 <span id="cb111-271"><a href="#cb111-271"></a></span>
 <span id="cb111-272"><a href="#cb111-272"></a>Another way of looking at it would be seeing what percentage of No&#39;s and Yes&#39;s we have missclassified.</span>
 <span id="cb111-273"><a href="#cb111-273"></a></span>
-<span id="cb111-274"><a href="#cb111-274"></a>For No&#39;s we have missclassified 40 out of 9667 = 0.4% For Yes&#39;s we have missclassified 228 out of 333 = 68.5%</span>
+<span id="cb111-274"><a href="#cb111-274"></a><span class="ss">-   </span>For No&#39;s we have missclassified 40 out of 9667 = 0.4%</span>
 <span id="cb111-275"><a href="#cb111-275"></a></span>
-<span id="cb111-276"><a href="#cb111-276"></a><span class="fu">#### Visualizing the relationship between variables</span></span>
+<span id="cb111-276"><a href="#cb111-276"></a><span class="ss">-   </span>For Yes&#39;s we have missclassified 228 out of 333 = 68.5%</span>
 <span id="cb111-277"><a href="#cb111-277"></a></span>
-<span id="cb111-278"><a href="#cb111-278"></a>A way of checking the relationship between different predictors in our model is to visualize a scatter matrix using <span class="in">`pairs()`</span>. We will use the <span class="in">`SAheart`</span> dataset for this:</span>
+<span id="cb111-278"><a href="#cb111-278"></a><span class="fu">#### Visualizing the relationship between variables</span></span>
 <span id="cb111-279"><a href="#cb111-279"></a></span>
-<span id="cb111-280"><a href="#cb111-280"></a>In this case we are not trying to predict the probability of getting a heart disease, we are going to assess the risk factors</span>
+<span id="cb111-280"><a href="#cb111-280"></a>A way of checking the relationship between different predictors in our model is to visualize a scatter matrix using <span class="in">`pairs()`</span>. We will use the <span class="in">`SAheart`</span> dataset for this:</span>
 <span id="cb111-281"><a href="#cb111-281"></a></span>
-<span id="cb111-282"><a href="#cb111-282"></a><span class="in">```{r, fig.width=10, fig.height=10}</span></span>
-<span id="cb111-283"><a href="#cb111-283"></a><span class="co"># Load the SAheart dataset</span></span>
-<span id="cb111-284"><a href="#cb111-284"></a><span class="fu">library</span>(bestglm)</span>
-<span id="cb111-285"><a href="#cb111-285"></a><span class="fu">data</span>(SAheart)</span>
-<span id="cb111-286"><a href="#cb111-286"></a></span>
-<span id="cb111-287"><a href="#cb111-287"></a><span class="co"># Select columns to include in the pairs plot (excluding &#39;typea&#39;)</span></span>
-<span id="cb111-288"><a href="#cb111-288"></a>SAheart_selected <span class="ot">&lt;-</span> SAheart <span class="sc">%&gt;%</span></span>
-<span id="cb111-289"><a href="#cb111-289"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(typea)) <span class="sc">%&gt;%</span></span>
-<span id="cb111-290"><a href="#cb111-290"></a>  <span class="fu">mutate</span>(<span class="at">famhist =</span> <span class="fu">ifelse</span>(famhist <span class="sc">==</span> <span class="st">&quot;Present&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
-<span id="cb111-291"><a href="#cb111-291"></a></span>
-<span id="cb111-292"><a href="#cb111-292"></a><span class="co"># Define colors based on &#39;chd&#39;</span></span>
-<span id="cb111-293"><a href="#cb111-293"></a>color_chd <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(SAheart_selected<span class="sc">$</span>chd <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;darkblue&quot;</span>)</span>
-<span id="cb111-294"><a href="#cb111-294"></a></span>
-<span id="cb111-295"><a href="#cb111-295"></a><span class="co"># Exclude the &#39;chd&#39; column from the pair plot</span></span>
-<span id="cb111-296"><a href="#cb111-296"></a>SAheart_selected <span class="ot">&lt;-</span> SAheart_selected <span class="sc">%&gt;%</span></span>
-<span id="cb111-297"><a href="#cb111-297"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>chd)</span>
-<span id="cb111-298"><a href="#cb111-298"></a></span>
-<span id="cb111-299"><a href="#cb111-299"></a><span class="co"># Create the scatter plot matrix</span></span>
-<span id="cb111-300"><a href="#cb111-300"></a><span class="fu">pairs</span>(SAheart_selected, </span>
-<span id="cb111-301"><a href="#cb111-301"></a>      <span class="at">col =</span> color_chd, </span>
-<span id="cb111-302"><a href="#cb111-302"></a>      <span class="at">pch =</span> <span class="dv">19</span>,           <span class="co"># Use solid points</span></span>
-<span id="cb111-303"><a href="#cb111-303"></a>      <span class="at">cex =</span> <span class="fl">0.5</span>,          <span class="co"># Reduce point size</span></span>
-<span id="cb111-304"><a href="#cb111-304"></a>      <span class="at">labels =</span> <span class="fu">colnames</span>(SAheart_selected),</span>
-<span id="cb111-305"><a href="#cb111-305"></a>      <span class="at">cex.labels =</span> <span class="fl">0.9</span>,   <span class="co"># Reduce label text size</span></span>
-<span id="cb111-306"><a href="#cb111-306"></a>      <span class="at">main =</span> <span class="st">&quot;Scatter-plot Matrix&quot;</span>,</span>
-<span id="cb111-307"><a href="#cb111-307"></a>      <span class="at">oma =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>)) <span class="co"># Reduce outer margins</span></span>
-<span id="cb111-308"><a href="#cb111-308"></a></span>
-<span id="cb111-309"><a href="#cb111-309"></a><span class="in">```</span></span>
+<span id="cb111-282"><a href="#cb111-282"></a>In this case we are not trying to predict the probability of getting a heart disease, we are going to assess the risk factors</span>
+<span id="cb111-283"><a href="#cb111-283"></a></span>
+<span id="cb111-284"><a href="#cb111-284"></a><span class="in">```{r, fig.width=10, fig.height=10}</span></span>
+<span id="cb111-285"><a href="#cb111-285"></a><span class="co"># Load the SAheart dataset</span></span>
+<span id="cb111-286"><a href="#cb111-286"></a><span class="fu">library</span>(bestglm)</span>
+<span id="cb111-287"><a href="#cb111-287"></a><span class="fu">data</span>(SAheart)</span>
+<span id="cb111-288"><a href="#cb111-288"></a></span>
+<span id="cb111-289"><a href="#cb111-289"></a><span class="co"># Select columns to include in the pairs plot (excluding &#39;typea&#39;)</span></span>
+<span id="cb111-290"><a href="#cb111-290"></a>SAheart_selected <span class="ot">&lt;-</span> SAheart <span class="sc">%&gt;%</span></span>
+<span id="cb111-291"><a href="#cb111-291"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(typea)) <span class="sc">%&gt;%</span></span>
+<span id="cb111-292"><a href="#cb111-292"></a>  <span class="fu">mutate</span>(<span class="at">famhist =</span> <span class="fu">ifelse</span>(famhist <span class="sc">==</span> <span class="st">&quot;Present&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb111-293"><a href="#cb111-293"></a></span>
+<span id="cb111-294"><a href="#cb111-294"></a><span class="co"># Define colors based on &#39;chd&#39;</span></span>
+<span id="cb111-295"><a href="#cb111-295"></a>color_chd <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(SAheart_selected<span class="sc">$</span>chd <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;darkblue&quot;</span>)</span>
+<span id="cb111-296"><a href="#cb111-296"></a></span>
+<span id="cb111-297"><a href="#cb111-297"></a><span class="co"># Exclude the &#39;chd&#39; column from the pair plot</span></span>
+<span id="cb111-298"><a href="#cb111-298"></a>SAheart_selected <span class="ot">&lt;-</span> SAheart_selected <span class="sc">%&gt;%</span></span>
+<span id="cb111-299"><a href="#cb111-299"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>chd)</span>
+<span id="cb111-300"><a href="#cb111-300"></a></span>
+<span id="cb111-301"><a href="#cb111-301"></a><span class="co"># Create the scatter plot matrix</span></span>
+<span id="cb111-302"><a href="#cb111-302"></a><span class="fu">pairs</span>(SAheart_selected, </span>
+<span id="cb111-303"><a href="#cb111-303"></a>      <span class="at">col =</span> color_chd, </span>
+<span id="cb111-304"><a href="#cb111-304"></a>      <span class="at">pch =</span> <span class="dv">19</span>,           <span class="co"># Use solid points</span></span>
+<span id="cb111-305"><a href="#cb111-305"></a>      <span class="at">cex =</span> <span class="fl">0.5</span>,          <span class="co"># Reduce point size</span></span>
+<span id="cb111-306"><a href="#cb111-306"></a>      <span class="at">labels =</span> <span class="fu">colnames</span>(SAheart_selected),</span>
+<span id="cb111-307"><a href="#cb111-307"></a>      <span class="at">cex.labels =</span> <span class="fl">0.9</span>,   <span class="co"># Reduce label text size</span></span>
+<span id="cb111-308"><a href="#cb111-308"></a>      <span class="at">main =</span> <span class="st">&quot;Scatter-plot Matrix&quot;</span>,</span>
+<span id="cb111-309"><a href="#cb111-309"></a>      <span class="at">oma =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>)) <span class="co"># Reduce outer margins</span></span>
 <span id="cb111-310"><a href="#cb111-310"></a></span>
-<span id="cb111-311"><a href="#cb111-311"></a>to fit a model for this data:</span>
+<span id="cb111-311"><a href="#cb111-311"></a><span class="in">```</span></span>
 <span id="cb111-312"><a href="#cb111-312"></a></span>
-<span id="cb111-315"><a href="#cb111-315"></a><span class="in">```{r}</span></span>
-<span id="cb111-316"><a href="#cb111-316"></a>heartfit <span class="ot">&lt;-</span> <span class="fu">glm</span>(chd<span class="sc">~</span>.,<span class="at">data=</span>SAheart, <span class="at">family=</span>binomial)</span>
-<span id="cb111-317"><a href="#cb111-317"></a><span class="fu">summary</span>(heartfit)</span>
-<span id="cb111-318"><a href="#cb111-318"></a><span class="in">```</span></span>
-<span id="cb111-319"><a href="#cb111-319"></a></span>
-<span id="cb111-320"><a href="#cb111-320"></a>Interestingly, obesity and alcohol does not show as significant and this is due to correlation.</span>
+<span id="cb111-313"><a href="#cb111-313"></a>to fit a model for this data:</span>
+<span id="cb111-314"><a href="#cb111-314"></a></span>
+<span id="cb111-317"><a href="#cb111-317"></a><span class="in">```{r}</span></span>
+<span id="cb111-318"><a href="#cb111-318"></a>heartfit <span class="ot">&lt;-</span> <span class="fu">glm</span>(chd<span class="sc">~</span>.,<span class="at">data=</span>SAheart, <span class="at">family=</span>binomial)</span>
+<span id="cb111-319"><a href="#cb111-319"></a><span class="fu">summary</span>(heartfit)</span>
+<span id="cb111-320"><a href="#cb111-320"></a><span class="in">```</span></span>
 <span id="cb111-321"><a href="#cb111-321"></a></span>
-<span id="cb111-322"><a href="#cb111-322"></a>::: exercise-box</span>
-<span id="cb111-323"><a href="#cb111-323"></a>Example:</span>
-<span id="cb111-324"><a href="#cb111-324"></a></span>
-<span id="cb111-325"><a href="#cb111-325"></a>We will begin by examining some numerical and graphical summaries of the Smarket data, which is part of the ISLR2 library. This data set consists of percentage returns for the S&amp;P 500 stock index over 1,250 days, from the beginning of 2001 until the end of 2005. For each date, we have recorded the percentage returns for each of the five previous trading days, <span class="in">`lagone`</span> through <span class="in">`lagfive`</span>. We have also recorded volume (the number of shares traded on the previous day, in billions), Today (the percentage return on the date in question) and direction (whether the market was Up or Down on this date). Our goal is to predict direction (a qualitative response) using the other features.</span>
+<span id="cb111-322"><a href="#cb111-322"></a>Interestingly, obesity and alcohol does not show as significant and this is due to correlation.</span>
+<span id="cb111-323"><a href="#cb111-323"></a></span>
+<span id="cb111-324"><a href="#cb111-324"></a>::: exercise-box</span>
+<span id="cb111-325"><a href="#cb111-325"></a>Example:</span>
 <span id="cb111-326"><a href="#cb111-326"></a></span>
-<span id="cb111-327"><a href="#cb111-327"></a><span class="in">```{r, fig.align=&#39;center&#39;, fig.height=10, fig.width=10}</span></span>
-<span id="cb111-328"><a href="#cb111-328"></a><span class="fu">head</span>(Smarket)</span>
-<span id="cb111-329"><a href="#cb111-329"></a><span class="fu">pairs</span>(Smarket[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>], <span class="at">col =</span> Smarket<span class="sc">$</span>Direction, <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">cex =</span> <span class="fl">0.5</span>)</span>
-<span id="cb111-330"><a href="#cb111-330"></a></span>
-<span id="cb111-331"><a href="#cb111-331"></a><span class="in">```</span></span>
+<span id="cb111-327"><a href="#cb111-327"></a>We will begin by examining some numerical and graphical summaries of the Smarket data, which is part of the ISLR2 library. This data set consists of percentage returns for the S&amp;P 500 stock index over 1,250 days, from the beginning of 2001 until the end of 2005. For each date, we have recorded the percentage returns for each of the five previous trading days, <span class="in">`lagone`</span> through <span class="in">`lagfive`</span>. We have also recorded volume (the number of shares traded on the previous day, in billions), Today (the percentage return on the date in question) and direction (whether the market was Up or Down on this date). Our goal is to predict direction (a qualitative response) using the other features.</span>
+<span id="cb111-328"><a href="#cb111-328"></a></span>
+<span id="cb111-329"><a href="#cb111-329"></a><span class="in">```{r, fig.align=&#39;center&#39;, fig.height=10, fig.width=10}</span></span>
+<span id="cb111-330"><a href="#cb111-330"></a><span class="fu">head</span>(Smarket)</span>
+<span id="cb111-331"><a href="#cb111-331"></a><span class="fu">pairs</span>(Smarket[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>], <span class="at">col =</span> Smarket<span class="sc">$</span>Direction, <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">cex =</span> <span class="fl">0.5</span>)</span>
 <span id="cb111-332"><a href="#cb111-332"></a></span>
-<span id="cb111-333"><a href="#cb111-333"></a>The pairs plot seem to not show a lot of correlation.</span>
+<span id="cb111-333"><a href="#cb111-333"></a><span class="in">```</span></span>
 <span id="cb111-334"><a href="#cb111-334"></a></span>
-<span id="cb111-337"><a href="#cb111-337"></a><span class="in">```{r}</span></span>
-<span id="cb111-338"><a href="#cb111-338"></a>glm.fits <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb111-339"><a href="#cb111-339"></a>    Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2 <span class="sc">+</span> Lag3 <span class="sc">+</span> Lag4 <span class="sc">+</span> Lag5 <span class="sc">+</span> Volume,</span>
-<span id="cb111-340"><a href="#cb111-340"></a>    <span class="at">data =</span> Smarket, <span class="at">family =</span> binomial</span>
-<span id="cb111-341"><a href="#cb111-341"></a>  )</span>
-<span id="cb111-342"><a href="#cb111-342"></a><span class="fu">summary</span>(glm.fits)</span>
-<span id="cb111-343"><a href="#cb111-343"></a><span class="in">```</span></span>
-<span id="cb111-344"><a href="#cb111-344"></a></span>
-<span id="cb111-345"><a href="#cb111-345"></a>The &#39;contrast()<span class="sc">\`</span> function tells us what value of Direction is 0 and which one is 1:</span>
+<span id="cb111-335"><a href="#cb111-335"></a>The pairs plot seem to not show a lot of correlation.</span>
+<span id="cb111-336"><a href="#cb111-336"></a></span>
+<span id="cb111-339"><a href="#cb111-339"></a><span class="in">```{r}</span></span>
+<span id="cb111-340"><a href="#cb111-340"></a>glm.fits <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb111-341"><a href="#cb111-341"></a>    Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2 <span class="sc">+</span> Lag3 <span class="sc">+</span> Lag4 <span class="sc">+</span> Lag5 <span class="sc">+</span> Volume,</span>
+<span id="cb111-342"><a href="#cb111-342"></a>    <span class="at">data =</span> Smarket, <span class="at">family =</span> binomial</span>
+<span id="cb111-343"><a href="#cb111-343"></a>  )</span>
+<span id="cb111-344"><a href="#cb111-344"></a><span class="fu">summary</span>(glm.fits)</span>
+<span id="cb111-345"><a href="#cb111-345"></a><span class="in">```</span></span>
 <span id="cb111-346"><a href="#cb111-346"></a></span>
-<span id="cb111-349"><a href="#cb111-349"></a><span class="in">```{r}</span></span>
-<span id="cb111-350"><a href="#cb111-350"></a><span class="fu">contrasts</span>(Smarket<span class="sc">$</span>Direction)</span>
-<span id="cb111-351"><a href="#cb111-351"></a><span class="in">```</span></span>
-<span id="cb111-352"><a href="#cb111-352"></a></span>
-<span id="cb111-353"><a href="#cb111-353"></a>The negative predictor in lag1, lag2 suggest that if the market had a positive return yesterday, then it is less likely to go up today, however, the $p$-value is large, so there is no clear association.</span>
+<span id="cb111-347"><a href="#cb111-347"></a>The &#39;contrast()<span class="sc">\`</span> function tells us what value of Direction is 0 and which one is 1:</span>
+<span id="cb111-348"><a href="#cb111-348"></a></span>
+<span id="cb111-351"><a href="#cb111-351"></a><span class="in">```{r}</span></span>
+<span id="cb111-352"><a href="#cb111-352"></a><span class="fu">contrasts</span>(Smarket<span class="sc">$</span>Direction)</span>
+<span id="cb111-353"><a href="#cb111-353"></a><span class="in">```</span></span>
 <span id="cb111-354"><a href="#cb111-354"></a></span>
-<span id="cb111-355"><a href="#cb111-355"></a>The null deviance and the residual deviance are very similar, which indicates that the model does not perform much better than just using the average.</span>
+<span id="cb111-355"><a href="#cb111-355"></a>The negative predictor in lag1, lag2 suggest that if the market had a positive return yesterday, then it is less likely to go up today, however, the $p$-value is large, so there is no clear association.</span>
 <span id="cb111-356"><a href="#cb111-356"></a></span>
-<span id="cb111-357"><a href="#cb111-357"></a>The <span class="in">`predict()`</span> function can be used to predict the probability that the market will go up, given the values of the predictors. The <span class="in">`type=&quot;response&quot;`</span> option tells R to output probabilities of the form $P(Y=1|X)$, as opposed to other information such as the logit. If no data set is supplied to the <span class="in">`predict()`</span> function, then the probabilities are computed for the training data that was used to fit the logistic regression model. Here we have printed only the first ten probabilities. We know that these values correspond to the probability of the market going up, rather than down, because the <span class="in">`contrasts()`</span> function indicates that <span class="in">`R`</span> has created a dummy variable with a 1 for <span class="in">`Up`</span>.</span>
+<span id="cb111-357"><a href="#cb111-357"></a>The null deviance and the residual deviance are very similar, which indicates that the model does not perform much better than just using the average.</span>
 <span id="cb111-358"><a href="#cb111-358"></a></span>
-<span id="cb111-359"><a href="#cb111-359"></a><span class="in">```{r }</span></span>
-<span id="cb111-360"><a href="#cb111-360"></a>glm.probs <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm.fits, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb111-361"><a href="#cb111-361"></a>glm.probs[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
-<span id="cb111-362"><a href="#cb111-362"></a></span>
-<span id="cb111-363"><a href="#cb111-363"></a><span class="in">```</span></span>
+<span id="cb111-359"><a href="#cb111-359"></a>The <span class="in">`predict()`</span> function can be used to predict the probability that the market will go up, given the values of the predictors. The <span class="in">`type=&quot;response&quot;`</span> option tells R to output probabilities of the form $P(Y=1|X)$, as opposed to other information such as the logit. If no data set is supplied to the <span class="in">`predict()`</span> function, then the probabilities are computed for the training data that was used to fit the logistic regression model. Here we have printed only the first ten probabilities. We know that these values correspond to the probability of the market going up, rather than down, because the <span class="in">`contrasts()`</span> function indicates that <span class="in">`R`</span> has created a dummy variable with a 1 for <span class="in">`Up`</span>.</span>
+<span id="cb111-360"><a href="#cb111-360"></a></span>
+<span id="cb111-361"><a href="#cb111-361"></a><span class="in">```{r }</span></span>
+<span id="cb111-362"><a href="#cb111-362"></a>glm.probs <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm.fits, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb111-363"><a href="#cb111-363"></a>glm.probs[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
 <span id="cb111-364"><a href="#cb111-364"></a></span>
-<span id="cb111-365"><a href="#cb111-365"></a>The first thing that calls our attention is that the values are very close to 50%, so the predictors are not very strong. In order to make a prediction as to whether the market will go up or down on a particular day, we must convert these predicted probabilities into class labels, <span class="in">`Up`</span> or <span class="in">`Down`</span>. The following two commands create a vector of class predictions based on whether the predicted probability of a market increase is greater than or less than $0.5$.</span>
+<span id="cb111-365"><a href="#cb111-365"></a><span class="in">```</span></span>
 <span id="cb111-366"><a href="#cb111-366"></a></span>
-<span id="cb111-367"><a href="#cb111-367"></a><span class="in">```{r }</span></span>
-<span id="cb111-368"><a href="#cb111-368"></a>glm.pred <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;Down&quot;</span>, <span class="dv">1250</span>)</span>
-<span id="cb111-369"><a href="#cb111-369"></a>glm.pred[glm.probs <span class="sc">&gt;</span> .<span class="dv">5</span>] <span class="ot">=</span> <span class="st">&quot;Up&quot;</span></span>
-<span id="cb111-370"><a href="#cb111-370"></a><span class="in">```</span></span>
-<span id="cb111-371"><a href="#cb111-371"></a></span>
-<span id="cb111-372"><a href="#cb111-372"></a>The first command creates a vector of 1,250 <span class="in">`Down`</span> elements. The second line transforms to <span class="in">`Up`</span> all of the elements for which the predicted probability of a market increase exceeds $0.5$. Given these predictions, the <span class="in">`table()`</span> function can be used to produce a *confusion matrix* in order to determine how many observations were correctly or incorrectly classified.</span>
+<span id="cb111-367"><a href="#cb111-367"></a>The first thing that calls our attention is that the values are very close to 50%, so the predictors are not very strong. In order to make a prediction as to whether the market will go up or down on a particular day, we must convert these predicted probabilities into class labels, <span class="in">`Up`</span> or <span class="in">`Down`</span>. The following two commands create a vector of class predictions based on whether the predicted probability of a market increase is greater than or less than $0.5$.</span>
+<span id="cb111-368"><a href="#cb111-368"></a></span>
+<span id="cb111-369"><a href="#cb111-369"></a><span class="in">```{r }</span></span>
+<span id="cb111-370"><a href="#cb111-370"></a>glm.pred <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;Down&quot;</span>, <span class="dv">1250</span>)</span>
+<span id="cb111-371"><a href="#cb111-371"></a>glm.pred[glm.probs <span class="sc">&gt;</span> .<span class="dv">5</span>] <span class="ot">=</span> <span class="st">&quot;Up&quot;</span></span>
+<span id="cb111-372"><a href="#cb111-372"></a><span class="in">```</span></span>
 <span id="cb111-373"><a href="#cb111-373"></a></span>
-<span id="cb111-374"><a href="#cb111-374"></a><span class="in">```{r }</span></span>
-<span id="cb111-375"><a href="#cb111-375"></a><span class="fu">table</span>(glm.pred, Smarket<span class="sc">$</span>Direction)</span>
-<span id="cb111-376"><a href="#cb111-376"></a>(<span class="dv">507</span> <span class="sc">+</span> <span class="dv">145</span>) <span class="sc">/</span> <span class="dv">1250</span></span>
-<span id="cb111-377"><a href="#cb111-377"></a><span class="fu">mean</span>(glm.pred <span class="sc">==</span> Smarket<span class="sc">$</span>Direction)</span>
-<span id="cb111-378"><a href="#cb111-378"></a><span class="in">```</span></span>
-<span id="cb111-379"><a href="#cb111-379"></a></span>
-<span id="cb111-380"><a href="#cb111-380"></a>The diagonal elements of the confusion matrix indicate correct predictions, while the off-diagonals represent incorrect predictions. Hence our model correctly predicted that the market would go up on $507$ days and that it would go down on $145$ days, for a total of $507+145 = 652$ correct predictions. The <span class="in">`mean()`</span> function can be used to compute the fraction of days for which the prediction was correct. In this case, logistic regression correctly predicted the movement of the market $52.2$% of the time.</span>
+<span id="cb111-374"><a href="#cb111-374"></a>The first command creates a vector of 1,250 <span class="in">`Down`</span> elements. The second line transforms to <span class="in">`Up`</span> all of the elements for which the predicted probability of a market increase exceeds $0.5$. Given these predictions, the <span class="in">`table()`</span> function can be used to produce a *confusion matrix* in order to determine how many observations were correctly or incorrectly classified.</span>
+<span id="cb111-375"><a href="#cb111-375"></a></span>
+<span id="cb111-376"><a href="#cb111-376"></a><span class="in">```{r }</span></span>
+<span id="cb111-377"><a href="#cb111-377"></a><span class="fu">table</span>(glm.pred, Smarket<span class="sc">$</span>Direction)</span>
+<span id="cb111-378"><a href="#cb111-378"></a>(<span class="dv">507</span> <span class="sc">+</span> <span class="dv">145</span>) <span class="sc">/</span> <span class="dv">1250</span></span>
+<span id="cb111-379"><a href="#cb111-379"></a><span class="fu">mean</span>(glm.pred <span class="sc">==</span> Smarket<span class="sc">$</span>Direction)</span>
+<span id="cb111-380"><a href="#cb111-380"></a><span class="in">```</span></span>
 <span id="cb111-381"><a href="#cb111-381"></a></span>
-<span id="cb111-382"><a href="#cb111-382"></a>At first glance, it appears that the logistic regression model is working a little better than random guessing. However, this result is misleading because we trained and tested the model on the same set of $1,250$ observations. In other words, $100\%-52.2\%=47.8\%$, is **the *training* error rate**. As we have seen previously, the training error rate is often overly optimistic -it tends to underestimate the test error rate-. In order to better assess the accuracy of the logistic regression model in this setting, we can fit the model using part of the data, and then examine how well it predicts the *held out* data. This will yield a more realistic error rate, in the sense that in practice we will be interested in our model&#39;s performance not on the data that we used to fit the model, but rather on days in the future for which the market&#39;s movements are unknown. To implement this strategy, we will first create a vector corresponding to the observations from 2001 through 2004. We will then use this vector to create a held out data set of observations from 2005:</span>
+<span id="cb111-382"><a href="#cb111-382"></a>The diagonal elements of the confusion matrix indicate correct predictions, while the off-diagonals represent incorrect predictions. Hence our model correctly predicted that the market would go up on $507$ days and that it would go down on $145$ days, for a total of $507+145 = 652$ correct predictions. The <span class="in">`mean()`</span> function can be used to compute the fraction of days for which the prediction was correct. In this case, logistic regression correctly predicted the movement of the market $52.2$% of the time.</span>
 <span id="cb111-383"><a href="#cb111-383"></a></span>
-<span id="cb111-386"><a href="#cb111-386"></a><span class="in">```{r}</span></span>
-<span id="cb111-387"><a href="#cb111-387"></a>train <span class="ot">&lt;-</span> (Smarket<span class="sc">$</span>Year <span class="sc">&lt;</span> <span class="dv">2005</span>)</span>
-<span id="cb111-388"><a href="#cb111-388"></a>Smarket<span class="fl">.2005</span> <span class="ot">&lt;-</span> Smarket[<span class="sc">!</span>train, ]</span>
-<span id="cb111-389"><a href="#cb111-389"></a><span class="fu">dim</span>(Smarket<span class="fl">.2005</span>)</span>
-<span id="cb111-390"><a href="#cb111-390"></a>Direction<span class="fl">.2005</span> <span class="ot">&lt;-</span> Smarket<span class="sc">$</span>Direction[<span class="sc">!</span>train]</span>
-<span id="cb111-391"><a href="#cb111-391"></a><span class="in">```</span></span>
-<span id="cb111-392"><a href="#cb111-392"></a></span>
-<span id="cb111-393"><a href="#cb111-393"></a>We now fit a logistic regression model using only the subset of the observations that correspond to dates before 2005, using the subset argument. We then obtain predicted probabilities of the stock market going up for each of the days in our test set---that is, for the days in 2005.</span>
+<span id="cb111-384"><a href="#cb111-384"></a>At first glance, it appears that the logistic regression model is working a little better than random guessing. However, this result is misleading because we trained and tested the model on the same set of $1,250$ observations. In other words, $100\%-52.2\%=47.8\%$, is **the *training* error rate**. As we have seen previously, the training error rate is often overly optimistic -it tends to underestimate the test error rate-. In order to better assess the accuracy of the logistic regression model in this setting, we can fit the model using part of the data, and then examine how well it predicts the *held out* data. This will yield a more realistic error rate, in the sense that in practice we will be interested in our model&#39;s performance not on the data that we used to fit the model, but rather on days in the future for which the market&#39;s movements are unknown. To implement this strategy, we will first create a vector corresponding to the observations from 2001 through 2004. We will then use this vector to create a held out data set of observations from 2005:</span>
+<span id="cb111-385"><a href="#cb111-385"></a></span>
+<span id="cb111-388"><a href="#cb111-388"></a><span class="in">```{r}</span></span>
+<span id="cb111-389"><a href="#cb111-389"></a>train <span class="ot">&lt;-</span> (Smarket<span class="sc">$</span>Year <span class="sc">&lt;</span> <span class="dv">2005</span>)</span>
+<span id="cb111-390"><a href="#cb111-390"></a>Smarket<span class="fl">.2005</span> <span class="ot">&lt;-</span> Smarket[<span class="sc">!</span>train, ]</span>
+<span id="cb111-391"><a href="#cb111-391"></a><span class="fu">dim</span>(Smarket<span class="fl">.2005</span>)</span>
+<span id="cb111-392"><a href="#cb111-392"></a>Direction<span class="fl">.2005</span> <span class="ot">&lt;-</span> Smarket<span class="sc">$</span>Direction[<span class="sc">!</span>train]</span>
+<span id="cb111-393"><a href="#cb111-393"></a><span class="in">```</span></span>
 <span id="cb111-394"><a href="#cb111-394"></a></span>
-<span id="cb111-397"><a href="#cb111-397"></a><span class="in">```{r}</span></span>
-<span id="cb111-398"><a href="#cb111-398"></a>glm.fits <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb111-399"><a href="#cb111-399"></a>    Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2 <span class="sc">+</span> Lag3 <span class="sc">+</span> Lag4 <span class="sc">+</span> Lag5 <span class="sc">+</span> Volume,</span>
-<span id="cb111-400"><a href="#cb111-400"></a>    <span class="at">data =</span> Smarket, <span class="at">family =</span> binomial, <span class="at">subset =</span> train</span>
-<span id="cb111-401"><a href="#cb111-401"></a>  )</span>
-<span id="cb111-402"><a href="#cb111-402"></a>glm.probs <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm.fits, Smarket<span class="fl">.2005</span>,</span>
-<span id="cb111-403"><a href="#cb111-403"></a>    <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb111-404"><a href="#cb111-404"></a><span class="in">```</span></span>
-<span id="cb111-405"><a href="#cb111-405"></a></span>
-<span id="cb111-406"><a href="#cb111-406"></a>Notice that we have trained and tested our model on two completely separate data sets: training was performed using only the dates before 2005, and testing was performed using only the dates in 2005. Finally, we compute the predictions for 2005 and compare them to the actual movements of the market over that time period.</span>
+<span id="cb111-395"><a href="#cb111-395"></a>We now fit a logistic regression model using only the subset of the observations that correspond to dates before 2005, using the subset argument. We then obtain predicted probabilities of the stock market going up for each of the days in our test set---that is, for the days in 2005.</span>
+<span id="cb111-396"><a href="#cb111-396"></a></span>
+<span id="cb111-399"><a href="#cb111-399"></a><span class="in">```{r}</span></span>
+<span id="cb111-400"><a href="#cb111-400"></a>glm.fits <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb111-401"><a href="#cb111-401"></a>    Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2 <span class="sc">+</span> Lag3 <span class="sc">+</span> Lag4 <span class="sc">+</span> Lag5 <span class="sc">+</span> Volume,</span>
+<span id="cb111-402"><a href="#cb111-402"></a>    <span class="at">data =</span> Smarket, <span class="at">family =</span> binomial, <span class="at">subset =</span> train</span>
+<span id="cb111-403"><a href="#cb111-403"></a>  )</span>
+<span id="cb111-404"><a href="#cb111-404"></a>glm.probs <span class="ot">&lt;-</span> <span class="fu">predict</span>(glm.fits, Smarket<span class="fl">.2005</span>,</span>
+<span id="cb111-405"><a href="#cb111-405"></a>    <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb111-406"><a href="#cb111-406"></a><span class="in">```</span></span>
 <span id="cb111-407"><a href="#cb111-407"></a></span>
-<span id="cb111-410"><a href="#cb111-410"></a><span class="in">```{r}</span></span>
-<span id="cb111-411"><a href="#cb111-411"></a>glm.pred <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;Down&quot;</span>, <span class="dv">252</span>)</span>
-<span id="cb111-412"><a href="#cb111-412"></a>glm.pred[glm.probs <span class="sc">&gt;</span> .<span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Up&quot;</span></span>
-<span id="cb111-413"><a href="#cb111-413"></a><span class="fu">table</span>(glm.pred, Direction<span class="fl">.2005</span>)</span>
-<span id="cb111-414"><a href="#cb111-414"></a><span class="fu">mean</span>(glm.pred <span class="sc">==</span> Direction<span class="fl">.2005</span>)</span>
-<span id="cb111-415"><a href="#cb111-415"></a><span class="in">```</span></span>
-<span id="cb111-416"><a href="#cb111-416"></a></span>
-<span id="cb111-417"><a href="#cb111-417"></a>and our test set error rate:</span>
+<span id="cb111-408"><a href="#cb111-408"></a>Notice that we have trained and tested our model on two completely separate data sets: training was performed using only the dates before 2005, and testing was performed using only the dates in 2005. Finally, we compute the predictions for 2005 and compare them to the actual movements of the market over that time period.</span>
+<span id="cb111-409"><a href="#cb111-409"></a></span>
+<span id="cb111-412"><a href="#cb111-412"></a><span class="in">```{r}</span></span>
+<span id="cb111-413"><a href="#cb111-413"></a>glm.pred <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;Down&quot;</span>, <span class="dv">252</span>)</span>
+<span id="cb111-414"><a href="#cb111-414"></a>glm.pred[glm.probs <span class="sc">&gt;</span> .<span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Up&quot;</span></span>
+<span id="cb111-415"><a href="#cb111-415"></a><span class="fu">table</span>(glm.pred, Direction<span class="fl">.2005</span>)</span>
+<span id="cb111-416"><a href="#cb111-416"></a><span class="fu">mean</span>(glm.pred <span class="sc">==</span> Direction<span class="fl">.2005</span>)</span>
+<span id="cb111-417"><a href="#cb111-417"></a><span class="in">```</span></span>
 <span id="cb111-418"><a href="#cb111-418"></a></span>
-<span id="cb111-421"><a href="#cb111-421"></a><span class="in">```{r}</span></span>
-<span id="cb111-422"><a href="#cb111-422"></a><span class="fu">mean</span>(glm.pred <span class="sc">!=</span> Direction<span class="fl">.2005</span>)</span>
-<span id="cb111-423"><a href="#cb111-423"></a><span class="in">```</span></span>
-<span id="cb111-424"><a href="#cb111-424"></a></span>
-<span id="cb111-425"><a href="#cb111-425"></a>Suppose that we want to predict the returns associated with particular values. We do this using the predict() function.</span>
+<span id="cb111-419"><a href="#cb111-419"></a>and our test set error rate:</span>
+<span id="cb111-420"><a href="#cb111-420"></a></span>
+<span id="cb111-423"><a href="#cb111-423"></a><span class="in">```{r}</span></span>
+<span id="cb111-424"><a href="#cb111-424"></a><span class="fu">mean</span>(glm.pred <span class="sc">!=</span> Direction<span class="fl">.2005</span>)</span>
+<span id="cb111-425"><a href="#cb111-425"></a><span class="in">```</span></span>
 <span id="cb111-426"><a href="#cb111-426"></a></span>
-<span id="cb111-429"><a href="#cb111-429"></a><span class="in">```{r}</span></span>
-<span id="cb111-430"><a href="#cb111-430"></a><span class="fu">predict</span>(glm.fits,</span>
-<span id="cb111-431"><a href="#cb111-431"></a>    <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">Lag1 =</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fl">1.5</span>),  <span class="at">Lag2 =</span> <span class="fu">c</span>(<span class="fl">1.1</span>, <span class="sc">-</span><span class="fl">0.8</span>),  <span class="at">Lag3 =</span> <span class="fu">c</span>(<span class="fl">1.1</span>, <span class="sc">-</span><span class="fl">0.8</span>), <span class="at">Lag4 =</span> <span class="fu">c</span>(<span class="fl">1.1</span>, <span class="sc">-</span><span class="fl">0.8</span>), <span class="at">Lag5 =</span> <span class="fu">c</span>(<span class="fl">1.1</span>, <span class="sc">-</span><span class="fl">0.8</span>), <span class="at">Volume=</span> <span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">100</span>), <span class="at">type =</span> <span class="st">&quot;response&quot;</span></span>
-<span id="cb111-432"><a href="#cb111-432"></a>  ))</span>
-<span id="cb111-433"><a href="#cb111-433"></a><span class="in">```</span></span>
-<span id="cb111-434"><a href="#cb111-434"></a>:::</span>
-<span id="cb111-435"><a href="#cb111-435"></a></span>
-<span id="cb111-436"><a href="#cb111-436"></a><span class="fu">### Case-control sampling and logistic regression.</span></span>
+<span id="cb111-427"><a href="#cb111-427"></a>Suppose that we want to predict the returns associated with particular values. We do this using the predict() function.</span>
+<span id="cb111-428"><a href="#cb111-428"></a></span>
+<span id="cb111-431"><a href="#cb111-431"></a><span class="in">```{r}</span></span>
+<span id="cb111-432"><a href="#cb111-432"></a><span class="fu">predict</span>(glm.fits,</span>
+<span id="cb111-433"><a href="#cb111-433"></a>    <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">Lag1 =</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fl">1.5</span>),  <span class="at">Lag2 =</span> <span class="fu">c</span>(<span class="fl">1.1</span>, <span class="sc">-</span><span class="fl">0.8</span>),  <span class="at">Lag3 =</span> <span class="fu">c</span>(<span class="fl">1.1</span>, <span class="sc">-</span><span class="fl">0.8</span>), <span class="at">Lag4 =</span> <span class="fu">c</span>(<span class="fl">1.1</span>, <span class="sc">-</span><span class="fl">0.8</span>), <span class="at">Lag5 =</span> <span class="fu">c</span>(<span class="fl">1.1</span>, <span class="sc">-</span><span class="fl">0.8</span>), <span class="at">Volume=</span> <span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">100</span>), <span class="at">type =</span> <span class="st">&quot;response&quot;</span></span>
+<span id="cb111-434"><a href="#cb111-434"></a>  ))</span>
+<span id="cb111-435"><a href="#cb111-435"></a><span class="in">```</span></span>
+<span id="cb111-436"><a href="#cb111-436"></a>:::</span>
 <span id="cb111-437"><a href="#cb111-437"></a></span>
-<span id="cb111-438"><a href="#cb111-438"></a>We know because medicine tells us, that the risk of heart disease in this type of population of South Africans is actually 5%. But in our dataset we used 160 cases (people with heart disease) and 302 controls. This results in an estimated proportion of $\tilde{\pi} = 0.35$, yet the prevalence of the heart disease is $\pi=0.05$</span>
+<span id="cb111-438"><a href="#cb111-438"></a><span class="fu">### Case-control sampling and logistic regression.</span></span>
 <span id="cb111-439"><a href="#cb111-439"></a></span>
-<span id="cb111-440"><a href="#cb111-440"></a>We can still use these data set to fit our model, and the model will be correct, but the constant term will be incorrect. We can correct the constant using a simple transformation. $$</span>
-<span id="cb111-441"><a href="#cb111-441"></a>\hat{\beta_0^*}=\hat{\beta_0}+log\frac{\pi}{1-\pi}-log\frac{\tilde{\pi}}{1-\tilde{\pi}}</span>
-<span id="cb111-442"><a href="#cb111-442"></a>$$ This formula is a re-calibration or re-centering of the logistic regression intercept $\hat{\beta_0}$ where: - $\hat{\beta_0}$ is the original estimated intercept. - $\hat{\beta_0^*}$ is the adjusted intercept after re-calibration. - $\pi$ is the baseline probability in the population. - $\tilde{\pi}$ is the target probability or prevalence rate you are adjusting to.</span>
-<span id="cb111-443"><a href="#cb111-443"></a></span>
-<span id="cb111-444"><a href="#cb111-444"></a>This is an approach often followed in epidemiology because the cases that we want to study are rare, so we want to take them all, up to five or six times that number of controls is sufficient. Another example is in advertising, where the click-through ratio for an add is very low, we need usually hundreds or thousands of people that saw the add but did not click on it, for just a few clicks, so following this approach we can reduce our dataset and not include all the control data.</span>
+<span id="cb111-440"><a href="#cb111-440"></a>We know because medicine tells us, that the risk of heart disease in this type of population of South Africans is actually 5%. But in our dataset we used 160 cases (people with heart disease) and 302 controls. This results in an estimated proportion of $\tilde{\pi} = 0.35$, yet the prevalence of the heart disease is $\pi=0.05$</span>
+<span id="cb111-441"><a href="#cb111-441"></a></span>
+<span id="cb111-442"><a href="#cb111-442"></a>We can still use these data set to fit our model, and the model will be correct, but the constant term will be incorrect. We can correct the constant using a simple transformation. $$</span>
+<span id="cb111-443"><a href="#cb111-443"></a>\hat{\beta_0^*}=\hat{\beta_0}+log\frac{\pi}{1-\pi}-log\frac{\tilde{\pi}}{1-\tilde{\pi}}</span>
+<span id="cb111-444"><a href="#cb111-444"></a>$$ This formula is a re-calibration or re-centering of the logistic regression intercept $\hat{\beta_0}$ where: - $\hat{\beta_0}$ is the original estimated intercept. - $\hat{\beta_0^*}$ is the adjusted intercept after re-calibration. - $\pi$ is the baseline probability in the population. - $\tilde{\pi}$ is the target probability or prevalence rate you are adjusting to.</span>
 <span id="cb111-445"><a href="#cb111-445"></a></span>
-<span id="cb111-446"><a href="#cb111-446"></a><span class="fu">### Multinomial regression</span></span>
+<span id="cb111-446"><a href="#cb111-446"></a>This is an approach often followed in epidemiology because the cases that we want to study are rare, so we want to take them all, up to five or six times that number of controls is sufficient. Another example is in advertising, where the click-through ratio for an add is very low, we need usually hundreds or thousands of people that saw the add but did not click on it, for just a few clicks, so following this approach we can reduce our dataset and not include all the control data.</span>
 <span id="cb111-447"><a href="#cb111-447"></a></span>
-<span id="cb111-448"><a href="#cb111-448"></a>So far we have only considered two classes in the response, but we can extend the model to k number of classes: $$</span>
-<span id="cb111-449"><a href="#cb111-449"></a>Pr(Y = k \mid X = x) = \frac{e^{\beta_{k0} + \beta_{k1}x_1 + \cdots + \beta_{kp}x_p}}{1 + \sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1}x_1 + \cdots + \beta_{lp}x_p}}</span>
-<span id="cb111-450"><a href="#cb111-450"></a>$$ {#eq-multinomialLogisticRegression}</span>
-<span id="cb111-451"><a href="#cb111-451"></a></span>
-<span id="cb111-452"><a href="#cb111-452"></a>To do this, we first select a single class to serve as a baseline. The decision to treat one specific class as a baseline is unimportant. The coefficient estimates will differ between two fitted models to different baselines variables due to the differing choice of baseline, but the fitted values (predictions), the log odds between any pair of classes, and the other key model outputs will remain the same.</span>
+<span id="cb111-448"><a href="#cb111-448"></a><span class="fu">### Multinomial regression</span></span>
+<span id="cb111-449"><a href="#cb111-449"></a></span>
+<span id="cb111-450"><a href="#cb111-450"></a>So far we have only considered two classes in the response, but we can extend the model to k number of classes: $$</span>
+<span id="cb111-451"><a href="#cb111-451"></a>Pr(Y = k \mid X = x) = \frac{e^{\beta_{k0} + \beta_{k1}x_1 + \cdots + \beta_{kp}x_p}}{1 + \sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1}x_1 + \cdots + \beta_{lp}x_p}}</span>
+<span id="cb111-452"><a href="#cb111-452"></a>$$ {#eq-multinomialLogisticRegression}</span>
 <span id="cb111-453"><a href="#cb111-453"></a></span>
-<span id="cb111-454"><a href="#cb111-454"></a>Although we can use multinomial regression for k values, it has its limitations: - When the classes are well separated, the parameter estimates for the logistic regression model are surprisingly unstable. - If n is small and the distribution of the predictors X is approximately normal in each of the classes, the linear discriminant model that we will see next is more stable than the logistic regression model.</span>
+<span id="cb111-454"><a href="#cb111-454"></a>To do this, we first select a single class to serve as a baseline. The decision to treat one specific class as a baseline is unimportant. The coefficient estimates will differ between two fitted models to different baselines variables due to the differing choice of baseline, but the fitted values (predictions), the log odds between any pair of classes, and the other key model outputs will remain the same.</span>
 <span id="cb111-455"><a href="#cb111-455"></a></span>
-<span id="cb111-456"><a href="#cb111-456"></a><span class="fu">## Discriminant Analysis. {#DiscriminantAnalysis}</span></span>
+<span id="cb111-456"><a href="#cb111-456"></a>Although we can use multinomial regression for k values, it has its limitations: - When the classes are well separated, the parameter estimates for the logistic regression model are surprisingly unstable. - If n is small and the distribution of the predictors X is approximately normal in each of the classes, the linear discriminant model that we will see next is more stable than the logistic regression model.</span>
 <span id="cb111-457"><a href="#cb111-457"></a></span>
-<span id="cb111-458"><a href="#cb111-458"></a><span class="fu">### Linear Discriminant Analysis(LDA)</span></span>
+<span id="cb111-458"><a href="#cb111-458"></a><span class="fu">## Discriminant Analysis. {#DiscriminantAnalysis}</span></span>
 <span id="cb111-459"><a href="#cb111-459"></a></span>
-<span id="cb111-460"><a href="#cb111-460"></a>Linear discriminant analysis is popular when we have more than two response classes.</span>
+<span id="cb111-460"><a href="#cb111-460"></a><span class="fu">### Linear Discriminant Analysis(LDA)</span></span>
 <span id="cb111-461"><a href="#cb111-461"></a></span>
-<span id="cb111-462"><a href="#cb111-462"></a>We can model de distribution of X in each of the classes separately and then use Bayes theorem to flip things around to get the probability of Y given X. When we use normal distributions for each class, this leads to linear or quadratic discriminant analysis.</span>
+<span id="cb111-462"><a href="#cb111-462"></a>Linear discriminant analysis is popular when we have more than two response classes.</span>
 <span id="cb111-463"><a href="#cb111-463"></a></span>
-<span id="cb111-464"><a href="#cb111-464"></a><span class="fu">#### Bayes theorem for classification.</span></span>
+<span id="cb111-464"><a href="#cb111-464"></a>We can model de distribution of X in each of the classes separately and then use Bayes theorem to flip things around to get the probability of Y given X. When we use normal distributions for each class, this leads to linear or quadratic discriminant analysis.</span>
 <span id="cb111-465"><a href="#cb111-465"></a></span>
-<span id="cb111-466"><a href="#cb111-466"></a>$$</span>
-<span id="cb111-467"><a href="#cb111-467"></a>P(Y=k \mid X=x) = \frac{Pr(X=x \mid Y=k) \times  Pr(Y=k)}{Pr(X=x)}</span>
-<span id="cb111-468"><a href="#cb111-468"></a>$$ {#eq-bayestheorem}</span>
-<span id="cb111-469"><a href="#cb111-469"></a></span>
-<span id="cb111-470"><a href="#cb111-470"></a><span class="ss">-   </span>Posterior Probability \$P(Y=k \mid X=x) \$ this is the probability that the target variable Y is in class k given the observed data X=x</span>
-<span id="cb111-471"><a href="#cb111-471"></a><span class="ss">-   </span>Likelihood: $Pr(X=x \mid Y=k)$ this is the probability of observing the data X=x given that the variable Y is in class k.</span>
-<span id="cb111-472"><a href="#cb111-472"></a><span class="ss">-   </span>Prior Probability: $Pr(Y=k)$ This is the initial probability of class k before observing the data, it&#39;s your prior belief about the class distribution.</span>
-<span id="cb111-473"><a href="#cb111-473"></a><span class="ss">-   </span>Marginal Likelihood: $Pr(X=x)$ this is the overall probability of observing the data X=x across all classes.</span>
-<span id="cb111-474"><a href="#cb111-474"></a></span>
-<span id="cb111-475"><a href="#cb111-475"></a><span class="fu">### k-Nearest Neighbour classification</span></span>
+<span id="cb111-466"><a href="#cb111-466"></a><span class="fu">#### Bayes theorem for classification.</span></span>
+<span id="cb111-467"><a href="#cb111-467"></a></span>
+<span id="cb111-468"><a href="#cb111-468"></a>$$</span>
+<span id="cb111-469"><a href="#cb111-469"></a>P(Y=k \mid X=x) = \frac{Pr(X=x \mid Y=k) \times  Pr(Y=k)}{Pr(X=x)}</span>
+<span id="cb111-470"><a href="#cb111-470"></a>$$ {#eq-bayestheorem}</span>
+<span id="cb111-471"><a href="#cb111-471"></a></span>
+<span id="cb111-472"><a href="#cb111-472"></a><span class="ss">-   </span>Posterior Probability \$P(Y=k \mid X=x) \$ this is the probability that the target variable Y is in class k given the observed data X=x</span>
+<span id="cb111-473"><a href="#cb111-473"></a><span class="ss">-   </span>Likelihood: $Pr(X=x \mid Y=k)$ this is the probability of observing the data X=x given that the variable Y is in class k.</span>
+<span id="cb111-474"><a href="#cb111-474"></a><span class="ss">-   </span>Prior Probability: $Pr(Y=k)$ This is the initial probability of class k before observing the data, it&#39;s your prior belief about the class distribution.</span>
+<span id="cb111-475"><a href="#cb111-475"></a><span class="ss">-   </span>Marginal Likelihood: $Pr(X=x)$ this is the overall probability of observing the data X=x across all classes.</span>
 <span id="cb111-476"><a href="#cb111-476"></a></span>
-<span id="cb111-477"><a href="#cb111-477"></a>In theory we would always like to predict qualitative responses using the Bayes classifier. But for real data, we do not know the conditional distribution of Y given X, and so computing the Bayes classifier is impossible. The k-nearest neighbor classification uses distance to try to classify the predictions: Given a positive integer K and a test observation $x_0$, the KNN classifier first identifies the K points in the training data that are closest to x0, represented by $N_0$. It then estimates the conditional probability for class $j$ as the fraction of points in $N_0$ whose response values equal $j$: $$</span>
-<span id="cb111-478"><a href="#cb111-478"></a>P(Y=j|X=x_0)=\frac{1}{K}\sum_{i\epsilon N_0}I(y_i=j)</span>
-<span id="cb111-479"><a href="#cb111-479"></a>$$ {#eq-probabilityFunctionknearest}</span>
-<span id="cb111-480"><a href="#cb111-480"></a></span>
-<span id="cb111-481"><a href="#cb111-481"></a>The algorithm relies on a distance metric (commonly Euclidean distance) to measure the similarity between instances. The distance between two points $(x_1, y_1)$ and $(x_2, y_2)$ in a 2D space is calculated as: $d=(x_2-x_1)^2+(y_2-y_1)^2$</span>
+<span id="cb111-477"><a href="#cb111-477"></a><span class="fu">### k-Nearest Neighbour classification</span></span>
+<span id="cb111-478"><a href="#cb111-478"></a></span>
+<span id="cb111-479"><a href="#cb111-479"></a>In theory we would always like to predict qualitative responses using the Bayes classifier. But for real data, we do not know the conditional distribution of Y given X, and so computing the Bayes classifier is impossible. The k-nearest neighbor classification uses distance to try to classify the predictions: Given a positive integer K and a test observation $x_0$, the KNN classifier first identifies the K points in the training data that are closest to x0, represented by $N_0$. It then estimates the conditional probability for class $j$ as the fraction of points in $N_0$ whose response values equal $j$: $$</span>
+<span id="cb111-480"><a href="#cb111-480"></a>P(Y=j|X=x_0)=\frac{1}{K}\sum_{i\epsilon N_0}I(y_i=j)</span>
+<span id="cb111-481"><a href="#cb111-481"></a>$$ {#eq-probabilityFunctionknearest}</span>
 <span id="cb111-482"><a href="#cb111-482"></a></span>
-<span id="cb111-483"><a href="#cb111-483"></a>Choosing k: The parameter $k$ represents the number of nearest neighbors to consider when making a prediction. For example, if $k = 3$, the algorithm looks at the 3 closest training instances to the query point.</span>
+<span id="cb111-483"><a href="#cb111-483"></a>The algorithm relies on a distance metric (commonly Euclidean distance) to measure the similarity between instances. The distance between two points $(x_1, y_1)$ and $(x_2, y_2)$ in a 2D space is calculated as: $d=(x_2-x_1)^2+(y_2-y_1)^2$</span>
 <span id="cb111-484"><a href="#cb111-484"></a></span>
-<span id="cb111-485"><a href="#cb111-485"></a>For classification, k-NN uses a majority voting mechanism. The class label that appears most frequently among the $k$ nearest neighbors is assigned to the query point.</span>
+<span id="cb111-485"><a href="#cb111-485"></a>Choosing k: The parameter $k$ represents the number of nearest neighbors to consider when making a prediction. For example, if $k = 3$, the algorithm looks at the 3 closest training instances to the query point.</span>
 <span id="cb111-486"><a href="#cb111-486"></a></span>
-<span id="cb111-487"><a href="#cb111-487"></a>k-NN is a non-parametric algorithm, meaning it makes no assumptions about the underlying data distribution. This makes it flexible but also computationally intensive, especially with large datasets.</span>
+<span id="cb111-487"><a href="#cb111-487"></a>For classification, k-NN uses a majority voting mechanism. The class label that appears most frequently among the $k$ nearest neighbors is assigned to the query point.</span>
 <span id="cb111-488"><a href="#cb111-488"></a></span>
-<span id="cb111-489"><a href="#cb111-489"></a>::: exercise-box</span>
-<span id="cb111-490"><a href="#cb111-490"></a>Example:</span>
-<span id="cb111-491"><a href="#cb111-491"></a></span>
-<span id="cb111-492"><a href="#cb111-492"></a>We will need the library &#39;class&#39; and work with the IRIS dataset. First we divide the dataset into training and test subsets and use the <span class="in">`knn`</span> function to get the predicted values for the test dataset. We can use a confusion_matrix to see the successes and failures of the model guessing the species.</span>
+<span id="cb111-489"><a href="#cb111-489"></a>k-NN is a non-parametric algorithm, meaning it makes no assumptions about the underlying data distribution. This makes it flexible but also computationally intensive, especially with large datasets.</span>
+<span id="cb111-490"><a href="#cb111-490"></a></span>
+<span id="cb111-491"><a href="#cb111-491"></a>::: exercise-box</span>
+<span id="cb111-492"><a href="#cb111-492"></a>Example:</span>
 <span id="cb111-493"><a href="#cb111-493"></a></span>
-<span id="cb111-496"><a href="#cb111-496"></a><span class="in">```{r}</span></span>
-<span id="cb111-497"><a href="#cb111-497"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb111-498"><a href="#cb111-498"></a>sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="fu">nrow</span>(iris), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
-<span id="cb111-499"><a href="#cb111-499"></a>train <span class="ot">&lt;-</span> iris[sample,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> ]</span>
-<span id="cb111-500"><a href="#cb111-500"></a>test <span class="ot">&lt;-</span> iris[<span class="sc">!</span>sample,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> ]</span>
-<span id="cb111-501"><a href="#cb111-501"></a>species<span class="ot">&lt;-</span> iris[sample,<span class="dv">5</span>]</span>
-<span id="cb111-502"><a href="#cb111-502"></a>specietest <span class="ot">&lt;-</span> iris[<span class="sc">!</span>sample,<span class="dv">5</span>]</span>
-<span id="cb111-503"><a href="#cb111-503"></a>knn.pred<span class="ot">&lt;-</span> class<span class="sc">::</span><span class="fu">knn</span>(train,test,species,<span class="at">k=</span><span class="dv">1</span>)</span>
-<span id="cb111-504"><a href="#cb111-504"></a><span class="fu">table</span>(knn.pred,specietest)</span>
-<span id="cb111-505"><a href="#cb111-505"></a><span class="fu">mean</span>(knn.pred <span class="sc">==</span>specietest)</span>
-<span id="cb111-506"><a href="#cb111-506"></a><span class="in">```</span></span>
-<span id="cb111-507"><a href="#cb111-507"></a>:::</span>
-<span id="cb111-508"><a href="#cb111-508"></a></span>
-<span id="cb111-509"><a href="#cb111-509"></a><span class="fu">#### Linear Discriminant Analysis for one variable.</span></span>
+<span id="cb111-494"><a href="#cb111-494"></a>We will need the library &#39;class&#39; and work with the IRIS dataset. First we divide the dataset into training and test subsets and use the <span class="in">`knn`</span> function to get the predicted values for the test dataset. We can use a confusion_matrix to see the successes and failures of the model guessing the species.</span>
+<span id="cb111-495"><a href="#cb111-495"></a></span>
+<span id="cb111-498"><a href="#cb111-498"></a><span class="in">```{r}</span></span>
+<span id="cb111-499"><a href="#cb111-499"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb111-500"><a href="#cb111-500"></a>sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="fu">nrow</span>(iris), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
+<span id="cb111-501"><a href="#cb111-501"></a>train <span class="ot">&lt;-</span> iris[sample,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> ]</span>
+<span id="cb111-502"><a href="#cb111-502"></a>test <span class="ot">&lt;-</span> iris[<span class="sc">!</span>sample,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> ]</span>
+<span id="cb111-503"><a href="#cb111-503"></a>species<span class="ot">&lt;-</span> iris[sample,<span class="dv">5</span>]</span>
+<span id="cb111-504"><a href="#cb111-504"></a>specietest <span class="ot">&lt;-</span> iris[<span class="sc">!</span>sample,<span class="dv">5</span>]</span>
+<span id="cb111-505"><a href="#cb111-505"></a>knn.pred<span class="ot">&lt;-</span> class<span class="sc">::</span><span class="fu">knn</span>(train,test,species,<span class="at">k=</span><span class="dv">1</span>)</span>
+<span id="cb111-506"><a href="#cb111-506"></a><span class="fu">table</span>(knn.pred,specietest)</span>
+<span id="cb111-507"><a href="#cb111-507"></a><span class="fu">mean</span>(knn.pred <span class="sc">==</span>specietest)</span>
+<span id="cb111-508"><a href="#cb111-508"></a><span class="in">```</span></span>
+<span id="cb111-509"><a href="#cb111-509"></a>:::</span>
 <span id="cb111-510"><a href="#cb111-510"></a></span>
-<span id="cb111-511"><a href="#cb111-511"></a>To classify Y at the value X=x we only need to see which of the $p_x(x)$ is the largest. For this we use the *discriminant score*</span>
+<span id="cb111-511"><a href="#cb111-511"></a><span class="fu">#### Linear Discriminant Analysis for one variable.</span></span>
 <span id="cb111-512"><a href="#cb111-512"></a></span>
-<span id="cb111-513"><a href="#cb111-513"></a>$$</span>
-<span id="cb111-514"><a href="#cb111-514"></a>\delta_k(x) = x \frac{\mu_k}{\sigma^{2}} - \frac{\mu_k^2}{2\sigma^{2}}+ \log(\pi_k)</span>
-<span id="cb111-515"><a href="#cb111-515"></a>$$ {#eq-discriminantScore}</span>
-<span id="cb111-516"><a href="#cb111-516"></a></span>
-<span id="cb111-517"><a href="#cb111-517"></a>Where $\pi$ is the prior probability</span>
+<span id="cb111-513"><a href="#cb111-513"></a>To classify Y at the value X=x we only need to see which of the $p_x(x)$ is the largest. For this we use the *discriminant score*</span>
+<span id="cb111-514"><a href="#cb111-514"></a></span>
+<span id="cb111-515"><a href="#cb111-515"></a>$$</span>
+<span id="cb111-516"><a href="#cb111-516"></a>\delta_k(x) = x \frac{\mu_k}{\sigma^{2}} - \frac{\mu_k^2}{2\sigma^{2}}+ \log(\pi_k)</span>
+<span id="cb111-517"><a href="#cb111-517"></a>$$ {#eq-discriminantScore}</span>
 <span id="cb111-518"><a href="#cb111-518"></a></span>
-<span id="cb111-519"><a href="#cb111-519"></a>Note that $\delta_k(x)$ is a linear function of x</span>
+<span id="cb111-519"><a href="#cb111-519"></a>Where $\pi$ is the prior probability</span>
 <span id="cb111-520"><a href="#cb111-520"></a></span>
-<span id="cb111-521"><a href="#cb111-521"></a>If there are k=2 classes and the prior is the same for both (0.5) then the formula simplifies to: $$</span>
-<span id="cb111-522"><a href="#cb111-522"></a>x = \frac{\mu_1+\mu_2}{2}</span>
-<span id="cb111-523"><a href="#cb111-523"></a>$$ Below we have a visualization for two classes of Y and its probabilities given x when the prior is the same for both classes. The dashed line shows the decision boundary, anything on the left of the line will be classified as class &#39;blue&#39; and anything on the right as class &#39;red&#39;</span>
-<span id="cb111-524"><a href="#cb111-524"></a></span>
-<span id="cb111-525"><a href="#cb111-525"></a><span class="in">```{r, echo=FALSE}</span></span>
-<span id="cb111-526"><a href="#cb111-526"></a><span class="co"># Set seed for reproducibility</span></span>
-<span id="cb111-527"><a href="#cb111-527"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb111-528"><a href="#cb111-528"></a></span>
-<span id="cb111-529"><a href="#cb111-529"></a><span class="co"># Simulate data for normal density functions</span></span>
-<span id="cb111-530"><a href="#cb111-530"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">6</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
-<span id="cb111-531"><a href="#cb111-531"></a>mu1 <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb111-532"><a href="#cb111-532"></a>mu2 <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb111-533"><a href="#cb111-533"></a>y1 <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x, <span class="at">mean =</span> mu1, <span class="at">sd =</span> <span class="dv">1</span>)</span>
-<span id="cb111-534"><a href="#cb111-534"></a>y2 <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x, <span class="at">mean =</span> mu2, <span class="at">sd =</span> <span class="dv">1</span>)</span>
-<span id="cb111-535"><a href="#cb111-535"></a></span>
-<span id="cb111-536"><a href="#cb111-536"></a>dbound <span class="ot">=</span> (mu2<span class="sc">-</span>mu1)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb111-521"><a href="#cb111-521"></a>Note that $\delta_k(x)$ is a linear function of x</span>
+<span id="cb111-522"><a href="#cb111-522"></a></span>
+<span id="cb111-523"><a href="#cb111-523"></a>If there are k=2 classes and the prior is the same for both (0.5) then the formula simplifies to: $$</span>
+<span id="cb111-524"><a href="#cb111-524"></a>x = \frac{\mu_1+\mu_2}{2}</span>
+<span id="cb111-525"><a href="#cb111-525"></a>$$ Below we have a visualization for two classes of Y and its probabilities given x when the prior is the same for both classes. The dashed line shows the decision boundary, anything on the left of the line will be classified as class &#39;blue&#39; and anything on the right as class &#39;red&#39;</span>
+<span id="cb111-526"><a href="#cb111-526"></a></span>
+<span id="cb111-527"><a href="#cb111-527"></a><span class="in">```{r, echo=FALSE}</span></span>
+<span id="cb111-528"><a href="#cb111-528"></a><span class="co"># Set seed for reproducibility</span></span>
+<span id="cb111-529"><a href="#cb111-529"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb111-530"><a href="#cb111-530"></a></span>
+<span id="cb111-531"><a href="#cb111-531"></a><span class="co"># Simulate data for normal density functions</span></span>
+<span id="cb111-532"><a href="#cb111-532"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">6</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
+<span id="cb111-533"><a href="#cb111-533"></a>mu1 <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb111-534"><a href="#cb111-534"></a>mu2 <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb111-535"><a href="#cb111-535"></a>y1 <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x, <span class="at">mean =</span> mu1, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb111-536"><a href="#cb111-536"></a>y2 <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x, <span class="at">mean =</span> mu2, <span class="at">sd =</span> <span class="dv">1</span>)</span>
 <span id="cb111-537"><a href="#cb111-537"></a></span>
-<span id="cb111-538"><a href="#cb111-538"></a><span class="co"># Plot normal density functions</span></span>
-<span id="cb111-539"><a href="#cb111-539"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">data.frame</span>(x, y1, y2), <span class="fu">aes</span>(x)) <span class="sc">+</span></span>
-<span id="cb111-540"><a href="#cb111-540"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> y1), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb111-541"><a href="#cb111-541"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> y2), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
-<span id="cb111-542"><a href="#cb111-542"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> dbound, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span>  <span class="co"># Bayes decision boundary</span></span>
-<span id="cb111-543"><a href="#cb111-543"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Normal Density Functions&quot;</span>,</span>
-<span id="cb111-544"><a href="#cb111-544"></a>       <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>,</span>
-<span id="cb111-545"><a href="#cb111-545"></a>       <span class="at">x =</span> <span class="st">&quot;X&quot;</span>) <span class="sc">+</span></span>
-<span id="cb111-546"><a href="#cb111-546"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb111-547"><a href="#cb111-547"></a><span class="in">```</span></span>
-<span id="cb111-548"><a href="#cb111-548"></a></span>
-<span id="cb111-549"><a href="#cb111-549"></a>When the priors are different, we have take them into consideration and compare $\pi_k f_x(x)$</span>
+<span id="cb111-538"><a href="#cb111-538"></a>dbound <span class="ot">=</span> (mu2<span class="sc">-</span>mu1)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb111-539"><a href="#cb111-539"></a></span>
+<span id="cb111-540"><a href="#cb111-540"></a><span class="co"># Plot normal density functions</span></span>
+<span id="cb111-541"><a href="#cb111-541"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">data.frame</span>(x, y1, y2), <span class="fu">aes</span>(x)) <span class="sc">+</span></span>
+<span id="cb111-542"><a href="#cb111-542"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> y1), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb111-543"><a href="#cb111-543"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> y2), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb111-544"><a href="#cb111-544"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> dbound, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span>  <span class="co"># Bayes decision boundary</span></span>
+<span id="cb111-545"><a href="#cb111-545"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Normal Density Functions&quot;</span>,</span>
+<span id="cb111-546"><a href="#cb111-546"></a>       <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>,</span>
+<span id="cb111-547"><a href="#cb111-547"></a>       <span class="at">x =</span> <span class="st">&quot;X&quot;</span>) <span class="sc">+</span></span>
+<span id="cb111-548"><a href="#cb111-548"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb111-549"><a href="#cb111-549"></a><span class="in">```</span></span>
 <span id="cb111-550"><a href="#cb111-550"></a></span>
-<span id="cb111-551"><a href="#cb111-551"></a>We usually don&#39;t know the prior, so we have to estimate it looking at the data. The estimated prior in each class will be the total number of elements in that class divided by the total number of cases $$</span>
-<span id="cb111-552"><a href="#cb111-552"></a>\hat{\pi_k}=\frac{n_k}{n}</span>
-<span id="cb111-553"><a href="#cb111-553"></a>$$</span>
-<span id="cb111-554"><a href="#cb111-554"></a></span>
-<span id="cb111-555"><a href="#cb111-555"></a>The mean of each class is calculated normally. The estimated variance is a bit more complex because it is not using the variance of each class but the *pooled variance estimate*</span>
+<span id="cb111-551"><a href="#cb111-551"></a>When the priors are different, we have take them into consideration and compare $\pi_k f_x(x)$</span>
+<span id="cb111-552"><a href="#cb111-552"></a></span>
+<span id="cb111-553"><a href="#cb111-553"></a>We usually don&#39;t know the prior, so we have to estimate it looking at the data. The estimated prior in each class will be the total number of elements in that class divided by the total number of cases $$</span>
+<span id="cb111-554"><a href="#cb111-554"></a>\hat{\pi_k}=\frac{n_k}{n}</span>
+<span id="cb111-555"><a href="#cb111-555"></a>$$</span>
 <span id="cb111-556"><a href="#cb111-556"></a></span>
-<span id="cb111-557"><a href="#cb111-557"></a>$$</span>
-<span id="cb111-558"><a href="#cb111-558"></a>\hat{\sigma^2}= \frac{1}{n-K} \sum^K_{k=1} \sum_{y_i=k}(x_1-\hat{\mu_k})^2= \sum^K_{k=1}\frac{n_k-1}{n-K}\times\hat{\sigma^2_k}</span>
-<span id="cb111-559"><a href="#cb111-559"></a>$$ {#eq-pooledVarianceEstimate}</span>
-<span id="cb111-560"><a href="#cb111-560"></a></span>
-<span id="cb111-561"><a href="#cb111-561"></a>Where $\hat{\sigma^2_k}$ is the usual formula for the estimated variance in the kth class. $$</span>
-<span id="cb111-562"><a href="#cb111-562"></a>\frac{1}{n_k-1}\sum^N_{i:y_i=k}(x_i-\hat{\mu_k})^ 2</span>
-<span id="cb111-563"><a href="#cb111-563"></a>$$ so basically what we are doing in the pooled variance is to calculate the variance for each of the classes and then do a weighted average of them.</span>
-<span id="cb111-564"><a href="#cb111-564"></a></span>
-<span id="cb111-565"><a href="#cb111-565"></a><span class="fu">### Multivariate linear discrimination.</span></span>
+<span id="cb111-557"><a href="#cb111-557"></a>The mean of each class is calculated normally. The estimated variance is a bit more complex because it is not using the variance of each class but the *pooled variance estimate*</span>
+<span id="cb111-558"><a href="#cb111-558"></a></span>
+<span id="cb111-559"><a href="#cb111-559"></a>$$</span>
+<span id="cb111-560"><a href="#cb111-560"></a>\hat{\sigma^2}= \frac{1}{n-K} \sum^K_{k=1} \sum_{y_i=k}(x_1-\hat{\mu_k})^2= \sum^K_{k=1}\frac{n_k-1}{n-K}\times\hat{\sigma^2_k}</span>
+<span id="cb111-561"><a href="#cb111-561"></a>$$ {#eq-pooledVarianceEstimate}</span>
+<span id="cb111-562"><a href="#cb111-562"></a></span>
+<span id="cb111-563"><a href="#cb111-563"></a>Where $\hat{\sigma^2_k}$ is the usual formula for the estimated variance in the kth class. $$</span>
+<span id="cb111-564"><a href="#cb111-564"></a>\frac{1}{n_k-1}\sum^N_{i:y_i=k}(x_i-\hat{\mu_k})^ 2</span>
+<span id="cb111-565"><a href="#cb111-565"></a>$$ so basically what we are doing in the pooled variance is to calculate the variance for each of the classes and then do a weighted average of them.</span>
 <span id="cb111-566"><a href="#cb111-566"></a></span>
-<span id="cb111-567"><a href="#cb111-567"></a>The discriminant score function for multivariate takes this quite complicated form: $$</span>
-<span id="cb111-568"><a href="#cb111-568"></a>\delta_k(x) = x^T\Sigma^{-1} \mu_k -\frac{1}{2}\mu_k^T\Sigma^{-1}\mu_k+ \log(\pi_k)</span>
-<span id="cb111-569"><a href="#cb111-569"></a>$$ {#eq-discriminantScoreMulti}</span>
-<span id="cb111-570"><a href="#cb111-570"></a></span>
-<span id="cb111-571"><a href="#cb111-571"></a>Once we have the estimates for the different parameters $\hat{\delta}_k(x)$ we can turn these into estimates for class probabilities: $$</span>
-<span id="cb111-572"><a href="#cb111-572"></a>\hat{P_{r}}(Y = k | X = x) = \frac{e^{\hat{\delta_k} (x)}}{\sum_{l=1}^{K} e^{\hat{\delta_l}(x)}}</span>
-<span id="cb111-573"><a href="#cb111-573"></a>$$ {#eq-conditionalProbabilityFormula1}</span>
-<span id="cb111-574"><a href="#cb111-574"></a></span>
-<span id="cb111-575"><a href="#cb111-575"></a>With these estimates we will classify Y=k to the largest probability for the value of x we are interested in.</span>
+<span id="cb111-567"><a href="#cb111-567"></a><span class="fu">### Multivariate linear discrimination.</span></span>
+<span id="cb111-568"><a href="#cb111-568"></a></span>
+<span id="cb111-569"><a href="#cb111-569"></a>The discriminant score function for multivariate takes this quite complicated form: $$</span>
+<span id="cb111-570"><a href="#cb111-570"></a>\delta_k(x) = x^T\Sigma^{-1} \mu_k -\frac{1}{2}\mu_k^T\Sigma^{-1}\mu_k+ \log(\pi_k)</span>
+<span id="cb111-571"><a href="#cb111-571"></a>$$ {#eq-discriminantScoreMulti}</span>
+<span id="cb111-572"><a href="#cb111-572"></a></span>
+<span id="cb111-573"><a href="#cb111-573"></a>Once we have the estimates for the different parameters $\hat{\delta}_k(x)$ we can turn these into estimates for class probabilities: $$</span>
+<span id="cb111-574"><a href="#cb111-574"></a>\hat{P_{r}}(Y = k | X = x) = \frac{e^{\hat{\delta_k} (x)}}{\sum_{l=1}^{K} e^{\hat{\delta_l}(x)}}</span>
+<span id="cb111-575"><a href="#cb111-575"></a>$$ {#eq-conditionalProbabilityFormula1}</span>
 <span id="cb111-576"><a href="#cb111-576"></a></span>
-<span id="cb111-577"><a href="#cb111-577"></a>We can run a classification over the Default dataset that we already used in <span class="co">[</span><span class="ot">multiple logistic regression</span><span class="co">](@MultipleLogisticRegression)</span>. To do so we use the function LDA from library MASS, but first we are going to check the levels of the response variable to know which value the reference (the first one):</span>
+<span id="cb111-577"><a href="#cb111-577"></a>With these estimates we will classify Y=k to the largest probability for the value of x we are interested in.</span>
 <span id="cb111-578"><a href="#cb111-578"></a></span>
-<span id="cb111-581"><a href="#cb111-581"></a><span class="in">```{r}</span></span>
-<span id="cb111-582"><a href="#cb111-582"></a><span class="fu">levels</span>(Default<span class="sc">$</span>default)</span>
-<span id="cb111-583"><a href="#cb111-583"></a><span class="in">```</span></span>
-<span id="cb111-584"><a href="#cb111-584"></a></span>
-<span id="cb111-585"><a href="#cb111-585"></a>So our reference level is default= &#39;No&#39;</span>
+<span id="cb111-579"><a href="#cb111-579"></a>We can run a classification over the Default dataset that we already used in <span class="co">[</span><span class="ot">multiple logistic regression</span><span class="co">](@MultipleLogisticRegression)</span>. To do so we use the function LDA from library MASS, but first we are going to check the levels of the response variable to know which value the reference (the first one):</span>
+<span id="cb111-580"><a href="#cb111-580"></a></span>
+<span id="cb111-583"><a href="#cb111-583"></a><span class="in">```{r}</span></span>
+<span id="cb111-584"><a href="#cb111-584"></a><span class="fu">levels</span>(Default<span class="sc">$</span>default)</span>
+<span id="cb111-585"><a href="#cb111-585"></a><span class="in">```</span></span>
 <span id="cb111-586"><a href="#cb111-586"></a></span>
-<span id="cb111-589"><a href="#cb111-589"></a><span class="in">```{r}</span></span>
-<span id="cb111-590"><a href="#cb111-590"></a>LDA.fit <span class="ot">=</span> <span class="fu">lda</span>( default <span class="sc">~</span> income<span class="sc">+</span>balance<span class="sc">+</span>student, <span class="at">data=</span>Default, )</span>
-<span id="cb111-591"><a href="#cb111-591"></a>LDA.fit</span>
-<span id="cb111-592"><a href="#cb111-592"></a>LDA.fit.p <span class="ot">=</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata=</span>Default[,<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])</span>
-<span id="cb111-593"><a href="#cb111-593"></a>LDA.fit.Classes <span class="ot">=</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata=</span>Default[,<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])<span class="sc">$</span>class</span>
-<span id="cb111-594"><a href="#cb111-594"></a></span>
-<span id="cb111-595"><a href="#cb111-595"></a><span class="in">```</span></span>
+<span id="cb111-587"><a href="#cb111-587"></a>So our reference level is default= &#39;No&#39;</span>
+<span id="cb111-588"><a href="#cb111-588"></a></span>
+<span id="cb111-591"><a href="#cb111-591"></a><span class="in">```{r}</span></span>
+<span id="cb111-592"><a href="#cb111-592"></a>LDA.fit <span class="ot">=</span> <span class="fu">lda</span>( default <span class="sc">~</span> income<span class="sc">+</span>balance<span class="sc">+</span>student, <span class="at">data=</span>Default, )</span>
+<span id="cb111-593"><a href="#cb111-593"></a>LDA.fit</span>
+<span id="cb111-594"><a href="#cb111-594"></a>LDA.fit.p <span class="ot">=</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata=</span>Default[,<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])</span>
+<span id="cb111-595"><a href="#cb111-595"></a>LDA.fit.Classes <span class="ot">=</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata=</span>Default[,<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])<span class="sc">$</span>class</span>
 <span id="cb111-596"><a href="#cb111-596"></a></span>
-<span id="cb111-597"><a href="#cb111-597"></a>**How to interpret the results of the LDA**</span>
+<span id="cb111-597"><a href="#cb111-597"></a><span class="in">```</span></span>
 <span id="cb111-598"><a href="#cb111-598"></a></span>
-<span id="cb111-599"><a href="#cb111-599"></a><span class="ss">-   </span>*Prior Probabilities of Groups*: These are the probabilities assigned to each class (No and Yes) before observing any data, based on the proportion of each class in the training data.</span>
+<span id="cb111-599"><a href="#cb111-599"></a>**How to interpret the results of the LDA**</span>
 <span id="cb111-600"><a href="#cb111-600"></a></span>
-<span id="cb111-601"><a href="#cb111-601"></a><span class="ss">    -   </span>No: 0.9667 (96.67% of the data is in the &quot;No&quot; category)</span>
-<span id="cb111-602"><a href="#cb111-602"></a><span class="ss">    -   </span>Yes: 0.0333 (3.33% of the data is in the &quot;Yes&quot; category)</span>
-<span id="cb111-603"><a href="#cb111-603"></a></span>
-<span id="cb111-604"><a href="#cb111-604"></a><span class="ss">-   </span>*Group Means*: These are the mean values of each predictor variable for each class.</span>
+<span id="cb111-601"><a href="#cb111-601"></a><span class="ss">-   </span>*Prior Probabilities of Groups*: These are the probabilities assigned to each class (No and Yes) before observing any data, based on the proportion of each class in the training data.</span>
+<span id="cb111-602"><a href="#cb111-602"></a></span>
+<span id="cb111-603"><a href="#cb111-603"></a><span class="ss">    -   </span>No: 0.9667 (96.67% of the data is in the &quot;No&quot; category)</span>
+<span id="cb111-604"><a href="#cb111-604"></a><span class="ss">    -   </span>Yes: 0.0333 (3.33% of the data is in the &quot;Yes&quot; category)</span>
 <span id="cb111-605"><a href="#cb111-605"></a></span>
-<span id="cb111-606"><a href="#cb111-606"></a><span class="ss">-   </span>*Coefficients of Linear Discriminants*: These coefficients are used to form the linear discriminant functions (LD1 in this case). The linear discriminant function combines the predictor variables to maximize the separation between the classes. Larger absolute values of coefficients indicate more significant contributions to the discriminant function.</span>
+<span id="cb111-606"><a href="#cb111-606"></a><span class="ss">-   </span>*Group Means*: These are the mean values of each predictor variable for each class.</span>
 <span id="cb111-607"><a href="#cb111-607"></a></span>
-<span id="cb111-608"><a href="#cb111-608"></a>The negative coefficient of the Student(Yes) indicates that being a Student reduces the possibility of defaulting = &#39;yes&#39;.</span>
+<span id="cb111-608"><a href="#cb111-608"></a><span class="ss">-   </span>*Coefficients of Linear Discriminants*: These coefficients are used to form the linear discriminant functions (LD1 in this case). The linear discriminant function combines the predictor variables to maximize the separation between the classes. Larger absolute values of coefficients indicate more significant contributions to the discriminant function.</span>
 <span id="cb111-609"><a href="#cb111-609"></a></span>
-<span id="cb111-610"><a href="#cb111-610"></a>In a two-class LDA model with reference level A, a positive coefficient for a predictor indicates that an increase in that predictor increases the discriminant score. A higher discriminant score makes it more likely for the observation to be classified as B rather than A.</span>
+<span id="cb111-610"><a href="#cb111-610"></a>The negative coefficient of the Student(Yes) indicates that being a Student reduces the possibility of defaulting = &#39;yes&#39;.</span>
 <span id="cb111-611"><a href="#cb111-611"></a></span>
-<span id="cb111-612"><a href="#cb111-612"></a>Conversely, a negative coefficient indicates that an increase in the predictor decreases the discriminant score, making it more likely for the observation to be classified as A.</span>
+<span id="cb111-612"><a href="#cb111-612"></a>In a two-class LDA model with reference level A, a positive coefficient for a predictor indicates that an increase in that predictor increases the discriminant score. A higher discriminant score makes it more likely for the observation to be classified as B rather than A.</span>
 <span id="cb111-613"><a href="#cb111-613"></a></span>
-<span id="cb111-614"><a href="#cb111-614"></a>LD1 is the *Linear Disciminative Function* LDFs are essentially the axes that best separate the different classes in your data. They are linear combinations of your original variables. (\@#eq-discriminantScoreMulti)</span>
+<span id="cb111-614"><a href="#cb111-614"></a>Conversely, a negative coefficient indicates that an increase in the predictor decreases the discriminant score, making it more likely for the observation to be classified as A.</span>
 <span id="cb111-615"><a href="#cb111-615"></a></span>
-<span id="cb111-616"><a href="#cb111-616"></a>In this case we only have a LDF (LD1), but with more classess we will get more. The number of LDFs is always one less than the number of classes.</span>
+<span id="cb111-616"><a href="#cb111-616"></a>LD1 is the *Linear Disciminative Function* LDFs are essentially the axes that best separate the different classes in your data. They are linear combinations of your original variables. (\@#eq-discriminantScoreMulti)</span>
 <span id="cb111-617"><a href="#cb111-617"></a></span>
-<span id="cb111-618"><a href="#cb111-618"></a>**Histogram of Linear Discriminants**: We can also use plots to see the overlapping of our groups: This plot shows a histogram of the discriminant function values for each class. The histograms should ideally show distinct peaks for each class, indicating good separation.</span>
+<span id="cb111-618"><a href="#cb111-618"></a>In this case we only have a LDF (LD1), but with more classess we will get more. The number of LDFs is always one less than the number of classes.</span>
 <span id="cb111-619"><a href="#cb111-619"></a></span>
-<span id="cb111-620"><a href="#cb111-620"></a>Overlapping histograms suggest some misclassification, as the discriminant function values are not clearly separated.</span>
+<span id="cb111-620"><a href="#cb111-620"></a>**Histogram of Linear Discriminants**: We can also use plots to see the overlapping of our groups: This plot shows a histogram of the discriminant function values for each class. The histograms should ideally show distinct peaks for each class, indicating good separation.</span>
 <span id="cb111-621"><a href="#cb111-621"></a></span>
-<span id="cb111-622"><a href="#cb111-622"></a><span class="in">```{r, fig.align=&#39;center&#39;}</span></span>
-<span id="cb111-623"><a href="#cb111-623"></a><span class="fu">plot</span>(LDA.fit)</span>
-<span id="cb111-624"><a href="#cb111-624"></a><span class="in">```</span></span>
-<span id="cb111-625"><a href="#cb111-625"></a></span>
-<span id="cb111-626"><a href="#cb111-626"></a>create a confusion matrix:</span>
+<span id="cb111-622"><a href="#cb111-622"></a>Overlapping histograms suggest some misclassification, as the discriminant function values are not clearly separated.</span>
+<span id="cb111-623"><a href="#cb111-623"></a></span>
+<span id="cb111-624"><a href="#cb111-624"></a><span class="in">```{r, fig.align=&#39;center&#39;}</span></span>
+<span id="cb111-625"><a href="#cb111-625"></a><span class="fu">plot</span>(LDA.fit)</span>
+<span id="cb111-626"><a href="#cb111-626"></a><span class="in">```</span></span>
 <span id="cb111-627"><a href="#cb111-627"></a></span>
-<span id="cb111-630"><a href="#cb111-630"></a><span class="in">```{r}</span></span>
-<span id="cb111-631"><a href="#cb111-631"></a><span class="fu">table</span>(Default<span class="sc">$</span>default,LDA.fit.Classes)</span>
-<span id="cb111-632"><a href="#cb111-632"></a><span class="in">```</span></span>
-<span id="cb111-633"><a href="#cb111-633"></a></span>
-<span id="cb111-634"><a href="#cb111-634"></a>And as before, we can use the confusion matrix to calculate our misclassification rate:</span>
+<span id="cb111-628"><a href="#cb111-628"></a>create a confusion matrix:</span>
+<span id="cb111-629"><a href="#cb111-629"></a></span>
+<span id="cb111-632"><a href="#cb111-632"></a><span class="in">```{r}</span></span>
+<span id="cb111-633"><a href="#cb111-633"></a><span class="fu">table</span>(Default<span class="sc">$</span>default,LDA.fit.Classes)</span>
+<span id="cb111-634"><a href="#cb111-634"></a><span class="in">```</span></span>
 <span id="cb111-635"><a href="#cb111-635"></a></span>
-<span id="cb111-638"><a href="#cb111-638"></a><span class="in">```{r}</span></span>
-<span id="cb111-639"><a href="#cb111-639"></a><span class="fu">cat</span>(<span class="st">&#39;misclassification rate: &#39;</span>, (<span class="dv">254</span><span class="sc">+</span><span class="dv">22</span>)<span class="sc">/</span><span class="dv">10000</span>)</span>
-<span id="cb111-640"><a href="#cb111-640"></a><span class="in">```</span></span>
-<span id="cb111-641"><a href="#cb111-641"></a></span>
-<span id="cb111-642"><a href="#cb111-642"></a>For No&#39;s we have missclassified 22 out of 9667 = 0.2% this is our *False positive rate* For Yes&#39;s we have missclassified 254 out of 333 = 76.3% this is our *False negative rate*</span>
+<span id="cb111-636"><a href="#cb111-636"></a>And as before, we can use the confusion matrix to calculate our misclassification rate:</span>
+<span id="cb111-637"><a href="#cb111-637"></a></span>
+<span id="cb111-640"><a href="#cb111-640"></a><span class="in">```{r}</span></span>
+<span id="cb111-641"><a href="#cb111-641"></a><span class="fu">cat</span>(<span class="st">&#39;misclassification rate: &#39;</span>, (<span class="dv">254</span><span class="sc">+</span><span class="dv">22</span>)<span class="sc">/</span><span class="dv">10000</span>)</span>
+<span id="cb111-642"><a href="#cb111-642"></a><span class="in">```</span></span>
 <span id="cb111-643"><a href="#cb111-643"></a></span>
-<span id="cb111-644"><a href="#cb111-644"></a>We can also use the function <span class="in">`confusionMatrix()`</span> from the package <span class="in">`caret`</span> to create and analyse the results. It takes two parameters the first one is the predicted values and the second one the real values (reference)</span>
+<span id="cb111-644"><a href="#cb111-644"></a>For No&#39;s we have missclassified 22 out of 9667 = 0.2% this is our *False positive rate* For Yes&#39;s we have missclassified 254 out of 333 = 76.3% this is our *False negative rate*</span>
 <span id="cb111-645"><a href="#cb111-645"></a></span>
-<span id="cb111-648"><a href="#cb111-648"></a><span class="in">```{r}</span></span>
-<span id="cb111-649"><a href="#cb111-649"></a><span class="co"># Create confusion matrix</span></span>
-<span id="cb111-650"><a href="#cb111-650"></a>confusion_matrix <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="at">data=</span><span class="fu">factor</span>(LDA.fit.Classes), <span class="at">reference=</span>Default<span class="sc">$</span>default)</span>
-<span id="cb111-651"><a href="#cb111-651"></a></span>
-<span id="cb111-652"><a href="#cb111-652"></a><span class="fu">print</span>(confusion_matrix)</span>
-<span id="cb111-653"><a href="#cb111-653"></a><span class="in">```</span></span>
-<span id="cb111-654"><a href="#cb111-654"></a></span>
-<span id="cb111-655"><a href="#cb111-655"></a>**Interpreting the results of the confusion matrix** <span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> id</span><span class="op">=</span><span class="st">&quot;confusion-matrix&quot;</span><span class="dt">&gt;&lt;/</span><span class="kw">a</span><span class="dt">&gt;</span></span>
+<span id="cb111-646"><a href="#cb111-646"></a>We can also use the function <span class="in">`confusionMatrix()`</span> from the package <span class="in">`caret`</span> to create and analyse the results. It takes two parameters the first one is the predicted values and the second one the real values (reference)</span>
+<span id="cb111-647"><a href="#cb111-647"></a></span>
+<span id="cb111-650"><a href="#cb111-650"></a><span class="in">```{r}</span></span>
+<span id="cb111-651"><a href="#cb111-651"></a><span class="co"># Create confusion matrix</span></span>
+<span id="cb111-652"><a href="#cb111-652"></a>confusion_matrix <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="at">data=</span><span class="fu">factor</span>(LDA.fit.Classes), <span class="at">reference=</span>Default<span class="sc">$</span>default)</span>
+<span id="cb111-653"><a href="#cb111-653"></a></span>
+<span id="cb111-654"><a href="#cb111-654"></a><span class="fu">print</span>(confusion_matrix)</span>
+<span id="cb111-655"><a href="#cb111-655"></a><span class="in">```</span></span>
 <span id="cb111-656"><a href="#cb111-656"></a></span>
-<span id="cb111-657"><a href="#cb111-657"></a><span class="ss">-   </span>*Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.</span>
+<span id="cb111-657"><a href="#cb111-657"></a>**Interpreting the results of the confusion matrix** <span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> id</span><span class="op">=</span><span class="st">&quot;confusion-matrix&quot;</span><span class="dt">&gt;&lt;/</span><span class="kw">a</span><span class="dt">&gt;</span></span>
 <span id="cb111-658"><a href="#cb111-658"></a></span>
-<span id="cb111-659"><a href="#cb111-659"></a><span class="ss">-   </span>*95% CI (Confidence Interval)*: It provides a range within which the true accuracy lies with 95% confidence.</span>
+<span id="cb111-659"><a href="#cb111-659"></a><span class="ss">-   </span>*Accuracy*: It measures the overall correctness of the model. 97.24% of the predictions are correct.</span>
 <span id="cb111-660"><a href="#cb111-660"></a></span>
-<span id="cb111-661"><a href="#cb111-661"></a><span class="ss">-   </span>*No Information Rate (NIR)*:It represents the accuracy if the model always predicted the majority class (No).</span>
+<span id="cb111-661"><a href="#cb111-661"></a><span class="ss">-   </span>*95% CI (Confidence Interval)*: It provides a range within which the true accuracy lies with 95% confidence.</span>
 <span id="cb111-662"><a href="#cb111-662"></a></span>
-<span id="cb111-663"><a href="#cb111-663"></a><span class="ss">-   </span>$p$-value <span class="sc">\[</span>Acc <span class="sc">\&gt;</span> NIR<span class="sc">\]</span>: This $p$-value tests if the accuracy is significantly better than the NIR.</span>
+<span id="cb111-663"><a href="#cb111-663"></a><span class="ss">-   </span>*No Information Rate (NIR)*:It represents the accuracy if the model always predicted the majority class (No).</span>
 <span id="cb111-664"><a href="#cb111-664"></a></span>
-<span id="cb111-665"><a href="#cb111-665"></a><span class="ss">-   </span>*Kappa*: It measures the agreement between the observed and predicted classifications, adjusted for chance. Values close to 1 indicate better agreement.</span>
+<span id="cb111-665"><a href="#cb111-665"></a><span class="ss">-   </span>$p$-value <span class="sc">\[</span>Acc <span class="sc">\&gt;</span> NIR<span class="sc">\]</span>: This $p$-value tests if the accuracy is significantly better than the NIR.</span>
 <span id="cb111-666"><a href="#cb111-666"></a></span>
-<span id="cb111-667"><a href="#cb111-667"></a><span class="ss">-   </span>*Mcnemar&#39;s Test* $p$-value: Tests if there is a significant difference between the number of false positives and false negatives.</span>
+<span id="cb111-667"><a href="#cb111-667"></a><span class="ss">-   </span>*Kappa*: It measures the agreement between the observed and predicted classifications, adjusted for chance. Values close to 1 indicate better agreement.</span>
 <span id="cb111-668"><a href="#cb111-668"></a></span>
-<span id="cb111-669"><a href="#cb111-669"></a>Class-Specific Metrics:</span>
+<span id="cb111-669"><a href="#cb111-669"></a><span class="ss">-   </span>*Mcnemar&#39;s Test* $p$-value: Tests if there is a significant difference between the number of false positives and false negatives.</span>
 <span id="cb111-670"><a href="#cb111-670"></a></span>
-<span id="cb111-671"><a href="#cb111-671"></a><span class="ss">-   </span>*Sensitivity (Recall)*:Proportion of actual positives correctly identified.</span>
+<span id="cb111-671"><a href="#cb111-671"></a>Class-Specific Metrics:</span>
 <span id="cb111-672"><a href="#cb111-672"></a></span>
-<span id="cb111-673"><a href="#cb111-673"></a><span class="ss">-   </span>*Specificity*: Proportion of actual negatives correctly identified.</span>
+<span id="cb111-673"><a href="#cb111-673"></a><span class="ss">-   </span>*Sensitivity (Recall)*:Proportion of actual positives correctly identified.</span>
 <span id="cb111-674"><a href="#cb111-674"></a></span>
-<span id="cb111-675"><a href="#cb111-675"></a><span class="ss">-   </span>*Positive Predictive Value (Precision)*: Proportion of positive results that are true positives.</span>
+<span id="cb111-675"><a href="#cb111-675"></a><span class="ss">-   </span>*Specificity*: Proportion of actual negatives correctly identified.</span>
 <span id="cb111-676"><a href="#cb111-676"></a></span>
-<span id="cb111-677"><a href="#cb111-677"></a><span class="ss">-   </span>*Negative Predictive Value*: Proportion of negative results that are true negatives.</span>
+<span id="cb111-677"><a href="#cb111-677"></a><span class="ss">-   </span>*Positive Predictive Value (Precision)*: Proportion of positive results that are true positives.</span>
 <span id="cb111-678"><a href="#cb111-678"></a></span>
-<span id="cb111-679"><a href="#cb111-679"></a><span class="ss">-   </span>*Prevalence*: Proportion of the actual positive cases in the dataset.</span>
+<span id="cb111-679"><a href="#cb111-679"></a><span class="ss">-   </span>*Negative Predictive Value*: Proportion of negative results that are true negatives.</span>
 <span id="cb111-680"><a href="#cb111-680"></a></span>
-<span id="cb111-681"><a href="#cb111-681"></a><span class="ss">-   </span>*Detection Rate*: Proportion of actual positives correctly identified by the model.</span>
+<span id="cb111-681"><a href="#cb111-681"></a><span class="ss">-   </span>*Prevalence*: Proportion of the actual positive cases in the dataset.</span>
 <span id="cb111-682"><a href="#cb111-682"></a></span>
-<span id="cb111-683"><a href="#cb111-683"></a><span class="ss">-   </span>*Detection Prevalence*:Proportion of the predicted positives out of the total predictions.</span>
+<span id="cb111-683"><a href="#cb111-683"></a><span class="ss">-   </span>*Detection Rate*: Proportion of actual positives correctly identified by the model.</span>
 <span id="cb111-684"><a href="#cb111-684"></a></span>
-<span id="cb111-685"><a href="#cb111-685"></a><span class="ss">-   </span>*Balanced Accuracy*: It&#39;s the average of sensitivity and specificity, providing a balanced measure for imbalanced datasets.</span>
+<span id="cb111-685"><a href="#cb111-685"></a><span class="ss">-   </span>*Detection Prevalence*:Proportion of the predicted positives out of the total predictions.</span>
 <span id="cb111-686"><a href="#cb111-686"></a></span>
-<span id="cb111-687"><a href="#cb111-687"></a>Summary: The model has a high overall accuracy (97.24%), but its specificity (23.72%) is low, indicating it struggles to correctly identify the negative class (Yes).</span>
+<span id="cb111-687"><a href="#cb111-687"></a><span class="ss">-   </span>*Balanced Accuracy*: It&#39;s the average of sensitivity and specificity, providing a balanced measure for imbalanced datasets.</span>
 <span id="cb111-688"><a href="#cb111-688"></a></span>
-<span id="cb111-689"><a href="#cb111-689"></a>The high sensitivity (99.77%) suggests it&#39;s good at identifying the majority class (No), but at the cost of false positives.</span>
+<span id="cb111-689"><a href="#cb111-689"></a>Summary: The model has a high overall accuracy (97.24%), but its specificity (23.72%) is low, indicating it struggles to correctly identify the negative class (Yes).</span>
 <span id="cb111-690"><a href="#cb111-690"></a></span>
-<span id="cb111-691"><a href="#cb111-691"></a>Adjusting the model or the decision threshold can help to balance sensitivity and specificity better.</span>
+<span id="cb111-691"><a href="#cb111-691"></a>The high sensitivity (99.77%) suggests it&#39;s good at identifying the majority class (No), but at the cost of false positives.</span>
 <span id="cb111-692"><a href="#cb111-692"></a></span>
-<span id="cb111-693"><a href="#cb111-693"></a>In order to reduce the false negative rate we can take change the threshold at which we classify one class to yes or no. By default we have been using equal priors for all variables, but we can change this to put more weight on the minority class (default = yes). This swill increase the false positive rate, so we need to evaluate for our data what type of errors we prefer depending on the risk of making the wrong classifications.</span>
+<span id="cb111-693"><a href="#cb111-693"></a>Adjusting the model or the decision threshold can help to balance sensitivity and specificity better.</span>
 <span id="cb111-694"><a href="#cb111-694"></a></span>
-<span id="cb111-695"><a href="#cb111-695"></a><span class="co">[</span><span class="ot">ROC Curve</span><span class="co">]</span>{#rocCurve}: We can use A ROC plot and AUC (Area under the curve) to summarize the overall performance of our model. A higher AUC is desired.</span>
+<span id="cb111-695"><a href="#cb111-695"></a>In order to reduce the false negative rate we can take change the threshold at which we classify one class to yes or no. By default we have been using equal priors for all variables, but we can change this to put more weight on the minority class (default = yes). This swill increase the false positive rate, so we need to evaluate for our data what type of errors we prefer depending on the risk of making the wrong classifications.</span>
 <span id="cb111-696"><a href="#cb111-696"></a></span>
-<span id="cb111-697"><a href="#cb111-697"></a><span class="in">```{r, fig.align=&#39;center&#39;}</span></span>
-<span id="cb111-698"><a href="#cb111-698"></a><span class="co"># Fit the LDA model</span></span>
-<span id="cb111-699"><a href="#cb111-699"></a>LDA.fit <span class="ot">&lt;-</span> <span class="fu">lda</span>(default <span class="sc">~</span> income <span class="sc">+</span> balance <span class="sc">+</span> student, <span class="at">data =</span> Default)</span>
+<span id="cb111-697"><a href="#cb111-697"></a><span class="fu">#### *Receiver Operating Characteristic* (ROC) {#ROCcurve}</span></span>
+<span id="cb111-698"><a href="#cb111-698"></a></span>
+<span id="cb111-699"><a href="#cb111-699"></a><span class="co">[</span><span class="ot">ROC Curve</span><span class="co">]</span>{#rocCurve}: We can use A ROC plot and AUC (Area under the curve) to summarize the overall performance of our model. A higher AUC is desired.</span>
 <span id="cb111-700"><a href="#cb111-700"></a></span>
-<span id="cb111-701"><a href="#cb111-701"></a><span class="co"># Get predicted probabilities</span></span>
-<span id="cb111-702"><a href="#cb111-702"></a>LDA.fit.prob <span class="ot">&lt;-</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata =</span> Default[, <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])<span class="sc">$</span>posterior[, <span class="dv">2</span>]</span>
-<span id="cb111-703"><a href="#cb111-703"></a></span>
-<span id="cb111-704"><a href="#cb111-704"></a><span class="co"># Generate ROC curve</span></span>
-<span id="cb111-705"><a href="#cb111-705"></a>roc_curve <span class="ot">&lt;-</span> <span class="fu">roc</span>(Default<span class="sc">$</span>default, LDA.fit.prob)</span>
-<span id="cb111-706"><a href="#cb111-706"></a></span>
-<span id="cb111-707"><a href="#cb111-707"></a><span class="co"># Plot ROC curve</span></span>
-<span id="cb111-708"><a href="#cb111-708"></a><span class="fu">plot</span>(roc_curve, <span class="at">main =</span> <span class="st">&quot;ROC Curve&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb111-709"><a href="#cb111-709"></a></span>
-<span id="cb111-710"><a href="#cb111-710"></a><span class="co"># Add AUC to the plot</span></span>
-<span id="cb111-711"><a href="#cb111-711"></a><span class="fu">auc</span>(roc_curve)</span>
-<span id="cb111-712"><a href="#cb111-712"></a><span class="in">```</span></span>
+<span id="cb111-701"><a href="#cb111-701"></a><span class="in">```{r, fig.align=&#39;center&#39;}</span></span>
+<span id="cb111-702"><a href="#cb111-702"></a><span class="co"># Fit the LDA model</span></span>
+<span id="cb111-703"><a href="#cb111-703"></a>LDA.fit <span class="ot">&lt;-</span> <span class="fu">lda</span>(default <span class="sc">~</span> income <span class="sc">+</span> balance <span class="sc">+</span> student, <span class="at">data =</span> Default)</span>
+<span id="cb111-704"><a href="#cb111-704"></a></span>
+<span id="cb111-705"><a href="#cb111-705"></a><span class="co"># Get predicted probabilities</span></span>
+<span id="cb111-706"><a href="#cb111-706"></a>LDA.fit.prob <span class="ot">&lt;-</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata =</span> Default[, <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])<span class="sc">$</span>posterior[, <span class="dv">2</span>]</span>
+<span id="cb111-707"><a href="#cb111-707"></a></span>
+<span id="cb111-708"><a href="#cb111-708"></a><span class="co"># Generate ROC curve</span></span>
+<span id="cb111-709"><a href="#cb111-709"></a>roc_curve <span class="ot">&lt;-</span> <span class="fu">roc</span>(Default<span class="sc">$</span>default, LDA.fit.prob)</span>
+<span id="cb111-710"><a href="#cb111-710"></a></span>
+<span id="cb111-711"><a href="#cb111-711"></a><span class="co"># Plot ROC curve</span></span>
+<span id="cb111-712"><a href="#cb111-712"></a><span class="fu">plot</span>(roc_curve, <span class="at">main =</span> <span class="st">&quot;ROC Curve&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
 <span id="cb111-713"><a href="#cb111-713"></a></span>
-<span id="cb111-714"><a href="#cb111-714"></a>The *Receiver Operating Characteristic* (ROC) curve is a graphical representation used to evaluate the performance of a classification model. It plots the True Positive Rate (Sensitivity) against the False Positive Rate (1-Specificity) at various threshold settings.</span>
-<span id="cb111-715"><a href="#cb111-715"></a></span>
-<span id="cb111-716"><a href="#cb111-716"></a><span class="ss">-   </span>*True Positive Rate* (TPR): Also known as sensitivity, it measures the proportion of actual positives correctly identified by the model.</span>
+<span id="cb111-714"><a href="#cb111-714"></a><span class="co"># Add AUC to the plot</span></span>
+<span id="cb111-715"><a href="#cb111-715"></a><span class="fu">auc</span>(roc_curve)</span>
+<span id="cb111-716"><a href="#cb111-716"></a><span class="in">```</span></span>
 <span id="cb111-717"><a href="#cb111-717"></a></span>
-<span id="cb111-718"><a href="#cb111-718"></a><span class="ss">-   </span>*False Positive Rate* (FPR): It measures the proportion of actual negatives incorrectly identified as positives by the model.</span>
+<span id="cb111-718"><a href="#cb111-718"></a>The *Receiver Operating Characteristic* (ROC) curve is a graphical representation used to evaluate the performance of a classification model. It plots the True Positive Rate (Sensitivity) against the False Positive Rate (1-Specificity) at various threshold settings.</span>
 <span id="cb111-719"><a href="#cb111-719"></a></span>
-<span id="cb111-720"><a href="#cb111-720"></a>The ROC curve helps visualize the trade-off between sensitivity and specificity for different threshold values. It is also used to compare Models: By comparing the ROC curves of different models, you can assess which model performs better.</span>
+<span id="cb111-720"><a href="#cb111-720"></a><span class="ss">-   </span>*True Positive Rate* (TPR): Also known as sensitivity, it measures the proportion of actual positives correctly identified by the model.</span>
 <span id="cb111-721"><a href="#cb111-721"></a></span>
-<span id="cb111-722"><a href="#cb111-722"></a>*The Area Under the ROC Curve* (AUC) is a single scalar value that summarizes the performance of a classification model. - AUC = 1: Perfect model (perfectly separates positive and negative classes). - AUC = 0.5: Random model (no better than random guessing). - AUC <span class="sc">\&lt;</span> 0.5: Worse than random guessing.</span>
+<span id="cb111-722"><a href="#cb111-722"></a><span class="ss">-   </span>*False Positive Rate* (FPR): It measures the proportion of actual negatives incorrectly identified as positives by the model.</span>
 <span id="cb111-723"><a href="#cb111-723"></a></span>
-<span id="cb111-724"><a href="#cb111-724"></a>Use of AUC: - Model Comparison: A higher AUC value indicates a better-performing model. - Robustness: AUC is insensitive to the threshold chosen for classification, providing a more robust evaluation metric.</span>
+<span id="cb111-724"><a href="#cb111-724"></a>The ROC curve helps visualize the trade-off between sensitivity and specificity for different threshold values. It is also used to compare Models: By comparing the ROC curves of different models, you can assess which model performs better.</span>
 <span id="cb111-725"><a href="#cb111-725"></a></span>
-<span id="cb111-726"><a href="#cb111-726"></a>In essence, the ROC curve and AUC provide a comprehensive way to evaluate and compare classification models, ensuring you pick the most accurate and reliable one.</span>
+<span id="cb111-726"><a href="#cb111-726"></a>*The Area Under the ROC Curve* (AUC) is a single scalar value that summarizes the performance of a classification model. - AUC = 1: Perfect model (perfectly separates positive and negative classes). - AUC = 0.5: Random model (no better than random guessing). - AUC <span class="sc">\&lt;</span> 0.5: Worse than random guessing.</span>
 <span id="cb111-727"><a href="#cb111-727"></a></span>
-<span id="cb111-728"><a href="#cb111-728"></a>Following what we see in the plot we think that a prior of 0.9 and 0.1 can be better, so we adjust our model accordingly:</span>
+<span id="cb111-728"><a href="#cb111-728"></a>Use of AUC: - Model Comparison: A higher AUC value indicates a better-performing model. - Robustness: AUC is insensitive to the threshold chosen for classification, providing a more robust evaluation metric.</span>
 <span id="cb111-729"><a href="#cb111-729"></a></span>
-<span id="cb111-732"><a href="#cb111-732"></a><span class="in">```{r}</span></span>
-<span id="cb111-733"><a href="#cb111-733"></a><span class="co"># Fit LDA model with adjusted prior probabilities</span></span>
-<span id="cb111-734"><a href="#cb111-734"></a>LDA.fit <span class="ot">&lt;-</span> <span class="fu">lda</span>(default <span class="sc">~</span> income <span class="sc">+</span> balance <span class="sc">+</span> student, <span class="at">data =</span> Default, <span class="at">prior =</span> <span class="fu">c</span>(<span class="fl">0.9</span>, <span class="fl">0.1</span>))</span>
-<span id="cb111-735"><a href="#cb111-735"></a></span>
-<span id="cb111-736"><a href="#cb111-736"></a><span class="co"># Predict and evaluate</span></span>
-<span id="cb111-737"><a href="#cb111-737"></a>LDA.fit.Classes <span class="ot">&lt;-</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata =</span> Default[, <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])<span class="sc">$</span>class</span>
-<span id="cb111-738"><a href="#cb111-738"></a>confusion_matrix <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="fu">factor</span>(LDA.fit.Classes), Default<span class="sc">$</span>default)</span>
+<span id="cb111-730"><a href="#cb111-730"></a>In essence, the ROC curve and AUC provide a comprehensive way to evaluate and compare classification models, ensuring you pick the most accurate and reliable one.</span>
+<span id="cb111-731"><a href="#cb111-731"></a></span>
+<span id="cb111-732"><a href="#cb111-732"></a>Following what we see in the plot we think that a prior of 0.9 and 0.1 can be better, so we adjust our model accordingly:</span>
+<span id="cb111-733"><a href="#cb111-733"></a></span>
+<span id="cb111-736"><a href="#cb111-736"></a><span class="in">```{r}</span></span>
+<span id="cb111-737"><a href="#cb111-737"></a><span class="co"># Fit LDA model with adjusted prior probabilities</span></span>
+<span id="cb111-738"><a href="#cb111-738"></a>LDA.fit <span class="ot">&lt;-</span> <span class="fu">lda</span>(default <span class="sc">~</span> income <span class="sc">+</span> balance <span class="sc">+</span> student, <span class="at">data =</span> Default, <span class="at">prior =</span> <span class="fu">c</span>(<span class="fl">0.9</span>, <span class="fl">0.1</span>))</span>
 <span id="cb111-739"><a href="#cb111-739"></a></span>
-<span id="cb111-740"><a href="#cb111-740"></a><span class="co"># Print confusion matrix</span></span>
-<span id="cb111-741"><a href="#cb111-741"></a><span class="fu">print</span>(<span class="st">&#39;Confusion Matrix&#39;</span>)</span>
-<span id="cb111-742"><a href="#cb111-742"></a><span class="fu">print</span>(confusion_matrix)</span>
+<span id="cb111-740"><a href="#cb111-740"></a><span class="co"># Predict and evaluate</span></span>
+<span id="cb111-741"><a href="#cb111-741"></a>LDA.fit.Classes <span class="ot">&lt;-</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata =</span> Default[, <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])<span class="sc">$</span>class</span>
+<span id="cb111-742"><a href="#cb111-742"></a>confusion_matrix <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="fu">factor</span>(LDA.fit.Classes), Default<span class="sc">$</span>default)</span>
 <span id="cb111-743"><a href="#cb111-743"></a></span>
-<span id="cb111-744"><a href="#cb111-744"></a><span class="co"># Extract the confusion matrix values</span></span>
-<span id="cb111-745"><a href="#cb111-745"></a>cm <span class="ot">&lt;-</span> confusion_matrix<span class="sc">$</span>table</span>
-<span id="cb111-746"><a href="#cb111-746"></a></span>
-<span id="cb111-747"><a href="#cb111-747"></a><span class="co"># Calculate False Positive Rate (FPR) and False Negative Rate (FNR)</span></span>
-<span id="cb111-748"><a href="#cb111-748"></a>false_positive_rate <span class="ot">&lt;-</span> cm[<span class="dv">2</span>, <span class="dv">1</span>] <span class="sc">/</span> <span class="fu">sum</span>(cm[, <span class="dv">1</span>])</span>
-<span id="cb111-749"><a href="#cb111-749"></a>false_negative_rate <span class="ot">&lt;-</span> cm[<span class="dv">1</span>, <span class="dv">2</span>] <span class="sc">/</span> <span class="fu">sum</span>(cm[, <span class="dv">2</span>])</span>
+<span id="cb111-744"><a href="#cb111-744"></a><span class="co"># Print confusion matrix</span></span>
+<span id="cb111-745"><a href="#cb111-745"></a><span class="fu">print</span>(<span class="st">&#39;Confusion Matrix&#39;</span>)</span>
+<span id="cb111-746"><a href="#cb111-746"></a><span class="fu">print</span>(confusion_matrix)</span>
+<span id="cb111-747"><a href="#cb111-747"></a></span>
+<span id="cb111-748"><a href="#cb111-748"></a><span class="co"># Extract the confusion matrix values</span></span>
+<span id="cb111-749"><a href="#cb111-749"></a>cm <span class="ot">&lt;-</span> confusion_matrix<span class="sc">$</span>table</span>
 <span id="cb111-750"><a href="#cb111-750"></a></span>
-<span id="cb111-751"><a href="#cb111-751"></a><span class="co"># Print the rates</span></span>
-<span id="cb111-752"><a href="#cb111-752"></a><span class="fu">cat</span>(<span class="st">&#39;False Positive Rate: &#39;</span>, false_positive_rate, <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&#39;</span>)</span>
-<span id="cb111-753"><a href="#cb111-753"></a><span class="fu">cat</span>(<span class="st">&#39;False Negative Rate: &#39;</span>, false_negative_rate, <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&#39;</span>)</span>
-<span id="cb111-754"><a href="#cb111-754"></a><span class="in">```</span></span>
-<span id="cb111-755"><a href="#cb111-755"></a></span>
-<span id="cb111-756"><a href="#cb111-756"></a>------------------------------------------------------------------------</span>
-<span id="cb111-757"><a href="#cb111-757"></a></span>
-<span id="cb111-758"><a href="#cb111-758"></a>::: exercise-box</span>
-<span id="cb111-759"><a href="#cb111-759"></a>Example with three classes:</span>
-<span id="cb111-760"><a href="#cb111-760"></a></span>
-<span id="cb111-761"><a href="#cb111-761"></a>As an example we can see Fisher&#39;s Iris dataset. It has 3 classes (Iris Species) and uses 4 different parameters to classify the different species: Sepal Length, Sepal Width, Petal Length and Petal Width. If we plot each variable against each other using <span class="in">`pairs()`</span> we can see that we can actually see quite a clear differentiation between the species using these variables.</span>
-<span id="cb111-762"><a href="#cb111-762"></a></span>
-<span id="cb111-763"><a href="#cb111-763"></a><span class="in">```{r, fig.align=&#39;center&#39;, echo=FALSE, fig.height=10, fig.width=10 }</span></span>
-<span id="cb111-764"><a href="#cb111-764"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>) <span class="sc">+</span> <span class="fl">0.1</span>, <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">cex =</span> <span class="dv">2</span>)</span>
-<span id="cb111-765"><a href="#cb111-765"></a><span class="fu">pairs</span>(iris[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="at">col =</span> <span class="fu">as.numeric</span>(iris<span class="sc">$</span>Species),</span>
-<span id="cb111-766"><a href="#cb111-766"></a>      <span class="at">main =</span> <span class="st">&quot;Pairs Plot of Iris Dataset&quot;</span>)</span>
-<span id="cb111-767"><a href="#cb111-767"></a></span>
-<span id="cb111-768"><a href="#cb111-768"></a><span class="co"># Add a blank plot for the legend</span></span>
-<span id="cb111-769"><a href="#cb111-769"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
-<span id="cb111-770"><a href="#cb111-770"></a></span>
-<span id="cb111-771"><a href="#cb111-771"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend =</span> <span class="fu">levels</span>(iris<span class="sc">$</span>Species), </span>
-<span id="cb111-772"><a href="#cb111-772"></a>       <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">title =</span> <span class="st">&quot;Species&quot;</span>, <span class="at">horiz =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb111-773"><a href="#cb111-773"></a><span class="in">```</span></span>
+<span id="cb111-751"><a href="#cb111-751"></a><span class="co"># Calculate False Positive Rate (FPR) and False Negative Rate (FNR)</span></span>
+<span id="cb111-752"><a href="#cb111-752"></a>false_positive_rate <span class="ot">&lt;-</span> cm[<span class="dv">2</span>, <span class="dv">1</span>] <span class="sc">/</span> <span class="fu">sum</span>(cm[, <span class="dv">1</span>])</span>
+<span id="cb111-753"><a href="#cb111-753"></a>false_negative_rate <span class="ot">&lt;-</span> cm[<span class="dv">1</span>, <span class="dv">2</span>] <span class="sc">/</span> <span class="fu">sum</span>(cm[, <span class="dv">2</span>])</span>
+<span id="cb111-754"><a href="#cb111-754"></a></span>
+<span id="cb111-755"><a href="#cb111-755"></a><span class="co"># Print the rates</span></span>
+<span id="cb111-756"><a href="#cb111-756"></a><span class="fu">cat</span>(<span class="st">&#39;False Positive Rate: &#39;</span>, false_positive_rate, <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb111-757"><a href="#cb111-757"></a><span class="fu">cat</span>(<span class="st">&#39;False Negative Rate: &#39;</span>, false_negative_rate, <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb111-758"><a href="#cb111-758"></a><span class="in">```</span></span>
+<span id="cb111-759"><a href="#cb111-759"></a></span>
+<span id="cb111-760"><a href="#cb111-760"></a>------------------------------------------------------------------------</span>
+<span id="cb111-761"><a href="#cb111-761"></a></span>
+<span id="cb111-762"><a href="#cb111-762"></a>::: exercise-box</span>
+<span id="cb111-763"><a href="#cb111-763"></a>Example with three classes:</span>
+<span id="cb111-764"><a href="#cb111-764"></a></span>
+<span id="cb111-765"><a href="#cb111-765"></a>As an example we can see Fisher&#39;s Iris dataset. It has 3 classes (Iris Species) and uses 4 different parameters to classify the different species: Sepal Length, Sepal Width, Petal Length and Petal Width. If we plot each variable against each other using <span class="in">`pairs()`</span> we can see that we can actually see quite a clear differentiation between the species using these variables.</span>
+<span id="cb111-766"><a href="#cb111-766"></a></span>
+<span id="cb111-767"><a href="#cb111-767"></a><span class="in">```{r, fig.align=&#39;center&#39;, echo=FALSE, fig.height=10, fig.width=10 }</span></span>
+<span id="cb111-768"><a href="#cb111-768"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>) <span class="sc">+</span> <span class="fl">0.1</span>, <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">cex =</span> <span class="dv">2</span>)</span>
+<span id="cb111-769"><a href="#cb111-769"></a><span class="fu">pairs</span>(iris[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="at">col =</span> <span class="fu">as.numeric</span>(iris<span class="sc">$</span>Species),</span>
+<span id="cb111-770"><a href="#cb111-770"></a>      <span class="at">main =</span> <span class="st">&quot;Pairs Plot of Iris Dataset&quot;</span>)</span>
+<span id="cb111-771"><a href="#cb111-771"></a></span>
+<span id="cb111-772"><a href="#cb111-772"></a><span class="co"># Add a blank plot for the legend</span></span>
+<span id="cb111-773"><a href="#cb111-773"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
 <span id="cb111-774"><a href="#cb111-774"></a></span>
-<span id="cb111-775"><a href="#cb111-775"></a>We are going to fit a model for our iris data and see how well it works predicting the species.</span>
-<span id="cb111-776"><a href="#cb111-776"></a></span>
-<span id="cb111-779"><a href="#cb111-779"></a><span class="in">```{r}</span></span>
-<span id="cb111-780"><a href="#cb111-780"></a>LDA.fit <span class="ot">=</span> <span class="fu">lda</span>( Species <span class="sc">~</span> Sepal.Length <span class="sc">+</span> Sepal.Width <span class="sc">+</span> Petal.Length <span class="sc">+</span> Petal.Width, iris)</span>
-<span id="cb111-781"><a href="#cb111-781"></a>LDA.fit</span>
-<span id="cb111-782"><a href="#cb111-782"></a><span class="in">```</span></span>
-<span id="cb111-783"><a href="#cb111-783"></a></span>
-<span id="cb111-784"><a href="#cb111-784"></a>We see that now we have to LDFs LD1 and LD2.</span>
-<span id="cb111-785"><a href="#cb111-785"></a></span>
-<span id="cb111-786"><a href="#cb111-786"></a>*Proportion of Trace*: The proportion of trace tells you how much of the total between-class variance each linear discriminant function explains.</span>
+<span id="cb111-775"><a href="#cb111-775"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend =</span> <span class="fu">levels</span>(iris<span class="sc">$</span>Species), </span>
+<span id="cb111-776"><a href="#cb111-776"></a>       <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">title =</span> <span class="st">&quot;Species&quot;</span>, <span class="at">horiz =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb111-777"><a href="#cb111-777"></a><span class="in">```</span></span>
+<span id="cb111-778"><a href="#cb111-778"></a></span>
+<span id="cb111-779"><a href="#cb111-779"></a>We are going to fit a model for our iris data and see how well it works predicting the species.</span>
+<span id="cb111-780"><a href="#cb111-780"></a></span>
+<span id="cb111-783"><a href="#cb111-783"></a><span class="in">```{r}</span></span>
+<span id="cb111-784"><a href="#cb111-784"></a>LDA.fit <span class="ot">=</span> <span class="fu">lda</span>( Species <span class="sc">~</span> Sepal.Length <span class="sc">+</span> Sepal.Width <span class="sc">+</span> Petal.Length <span class="sc">+</span> Petal.Width, iris)</span>
+<span id="cb111-785"><a href="#cb111-785"></a>LDA.fit</span>
+<span id="cb111-786"><a href="#cb111-786"></a><span class="in">```</span></span>
 <span id="cb111-787"><a href="#cb111-787"></a></span>
-<span id="cb111-788"><a href="#cb111-788"></a>In this case:</span>
+<span id="cb111-788"><a href="#cb111-788"></a>We see that now we have to LDFs LD1 and LD2.</span>
 <span id="cb111-789"><a href="#cb111-789"></a></span>
-<span id="cb111-790"><a href="#cb111-790"></a><span class="ss">-   </span>LD1: Explains 99.12% of the variance.</span>
+<span id="cb111-790"><a href="#cb111-790"></a>*Proportion of Trace*: The proportion of trace tells you how much of the total between-class variance each linear discriminant function explains.</span>
 <span id="cb111-791"><a href="#cb111-791"></a></span>
-<span id="cb111-792"><a href="#cb111-792"></a><span class="ss">-   </span>LD2: Explains 0.88% of the variance.</span>
+<span id="cb111-792"><a href="#cb111-792"></a>In this case:</span>
 <span id="cb111-793"><a href="#cb111-793"></a></span>
-<span id="cb111-794"><a href="#cb111-794"></a>So, LD1 is the primary driver for separating the species in the iris dataset, while LD2 adds a minor amount of additional discrimination.</span>
+<span id="cb111-794"><a href="#cb111-794"></a><span class="ss">-   </span>LD1: Explains 99.12% of the variance.</span>
 <span id="cb111-795"><a href="#cb111-795"></a></span>
-<span id="cb111-796"><a href="#cb111-796"></a>Now we are going to perform the classification:</span>
+<span id="cb111-796"><a href="#cb111-796"></a><span class="ss">-   </span>LD2: Explains 0.88% of the variance.</span>
 <span id="cb111-797"><a href="#cb111-797"></a></span>
-<span id="cb111-800"><a href="#cb111-800"></a><span class="in">```{r}</span></span>
-<span id="cb111-801"><a href="#cb111-801"></a>LDA.fit.C <span class="ot">=</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata=</span>iris[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>)])<span class="sc">$</span>class</span>
-<span id="cb111-802"><a href="#cb111-802"></a></span>
-<span id="cb111-803"><a href="#cb111-803"></a><span class="fu">head</span>(LDA.fit.C)</span>
-<span id="cb111-804"><a href="#cb111-804"></a><span class="in">```</span></span>
-<span id="cb111-805"><a href="#cb111-805"></a></span>
-<span id="cb111-806"><a href="#cb111-806"></a>We can quickly create a confusion matrix using table:</span>
-<span id="cb111-807"><a href="#cb111-807"></a></span>
-<span id="cb111-810"><a href="#cb111-810"></a><span class="in">```{r}</span></span>
-<span id="cb111-811"><a href="#cb111-811"></a><span class="fu">table</span>(iris<span class="sc">$</span>Species, LDA.fit.C)</span>
-<span id="cb111-812"><a href="#cb111-812"></a><span class="in">```</span></span>
-<span id="cb111-813"><a href="#cb111-813"></a></span>
-<span id="cb111-814"><a href="#cb111-814"></a>As we have seen before we can also use the confusion matrix function from the package caret:</span>
-<span id="cb111-815"><a href="#cb111-815"></a></span>
-<span id="cb111-818"><a href="#cb111-818"></a><span class="in">```{r}</span></span>
-<span id="cb111-819"><a href="#cb111-819"></a>caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="at">data=</span>LDA.fit.C, <span class="at">reference=</span>iris<span class="sc">$</span>Species )</span>
-<span id="cb111-820"><a href="#cb111-820"></a><span class="in">```</span></span>
-<span id="cb111-821"><a href="#cb111-821"></a></span>
-<span id="cb111-822"><a href="#cb111-822"></a>Lastly, we can create an LDA plot to view the linear discriminants of the model and visualize how well it separated the three different species in our dataset:</span>
-<span id="cb111-823"><a href="#cb111-823"></a></span>
-<span id="cb111-824"><a href="#cb111-824"></a><span class="in">```{r, fig.align=&#39;center&#39;, fig.width=10}</span></span>
-<span id="cb111-825"><a href="#cb111-825"></a><span class="co"># Predict the LDA values</span></span>
-<span id="cb111-826"><a href="#cb111-826"></a>lda.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata=</span>iris[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>)])<span class="sc">$</span>x</span>
+<span id="cb111-798"><a href="#cb111-798"></a>So, LD1 is the primary driver for separating the species in the iris dataset, while LD2 adds a minor amount of additional discrimination.</span>
+<span id="cb111-799"><a href="#cb111-799"></a></span>
+<span id="cb111-800"><a href="#cb111-800"></a>Now we are going to perform the classification:</span>
+<span id="cb111-801"><a href="#cb111-801"></a></span>
+<span id="cb111-804"><a href="#cb111-804"></a><span class="in">```{r}</span></span>
+<span id="cb111-805"><a href="#cb111-805"></a>LDA.fit.C <span class="ot">=</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata=</span>iris[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>)])<span class="sc">$</span>class</span>
+<span id="cb111-806"><a href="#cb111-806"></a></span>
+<span id="cb111-807"><a href="#cb111-807"></a><span class="fu">head</span>(LDA.fit.C)</span>
+<span id="cb111-808"><a href="#cb111-808"></a><span class="in">```</span></span>
+<span id="cb111-809"><a href="#cb111-809"></a></span>
+<span id="cb111-810"><a href="#cb111-810"></a>We can quickly create a confusion matrix using table:</span>
+<span id="cb111-811"><a href="#cb111-811"></a></span>
+<span id="cb111-814"><a href="#cb111-814"></a><span class="in">```{r}</span></span>
+<span id="cb111-815"><a href="#cb111-815"></a><span class="fu">table</span>(iris<span class="sc">$</span>Species, LDA.fit.C)</span>
+<span id="cb111-816"><a href="#cb111-816"></a><span class="in">```</span></span>
+<span id="cb111-817"><a href="#cb111-817"></a></span>
+<span id="cb111-818"><a href="#cb111-818"></a>As we have seen before we can also use the confusion matrix function from the package caret:</span>
+<span id="cb111-819"><a href="#cb111-819"></a></span>
+<span id="cb111-822"><a href="#cb111-822"></a><span class="in">```{r}</span></span>
+<span id="cb111-823"><a href="#cb111-823"></a>caret<span class="sc">::</span><span class="fu">confusionMatrix</span>(<span class="at">data=</span>LDA.fit.C, <span class="at">reference=</span>iris<span class="sc">$</span>Species )</span>
+<span id="cb111-824"><a href="#cb111-824"></a><span class="in">```</span></span>
+<span id="cb111-825"><a href="#cb111-825"></a></span>
+<span id="cb111-826"><a href="#cb111-826"></a>Lastly, we can create an LDA plot to view the linear discriminants of the model and visualize how well it separated the three different species in our dataset:</span>
 <span id="cb111-827"><a href="#cb111-827"></a></span>
-<span id="cb111-828"><a href="#cb111-828"></a><span class="co"># Combine the LDA values with the original dataset</span></span>
-<span id="cb111-829"><a href="#cb111-829"></a>lda.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(lda.pred, <span class="at">Species =</span> iris<span class="sc">$</span>Species)</span>
-<span id="cb111-830"><a href="#cb111-830"></a></span>
-<span id="cb111-831"><a href="#cb111-831"></a><span class="co"># Define colors for each species</span></span>
-<span id="cb111-832"><a href="#cb111-832"></a>species_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">setosa =</span> <span class="st">&quot;red&quot;</span>, <span class="at">versicolor =</span> <span class="st">&quot;green&quot;</span>, <span class="at">virginica =</span> <span class="st">&quot;blue&quot;</span>)</span>
-<span id="cb111-833"><a href="#cb111-833"></a></span>
-<span id="cb111-834"><a href="#cb111-834"></a><span class="co"># Plot the LDA results using base R plot</span></span>
-<span id="cb111-835"><a href="#cb111-835"></a><span class="fu">plot</span>(lda.data<span class="sc">$</span>LD1, lda.data<span class="sc">$</span>LD2, <span class="at">col =</span> species_colors[lda.data<span class="sc">$</span>Species],</span>
-<span id="cb111-836"><a href="#cb111-836"></a>     <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">xlab =</span> <span class="st">&quot;Linear Discriminant 1&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Linear Discriminant 2&quot;</span>,</span>
-<span id="cb111-837"><a href="#cb111-837"></a>     <span class="at">main =</span> <span class="st">&quot;LDA of Iris Dataset&quot;</span>)</span>
-<span id="cb111-838"><a href="#cb111-838"></a></span>
-<span id="cb111-839"><a href="#cb111-839"></a><span class="co"># Add a legend</span></span>
-<span id="cb111-840"><a href="#cb111-840"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">levels</span>(iris<span class="sc">$</span>Species), </span>
-<span id="cb111-841"><a href="#cb111-841"></a>       <span class="at">col =</span> species_colors, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">title =</span> <span class="st">&quot;Species&quot;</span>)</span>
+<span id="cb111-828"><a href="#cb111-828"></a><span class="in">```{r, fig.align=&#39;center&#39;, fig.width=10}</span></span>
+<span id="cb111-829"><a href="#cb111-829"></a><span class="co"># Predict the LDA values</span></span>
+<span id="cb111-830"><a href="#cb111-830"></a>lda.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(LDA.fit, <span class="at">newdata=</span>iris[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>)])<span class="sc">$</span>x</span>
+<span id="cb111-831"><a href="#cb111-831"></a></span>
+<span id="cb111-832"><a href="#cb111-832"></a><span class="co"># Combine the LDA values with the original dataset</span></span>
+<span id="cb111-833"><a href="#cb111-833"></a>lda.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(lda.pred, <span class="at">Species =</span> iris<span class="sc">$</span>Species)</span>
+<span id="cb111-834"><a href="#cb111-834"></a></span>
+<span id="cb111-835"><a href="#cb111-835"></a><span class="co"># Define colors for each species</span></span>
+<span id="cb111-836"><a href="#cb111-836"></a>species_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">setosa =</span> <span class="st">&quot;red&quot;</span>, <span class="at">versicolor =</span> <span class="st">&quot;green&quot;</span>, <span class="at">virginica =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb111-837"><a href="#cb111-837"></a></span>
+<span id="cb111-838"><a href="#cb111-838"></a><span class="co"># Plot the LDA results using base R plot</span></span>
+<span id="cb111-839"><a href="#cb111-839"></a><span class="fu">plot</span>(lda.data<span class="sc">$</span>LD1, lda.data<span class="sc">$</span>LD2, <span class="at">col =</span> species_colors[lda.data<span class="sc">$</span>Species],</span>
+<span id="cb111-840"><a href="#cb111-840"></a>     <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">xlab =</span> <span class="st">&quot;Linear Discriminant 1&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Linear Discriminant 2&quot;</span>,</span>
+<span id="cb111-841"><a href="#cb111-841"></a>     <span class="at">main =</span> <span class="st">&quot;LDA of Iris Dataset&quot;</span>)</span>
 <span id="cb111-842"><a href="#cb111-842"></a></span>
-<span id="cb111-843"><a href="#cb111-843"></a><span class="in">```</span></span>
-<span id="cb111-844"><a href="#cb111-844"></a>:::</span>
-<span id="cb111-845"><a href="#cb111-845"></a></span>
-<span id="cb111-846"><a href="#cb111-846"></a><span class="fu">### Quadratic Discriminant Analysis (QDA).</span></span>
-<span id="cb111-847"><a href="#cb111-847"></a></span>
-<span id="cb111-848"><a href="#cb111-848"></a>So far we have seen how to use discriminant analysis for a normal distribution, with the same variance for each class. If the distribution is still normal but the variance for each class is different, we use *quadratic discriminant analysis* The formula for the discriminant score was quite simple for the linear discriminant analysis because the quadratic terms were cancelling each other, but now, because $\Sigma_k$ are different, we cannot apply that cancellation. $$</span>
-<span id="cb111-849"><a href="#cb111-849"></a>\delta_k(x) = -\frac{1}{2}(x-\mu_k)^T\Sigma_k^{-1}(x-\mu_k) + \log{\pi_k} - \frac{1}{2}\log{|\Sigma_k|}</span>
-<span id="cb111-850"><a href="#cb111-850"></a>$$ {#eq-quadraticDiscriminantFunction}</span>
+<span id="cb111-843"><a href="#cb111-843"></a><span class="co"># Add a legend</span></span>
+<span id="cb111-844"><a href="#cb111-844"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">levels</span>(iris<span class="sc">$</span>Species), </span>
+<span id="cb111-845"><a href="#cb111-845"></a>       <span class="at">col =</span> species_colors, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">title =</span> <span class="st">&quot;Species&quot;</span>)</span>
+<span id="cb111-846"><a href="#cb111-846"></a></span>
+<span id="cb111-847"><a href="#cb111-847"></a><span class="in">```</span></span>
+<span id="cb111-848"><a href="#cb111-848"></a>:::</span>
+<span id="cb111-849"><a href="#cb111-849"></a></span>
+<span id="cb111-850"><a href="#cb111-850"></a><span class="fu">### Quadratic Discriminant Analysis (QDA).</span></span>
 <span id="cb111-851"><a href="#cb111-851"></a></span>
-<span id="cb111-852"><a href="#cb111-852"></a>Where - $\Sigma_k$ represents the covariance matrix for class (k). It describes the spread and orientation of the data points in class (k). - $\pi_k$: This is the prior probability of class (k). It represents the proportion of data points that belong to class (k) in the training dataset.</span>
-<span id="cb111-853"><a href="#cb111-853"></a></span>
-<span id="cb111-854"><a href="#cb111-854"></a>Quadratic discriminant analysis is good when the number of features is not high, because you need to estimate the covariance matrices.</span>
+<span id="cb111-852"><a href="#cb111-852"></a>So far we have seen how to use discriminant analysis for a normal distribution, with the same variance for each class. If the distribution is still normal but the variance for each class is different, we use *quadratic discriminant analysis* The formula for the discriminant score was quite simple for the linear discriminant analysis because the quadratic terms were cancelling each other, but now, because $\Sigma_k$ are different, we cannot apply that cancellation. $$</span>
+<span id="cb111-853"><a href="#cb111-853"></a>\delta_k(x) = -\frac{1}{2}(x-\mu_k)^T\Sigma_k^{-1}(x-\mu_k) + \log{\pi_k} - \frac{1}{2}\log{|\Sigma_k|}</span>
+<span id="cb111-854"><a href="#cb111-854"></a>$$ {#eq-quadraticDiscriminantFunction}</span>
 <span id="cb111-855"><a href="#cb111-855"></a></span>
-<span id="cb111-856"><a href="#cb111-856"></a>::: exercise-box</span>
-<span id="cb111-857"><a href="#cb111-857"></a>Example:</span>
-<span id="cb111-858"><a href="#cb111-858"></a></span>
-<span id="cb111-859"><a href="#cb111-859"></a>We are going to use the iris dataset to perform quadratic Discriminant Analisys. We will split the dataset into training and testing sets:</span>
-<span id="cb111-860"><a href="#cb111-860"></a></span>
-<span id="cb111-863"><a href="#cb111-863"></a><span class="in">```{r}</span></span>
-<span id="cb111-864"><a href="#cb111-864"></a><span class="fu">str</span>(iris)</span>
-<span id="cb111-865"><a href="#cb111-865"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb111-866"><a href="#cb111-866"></a>sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="fu">nrow</span>(iris), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
-<span id="cb111-867"><a href="#cb111-867"></a>train <span class="ot">&lt;-</span> iris[sample, ]</span>
-<span id="cb111-868"><a href="#cb111-868"></a>test <span class="ot">&lt;-</span> iris[<span class="sc">!</span>sample, ]</span>
-<span id="cb111-869"><a href="#cb111-869"></a></span>
-<span id="cb111-870"><a href="#cb111-870"></a><span class="in">```</span></span>
-<span id="cb111-871"><a href="#cb111-871"></a></span>
-<span id="cb111-872"><a href="#cb111-872"></a>and now we use the <span class="in">`qda`</span> function from the MASS package to fit the model over the training data:</span>
+<span id="cb111-856"><a href="#cb111-856"></a>Where - $\Sigma_k$ represents the covariance matrix for class (k). It describes the spread and orientation of the data points in class (k). - $\pi_k$: This is the prior probability of class (k). It represents the proportion of data points that belong to class (k) in the training dataset.</span>
+<span id="cb111-857"><a href="#cb111-857"></a></span>
+<span id="cb111-858"><a href="#cb111-858"></a>Quadratic discriminant analysis is good when the number of features is not high, because you need to estimate the covariance matrices.</span>
+<span id="cb111-859"><a href="#cb111-859"></a></span>
+<span id="cb111-860"><a href="#cb111-860"></a>::: exercise-box</span>
+<span id="cb111-861"><a href="#cb111-861"></a>Example:</span>
+<span id="cb111-862"><a href="#cb111-862"></a></span>
+<span id="cb111-863"><a href="#cb111-863"></a>We are going to use the iris dataset to perform quadratic Discriminant Analisys. We will split the dataset into training and testing sets:</span>
+<span id="cb111-864"><a href="#cb111-864"></a></span>
+<span id="cb111-867"><a href="#cb111-867"></a><span class="in">```{r}</span></span>
+<span id="cb111-868"><a href="#cb111-868"></a><span class="fu">str</span>(iris)</span>
+<span id="cb111-869"><a href="#cb111-869"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb111-870"><a href="#cb111-870"></a>sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="fu">nrow</span>(iris), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
+<span id="cb111-871"><a href="#cb111-871"></a>train <span class="ot">&lt;-</span> iris[sample, ]</span>
+<span id="cb111-872"><a href="#cb111-872"></a>test <span class="ot">&lt;-</span> iris[<span class="sc">!</span>sample, ]</span>
 <span id="cb111-873"><a href="#cb111-873"></a></span>
-<span id="cb111-876"><a href="#cb111-876"></a><span class="in">```{r}</span></span>
-<span id="cb111-877"><a href="#cb111-877"></a>model <span class="ot">&lt;-</span> <span class="fu">qda</span>(Species <span class="sc">~</span> ., <span class="at">data=</span>train)</span>
-<span id="cb111-878"><a href="#cb111-878"></a><span class="fu">print</span>(model)</span>
-<span id="cb111-879"><a href="#cb111-879"></a></span>
-<span id="cb111-880"><a href="#cb111-880"></a><span class="in">```</span></span>
-<span id="cb111-881"><a href="#cb111-881"></a></span>
-<span id="cb111-882"><a href="#cb111-882"></a>*Prior probabilities of group*: These represent the proportions of each Species in the training set. For example, 35.8% of all observations in the training set were of species virginica.</span>
+<span id="cb111-874"><a href="#cb111-874"></a><span class="in">```</span></span>
+<span id="cb111-875"><a href="#cb111-875"></a></span>
+<span id="cb111-876"><a href="#cb111-876"></a>and now we use the <span class="in">`qda`</span> function from the MASS package to fit the model over the training data:</span>
+<span id="cb111-877"><a href="#cb111-877"></a></span>
+<span id="cb111-880"><a href="#cb111-880"></a><span class="in">```{r}</span></span>
+<span id="cb111-881"><a href="#cb111-881"></a>model <span class="ot">&lt;-</span> <span class="fu">qda</span>(Species <span class="sc">~</span> ., <span class="at">data=</span>train)</span>
+<span id="cb111-882"><a href="#cb111-882"></a><span class="fu">print</span>(model)</span>
 <span id="cb111-883"><a href="#cb111-883"></a></span>
-<span id="cb111-884"><a href="#cb111-884"></a>*Group means*: These display the mean values for each predictor variable for each species. As ususal, to use the model to get the fitted values we use <span class="in">`predict`</span></span>
+<span id="cb111-884"><a href="#cb111-884"></a><span class="in">```</span></span>
 <span id="cb111-885"><a href="#cb111-885"></a></span>
-<span id="cb111-888"><a href="#cb111-888"></a><span class="in">```{r}</span></span>
-<span id="cb111-889"><a href="#cb111-889"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, test)</span>
-<span id="cb111-890"><a href="#cb111-890"></a><span class="fu">names</span>(predictions)</span>
-<span id="cb111-891"><a href="#cb111-891"></a></span>
-<span id="cb111-892"><a href="#cb111-892"></a><span class="in">```</span></span>
-<span id="cb111-893"><a href="#cb111-893"></a></span>
-<span id="cb111-894"><a href="#cb111-894"></a>Predict returns a list with two variables: - *class*: the predicted class - *Posterior*: the posterior probability that an observation belong to each class.</span>
+<span id="cb111-886"><a href="#cb111-886"></a>*Prior probabilities of group*: These represent the proportions of each Species in the training set. For example, 35.8% of all observations in the training set were of species virginica.</span>
+<span id="cb111-887"><a href="#cb111-887"></a></span>
+<span id="cb111-888"><a href="#cb111-888"></a>*Group means*: These display the mean values for each predictor variable for each species. As ususal, to use the model to get the fitted values we use <span class="in">`predict`</span></span>
+<span id="cb111-889"><a href="#cb111-889"></a></span>
+<span id="cb111-892"><a href="#cb111-892"></a><span class="in">```{r}</span></span>
+<span id="cb111-893"><a href="#cb111-893"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, test)</span>
+<span id="cb111-894"><a href="#cb111-894"></a><span class="fu">names</span>(predictions)</span>
 <span id="cb111-895"><a href="#cb111-895"></a></span>
-<span id="cb111-898"><a href="#cb111-898"></a><span class="in">```{r}</span></span>
-<span id="cb111-899"><a href="#cb111-899"></a><span class="fu">head</span>(predictions<span class="sc">$</span>class)</span>
-<span id="cb111-900"><a href="#cb111-900"></a><span class="fu">head</span>(predictions<span class="sc">$</span>posterior)</span>
-<span id="cb111-901"><a href="#cb111-901"></a><span class="in">```</span></span>
-<span id="cb111-902"><a href="#cb111-902"></a></span>
-<span id="cb111-903"><a href="#cb111-903"></a>We can use the following code to see what percentage of observations the QDA model correctly predicted:</span>
-<span id="cb111-904"><a href="#cb111-904"></a></span>
-<span id="cb111-907"><a href="#cb111-907"></a><span class="in">```{r}</span></span>
-<span id="cb111-908"><a href="#cb111-908"></a><span class="fu">mean</span>(predictions<span class="sc">$</span>class<span class="sc">==</span>test<span class="sc">$</span>Species)</span>
-<span id="cb111-909"><a href="#cb111-909"></a><span class="in">```</span></span>
-<span id="cb111-910"><a href="#cb111-910"></a></span>
-<span id="cb111-911"><a href="#cb111-911"></a>And we create a confusion matrix to see the results:</span>
-<span id="cb111-912"><a href="#cb111-912"></a></span>
-<span id="cb111-915"><a href="#cb111-915"></a><span class="in">```{r}</span></span>
-<span id="cb111-916"><a href="#cb111-916"></a><span class="fu">table</span>(predictions<span class="sc">$</span>class, test<span class="sc">$</span>Species)</span>
-<span id="cb111-917"><a href="#cb111-917"></a><span class="in">```</span></span>
-<span id="cb111-918"><a href="#cb111-918"></a>:::</span>
-<span id="cb111-919"><a href="#cb111-919"></a></span>
-<span id="cb111-920"><a href="#cb111-920"></a><span class="fu">### Naive Bayes</span></span>
-<span id="cb111-921"><a href="#cb111-921"></a></span>
-<span id="cb111-922"><a href="#cb111-922"></a>Naive Bayes is best used when the number of features is high because it does not require to calculate the covariance matrices. It assumes that the features are independent in each class, this means your predictor variables are independent, which is almost never true for real data. Despite the strong assumptions that it does, naive Bayes often produces good classification results.</span>
+<span id="cb111-896"><a href="#cb111-896"></a><span class="in">```</span></span>
+<span id="cb111-897"><a href="#cb111-897"></a></span>
+<span id="cb111-898"><a href="#cb111-898"></a>Predict returns a list with two variables: - *class*: the predicted class - *Posterior*: the posterior probability that an observation belong to each class.</span>
+<span id="cb111-899"><a href="#cb111-899"></a></span>
+<span id="cb111-902"><a href="#cb111-902"></a><span class="in">```{r}</span></span>
+<span id="cb111-903"><a href="#cb111-903"></a><span class="fu">head</span>(predictions<span class="sc">$</span>class)</span>
+<span id="cb111-904"><a href="#cb111-904"></a><span class="fu">head</span>(predictions<span class="sc">$</span>posterior)</span>
+<span id="cb111-905"><a href="#cb111-905"></a><span class="in">```</span></span>
+<span id="cb111-906"><a href="#cb111-906"></a></span>
+<span id="cb111-907"><a href="#cb111-907"></a>We can use the following code to see what percentage of observations the QDA model correctly predicted:</span>
+<span id="cb111-908"><a href="#cb111-908"></a></span>
+<span id="cb111-911"><a href="#cb111-911"></a><span class="in">```{r}</span></span>
+<span id="cb111-912"><a href="#cb111-912"></a><span class="fu">mean</span>(predictions<span class="sc">$</span>class<span class="sc">==</span>test<span class="sc">$</span>Species)</span>
+<span id="cb111-913"><a href="#cb111-913"></a><span class="in">```</span></span>
+<span id="cb111-914"><a href="#cb111-914"></a></span>
+<span id="cb111-915"><a href="#cb111-915"></a>And we create a confusion matrix to see the results:</span>
+<span id="cb111-916"><a href="#cb111-916"></a></span>
+<span id="cb111-919"><a href="#cb111-919"></a><span class="in">```{r}</span></span>
+<span id="cb111-920"><a href="#cb111-920"></a><span class="fu">table</span>(predictions<span class="sc">$</span>class, test<span class="sc">$</span>Species)</span>
+<span id="cb111-921"><a href="#cb111-921"></a><span class="in">```</span></span>
+<span id="cb111-922"><a href="#cb111-922"></a>:::</span>
 <span id="cb111-923"><a href="#cb111-923"></a></span>
-<span id="cb111-924"><a href="#cb111-924"></a>It can be used for mixed feature vectors (quantitative and qualitative). ::: {.exercise-box} Example We are going to be working again with the Iris dataset. This time we are going to introduce also a new function <span class="in">`ggpairs()`</span> from the package GGally, this will help us visualize the correlation between the variables before we start our analysis</span>
+<span id="cb111-924"><a href="#cb111-924"></a><span class="fu">### Naive Bayes</span></span>
 <span id="cb111-925"><a href="#cb111-925"></a></span>
-<span id="cb111-926"><a href="#cb111-926"></a><span class="in">```{r ggpairs, fig.align=&#39;center&#39;, fig.width=8, fig.height=8}</span></span>
-<span id="cb111-927"><a href="#cb111-927"></a>GGally<span class="sc">::</span><span class="fu">ggpairs</span>(iris[<span class="sc">-</span><span class="dv">5</span>], <span class="at">title =</span> <span class="st">&quot;The correlation between the predictors&quot;</span>)</span>
-<span id="cb111-928"><a href="#cb111-928"></a><span class="in">```</span></span>
+<span id="cb111-926"><a href="#cb111-926"></a>Naive Bayes is best used when the number of features is high because it does not require to calculate the covariance matrices. It assumes that the features are independent in each class, this means your predictor variables are independent, which is almost never true for real data. Despite the strong assumptions that it does, naive Bayes often produces good classification results.</span>
+<span id="cb111-927"><a href="#cb111-927"></a></span>
+<span id="cb111-928"><a href="#cb111-928"></a>It can be used for mixed feature vectors (quantitative and qualitative). ::: {.exercise-box} Example We are going to be working again with the Iris dataset. This time we are going to introduce also a new function <span class="in">`ggpairs()`</span> from the package GGally, this will help us visualize the correlation between the variables before we start our analysis</span>
 <span id="cb111-929"><a href="#cb111-929"></a></span>
-<span id="cb111-930"><a href="#cb111-930"></a>We are going to split the data for the train and the test:</span>
-<span id="cb111-931"><a href="#cb111-931"></a></span>
-<span id="cb111-934"><a href="#cb111-934"></a><span class="in">```{r}</span></span>
-<span id="cb111-935"><a href="#cb111-935"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb111-936"><a href="#cb111-936"></a>sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="fu">nrow</span>(iris), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
-<span id="cb111-937"><a href="#cb111-937"></a>train <span class="ot">&lt;-</span> iris[sample, ]</span>
-<span id="cb111-938"><a href="#cb111-938"></a>test <span class="ot">&lt;-</span> iris[<span class="sc">!</span>sample, ]</span>
-<span id="cb111-939"><a href="#cb111-939"></a><span class="in">```</span></span>
-<span id="cb111-940"><a href="#cb111-940"></a></span>
-<span id="cb111-941"><a href="#cb111-941"></a>We will need the library <span class="in">`naivebayes`</span> for fitting the model:</span>
-<span id="cb111-942"><a href="#cb111-942"></a></span>
-<span id="cb111-945"><a href="#cb111-945"></a><span class="in">```{r}</span></span>
-<span id="cb111-946"><a href="#cb111-946"></a>naive.fit <span class="ot">&lt;-</span> naivebayes<span class="sc">::</span><span class="fu">naive_bayes</span>(Species <span class="sc">~</span>., <span class="at">data=</span>train)</span>
-<span id="cb111-947"><a href="#cb111-947"></a>naive.fit</span>
-<span id="cb111-948"><a href="#cb111-948"></a><span class="in">```</span></span>
-<span id="cb111-949"><a href="#cb111-949"></a></span>
-<span id="cb111-950"><a href="#cb111-950"></a>Now we can use the model to predict values using the test data subset and create a confusion matrix</span>
-<span id="cb111-951"><a href="#cb111-951"></a></span>
-<span id="cb111-954"><a href="#cb111-954"></a><span class="in">```{r}</span></span>
-<span id="cb111-955"><a href="#cb111-955"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(naive.fit, test)</span>
-<span id="cb111-956"><a href="#cb111-956"></a></span>
-<span id="cb111-957"><a href="#cb111-957"></a>(confusion_matrix<span class="ot">&lt;-</span> <span class="fu">table</span>(predictions,test<span class="sc">$</span>Species))</span>
-<span id="cb111-958"><a href="#cb111-958"></a></span>
-<span id="cb111-959"><a href="#cb111-959"></a>(accuracy<span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">diag</span>(confusion_matrix))<span class="sc">/</span><span class="fu">sum</span>(confusion_matrix))</span>
-<span id="cb111-960"><a href="#cb111-960"></a><span class="in">```</span></span>
-<span id="cb111-961"><a href="#cb111-961"></a></span>
-<span id="cb111-962"><a href="#cb111-962"></a>:::</span>
+<span id="cb111-930"><a href="#cb111-930"></a><span class="in">```{r ggpairs, fig.align=&#39;center&#39;, fig.width=8, fig.height=8}</span></span>
+<span id="cb111-931"><a href="#cb111-931"></a>GGally<span class="sc">::</span><span class="fu">ggpairs</span>(iris[<span class="sc">-</span><span class="dv">5</span>], <span class="at">title =</span> <span class="st">&quot;The correlation between the predictors&quot;</span>)</span>
+<span id="cb111-932"><a href="#cb111-932"></a><span class="in">```</span></span>
+<span id="cb111-933"><a href="#cb111-933"></a></span>
+<span id="cb111-934"><a href="#cb111-934"></a>We are going to split the data for the train and the test:</span>
+<span id="cb111-935"><a href="#cb111-935"></a></span>
+<span id="cb111-938"><a href="#cb111-938"></a><span class="in">```{r}</span></span>
+<span id="cb111-939"><a href="#cb111-939"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb111-940"><a href="#cb111-940"></a>sample <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>), <span class="fu">nrow</span>(iris), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
+<span id="cb111-941"><a href="#cb111-941"></a>train <span class="ot">&lt;-</span> iris[sample, ]</span>
+<span id="cb111-942"><a href="#cb111-942"></a>test <span class="ot">&lt;-</span> iris[<span class="sc">!</span>sample, ]</span>
+<span id="cb111-943"><a href="#cb111-943"></a><span class="in">```</span></span>
+<span id="cb111-944"><a href="#cb111-944"></a></span>
+<span id="cb111-945"><a href="#cb111-945"></a>We will need the library <span class="in">`naivebayes`</span> for fitting the model:</span>
+<span id="cb111-946"><a href="#cb111-946"></a></span>
+<span id="cb111-949"><a href="#cb111-949"></a><span class="in">```{r}</span></span>
+<span id="cb111-950"><a href="#cb111-950"></a>naive.fit <span class="ot">&lt;-</span> naivebayes<span class="sc">::</span><span class="fu">naive_bayes</span>(Species <span class="sc">~</span>., <span class="at">data=</span>train)</span>
+<span id="cb111-951"><a href="#cb111-951"></a>naive.fit</span>
+<span id="cb111-952"><a href="#cb111-952"></a><span class="in">```</span></span>
+<span id="cb111-953"><a href="#cb111-953"></a></span>
+<span id="cb111-954"><a href="#cb111-954"></a>Now we can use the model to predict values using the test data subset and create a confusion matrix</span>
+<span id="cb111-955"><a href="#cb111-955"></a></span>
+<span id="cb111-958"><a href="#cb111-958"></a><span class="in">```{r}</span></span>
+<span id="cb111-959"><a href="#cb111-959"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(naive.fit, test)</span>
+<span id="cb111-960"><a href="#cb111-960"></a></span>
+<span id="cb111-961"><a href="#cb111-961"></a>(confusion_matrix<span class="ot">&lt;-</span> <span class="fu">table</span>(predictions,test<span class="sc">$</span>Species))</span>
+<span id="cb111-962"><a href="#cb111-962"></a></span>
+<span id="cb111-963"><a href="#cb111-963"></a>(accuracy<span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">diag</span>(confusion_matrix))<span class="sc">/</span><span class="fu">sum</span>(confusion_matrix))</span>
+<span id="cb111-964"><a href="#cb111-964"></a><span class="in">```</span></span>
+<span id="cb111-965"><a href="#cb111-965"></a></span>
+<span id="cb111-966"><a href="#cb111-966"></a>:::</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

@@ -165,7 +165,7 @@ glm.balance<- glm(default ~ balance, data=Default, family = binomial)
 summary(glm.balance)
 ```
 
-### Interpreting the results:
+### Interpreting the results: {#logisticRegressionResults}
 
 For the Default data, estimated coefficients of the logistic regression model that predicts the probability of default using balance. A one-unit increase in balance is associated with an increase in the log odds of default by 0.0055 units. Many aspects of the logistic regression output are similar to the linear regression. For example, we can measure the accuracy of the coefficient estimates by computing their standard errors. The z-statistic plays the same role as the t-statistic in the linear regression output: the z-statistic associated with $\beta_1$ is equal to $\hat{\beta_1}/SE(\hat{\beta_1})$, and so a large (absolute) value of the z-statistic indicates evidence against the null hypothesis $H_0:\beta_1=0$. This null hypothesis implies that the probability of default does not depend on balance. Since the `$p$-value` associated with balance is tiny, we can reject the null hypothesis. The intercept is typically not of interest. \### Making predictions Once the coefficients have been estimated, we can compute the probability of default for any given credit balance. we will use the logistic regression formula we already saw (@eq-logisticRegression)
 
@@ -230,7 +230,7 @@ p2 <- ggplot(Default, aes(x = student, y = balance, fill = student)) +
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
-#### Misclassification rate
+#### Misclassification rate {#missclassificationRate}
 
 How many values does our model get right and how many get wrong? for that we can use a *confusion matrix* :
 
@@ -259,7 +259,9 @@ Although this misclassification rate might seem very small, we need to take into
 
 Another way of looking at it would be seeing what percentage of No's and Yes's we have missclassified.
 
-For No's we have missclassified 40 out of 9667 = 0.4% For Yes's we have missclassified 228 out of 333 = 68.5%
+-   For No's we have missclassified 40 out of 9667 = 0.4%
+
+-   For Yes's we have missclassified 228 out of 333 = 68.5%
 
 #### Visualizing the relationship between variables
 
@@ -652,6 +654,8 @@ The high sensitivity (99.77%) suggests it's good at identifying the majority cla
 Adjusting the model or the decision threshold can help to balance sensitivity and specificity better.
 
 In order to reduce the false negative rate we can take change the threshold at which we classify one class to yes or no. By default we have been using equal priors for all variables, but we can change this to put more weight on the minority class (default = yes). This swill increase the false positive rate, so we need to evaluate for our data what type of errors we prefer depending on the risk of making the wrong classifications.
+
+#### *Receiver Operating Characteristic* (ROC) {#ROCcurve}
 
 [ROC Curve]{#rocCurve}: We can use A ROC plot and AUC (Area under the curve) to summarize the overall performance of our model. A higher AUC is desired.
 
