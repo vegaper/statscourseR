@@ -4019,10 +4019,6 @@ window.Quarto = {
  <span class="dropdown-text">Statistical Tests</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Titanic.html">
- <span class="dropdown-text">Titanic exercise</span></a>
-  </li>  
-        <li>
     <a class="dropdown-item" href="./linearModels.html">
  <span class="dropdown-text">Linear Models</span></a>
   </li>  
@@ -4033,6 +4029,10 @@ window.Quarto = {
         <li>
     <a class="dropdown-item" href="./classification.html">
  <span class="dropdown-text">Classification problems</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./Titanic.html">
+ <span class="dropdown-text">Titanic exercise</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./polynomialReg.html">
@@ -4918,7 +4918,7 @@ F-statistic:   910 on 1 and 141 DF,  p-value: &lt; 0.00000000000000022</code></p
 0.00000000000000000000000000000000000000000000000000000000000000225742 </code></pre>
 </div>
 </div>
-<p>When looking at coefficients one must be aware that the units we used in our data will affect them. The z-statistic is not affected by units.</p>
+<p>When looking at coefficients one must be aware that the units we used in our data will affect them. The <span class="math inline">\(z\)</span>-statistic is not affected by units.</p>
 <p>We can use the <code>names()</code> function in order to find out what other pieces of information are stored. Although we can extract these quantities by name—e.g. <code>testResults$coefficients</code>—it is safer to use the extractor functions like <code>coef()</code> to access them.</p>
 <div class="cell">
 <details open class="code-fold">
@@ -4976,8 +4976,8 @@ DLA1        0.9027204 1.0293353</code></pre>
 1 4.201957 3.838095 4.565819</code></pre>
 </div>
 </div>
-<p>R is also retrieving a p value for the overall model that’s coming from an Anova F-Test. that corresponds with the coefficient for the slope.</p>
-<p>our diagnostic plots are automatically produced by applying the <code>plot()</code> function directly to the output from <code>lm()</code>. In general, this command will produce one plot at a time, and hitting <em>Enter</em> will generate the next plot. However, it is often convenient to view all four plots together. We can achieve this by using the <code>par()</code> and <code>mfrow()</code> functions, which tell <code>R</code> to split the display screen into separate panels so that multiple plots can be viewed simultaneously. For example, <code>par(mfrow = c(2, 2))</code> divides the plotting region into a <span class="math inline">\(2 \times 2\)</span> grid of panels.</p>
+<p><code>R</code> is also retrieving a <span class="math inline">\(p\)</span> value for the overall model that’s coming from an Anova F-Test. that corresponds with the coefficient for the slope.</p>
+<p>Our diagnostic plots are automatically produced by applying the <code>plot()</code> function directly to the output from <code>lm()</code>. In general, this command will produce one plot at a time, and hitting <em>Enter</em> will generate the next plot. However, it is often convenient to view all four plots together. We can achieve this by using the <code>par()</code> and <code>mfrow()</code> functions, which tell <code>R</code> to split the display screen into separate panels so that multiple plots can be viewed simultaneously. For example, <code>par(mfrow = c(2, 2))</code> divides the plotting region into a <span class="math inline">\(2 \times 2\)</span> grid of panels.</p>
 <div class="cell" data-layout-align="center">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -7406,7 +7406,7 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <span id="cb114-698"><a href="#cb114-698"></a>testResult<span class="sc">$</span>coefficients[,<span class="dv">4</span>]</span>
 <span id="cb114-699"><a href="#cb114-699"></a><span class="in">```</span></span>
 <span id="cb114-700"><a href="#cb114-700"></a></span>
-<span id="cb114-701"><a href="#cb114-701"></a>When looking at coefficients one must be aware that the units we used in our data will affect them. The z-statistic is not affected by units.</span>
+<span id="cb114-701"><a href="#cb114-701"></a>When looking at coefficients one must be aware that the units we used in our data will affect them. The $z$-statistic is not affected by units.</span>
 <span id="cb114-702"><a href="#cb114-702"></a></span>
 <span id="cb114-703"><a href="#cb114-703"></a>We can use the <span class="in">`names()`</span> function in order to find out what other pieces of information are stored. Although we can extract these quantities by name---e.g. <span class="in">`testResults$coefficients`</span>---it is safer to use the extractor functions like <span class="in">`coef()`</span> to access them.</span>
 <span id="cb114-704"><a href="#cb114-704"></a></span>
@@ -7434,9 +7434,9 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <span id="cb114-726"><a href="#cb114-726"></a>    <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>)</span>
 <span id="cb114-727"><a href="#cb114-727"></a><span class="in">```</span></span>
 <span id="cb114-728"><a href="#cb114-728"></a></span>
-<span id="cb114-729"><a href="#cb114-729"></a>R is also retrieving a p value for the overall model that&#39;s coming from an Anova F-Test. that corresponds with the coefficient for the slope.</span>
+<span id="cb114-729"><a href="#cb114-729"></a><span class="in">`R`</span> is also retrieving a $p$ value for the overall model that&#39;s coming from an Anova F-Test. that corresponds with the coefficient for the slope.</span>
 <span id="cb114-730"><a href="#cb114-730"></a></span>
-<span id="cb114-731"><a href="#cb114-731"></a>our diagnostic plots are automatically produced by applying the <span class="in">`plot()`</span> function directly to the output from <span class="in">`lm()`</span>. In general, this command will produce one plot at a time, and hitting *Enter* will generate the next plot. However, it is often convenient to view all four plots together. We can achieve this by using the <span class="in">`par()`</span> and <span class="in">`mfrow()`</span> functions, which tell <span class="in">`R`</span> to split the display screen into separate panels so that multiple plots can be viewed simultaneously. For example, <span class="in">`par(mfrow = c(2, 2))`</span> divides the plotting region into a $2 \times 2$ grid of panels.</span>
+<span id="cb114-731"><a href="#cb114-731"></a>Our diagnostic plots are automatically produced by applying the <span class="in">`plot()`</span> function directly to the output from <span class="in">`lm()`</span>. In general, this command will produce one plot at a time, and hitting *Enter* will generate the next plot. However, it is often convenient to view all four plots together. We can achieve this by using the <span class="in">`par()`</span> and <span class="in">`mfrow()`</span> functions, which tell <span class="in">`R`</span> to split the display screen into separate panels so that multiple plots can be viewed simultaneously. For example, <span class="in">`par(mfrow = c(2, 2))`</span> divides the plotting region into a $2 \times 2$ grid of panels.</span>
 <span id="cb114-732"><a href="#cb114-732"></a></span>
 <span id="cb114-733"><a href="#cb114-733"></a><span class="in">```{r, fig.align=&#39;center&#39;, fig.width=7}</span></span>
 <span id="cb114-734"><a href="#cb114-734"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
